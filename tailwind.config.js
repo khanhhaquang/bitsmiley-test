@@ -21,9 +21,9 @@ export default {
     extend: {
       colors: colors,
       backgroundImage: {
-        bitSpace: "url('./src/assets/illustrations/bit-space.png')",
-        bitGlobal1: "url('./src/assets/illustrations/bit-global-1.png')",
-        bitGlobal2: "url('./src/assets/illustrations/bit-global-2.png')"
+        bitSpace: "url('/src/assets/illustrations/bit-space.png')",
+        bitGlobal1: "url('/src/assets/illustrations/bit-global-1.png')",
+        bitGlobal2: "url('/src/assets/illustrations/bit-global-2.png')"
       },
       fontFamily: {
         psm: ['psm', ...defaultTheme.fontFamily.sans],

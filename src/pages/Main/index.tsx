@@ -19,13 +19,13 @@ const Machine: React.FC = () => {
       <div className="relative flex h-[1200px] w-[1716px] shrink-0 items-center justify-center">
         <img
           className="absolute h-[1200px] w-[1716px] shrink-0"
-          src="./src/assets/illustrations/machine-static.png"
+          src="/src/assets/illustrations/machine-static.png"
           alt="machine-static"
         />
 
         <img
           className="absolute h-[1200px] w-[1716px] shrink-0"
-          src="./src/assets/illustrations/screen-strips.png"
+          src="/src/assets/illustrations/screen-strips.png"
           alt="screen-strips"
         />
 
@@ -37,7 +37,7 @@ const Machine: React.FC = () => {
               .fill(1)
               .map(
                 (_, idx) =>
-                  `./src/assets/frames/question-mark-rotate-mini/${idx + 1}.png`
+                  `/src/assets/frames/question-mark-rotate-mini/${idx + 1}.png`
               )}
           />
         </div>
@@ -48,8 +48,8 @@ const Machine: React.FC = () => {
             height={1200}
             fps={0.5}
             imgLocalPaths={[
-              './src/assets/frames/lights/light-1.png',
-              './src/assets/frames/lights/light-2.png'
+              '/src/assets/frames/lights/light-1.png',
+              '/src/assets/frames/lights/light-2.png'
             ]}
           />
         </div>
@@ -182,10 +182,10 @@ const BackedBy: React.FC = () => {
   return (
     <div className="flex items-center justify-center gap-x-40 px-[22%]">
       <div className="h-[153px] w-[462px] shrink-0">
-        <img src="./src/assets/illustrations/okx-logo.png" alt="okx" />
+        <img src="/src/assets/illustrations/okx-logo.png" alt="okx" />
       </div>
       <div className="h-[153px] w-[445px] shrink-0">
-        <img src="./src/assets/illustrations/abcde-logo.png" alt="abcde" />
+        <img src="/src/assets/illustrations/abcde-logo.png" alt="abcde" />
       </div>
     </div>
   )

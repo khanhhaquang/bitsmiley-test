@@ -1,12 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 let timer: number
-export const CanvasFrames: React.FC<{
+
+export type CanvasFramesRef = {
+  isPlaying: boolean
+  play: () => void
+  stop: () => void
+}
+
+type CanvasFramesProps = {
   imgLocalPaths: string[]
   width: number
   height: number
+  autoPlay?: boolean
   fps?: number
-}> = ({ imgLocalPaths, width, height, fps = 24 }) => {
+}
+
+export const CanvasFrames = React.forwardRef<
+  CanvasFramesRef,
+  CanvasFramesProps
+>(({ imgLocalPaths, width, height, autoPlay = true, fps = 24 }, ref) => {
+  const [isPlaying, setIsPlaying] = useState(autoPlay)
   const [loadedImages, setLoadedImages] = useState<HTMLImageElement[]>([])
   const [isLoadingImages, setIsLoadingImages] = useState(true)
 
@@ -14,6 +28,16 @@ export const CanvasFrames: React.FC<{
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const totalFrame = imgLocalPaths.length
+
+  React.useImperativeHandle(ref, () => ({
+    isPlaying,
+    play: () => {
+      setIsPlaying(true)
+    },
+    stop: () => {
+      setIsPlaying(false)
+    }
+  }))
 
   const loadImages = () => {
     if (!totalFrame || loadedImages.length >= totalFrame) {
@@ -52,13 +76,24 @@ export const CanvasFrames: React.FC<{
   }, [imgLocalPaths])
 
   useEffect(() => {
-    if (!isLoadingImages && !!loadedImages.length) {
+    if (!isLoadingImages && !!loadedImages.length && isPlaying) {
       animation()
     }
 
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoadingImages, loadedImages.length])
+  }, [isLoadingImages, loadedImages.length, isPlaying])
 
-  return <canvas ref={canvasRef} height={height} width={width} />
-}
+  useEffect(() => {
+    if (!isPlaying) {
+      currentIndex.current = 0
+      clearTimeout(timer)
+    }
+  }, [isPlaying])
+
+  return isPlaying ? (
+    <canvas ref={canvasRef} height={height} width={width} />
+  ) : (
+    <img src={loadedImages[0]?.src} alt="..." />
+  )
+})
