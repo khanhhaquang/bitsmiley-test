@@ -10,5 +10,17 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
+  build: {
+    rollupOptions: {
+      output: {
+        chunkFileNames: 'static/js/[name]-[hash].js',
+        entryFileNames: 'static/js/[name]-[hash].js',
+        assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+      }
+    }
+  },
+  esbuild: {
+    drop: ['console', 'debugger']
+  },
   plugins: [react(), svgr({ include: '**/*.svg?react' })]
 })

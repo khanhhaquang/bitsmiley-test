@@ -1,5 +1,5 @@
-import HeaderSVG from '@/assets/header.svg?react'
-import SmileySVG from '@/assets/smiley.svg?react'
+import HeaderSVG from '@/assets/icons/header.svg?react'
+import SmileySVG from '@/assets/icons/smiley.svg?react'
 
 const Header: React.FC = () => {
   return (
@@ -14,10 +14,14 @@ const Machine: React.FC = () => {
       <div className="flex h-full w-full items-center justify-center bg-gray-500">
         <div className="relative h-8 w-2/5 overflow-hidden whitespace-nowrap">
           <span className="absolute animate-[slide_10s_linear_infinite]">
-            <span>smiley express smiley express smiley express smiley express smiley
-            express smiley express</span>
-            <span>smiley express smiley express smiley express smiley express smiley
-            express smiley express</span>
+            <span className="font-smb">
+              smiley express smiley express smiley express smiley express smiley
+              express smiley express
+            </span>
+            <span className='font-smb'>
+              smiley express smiley express smiley express smiley express smiley
+              express smiley express
+            </span>
           </span>
         </div>
       </div>

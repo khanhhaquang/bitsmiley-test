@@ -1,4 +1,4 @@
-import { transform } from 'typescript'
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 const colors = {
   yellow: '#FFF500',
@@ -18,6 +18,11 @@ export default {
   theme: {
     extend: {
       colors: colors,
+      fontFamily: {
+        psm: ['psm', ...defaultTheme.fontFamily.sans],
+        pss: ['pss', ...defaultTheme.fontFamily.sans],
+        smb: ['smb', ...defaultTheme.fontFamily.sans]
+      },
       keyframes: {
         slide: {
           '0%': {
