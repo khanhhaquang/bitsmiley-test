@@ -1,29 +1,23 @@
 import HeaderSVG from '@/assets/icons/header.svg?react'
 import SmileySVG from '@/assets/icons/smiley.svg?react'
+import { CanvasFrames } from '@/components/CanvasFrames'
 
 const Header: React.FC = () => {
   return (
-    <div className="mt-8 flex h-24 items-end justify-center">
+    <div className="z-10 flex h-24 items-end justify-center">
       <HeaderSVG />
     </div>
   )
 }
 const Machine: React.FC = () => {
   return (
-    <div className="flex h-96 items-center justify-center px-24">
-      <div className="flex h-full w-full items-center justify-center bg-gray-500">
-        <div className="relative h-8 w-2/5 overflow-hidden whitespace-nowrap">
-          <span className="absolute animate-[slide_10s_linear_infinite]">
-            <span className="font-smb">
-              smiley express smiley express smiley express smiley express smiley
-              express smiley express
-            </span>
-            <span className='font-smb'>
-              smiley express smiley express smiley express smiley express smiley
-              express smiley express
-            </span>
-          </span>
-        </div>
+    <div className="mt-12 flex items-center justify-center px-24">
+      <div className="relative flex aspect-[1716/1200] w-[1716px] items-center justify-center">
+        <img
+          className="absolute aspect-[1716/1200] w-[1716px] outline outline-pink-200"
+          src="./src/assets/illustrations/machine-static.png"
+          alt="machine-static"
+        />
       </div>
     </div>
   )
@@ -58,7 +52,7 @@ const Divider: React.FC<{ title: string }> = ({ title }) => {
 const Inventor: React.FC = () => {
   return (
     <div className="flex items-center justify-center gap-x-28 px-[22%]">
-      <div className="h-full w-full">
+      <div className="aspect-[251/272] w-[251px] shrink-0">
         <SmileySVG />
       </div>
       <div className="">
@@ -101,7 +95,23 @@ const Articles: React.FC = () => {
 
 const Main: React.FC = () => {
   return (
-    <div className="inset-0 h-screen w-screen bg-black text-white">
+    <div className="relative inset-0 h-screen w-screen bg-black text-white">
+      {/* <div className="absolute left-0 top-0 z-0 w-full">
+        <img src="./src/assets/illustrations/bit-space.png" alt="bit-space" />
+      </div> */}
+
+      <CanvasFrames
+        width={301}
+        height={286}
+        totalFrame={49}
+        imgLocalPaths={Array(49)
+          .fill(1)
+          .map(
+            (_, idx) =>
+              `./src/assets/frames/question-mark-rotate-mini/${idx + 1}.png`
+          )}
+      />
+
       <Header />
       <Machine />
       <Divider title="Who is bitSmiley" />
