@@ -5,17 +5,18 @@ export const CanvasFrames: React.FC<{
   imgLocalPaths: string[]
   width: number
   height: number
-  totalFrame: number
   fps?: number
-}> = ({ imgLocalPaths, width, height, totalFrame, fps = 24 }) => {
+}> = ({ imgLocalPaths, width, height, fps = 24 }) => {
   const [loadedImages, setLoadedImages] = useState<HTMLImageElement[]>([])
   const [isLoadingImages, setIsLoadingImages] = useState(true)
-  
+
   const currentIndex = useRef(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
+  const totalFrame = imgLocalPaths.length
+
   const loadImages = () => {
-    if (!imgLocalPaths.length || loadedImages.length >= totalFrame) {
+    if (!totalFrame || loadedImages.length >= totalFrame) {
       setIsLoadingImages(false)
       return
     }
@@ -24,7 +25,7 @@ export const CanvasFrames: React.FC<{
       img.src = i
       img.onload = () => setLoadedImages((pre) => [...pre, img])
 
-      if (idx === imgLocalPaths.length - 1) setIsLoadingImages(false)
+      if (idx === totalFrame - 1) setIsLoadingImages(false)
     })
   }
 
