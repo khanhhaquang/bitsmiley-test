@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-let timer: number
-
 export type CanvasFramesRef = {
   isPlaying: boolean
   isLoadingImages: boolean
@@ -20,7 +18,7 @@ type CanvasFramesProps = {
 export const CanvasFrames = React.forwardRef<
   CanvasFramesRef,
   CanvasFramesProps
->(({ imgLocalPaths, width, height, autoPlay = true, fps = 24 }, ref) => {
+>(({ imgLocalPaths, width, height, autoPlay = true, fps = 30 }, ref) => {
   const [isPlaying, setIsPlaying] = useState(autoPlay)
   const [loadedImages, setLoadedImages] = useState<HTMLImageElement[]>([])
   const [isLoadingImages, setIsLoadingImages] = useState(true)
@@ -28,6 +26,9 @@ export const CanvasFrames = React.forwardRef<
   const currentIndex = useRef(0)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
+  const requestRef = useRef(0)
+  const lastFrameTime = useRef(0)
+  const frameInterval = 1000 / fps
   const totalFrame = imgLocalPaths.length
 
   React.useImperativeHandle(ref, () => ({
@@ -41,55 +42,70 @@ export const CanvasFrames = React.forwardRef<
     }
   }))
 
-  const loadImages = () => {
+  const loadImages = async () => {
     if (!totalFrame || loadedImages.length >= totalFrame) {
       setIsLoadingImages(false)
       return
     }
-    imgLocalPaths.forEach((i, idx) => {
-      const img = new Image(width, height)
-      img.src = i
-      img.onload = () => setLoadedImages((pre) => [...pre, img])
 
-      if (idx === totalFrame - 1) setIsLoadingImages(false)
+    const promises = imgLocalPaths.map((i) => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image(width, height)
+        img.src = i
+        img.onerror = reject
+        img.onload = () => {
+          resolve(img)
+        }
+      })
     })
+    const allLoadedImages = await Promise.all(promises)
+
+    setLoadedImages(allLoadedImages)
+    setIsLoadingImages(false)
   }
 
-  const animation = () => {
-    const ctx = canvasRef.current?.getContext('2d')
-    if (!ctx || !loadedImages[currentIndex.current]) return
+  const animation = (currentTime: number) => {
+    const elapsed = currentTime - lastFrameTime.current
 
-    ctx.clearRect(0, 0, width, height)
-    ctx.save()
-    ctx.drawImage(loadedImages[currentIndex.current], 0, 0)
+    if (elapsed > frameInterval) {
+      lastFrameTime.current = currentTime
 
-    if (currentIndex.current >= totalFrame - 1) {
-      currentIndex.current = 0
-    } else {
-      currentIndex.current += 1
+      const ctx = canvasRef.current?.getContext('2d')
+      if (!ctx || !loadedImages[currentIndex.current]) return
+
+      ctx.clearRect(0, 0, width, height)
+      ctx.save()
+      ctx.drawImage(loadedImages[currentIndex.current], 0, 0)
+
+      if (currentIndex.current >= totalFrame - 1) {
+        currentIndex.current = 0
+      } else {
+        currentIndex.current += 1
+      }
     }
-    timer = setTimeout(animation, 1000 / fps)
+
+    requestRef.current = requestAnimationFrame(animation)
   }
 
   useEffect(() => {
-    if (!imgLocalPaths.length) return
+    if (!imgLocalPaths.length || !!loadedImages.length) return
     loadImages()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imgLocalPaths])
+  }, [imgLocalPaths.length, loadedImages.length])
 
   useEffect(() => {
     if (!isLoadingImages && !!loadedImages.length && isPlaying) {
-      animation()
+      requestRef.current = requestAnimationFrame(animation)
     }
 
-    return () => clearTimeout(timer)
+    return () => cancelAnimationFrame(requestRef.current)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoadingImages, loadedImages.length, isPlaying])
 
   useEffect(() => {
     if (!isPlaying) {
       currentIndex.current = 0
-      clearTimeout(timer)
+      cancelAnimationFrame(requestRef.current)
     }
   }, [isPlaying])
 

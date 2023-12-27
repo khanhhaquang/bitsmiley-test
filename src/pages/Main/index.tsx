@@ -37,6 +37,7 @@ const MintMachine: React.FC = () => {
 
         <div className="absolute bottom-[43%] left-[25.8%] z-10">
           <CanvasFrames
+            fps={24}
             width={301}
             height={286}
             imgLocalPaths={questionMarkRotateMiniImgUrls}
@@ -59,7 +60,7 @@ const MintMachine: React.FC = () => {
           <Marquee
             speed={200}
             className="relative flex h-full w-full items-center justify-center overflow-hidden whitespace-nowrap p-5 font-smb text-[80px] text-yellow2">
-            bitSmiley granD minting coming soon !!! bitSmiley granD minting
+            bitSmiley grand minting coming soon !!! bitSmiley granDdminting
             coming soon !!!
           </Marquee>
         </div>
@@ -171,7 +172,7 @@ const Inventor: React.FC = () => {
           time.
         </div>
         <div className="relative mt-6 h-10 w-32">
-          <div className="absolute left-0 top-0 z-50 bg-blue px-4 py-2 font-bold">
+          <div className="absolute left-0 top-0 z-50 cursor-pointer bg-blue px-4 py-2 font-bold">
             WHITEPAPER
           </div>
           <div className="absolute left-2 top-2 z-10 h-full w-full bg-blue2"></div>
