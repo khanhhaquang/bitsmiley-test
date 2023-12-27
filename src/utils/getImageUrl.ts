@@ -2,6 +2,10 @@ export default function getImageUrl(path: string) {
   return new URL(path, import.meta.url).href
 }
 
+export const getIconUrl = (name: string) => {
+  return new URL(`/src/assets/icons/${name}.png`, import.meta.url).href
+}
+
 export const getFrameUrl = (frameName: string, picName: string | number) => {
   return new URL(
     `/src/assets/frames/${frameName}/${picName}.png`,

@@ -1,19 +1,19 @@
-import HeaderSVG from '@/assets/icons/header.svg?react'
-import SmileySVG from '@/assets/icons/smiley.svg?react'
-import DotSVG from '@/assets/icons/dot.svg?react'
-import CopyRightSVG from '@/assets/icons/copyright.svg?react'
-
+import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
 import { CanvasFrames } from '@/components/CanvasFrames'
 
 import { cn } from '@/utils/cn'
-import { getFrameUrl, getIllustrationUrl } from '@/utils/getImageUrl'
+import {
+  getFrameUrl,
+  getIconUrl,
+  getIllustrationUrl
+} from '@/utils/getImageUrl'
 import { useWindowSize } from '@/hooks/useWindowSize'
 
 const Header: React.FC = () => {
   return (
     <div className="z-10 flex items-end justify-center pt-10">
-      <HeaderSVG />
+      <Image src={getIconUrl('header')} />
     </div>
   )
 }
@@ -25,16 +25,14 @@ const MintMachine: React.FC = () => {
   return (
     <div className="flex items-center justify-center px-24">
       <div className="relative flex h-[1200px] w-[1716px] shrink-0 items-center justify-center">
-        <img
+        <Image
           className="absolute h-[1200px] w-[1716px] shrink-0"
           src={getIllustrationUrl('machine-static')}
-          alt="machine-static"
         />
 
-        <img
+        <Image
           className="absolute h-[1200px] w-[1716px] shrink-0"
           src={getIllustrationUrl('screen-strips')}
-          alt="screen-strips"
         />
 
         <div className="absolute bottom-[43%] left-[25.8%] z-10">
@@ -69,7 +67,7 @@ const MintMachine: React.FC = () => {
 
         <div className="absolute bottom-[248px] left-3 flex items-center gap-x-1.5 font-bold">
           <span>
-            <CopyRightSVG />
+            <Image src={getIconUrl('copyright')} />
           </span>
           <span className="cursor-default mix-blend-difference">
             bitSmiley team 2023
@@ -121,7 +119,7 @@ const MintMachine: React.FC = () => {
           </div>
           <div className="flex items-center gap-x-2 text-lg font-bold text-green">
             <span>
-              <DotSVG />
+              <Image src={getIconUrl('dot')} />
             </span>
             <span>MINING COMING SOON...</span>
           </div>
@@ -169,7 +167,7 @@ const Inventor: React.FC = () => {
   return (
     <div className="flex cursor-default items-center justify-center gap-x-28">
       <div className="aspect-[251/272] w-[251px] shrink-0">
-        <SmileySVG />
+        <Image src={getIconUrl('smiley')} />
       </div>
       <div className="w-[700px]">
         <div className="text-[32px]">Inventor of bitUSD</div>
@@ -194,10 +192,10 @@ const BackedBy: React.FC = () => {
   return (
     <div className="flex items-center justify-center gap-x-40">
       <div className="h-[153px] w-[462px] shrink-0">
-        <img src={getIllustrationUrl('okx-logo')} alt="okx" />
+        <Image src={getIllustrationUrl('okx-logo')} />
       </div>
       <div className="h-[153px] w-[445px] shrink-0">
-        <img src={getIllustrationUrl('abcde-logo')} alt="abcde" />
+        <Image src={getIllustrationUrl('abcde-logo')} />
       </div>
     </div>
   )
@@ -226,9 +224,8 @@ const Main: React.FC = () => {
       style={{
         scale: `${(width * 100) / 1920}%`
       }}>
-      <img
+      <Image
         src={getIllustrationUrl('bit-space')}
-        alt="bit-space"
         style={{
           scale: `${(1920 * 100) / width}%`
         }}
@@ -239,9 +236,8 @@ const Main: React.FC = () => {
       <Divider title="Who is bitSmiley" className="mt-40" />
 
       <div className="relative">
-        <img
+        <Image
           src={getIllustrationUrl('bit-global-1')}
-          alt="bit-global-1"
           style={{
             scale: `${(1920 * 100) / width}%`
           }}
@@ -253,9 +249,8 @@ const Main: React.FC = () => {
 
       <BackedBy />
       <div className="relative">
-        <img
+        <Image
           src={getIllustrationUrl('bit-global-2')}
-          alt="bit-global-2"
           style={{
             scale: `${(1920 * 100) / width}%`
           }}
