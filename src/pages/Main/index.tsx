@@ -59,29 +59,29 @@ const MintMachine: React.FC = () => {
         <div className="absolute bottom-[168px] left-[254px] h-[126px] w-[784px]">
           <Marquee
             speed={200}
-            className="relative flex h-full w-full items-center justify-center overflow-hidden whitespace-nowrap p-5 font-smb text-[80px] text-yellow2">
+            className="relative flex h-full w-full cursor-default items-center justify-center overflow-hidden whitespace-nowrap p-5 font-smb text-[80px] text-yellow2">
             bitSmiley grand minting coming soon !!! bitSmiley granDdminting
             coming soon !!!
           </Marquee>
         </div>
 
-        <div className="absolute bottom-[248px] left-0 flex items-center gap-x-1.5 font-bold">
+        <div className="absolute bottom-[248px] left-3 flex items-center gap-x-1.5 font-bold">
           <span>
             <CopyRightSVG />
           </span>
-          <span>
-            bitSmiley team <span className="text-black">20</span>23
+          <span className="cursor-default mix-blend-difference">
+            bitSmiley team 2023
           </span>
         </div>
 
-        <div className="absolute bottom-[248px] right-[26px] flex items-center gap-x-6 font-bold">
-          <span className="cursor-pointer text-green hover:text-white">
+        <div className="absolute bottom-[248px] right-[34px] flex items-center gap-x-6 font-bold">
+          <span className="cursor-pointer mix-blend-difference">
             [Whitepaper]
           </span>
-          <span className="cursor-pointer text-green hover:text-white">
+          <span className="cursor-pointer text-green mix-blend-difference">
             [Twitter]
           </span>
-          <span className="cursor-pointer text-green hover:text-white">
+          <span className="cursor-pointer text-green mix-blend-difference">
             [Discord]
           </span>
         </div>
@@ -131,7 +131,7 @@ const MintMachine: React.FC = () => {
 
 const Divider: React.FC<{ title: string }> = ({ title }) => {
   return (
-    <div className="my-[200px] flex items-center justify-center px-[12%] py-2.5">
+    <div className="my-[200px] flex cursor-default items-center justify-center px-[12%] py-2.5">
       <div className="text-5xl font-bold">+</div>
       <div className="flex flex-1 items-center overflow-hidden text-5xl">
         {Array(30)
@@ -158,11 +158,11 @@ const Divider: React.FC<{ title: string }> = ({ title }) => {
 }
 const Inventor: React.FC = () => {
   return (
-    <div className="flex items-center justify-center gap-x-28 px-[22%]">
+    <div className="flex cursor-default items-center justify-center gap-x-28">
       <div className="aspect-[251/272] w-[251px] shrink-0">
         <SmileySVG />
       </div>
-      <div className="">
+      <div className="w-[700px]">
         <div className="text-[32px]">Inventor of bitUSD</div>
         <div className="mt-12 text-2xl">
           We are the OG of Bitcoin{' '}
@@ -183,7 +183,7 @@ const Inventor: React.FC = () => {
 }
 const BackedBy: React.FC = () => {
   return (
-    <div className="flex items-center justify-center gap-x-40 px-[22%]">
+    <div className="flex items-center justify-center gap-x-40">
       <div className="h-[153px] w-[462px] shrink-0">
         <img src={getIllustrationUrl('okx-logo')} alt="okx" />
       </div>
@@ -195,7 +195,7 @@ const BackedBy: React.FC = () => {
 }
 const Articles: React.FC = () => {
   return (
-    <div className="flex items-center justify-center gap-x-10 px-[20%] pb-40">
+    <div className="flex items-center justify-center gap-x-10 pb-40">
       <div className="aspect-square w-[370px] shrink-0 bg-gray-500">
         Article1
       </div>
@@ -211,16 +211,28 @@ const Articles: React.FC = () => {
 
 const Main: React.FC = () => {
   return (
-    <div className="inset-0 h-screen w-screen bg-bitSpace bg-cover bg-center bg-no-repeat text-white">
+    <div className="inset-0 h-screen w-screen bg-bitSpace bg-fullw bg-no-repeat text-white">
       <Header />
       <MintMachine />
       <Divider title="Who is bitSmiley" />
-      <div className="bg-bitGlobal1 bg-cover bg-center bg-no-repeat">
+
+      <div className="relative">
+        <img
+          src={getIllustrationUrl('bit-global-1')}
+          alt="bit-global-1"
+          className="absolute left-0 top-0 z-[-1] w-full"
+        />
         <Inventor />
         <Divider title="Backed By" />
       </div>
+
       <BackedBy />
-      <div className="bg-bitGlobal2 bg-cover bg-center bg-no-repeat ">
+      <div className="relative">
+        <img
+          src={getIllustrationUrl('bit-global-2')}
+          alt="bit-global-2"
+          className="absolute bottom-0 left-0 z-[-2] w-full"
+        />
         <Divider title="Articles" />
         <Articles />
       </div>

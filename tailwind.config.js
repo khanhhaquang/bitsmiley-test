@@ -18,12 +18,13 @@ export default {
     './node_modules/flowbite-react/lib/esm/**/*.js'
   ],
   theme: {
+    backgroundSize: {
+      fullw: '100% auto'
+    },
     extend: {
       colors: colors,
       backgroundImage: {
-        bitSpace: "url('/src/assets/illustrations/bit-space.png')",
-        bitGlobal1: "url('/src/assets/illustrations/bit-global-1.png')",
-        bitGlobal2: "url('/src/assets/illustrations/bit-global-2.png')"
+        bitSpace: "url('/src/assets/illustrations/bit-space.png')"
       },
       fontFamily: {
         psm: ['psm', ...defaultTheme.fontFamily.sans],

@@ -121,7 +121,6 @@ export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
     [direction]
   )
 
-  // Render {multiplier} number of children
   const multiplyChildren = useCallback(
     (multiplier: number) => {
       return [
