@@ -6,7 +6,9 @@ import CopyRightSVG from '@/assets/icons/copyright.svg?react'
 import { Marquee } from '@/components/Marquee'
 import { CanvasFrames } from '@/components/CanvasFrames'
 
+import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getImageUrl'
+import { useWindowSize } from '@/hooks/useWindowSize'
 
 const Header: React.FC = () => {
   return (
@@ -129,9 +131,16 @@ const MintMachine: React.FC = () => {
   )
 }
 
-const Divider: React.FC<{ title: string }> = ({ title }) => {
+const Divider: React.FC<{ title: string; className?: string }> = ({
+  title,
+  className
+}) => {
   return (
-    <div className="my-[200px] flex cursor-default items-center justify-center px-[12%] py-2.5">
+    <div
+      className={cn(
+        'my-[200px] flex cursor-default items-center justify-center px-[12%] py-2.5',
+        className
+      )}>
       <div className="text-5xl font-bold">+</div>
       <div className="flex flex-1 items-center overflow-hidden text-5xl">
         {Array(30)
@@ -210,17 +219,33 @@ const Articles: React.FC = () => {
 }
 
 const Main: React.FC = () => {
+  const { width } = useWindowSize()
   return (
-    <div className="inset-0 h-screen w-screen bg-bitSpace bg-fullw bg-no-repeat text-white">
+    <div
+      className="inset-0 h-screen w-screen origin-top text-white"
+      style={{
+        scale: `${(width * 100) / 1920}%`
+      }}>
+      <img
+        src={getIllustrationUrl('bit-space')}
+        alt="bit-space"
+        style={{
+          scale: `${(1920 * 100) / width}%`
+        }}
+        className="absolute left-0 top-0 z-[-1] w-full origin-top"
+      />
       <Header />
       <MintMachine />
-      <Divider title="Who is bitSmiley" />
+      <Divider title="Who is bitSmiley" className="mt-40" />
 
       <div className="relative">
         <img
           src={getIllustrationUrl('bit-global-1')}
           alt="bit-global-1"
-          className="absolute left-0 top-0 z-[-1] w-full"
+          style={{
+            scale: `${(1920 * 100) / width}%`
+          }}
+          className="absolute left-0 top-0 z-[-1] w-full origin-top"
         />
         <Inventor />
         <Divider title="Backed By" />
@@ -231,7 +256,10 @@ const Main: React.FC = () => {
         <img
           src={getIllustrationUrl('bit-global-2')}
           alt="bit-global-2"
-          className="absolute bottom-0 left-0 z-[-2] w-full"
+          style={{
+            scale: `${(1920 * 100) / width}%`
+          }}
+          className="absolute bottom-0 left-0 z-[-2] w-full origin-top"
         />
         <Divider title="Articles" />
         <Articles />

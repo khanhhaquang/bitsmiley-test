@@ -23,9 +23,6 @@ export default {
     },
     extend: {
       colors: colors,
-      backgroundImage: {
-        bitSpace: "url('/src/assets/illustrations/bit-space.png')"
-      },
       fontFamily: {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
         pss: ['pss', ...defaultTheme.fontFamily.sans],
