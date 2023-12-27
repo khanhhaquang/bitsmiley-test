@@ -14,7 +14,8 @@ module.exports = {
     'tailwind.config.js',
     'src/**/*.svg',
     '**/public/**',
-    '**/node_modules/**'
+    '**/node_modules/**',
+    'generateResourcesPaths.cjs'
   ],
   settings: {
     tailwindcss: {

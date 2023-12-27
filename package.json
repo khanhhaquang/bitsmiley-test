@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "node ./src/scripts/generateResourcesPaths.cjs && vite",
+    "build": "node ./src/scripts/generateResourcesPaths.cjs && tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix"
