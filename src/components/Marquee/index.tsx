@@ -24,7 +24,7 @@ type MarqueeProps = {
   children?: ReactNode
 } & RefAttributes<HTMLDivElement>
 
-const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
+export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
   { className = '', play = true, direction = 'left', speed = 50, children },
   ref
 ) {
@@ -166,5 +166,3 @@ const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
     </div>
   )
 })
-
-export default Marquee

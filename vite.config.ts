@@ -22,5 +22,5 @@ export default defineConfig({
   esbuild: {
     drop: ['console', 'debugger']
   },
-  plugins: [react(), svgr({ include: '**/*.svg?react' })]
+  plugins: [react(), svgr()]
 })

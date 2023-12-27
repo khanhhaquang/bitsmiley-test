@@ -4,6 +4,7 @@ let timer: number
 
 export type CanvasFramesRef = {
   isPlaying: boolean
+  isLoadingImages: boolean
   play: () => void
   stop: () => void
 }
@@ -31,6 +32,7 @@ export const CanvasFrames = React.forwardRef<
 
   React.useImperativeHandle(ref, () => ({
     isPlaying,
+    isLoadingImages,
     play: () => {
       setIsPlaying(true)
     },

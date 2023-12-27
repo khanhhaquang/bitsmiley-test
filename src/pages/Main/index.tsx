@@ -1,10 +1,12 @@
 import HeaderSVG from '@/assets/icons/header.svg?react'
 import SmileySVG from '@/assets/icons/smiley.svg?react'
-import DOTSVG from '@/assets/icons/dot.svg?react'
+import DotSVG from '@/assets/icons/dot.svg?react'
 import CopyRightSVG from '@/assets/icons/copyright.svg?react'
 
+import { Marquee } from '@/components/Marquee'
 import { CanvasFrames } from '@/components/CanvasFrames'
-import Marquee from '@/components/Marquee'
+
+import { getFrameUrl, getIllustrationUrl } from '@/utils/getImageUrl'
 
 const Header: React.FC = () => {
   return (
@@ -13,19 +15,23 @@ const Header: React.FC = () => {
     </div>
   )
 }
-const Machine: React.FC = () => {
+const MintMachine: React.FC = () => {
+  const questionMarkRotateMiniImgUrls = Array(49)
+    .fill(1)
+    .map((_, idx) => getFrameUrl('question-mark-rotate-mini', idx + 1))
+
   return (
     <div className="flex items-center justify-center px-24">
       <div className="relative flex h-[1200px] w-[1716px] shrink-0 items-center justify-center">
         <img
           className="absolute h-[1200px] w-[1716px] shrink-0"
-          src="/src/assets/illustrations/machine-static.png"
+          src={getIllustrationUrl('machine-static')}
           alt="machine-static"
         />
 
         <img
           className="absolute h-[1200px] w-[1716px] shrink-0"
-          src="/src/assets/illustrations/screen-strips.png"
+          src={getIllustrationUrl('screen-strips')}
           alt="screen-strips"
         />
 
@@ -33,23 +39,18 @@ const Machine: React.FC = () => {
           <CanvasFrames
             width={301}
             height={286}
-            imgLocalPaths={Array(49)
-              .fill(1)
-              .map(
-                (_, idx) =>
-                  `/src/assets/frames/question-mark-rotate-mini/${idx + 1}.png`
-              )}
+            imgLocalPaths={questionMarkRotateMiniImgUrls}
           />
         </div>
 
         <div className="absolute inset-x-0 h-full w-full">
           <CanvasFrames
+            fps={0.5}
             width={1716}
             height={1200}
-            fps={0.5}
             imgLocalPaths={[
-              '/src/assets/frames/lights/light-1.png',
-              '/src/assets/frames/lights/light-2.png'
+              getFrameUrl('lights', 'light-1'),
+              getFrameUrl('lights', 'light-2')
             ]}
           />
         </div>
@@ -117,7 +118,7 @@ const Machine: React.FC = () => {
           </div>
           <div className="flex items-center gap-x-2 text-lg font-bold text-green">
             <span>
-              <DOTSVG />
+              <DotSVG />
             </span>
             <span>MINING COMING SOON...</span>
           </div>
@@ -126,6 +127,7 @@ const Machine: React.FC = () => {
     </div>
   )
 }
+
 const Divider: React.FC<{ title: string }> = ({ title }) => {
   return (
     <div className="my-[200px] flex items-center justify-center px-[12%] py-2.5">
@@ -182,10 +184,10 @@ const BackedBy: React.FC = () => {
   return (
     <div className="flex items-center justify-center gap-x-40 px-[22%]">
       <div className="h-[153px] w-[462px] shrink-0">
-        <img src="/src/assets/illustrations/okx-logo.png" alt="okx" />
+        <img src={getIllustrationUrl('okx-logo')} alt="okx" />
       </div>
       <div className="h-[153px] w-[445px] shrink-0">
-        <img src="/src/assets/illustrations/abcde-logo.png" alt="abcde" />
+        <img src={getIllustrationUrl('abcde-logo')} alt="abcde" />
       </div>
     </div>
   )
@@ -210,7 +212,7 @@ const Main: React.FC = () => {
   return (
     <div className="inset-0 h-screen w-screen bg-bitSpace bg-cover bg-center bg-no-repeat text-white">
       <Header />
-      <Machine />
+      <MintMachine />
       <Divider title="Who is bitSmiley" />
       <div className="bg-bitGlobal1 bg-cover bg-center bg-no-repeat">
         <Inventor />

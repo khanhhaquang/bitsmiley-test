@@ -6,12 +6,6 @@ import Routes from './App.routes'
 import { BrowserRouter } from 'react-router-dom'
 
 const App: React.FC = () => {
-  const isFetchedConfig = true
-
-  if (!isFetchedConfig) {
-    return <PageLoader />
-  }
-
   return (
     <BrowserRouter>
       <Suspense fallback={<PageLoader />}>
