@@ -10,6 +10,11 @@ import {
 } from '@/utils/getImageUrl'
 import { useWindowSize } from '@/hooks/useWindowSize'
 
+const whitePaperLink =
+  'https://github.com/bitSmiley-protocol/whitepaper/blob/main/BitSmiley_White_Paper.pdf'
+const twitterLink = 'https://twitter.com/bitsmiley_labs'
+const discordLink = 'https://t.co/aPAAAET2O3'
+
 const Header: React.FC = () => {
   return (
     <div className="z-10 flex items-end justify-center pt-10">
@@ -23,7 +28,7 @@ const MintMachine: React.FC = () => {
     .map((_, idx) => getFrameUrl('question-mark-rotate-mini', idx + 1))
 
   return (
-    <div className="flex items-center justify-center px-24">
+    <div className="flex items-center justify-center">
       <div className="relative flex h-[1200px] w-[1716px] shrink-0 items-center justify-center">
         <Image
           className="absolute h-[1200px] w-[1716px] shrink-0"
@@ -58,9 +63,9 @@ const MintMachine: React.FC = () => {
 
         <div className="absolute bottom-[168px] left-[254px] h-[126px] w-[784px]">
           <Marquee
-            speed={200}
+            speed={150}
             className="relative flex h-full w-full cursor-default items-center justify-center overflow-hidden whitespace-nowrap p-5 font-smb text-[80px] text-yellow2">
-            bitSmiley grand minting coming soon !!! bitSmiley granDdminting
+            bitSmiley grand minting coming soon !!! bitSmiley grand minting
             coming soon !!!
           </Marquee>
         </div>
@@ -75,13 +80,19 @@ const MintMachine: React.FC = () => {
         </div>
 
         <div className="absolute bottom-[248px] right-[34px] flex items-center gap-x-6 font-bold">
-          <span className="cursor-pointer mix-blend-difference">
+          <span
+            className="cursor-pointer mix-blend-difference"
+            onClick={() => window.open(whitePaperLink, '__blank')}>
             [Whitepaper]
           </span>
-          <span className="cursor-pointer text-green mix-blend-difference">
+          <span
+            className="cursor-pointer text-green mix-blend-difference"
+            onClick={() => window.open(twitterLink, '__blank')}>
             [Twitter]
           </span>
-          <span className="cursor-pointer text-green mix-blend-difference">
+          <span
+            className="cursor-pointer text-green mix-blend-difference"
+            onClick={() => window.open(discordLink, '__blank')}>
             [Discord]
           </span>
         </div>
@@ -220,16 +231,16 @@ const Main: React.FC = () => {
   const { width } = useWindowSize()
   return (
     <div
-      className="inset-0 h-screen w-screen origin-top text-white"
+      className="relative h-screen w-screen origin-top text-white"
       style={{
-        scale: `${(width * 100) / 1920}%`
+        scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
       }}>
       <Image
         src={getIllustrationUrl('bit-space')}
         style={{
-          scale: `${(1920 * 100) / width}%`
+          scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
         }}
-        className="absolute left-0 top-0 z-[-1] w-full origin-top"
+        className="absolute left-0 top-0 z-[-1] w-screen origin-top"
       />
       <Header />
       <MintMachine />
@@ -239,9 +250,9 @@ const Main: React.FC = () => {
         <Image
           src={getIllustrationUrl('bit-global-1')}
           style={{
-            scale: `${(1920 * 100) / width}%`
+            scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
           }}
-          className="absolute left-0 top-0 z-[-1] w-full origin-top"
+          className="absolute left-0 top-0 z-[-1] w-screen origin-top"
         />
         <Inventor />
         <Divider title="Backed By" />
@@ -252,9 +263,9 @@ const Main: React.FC = () => {
         <Image
           src={getIllustrationUrl('bit-global-2')}
           style={{
-            scale: `${(1920 * 100) / width}%`
+            scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
           }}
-          className="absolute bottom-0 left-0 z-[-2] w-full origin-top"
+          className="absolute bottom-0 left-0 z-[-2] w-screen origin-top"
         />
         <Divider title="Articles" />
         <Articles />

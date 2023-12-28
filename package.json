@@ -4,20 +4,24 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node ./src/scripts/generateResourcesPaths.cjs && vite",
-    "build": "node ./src/scripts/generateResourcesPaths.cjs && tsc && vite build",
+    "dev": "vite",
+    "prebuild": "tsc && vite build",
+    "build": "npm run prebuild && node scripts/generateResourcesPaths.cjs && npm run prebuild",
     "preview": "vite preview",
     "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix"
+    "lint:fix": "eslint ./src --fix",
+    "deploy:demo": "sh scripts/deploy_demo.sh"
   },
   "dependencies": {
     "classnames": "^2.4.0",
+    "fontfaceobserver": "^2.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@types/fontfaceobserver": "^2.1.3",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",

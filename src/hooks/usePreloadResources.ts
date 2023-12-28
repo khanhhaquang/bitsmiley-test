@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
-import images from '@/scripts/resourcePaths.json'
+import images from './imgPaths.json'
+import FontFaceObserver from 'fontfaceobserver'
 
 export const usePreloadResources = () => {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingImages, setIsLoadingImages] = useState(true)
+  const [isLoadingFonts, setIsLoadingFonts] = useState(true)
+
+  const isLoading = isLoadingImages || isLoadingFonts
 
   const loadImages = async () => {
     const imagePromises = images.map((url) => {
@@ -17,16 +21,49 @@ export const usePreloadResources = () => {
 
     try {
       await Promise.all(imagePromises)
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error('Error loading images:', error)
     }
 
-    setIsLoading(false)
+    setIsLoadingImages(false)
+  }
+
+  const loadFonts = async () => {
+    const psm = new FontFaceObserver('psm', {
+      weight: 400,
+      style: 'normal'
+    })
+
+    const pss = new FontFaceObserver('pss', {
+      weight: 700,
+      style: 'normal'
+    })
+
+    const smb = new FontFaceObserver('smb', {
+      weight: 400,
+      style: 'normal'
+    })
+
+    try {
+      await Promise.all([psm.load(), pss.load(), smb.load()])
+      document.documentElement.classList.add('fonts-loaded')
+    } catch (error) {
+      console.error('Error loading fonts:', error)
+    }
+
+    setIsLoadingFonts(false)
   }
 
   useEffect(() => {
+    if (!import.meta.env.PROD) {
+      setIsLoadingFonts(false)
+      setIsLoadingImages(false)
+      return
+    }
+
+    loadFonts()
     loadImages()
   }, [])
 
-  return { isLoading }
+  return { isLoading, isLoadingImages }
 }
