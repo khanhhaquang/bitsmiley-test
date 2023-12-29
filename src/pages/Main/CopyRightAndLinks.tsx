@@ -19,7 +19,7 @@ export const CopyRightAndLinks: React.FC = () => {
         <span>
           <Image src={getIconUrl('copyright')} />
         </span>
-        <span className="cursor-default">bitSmiley team 2023</span>
+        <span className="cursor-default">bitSmiley team 2024</span>
       </div>
       <div
         className="flex origin-right items-center gap-x-6 font-bold"

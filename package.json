@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "deploy:demo": "sh scripts/deploy_demo.sh"
+    "deploy:dev": "sh scripts/deploy_dev.sh"
   },
   "dependencies": {
     "axios": "^1.6.3",

@@ -21,11 +21,10 @@ export const usePreloadResources = () => {
       })
     })
 
-    const mediumImgs = items?.map((i) => {
+    const mediumImgs = items?.slice(0, 3)?.map((i) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
-        img.src = new URL(i.img as string, import.meta.url).href
-
+        img.src = i.img as string
         img.onload = () => resolve(img)
         img.onerror = reject
       })
@@ -71,18 +70,18 @@ export const usePreloadResources = () => {
   }
 
   useEffect(() => {
-    if (!import.meta.env.PROD) {
+    if (import.meta.env.MODE === 'development') {
       setIsLoadingFonts(false)
       setIsLoadingImages(false)
       return
     }
 
-    if (items?.length) {
+    if (!!items?.length && !isLoadingFeeds) {
       loadImages()
     }
 
     loadFonts()
-  }, [items?.length, loadImages])
+  }, [items?.length, isLoadingFeeds, loadImages])
 
   return { isLoading, isLoadingImages }
 }
