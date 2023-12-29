@@ -80,7 +80,7 @@ const Articles: React.FC = () => {
       {items?.slice(0, 3).map((i, idx) => (
         <div
           key={idx}
-          className="aspect-square w-[370px] shrink-0 cursor-pointer"
+          className="aspect-square w-[325px] shrink-0 cursor-pointer"
           onClick={() => window.open(i.link, '__blank')}>
           {i.img && <Image className="" src={i.img} />}
         </div>
@@ -121,7 +121,7 @@ const Main: React.FC = () => {
         <MintMachine />
 
         <div className="relative">
-          <Divider title="Who is bitSmiley" className="mb-[280px] mt-[205px]" />
+          <Divider title="Who is bitSmiley" className="mb-[280px] mt-[200px]" />
 
           <div
             className="absolute left-0 top-0 z-[-1] w-screen origin-top"
@@ -136,7 +136,7 @@ const Main: React.FC = () => {
         </div>
 
         <Inventor />
-        <Divider title="Backed By" className="mb-[280px] mt-[347px]" />
+        <Divider title="Backed By" className="mb-[280px] mt-[320px]" />
 
         <BackedBy />
 
@@ -152,7 +152,7 @@ const Main: React.FC = () => {
             </div>
           </div>
 
-          <Divider title="Articles" className="mb-[280px] mt-[347px]" />
+          <Divider title="Articles" className="mt-[330px]" />
         </div>
 
         <div className="pb-[340px]">
