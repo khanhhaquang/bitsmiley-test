@@ -27,19 +27,23 @@ export const CopyRightAndLinks: React.FC = () => {
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
         }}>
         <span
-          className="cursor-pointer hover:underline active:no-underline"
+          className="cursor-pointer"
           onClick={() => window.open(LINKS.whitePaper, '__blank')}>
-          [Whitepaper]
+          [
+          <span className="hover:underline active:no-underline">
+            Whitepaper
+          </span>
+          ]
         </span>
         <span
-          className="cursor-pointer text-green hover:underline active:no-underline"
+          className="cursor-pointer text-green"
           onClick={() => window.open(LINKS.twitter, '__blank')}>
-          [Twitter]
+          [<span className="hover:underline active:no-underline">Twitter</span>]
         </span>
         <span
-          className="cursor-pointer text-green hover:underline active:no-underline"
+          className="cursor-pointer text-green"
           onClick={() => window.open(LINKS.discord, '__blank')}>
-          [Discord]
+          [<span className="hover:underline active:no-underline">Discord</span>]
         </span>
       </div>
     </div>

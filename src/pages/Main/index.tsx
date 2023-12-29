@@ -52,7 +52,7 @@ const Inventor: React.FC = () => {
         <div
           onClick={() => window.open(LINKS.whitePaper, '__blank')}
           className={cn(
-            'mt-6 h-10 w-32 cursor-pointer bg-blue px-4 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 focus:shadow-none',
+            'mt-6 h-10 w-32 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 focus:shadow-none',
             'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
           )}>
           Whitepaper
