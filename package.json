@@ -7,6 +7,7 @@
     "dev": "vite",
     "prebuild": "tsc && vite build",
     "build": "npm run prebuild && node scripts/generateResourcesPaths.cjs && npm run prebuild",
+    "build:dev": "npm run prebuild && node scripts/generateResourcesPaths.cjs && npm run prebuild && node scripts/configVercel.cjs",
     "preview": "vite preview",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",

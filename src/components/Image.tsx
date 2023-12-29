@@ -3,13 +3,5 @@ export const Image: React.FC<{
   className?: string
   style?: React.CSSProperties
 }> = ({ src, style, className }) => {
-  return (
-    <img
-      rel="preload"
-      alt="picture"
-      src={src}
-      style={style}
-      className={className}
-    />
-  )
+  return <img alt="picture" src={src} style={style} className={className} />
 }
