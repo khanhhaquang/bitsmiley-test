@@ -1,5 +1,5 @@
 rm -rf dist &&
-npm run build &&
+npm run build:dev &&
 cd dist &&
 git init &&
 git add . &&

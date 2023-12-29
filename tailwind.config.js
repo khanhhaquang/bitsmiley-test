@@ -4,6 +4,7 @@ const colors = {
   yellow: '#FFF500',
   yellow2: '#FFC700',
   blue: '#2648EF',
+  blue1: '#516DF2',
   blue2: '#1C2A89',
   green: '#29F863'
 }
@@ -26,7 +27,11 @@ export default {
       fontFamily: {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
         pss: ['pss', ...defaultTheme.fontFamily.sans],
-        smb: ['smb', ...defaultTheme.fontFamily.sans]
+        smb: ['smb', ...defaultTheme.fontFamily.sans],
+        sdm: ['sdm', ...defaultTheme.fontFamily.sans]
+      },
+      boxShadow: {
+        'whitepaper-button': '6px 6px 0px 0px #172B8F;'
       },
       keyframes: {
         slide: {

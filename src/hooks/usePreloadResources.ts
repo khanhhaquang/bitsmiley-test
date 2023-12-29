@@ -44,9 +44,13 @@ export const usePreloadResources = () => {
       style: 'normal'
     })
 
+    const sdm = new FontFaceObserver('sdm', {
+      weight: 400,
+      style: 'normal'
+    })
+
     try {
-      await Promise.all([psm.load(), pss.load(), smb.load()])
-      document.documentElement.classList.add('fonts-loaded')
+      await Promise.all([psm.load(), pss.load(), smb.load(), sdm.load()])
     } catch (error) {
       console.error('Error loading fonts:', error)
     }
