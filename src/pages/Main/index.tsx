@@ -105,26 +105,34 @@ const Main: React.FC = () => {
           }}
           className="absolute left-0 top-0 z-[-1] w-screen origin-top"
         />
-        <Image
-          src={getIllustrationUrl('bit-global-2')}
+
+        <div
+          className="absolute left-0 top-[600px] z-[-1] w-screen origin-top mix-blend-lighten"
           style={{
             scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
-          }}
-          className="absolute left-0 top-[600px] z-[-1] w-screen origin-top mix-blend-lighten"
-        />
+          }}>
+          <div className="relative">
+            <div className="absolute inset-x-0 h-full w-full bg-gradient-to-b from-transparent via-transparent to-black"></div>
+            <Image src={getIllustrationUrl('bit-global-2')} />
+          </div>
+        </div>
+
         <Header />
         <MintMachine />
 
         <div className="relative">
           <Divider title="Who is bitSmiley" className="mb-[280px] mt-[205px]" />
 
-          <Image
-            src={getIllustrationUrl('bit-global-1')}
+          <div
+            className="absolute left-0 top-0 z-[-1] w-screen origin-top"
             style={{
               scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
-            }}
-            className="absolute left-0 top-0 z-[-1] w-screen origin-top"
-          />
+            }}>
+            <div className="relative">
+              <div className="absolute inset-x-0 h-full w-full bg-gradient-to-t from-transparent via-transparent to-black"></div>
+              <Image src={getIllustrationUrl('bit-global-1')} />
+            </div>
+          </div>
         </div>
 
         <Inventor />
@@ -133,13 +141,17 @@ const Main: React.FC = () => {
         <BackedBy />
 
         <div className="relative">
-          <Image
-            src={getIllustrationUrl('bit-global-2')}
+          <div
             style={{
               scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
             }}
-            className="absolute bottom-0 left-0 z-[-2] w-screen origin-top"
-          />
+            className="absolute bottom-0 left-0 z-[-2] w-screen origin-top">
+            <div className="relative">
+              <div className="absolute inset-x-0 h-full w-full bg-gradient-to-b from-transparent via-transparent to-black"></div>
+              <Image src={getIllustrationUrl('bit-global-2')} />
+            </div>
+          </div>
+
           <Divider title="Articles" className="mb-[280px] mt-[347px]" />
         </div>
 
