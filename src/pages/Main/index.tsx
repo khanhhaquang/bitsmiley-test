@@ -11,11 +11,13 @@ import { LINKS } from '@/config/links'
 import { MintMachine } from './MintMachine'
 import { cn } from '@/utils/cn'
 import { CanvasFrames } from '@/components/CanvasFrames'
+import { useFetchArticles } from '@/hooks/useFetchArticles'
+import { CopyRightAndLinks } from './CopyRightAndLinks'
 
 const Header: React.FC = () => {
   return (
-    <div className="z-10 flex items-end justify-center pt-[68px]">
-      <Image src={getIconUrl('header')} />
+    <div className="z-10 flex items-end justify-center pt-14">
+      <Image src={getIconUrl('header')} className="h-[88px]" />
     </div>
   )
 }
@@ -61,7 +63,7 @@ const Inventor: React.FC = () => {
 }
 const BackedBy: React.FC = () => {
   return (
-    <div className="flex items-center justify-center gap-x-40">
+    <div className="flex items-center justify-center gap-x-40 py-10">
       <div className="h-[153px] w-[462px] shrink-0">
         <Image src={getIllustrationUrl('okx-logo')} />
       </div>
@@ -72,17 +74,17 @@ const BackedBy: React.FC = () => {
   )
 }
 const Articles: React.FC = () => {
+  const { items } = useFetchArticles()
   return (
-    <div className="flex items-center justify-center gap-x-10 pb-40">
-      <div className="aspect-square w-[370px] shrink-0 bg-gray-500">
-        Article1
-      </div>
-      <div className="aspect-square w-[370px] shrink-0 bg-gray-500">
-        Article1
-      </div>
-      <div className="aspect-square w-[370px] shrink-0 bg-gray-500">
-        Article1
-      </div>
+    <div className="flex items-center justify-center gap-x-12">
+      {items?.slice(0, 3).map((i, idx) => (
+        <div
+          key={idx}
+          className="aspect-square w-[370px] shrink-0 cursor-pointer"
+          onClick={() => window.open(i.link, '__blank')}>
+          {i.img && <Image className="" src={i.img} />}
+        </div>
+      ))}
     </div>
   )
 }
@@ -90,53 +92,62 @@ const Articles: React.FC = () => {
 const Main: React.FC = () => {
   const { width } = useWindowSize()
   return (
-    <div
-      className="relative h-screen w-screen origin-top text-white"
-      style={{
-        scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-      }}>
-      <Image
-        src={getIllustrationUrl('bit-space')}
+    <div className="max-h-screen w-screen">
+      <div
+        className="relative origin-top text-white"
         style={{
-          scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
-        }}
-        className="absolute left-0 top-0 z-[-1] w-screen origin-top"
-      />
-      <Image
-        src={getIllustrationUrl('bit-global-2')}
-        style={{
-          scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
-        }}
-        className="absolute left-0 top-[580px] z-[-1] w-screen origin-top mix-blend-lighten"
-      />
-      <Header />
-      <MintMachine />
-      <Divider title="Who is bitSmiley" className="mt-40" />
-
-      <div className="relative">
+          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+        }}>
         <Image
-          src={getIllustrationUrl('bit-global-1')}
+          src={getIllustrationUrl('bit-space')}
           style={{
             scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
           }}
           className="absolute left-0 top-0 z-[-1] w-screen origin-top"
         />
-        <Inventor />
-        <Divider title="Backed By" className="mb-[280px]" />
-      </div>
-
-      <BackedBy />
-      <div className="relative">
         <Image
           src={getIllustrationUrl('bit-global-2')}
           style={{
             scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
           }}
-          className="absolute bottom-0 left-0 z-[-2] w-screen origin-top"
+          className="absolute left-0 top-[600px] z-[-1] w-screen origin-top mix-blend-lighten"
         />
-        <Divider title="Articles" className="mt-[320px]" />
-        <Articles />
+        <Header />
+        <MintMachine />
+
+        <div className="relative">
+          <Divider title="Who is bitSmiley" className="mb-[280px] mt-[205px]" />
+
+          <Image
+            src={getIllustrationUrl('bit-global-1')}
+            style={{
+              scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
+            }}
+            className="absolute left-0 top-0 z-[-1] w-screen origin-top"
+          />
+        </div>
+
+        <Inventor />
+        <Divider title="Backed By" className="mb-[280px] mt-[347px]" />
+
+        <BackedBy />
+
+        <div className="relative">
+          <Image
+            src={getIllustrationUrl('bit-global-2')}
+            style={{
+              scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
+            }}
+            className="absolute bottom-0 left-0 z-[-2] w-screen origin-top"
+          />
+          <Divider title="Articles" className="mb-[280px] mt-[347px]" />
+        </div>
+
+        <div className="pb-[340px]">
+          <Articles />
+        </div>
       </div>
+      <CopyRightAndLinks />
     </div>
   )
 }

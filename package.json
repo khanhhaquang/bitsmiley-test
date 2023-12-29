@@ -14,11 +14,12 @@
     "deploy:demo": "sh scripts/deploy_demo.sh"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.15.0",
+    "axios": "^1.6.3",
     "classnames": "^2.4.0",
     "fontfaceobserver": "^2.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-query": "^3.39.3",
     "react-router-dom": "^6.21.1",
     "tailwind-merge": "^2.2.0"
   },

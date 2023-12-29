@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import images from './imgPaths.json'
 import FontFaceObserver from 'fontfaceobserver'
+import { useFetchArticles } from './useFetchArticles'
 
 export const usePreloadResources = () => {
+  const { items, isLoading: isLoadingFeeds } = useFetchArticles()
   const [isLoadingImages, setIsLoadingImages] = useState(true)
   const [isLoadingFonts, setIsLoadingFonts] = useState(true)
 
-  const isLoading = isLoadingImages || isLoadingFonts
+  const isLoading = isLoadingImages || isLoadingFonts || isLoadingFeeds
 
-  const loadImages = async () => {
+  const loadImages = useCallback(async () => {
     const imagePromises = images.map((url) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
@@ -19,14 +21,24 @@ export const usePreloadResources = () => {
       })
     })
 
+    const mediumImgs = items?.map((i) => {
+      return new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image()
+        img.src = new URL(i.img as string, import.meta.url).href
+
+        img.onload = () => resolve(img)
+        img.onerror = reject
+      })
+    })
+
     try {
-      await Promise.all(imagePromises)
+      await Promise.all([...imagePromises, ...(mediumImgs || [])])
     } catch (error) {
       console.error('Error loading images:', error)
     }
 
     setIsLoadingImages(false)
-  }
+  }, [items])
 
   const loadFonts = async () => {
     const psm = new FontFaceObserver('psm', {
@@ -65,9 +77,12 @@ export const usePreloadResources = () => {
       return
     }
 
+    if (items?.length) {
+      loadImages()
+    }
+
     loadFonts()
-    loadImages()
-  }, [])
+  }, [items?.length, loadImages])
 
   return { isLoading, isLoadingImages }
 }

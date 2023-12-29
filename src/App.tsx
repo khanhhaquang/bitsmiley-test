@@ -3,10 +3,11 @@ import { Suspense } from 'react'
 import { PageLoader } from '@/components/PageLoader'
 
 import Routes from './App.routes'
-import { BrowserRouter } from 'react-router-dom'
-import { usePreloadResources } from './hooks/usePreloadResources'
+import { usePreloadResources } from '@/hooks/usePreloadResources'
+import { useFetchArticles } from '@/hooks/useFetchArticles'
 
 const App: React.FC = () => {
+  useFetchArticles()
   const { isLoading } = usePreloadResources()
 
   if (isLoading) {
@@ -14,11 +15,9 @@ const App: React.FC = () => {
   }
 
   return (
-    <BrowserRouter>
-      <Suspense fallback={<PageLoader />}>
-        <Routes />
-      </Suspense>
-    </BrowserRouter>
+    <Suspense fallback={<PageLoader />}>
+      <Routes />
+    </Suspense>
   )
 }
 

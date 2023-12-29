@@ -1,7 +1,6 @@
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
-import { LINKS } from '@/config/links'
 import {
   getFrameUrl,
   getIconUrl,
@@ -13,7 +12,7 @@ export const MintMachine: React.FC = () => {
     .map((_, idx) => getFrameUrl('question-mark-rotate-mini', idx + 1))
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex h-[1200px] -translate-y-9 items-center justify-center">
       <div className="relative flex h-[1200px] w-[1716px] shrink-0 items-center justify-center">
         <Image
           className="absolute h-[1200px] w-[1716px] shrink-0"
@@ -53,33 +52,6 @@ export const MintMachine: React.FC = () => {
             bitSmiley grand minting coming soon !!! bitSmiley grand minting
             coming soon !!!
           </Marquee>
-        </div>
-
-        <div className="absolute bottom-[248px] left-3 flex items-center gap-x-1.5 font-bold">
-          <span>
-            <Image src={getIconUrl('copyright')} />
-          </span>
-          <span className="cursor-default mix-blend-difference">
-            bitSmiley team 2023
-          </span>
-        </div>
-
-        <div className="absolute bottom-[248px] right-[34px] flex items-center gap-x-6 font-bold">
-          <span
-            className="cursor-pointer mix-blend-difference"
-            onClick={() => window.open(LINKS.whitePaper, '__blank')}>
-            [Whitepaper]
-          </span>
-          <span
-            className="cursor-pointer text-green mix-blend-difference"
-            onClick={() => window.open(LINKS.twitter, '__blank')}>
-            [Twitter]
-          </span>
-          <span
-            className="cursor-pointer text-green mix-blend-difference"
-            onClick={() => window.open(LINKS.discord, '__blank')}>
-            [Discord]
-          </span>
         </div>
 
         <div className="absolute left-[834px] top-[380px] flex w-[398px] flex-col gap-y-6">
