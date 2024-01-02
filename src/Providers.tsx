@@ -2,6 +2,9 @@ import { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { BrowserRouter } from 'react-router-dom'
+import { ModalsContainer } from './components/Modal'
+import { rootStore } from './store/rootReducer'
+import { Provider as ReduxProvider } from 'react-redux'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const queryRetry = (count: number, { response }: any): boolean =>
@@ -26,12 +29,16 @@ type TProps = {
 
 const Providers: React.FC<TProps> = (props: TProps) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen position="top-left" />
-      <BrowserRouter>{props.children}</BrowserRouter>
-    </QueryClientProvider>
+    <ReduxProvider store={rootStore}>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools initialIsOpen position="top-left" />
+        <BrowserRouter>
+          <ModalsContainer />
+          {props.children}
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ReduxProvider>
   )
 }
 
 export default Providers
-

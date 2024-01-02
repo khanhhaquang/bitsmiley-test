@@ -13,6 +13,7 @@ import { cn } from '@/utils/cn'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { CopyRightAndLinks } from './CopyRightAndLinks'
+import { ConnectWallet } from '@/components/ConnectWallet'
 
 const Inventor: React.FC = () => {
   return (
@@ -158,6 +159,21 @@ const Main: React.FC = () => {
           <Articles />
         </div>
       </div>
+
+      <div
+        className="absolute right-[136px] top-[68px]"
+        style={{
+          top: `${width >= 1920 ? 68 : (68 / 1920) * width}px`,
+          right: `${width >= 1920 ? 136 : (136 / 1920) * width}px`
+        }}>
+        <ConnectWallet
+          style={{
+            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+          }}
+          className="origin-bottom-right"
+        />
+      </div>
+
       <CopyRightAndLinks />
     </div>
   )

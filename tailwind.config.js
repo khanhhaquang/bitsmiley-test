@@ -33,7 +33,8 @@ export default {
         sdm: ['sdm', ...defaultTheme.fontFamily.sans]
       },
       boxShadow: {
-        'whitepaper-button': '6px 6px 0px 0px #172B8F;'
+        'connectwallet-button': '6px 6px 0px 0px #919191',
+        'whitepaper-button': '6px 6px 0px 0px #172B8F'
       },
       keyframes: {
         slide: {
