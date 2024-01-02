@@ -44,3 +44,7 @@ body {
 img {
   pointer-events: none;
 }
+
+.no-scroll {
+  overflow: hidden;
+}

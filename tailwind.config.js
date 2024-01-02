@@ -6,7 +6,9 @@ const colors = {
   blue: '#2648EF',
   blue1: '#516DF2',
   blue2: '#1C2A89',
-  green: '#29F863'
+  green: '#29F863',
+  black2: '#010101',
+  grey2: '#8F8F8F'
 }
 
 /** @type {import('tailwindcss').Config} */
