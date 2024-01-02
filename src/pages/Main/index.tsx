@@ -14,14 +14,6 @@ import { CanvasFrames } from '@/components/CanvasFrames'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { CopyRightAndLinks } from './CopyRightAndLinks'
 
-const Header: React.FC = () => {
-  return (
-    <div className="z-10 flex items-end justify-center pt-14">
-      <Image src={getIconUrl('header')} className="h-[88px]" />
-    </div>
-  )
-}
-
 const Inventor: React.FC = () => {
   return (
     <div className="flex cursor-default items-center justify-center gap-x-28">
@@ -117,7 +109,14 @@ const Main: React.FC = () => {
           </div>
         </div>
 
-        <Header />
+        <div
+          className="z-10 flex items-end justify-center pt-[68px]"
+          style={{
+            paddingTop: `${width >= 1920 ? 68 : (1920 / width) * 68}px`
+          }}>
+          <Image src={getIconUrl('header')} className="h-16" />
+        </div>
+
         <MintMachine />
 
         <div className="relative">

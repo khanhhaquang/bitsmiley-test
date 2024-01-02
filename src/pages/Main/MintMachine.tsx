@@ -35,7 +35,7 @@ export const MintMachine: React.FC = () => {
 
         <div className="absolute inset-x-0 h-full w-full">
           <CanvasFrames
-            fps={0.5}
+            fps={1}
             width={1716}
             height={1200}
             imgLocalPaths={[
