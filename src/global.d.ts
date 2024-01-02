@@ -4,4 +4,5 @@ declare interface Window {
   okxwallet?: {
     bitcoin?: any
   }
+  unisat?: any
 }

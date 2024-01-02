@@ -26,11 +26,11 @@ export const Modal: React.FC<TProps> = ({
       }
 
       window.addEventListener('keydown', handleEsc)
-      document.querySelector('body')?.classList.add('no-scroll');
+      document.querySelector('body')?.classList.add('no-scroll')
 
       return () => {
         window.removeEventListener('keydown', handleEsc)
-        document.querySelector('body')?.classList.remove('no-scroll');
+        document.querySelector('body')?.classList.remove('no-scroll')
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -41,7 +41,7 @@ export const Modal: React.FC<TProps> = ({
   return createPortal(
     <div
       className={cn(
-        'fixed left-0 right-0 bottom-0 top-0 w-screen z-50 h-screen animation-all',
+        'fixed left-0 right-0 bottom-0 top-0 w-screen z-[100] h-screen animation-all',
         className
       )}>
       {children}

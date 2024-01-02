@@ -36,6 +36,9 @@ export default {
         'connectwallet-button': '6px 6px 0px 0px #919191',
         'whitepaper-button': '6px 6px 0px 0px #172B8F'
       },
+      backgroundImage: {
+        'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")'
+      },
       keyframes: {
         slide: {
           '0%': {

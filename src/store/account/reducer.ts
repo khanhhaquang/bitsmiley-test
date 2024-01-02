@@ -29,7 +29,7 @@ export default createReducer(initState, (builder) => {
     setLocalStorage(LOCAL_STORAGE_KEYS.PUBLIC_KEY, action.payload.publicKey)
     setLocalStorage(
       LOCAL_STORAGE_KEYS.COMPRESSED_PUBLIC_KEY,
-      action.payload.compressedPublicKey
+      action.payload.compressedPublicKey || ''
     )
   }),
     builder.addCase(actions.SET_LOGIN_TYPE, (state, action) => {
@@ -39,5 +39,6 @@ export default createReducer(initState, (builder) => {
 })
 
 export const getAccountInfo = (state: RootState) => state.account.accountInfo
+export const getLoginType = (state: RootState) => state.account.loginType
 export const getIsConnected = (state: RootState) =>
   !!state.account.accountInfo.address && !!state.account.loginType

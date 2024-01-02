@@ -1,10 +1,12 @@
 export enum LoginTypeEnum {
   None = '',
-  OKX = 'okx'
+  OKX = 'okx',
+  UNISAT = 'unisat',
+  XVERSE = 'xverse'
 }
 
 export interface IAccountInfo {
   address: string
   publicKey: string
-  compressedPublicKey: string
+  compressedPublicKey?: string
 }
