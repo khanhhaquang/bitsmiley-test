@@ -20,7 +20,9 @@ function getResourcePaths(directoryPath, allFileNames = []) {
   return allFileNames
 }
 
-const allImages = getResourcePaths('./dist/static/png')
+const allPngs = getResourcePaths('./dist/static/png')
+const allSvgs = getResourcePaths('./dist/static/svg')
+const allImages = [...allPngs, ...allSvgs]
 
 const imgsOutputFilePath = path.resolve(root, 'src/hooks/imgPaths.json')
 fs.writeFileSync(

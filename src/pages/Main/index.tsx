@@ -18,37 +18,42 @@ import { ConnectWallet } from '@/components/ConnectWallet'
 const Inventor: React.FC = () => {
   return (
     <div className="flex cursor-default items-center justify-center gap-x-28">
-      <div className="aspect-[251/272] w-[251px] shrink-0">
+      <div className="h-[230px] w-[215px] shrink-0">
         <CanvasFrames
           fps={8}
-          width={252}
-          height={273}
+          width={215}
+          height={230}
           imgLocalPaths={[
             ...Array(14)
               .fill(1)
-              .map(() => getFrameUrl('smiley-logo', `smiley-1`)),
-            getFrameUrl('smiley-logo', `smiley-2`),
-            getFrameUrl('smiley-logo', `smiley-1`),
-            getFrameUrl('smiley-logo', `smiley-2`)
+              .map(() => getFrameUrl('smiley-logo', 'smiley-1', 'svg')),
+            getFrameUrl('smiley-logo', 'smiley-2', 'svg'),
+            getFrameUrl('smiley-logo', 'smiley-1', 'svg'),
+            getFrameUrl('smiley-logo', 'smiley-2', 'svg')
           ]}
         />
       </div>
-      <div className="w-[700px]">
-        <div className="text-[32px]">Inventor of bitUSD</div>
-        <div className="mt-12 text-2xl">
-          We are the OG of Bitcoin{' '}
-          <span className="text-yellow">stablecoin</span> based on
-          over-collateralization, building its peripheral{' '}
-          <span className="text-yellow">Fintegra</span> products at the same
-          time.
+      <div className="flex h-[230px] w-[700px] flex-col justify-between">
+        <div className="flex items-center justify-start gap-x-2 text-[32px]">
+          <span>Inventor of bitUSD</span>
+          <Image src={getIconUrl('coin', 'svg')} />
         </div>
-        <div
-          onClick={() => window.open(LINKS.whitePaper, '__blank')}
-          className={cn(
-            'mt-6 h-10 w-32 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 active:shadow-none',
-            'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
-          )}>
-          Whitepaper
+        <div>
+          <div className="mb-4 text-2xl">
+            We are the OG of Bitcoin{' '}
+            <span className="text-yellow">stablecoin</span> based on
+            over-collateralization, building its peripheral{' '}
+            <span className="text-yellow">Fintegra</span> products at the same
+            time.
+          </div>
+          <div
+            onClick={() => window.open(LINKS.whitePaper, '__blank')}
+            className={cn(
+              'inline-block h-10 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 active:shadow-none',
+              'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
+            )}>
+            Whitepaper
+          </div>
         </div>
       </div>
     </div>
