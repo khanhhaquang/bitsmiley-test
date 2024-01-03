@@ -32,6 +32,10 @@ export default {
         smb: ['smb', ...defaultTheme.fontFamily.sans],
         sdm: ['sdm', ...defaultTheme.fontFamily.sans]
       },
+      cursor: {
+        default: 'url("/src/assets/illustrations/cursor-default.svg"), default',
+        pointer: 'url("/src/assets/illustrations/cursor-pointer.svg"), pointer'
+      },
       boxShadow: {
         'connectwallet-button': '6px 6px 0px 0px #919191',
         'whitepaper-button': '6px 6px 0px 0px #172B8F'
