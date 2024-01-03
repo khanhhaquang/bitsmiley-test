@@ -45,7 +45,7 @@ const Inventor: React.FC = () => {
         <div
           onClick={() => window.open(LINKS.whitePaper, '__blank')}
           className={cn(
-            'mt-6 h-10 w-32 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 focus:shadow-none',
+            'mt-6 h-10 w-32 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 active:shadow-none',
             'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
           )}>
           Whitepaper
@@ -106,7 +106,10 @@ const Main: React.FC = () => {
           }}>
           <div className="relative">
             <div className="absolute inset-x-0 h-full w-full bg-gradient-to-b from-transparent via-transparent to-black"></div>
-            <Image src={getIllustrationUrl('bit-global-2')} />
+            <Image
+              src={getIllustrationUrl('bit-global-2')}
+              className="w-full"
+            />
           </div>
         </div>
 
@@ -115,7 +118,7 @@ const Main: React.FC = () => {
           style={{
             paddingTop: `${width >= 1920 ? 68 : (1920 / width) * 68}px`
           }}>
-          <Image src={getIconUrl('header')} className="h-16" />
+          <Image src={getIconUrl('header', 'svg')} className="h-16 w-full" />
         </div>
 
         <MintMachine />
@@ -130,7 +133,10 @@ const Main: React.FC = () => {
             }}>
             <div className="relative">
               <div className="absolute inset-x-0 h-full w-full bg-gradient-to-t from-transparent via-transparent to-black"></div>
-              <Image src={getIllustrationUrl('bit-global-1')} />
+              <Image
+                src={getIllustrationUrl('bit-global-1')}
+                className="w-full"
+              />
             </div>
           </div>
         </div>
@@ -148,7 +154,10 @@ const Main: React.FC = () => {
             className="absolute bottom-0 left-0 z-[-2] w-screen origin-top">
             <div className="relative">
               <div className="absolute inset-x-0 h-full w-full bg-gradient-to-b from-transparent via-transparent to-black"></div>
-              <Image src={getIllustrationUrl('bit-global-2')} />
+              <Image
+                src={getIllustrationUrl('bit-global-2')}
+                className="w-full"
+              />
             </div>
           </div>
 
@@ -161,9 +170,9 @@ const Main: React.FC = () => {
       </div>
 
       <div
-        className="absolute right-[136px] top-[68px]"
+        className="absolute right-[136px]"
         style={{
-          top: `${width >= 1920 ? 68 : (68 / 1920) * width}px`,
+          top: `${width >= 1920 ? 80 : (80 / 1920) * width}px`,
           right: `${width >= 1920 ? 136 : (136 / 1920) * width}px`
         }}>
         <ConnectWallet

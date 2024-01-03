@@ -24,7 +24,7 @@ export const ConnectWallet: React.FC<{
         onClick={() => setIsOpen(true)}
         style={style}
         className={cn(
-          'cursor-pointer bg-white text-black px-5 py-2 font-bold shadow-connectwallet-button focus:shadow-none whitespace-nowrap',
+          'cursor-pointer bg-white text-black px-5 py-2 font-bold shadow-connectwallet-button active:shadow-none whitespace-nowrap',
           'active:shadow-none active:translate-x-1.5 active:translate-y-1.5',
           className
         )}>

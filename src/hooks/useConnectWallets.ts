@@ -3,7 +3,6 @@ import { useStoreActions } from '@/hooks/useStoreActions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'
 import { getLoginType } from '@/store/account/reducer'
-import { getAddress, BitcoinNetworkType, AddressPurpose } from 'sats-connect'
 
 export const useConnectWallets = () => {
   const loginType = useSelector(getLoginType)
@@ -65,31 +64,6 @@ export const useConnectWallets = () => {
     }
   }
 
-  const connectSat = async () => {
-    try {
-      await getAddress({
-        payload: {
-          purposes: [AddressPurpose.Ordinals, AddressPurpose.Payment],
-          message: 'Address for receiving Ordinals and payments',
-          network: { type: BitcoinNetworkType.Mainnet }
-        },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onFinish: ({ addresses }) => {
-          handleAccountChanged(
-            {
-              address: addresses?.[0]?.address || '',
-              publicKey: addresses?.[0]?.publicKey || ''
-            },
-            LoginTypeEnum.XVERSE
-          )
-        },
-        onCancel: () => console.error('Xverse Request canceled')
-      })
-    } catch (error) {
-      console.error('Xverse connect error')
-    }
-  }
-
   useEffect(() => {
     if (!window.okxwallet || loginType !== LoginTypeEnum.OKX) return
 
@@ -125,5 +99,5 @@ export const useConnectWallets = () => {
     }
   }, [handleAccountChanged, loginType])
 
-  return { connectOkx, connectUnisat, connectSat }
+  return { connectOkx, connectUnisat }
 }

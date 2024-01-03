@@ -5,10 +5,14 @@ import { PageLoader } from '@/components/PageLoader'
 import Routes from './App.routes'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
+import { useIsWalletUnlocked } from './hooks/useIsWalletUnlocked'
 
 const App: React.FC = () => {
-  useFetchArticles()
-  const { isLoading } = usePreloadResources()
+  const { isLoading: isLoadingArticles } = useFetchArticles()
+  const { isLoading: isCheckingWallet } = useIsWalletUnlocked()
+  const { isLoading: isLoadingImages } = usePreloadResources()
+
+  const isLoading = isLoadingArticles || isCheckingWallet || isLoadingImages
 
   if (isLoading) {
     return <PageLoader />
