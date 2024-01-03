@@ -1,10 +1,9 @@
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { getCurrentTypeWritterSeq } from '@/store/common/reducer'
-import { cn } from '@/utils/cn'
 import { useState, useEffect, ReactNode, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
-const DEFAULT_MS = 80
+const DEFAULT_MS = 40
 
 export interface ITypewriterProps {
   seq: number
@@ -60,19 +59,18 @@ export default function Typewriter({
   ])
 
   return (
-    <span className="relative flex items-center">
+    <span className="flex items-center">
       {formattedNodes?.slice(0, currentNodeIndex).map((n, idx) => (
-        <span key={idx} className="flex items-center justify-center">
+        <span key={idx} className="relative flex items-center justify-center">
           {/^\s*$/.test(n as string) ? '\u00A0' : n}
+
+          {idx === formattedNodes?.slice(0, currentNodeIndex).length - 1 && (
+            <span className="absolute -right-4">
+              {isStarted ? cursor && '▎' : ''}
+            </span>
+          )}
         </span>
       ))}
-      <span
-        className={cn(
-          'absolute -right-4 top-0',
-          isStarted && 'animate-[blink_1s_infinite]'
-        )}>
-        {isStarted ? cursor && '▎' : ''}
-      </span>
     </span>
   )
 }

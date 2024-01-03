@@ -21,9 +21,6 @@ export default {
     './node_modules/flowbite-react/lib/esm/**/*.js'
   ],
   theme: {
-    backgroundSize: {
-      fullw: '100% auto'
-    },
     extend: {
       colors: colors,
       fontFamily: {
@@ -42,25 +39,6 @@ export default {
       },
       backgroundImage: {
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")'
-      },
-      keyframes: {
-        blink: {
-          '0%': {
-            opacity: 1
-          },
-          '49%': {
-            opacity: 1
-          },
-          '60%': {
-            opacity: 0
-          },
-          '99%': {
-            opacity: 0
-          },
-          '100%': {
-            opacity: 1
-          }
-        }
       }
     }
   },

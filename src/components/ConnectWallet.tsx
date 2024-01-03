@@ -35,32 +35,33 @@ export const ConnectWallet: React.FC<{
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
-          <div className="relative w-[432px] whitespace-nowrap border-2 border-white bg-black bg-connect-modal font-smb text-2xl">
+          <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
             <div
               onClick={() => setIsOpen(false)}
-              className="absolute right-7 top-7 z-10 cursor-pointer">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path
-                  d="M0 0H3.59984V3.59961H7.19945V7.19944H3.59961V3.59984H0V0ZM7.19945 10.7995H3.59961V14.3993H7.19945V10.7995ZM10.7991 7.19969H14.3988V3.59986H10.7989V7.19965H7.19922V10.7995H10.7991V7.19969ZM3.59984 14.3993H0V17.9992H3.59984V14.3993ZM10.7989 10.7995H14.3988V14.3993H10.7989V10.7995ZM14.4002 0H18V3.59984H14.4002V0ZM18 14.3993H14.4002V17.9992H18V14.3993Z"
-                  fill="currentColor"
-                />
-              </svg>
+              className="absolute right-2.5 top-2.5 z-[100] cursor-pointer">
+              <Image src={getIconUrl('close', 'svg')} />
             </div>
 
-            <div className="px-12 py-16">
-              <div className="mb-12">CONNECT WALLET</div>
+            <div className="p-11">
+              <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
+              <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
+                We are working on adding more wallets. Don’t have any wallet
+                listed here? Select a provider below to create one
+              </div>
               <div className="flex flex-col gap-y-6">
                 <WalletItem
-                  name="OKX WALLET"
+                  iconName="unisat"
+                  name="Unisat Wallet"
                   connect={async () => {
-                    await connectOkx()
+                    await connectUnisat()
                     setIsOpen(false)
                   }}
                 />
                 <WalletItem
-                  name="UniSat WALLET"
+                  iconName="okx"
+                  name="OKX wallet"
                   connect={async () => {
-                    await connectUnisat()
+                    await connectOkx()
                     setIsOpen(false)
                   }}
                 />
@@ -76,12 +77,13 @@ export const ConnectWallet: React.FC<{
 const WalletItem: React.FC<{
   connect: () => void
   name: string
-}> = ({ connect, name }) => {
+  iconName: string
+}> = ({ connect, name, iconName }) => {
   return (
     <div
-      className="relative flex cursor-pointer items-center gap-x-2.5 border-y-2 border-white bg-black p-2.5 pl-5"
+      className="relative flex cursor-pointer items-center gap-x-3 border-y-2 border-white bg-black py-2.5 pl-5"
       onClick={connect}>
-      <Image src={getIconUrl('smiley')} className="w-7" />
+      <Image src={getIconUrl(iconName)} className="aspect-square w-[38px]" />
       <svg
         className="absolute -left-2"
         width="10"

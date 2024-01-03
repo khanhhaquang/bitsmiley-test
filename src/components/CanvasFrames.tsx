@@ -51,6 +51,8 @@ export const CanvasFrames = React.forwardRef<
     const promises = imgLocalPaths.map((i) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image(width, height)
+        img.width = width
+        img.height = height
         img.src = i
         img.onerror = reject
         img.onload = () => {
@@ -75,7 +77,7 @@ export const CanvasFrames = React.forwardRef<
 
       ctx.clearRect(0, 0, width, height)
       ctx.save()
-      ctx.drawImage(loadedImages[currentIndex.current], 0, 0)
+      ctx.drawImage(loadedImages[currentIndex.current], 0, 0, width, height)
 
       if (currentIndex.current >= totalFrame - 1) {
         currentIndex.current = 0
@@ -112,6 +114,13 @@ export const CanvasFrames = React.forwardRef<
   return isPlaying ? (
     <canvas ref={canvasRef} height={height} width={width} />
   ) : (
-    <img src={loadedImages[0]?.src} alt="..." />
+    <img
+      src={loadedImages[0]?.src}
+      style={{
+        width,
+        height
+      }}
+      alt="..."
+    />
   )
 })
