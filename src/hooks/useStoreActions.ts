@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 import accountActions from '@/store/account/actions'
+import commonActions from '@/store/common/actions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 
 export const useStoreActions = () => {
@@ -23,8 +24,14 @@ export const useStoreActions = () => {
       dispatch(accountActions.SET_LOGIN_TYPE(payload)),
     [dispatch]
   )
+  const setCurrentTypewritterSeq = useCallback(
+    (payload: number) =>
+      dispatch(commonActions.SET_CURRENT_TYPEWRITTER_SEQ(payload)),
+    [dispatch]
+  )
 
   return {
+    setCurrentTypewritterSeq,
     setAccountInfo,
     setLoginType,
     resetStorage

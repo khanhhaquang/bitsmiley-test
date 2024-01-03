@@ -44,12 +44,21 @@ export default {
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")'
       },
       keyframes: {
-        slide: {
+        blink: {
           '0%': {
-            transform: 'translateX(0)'
+            opacity: 1
+          },
+          '49%': {
+            opacity: 1
+          },
+          '60%': {
+            opacity: 0
+          },
+          '99%': {
+            opacity: 0
           },
           '100%': {
-            transform: 'translateX(-100%)'
+            opacity: 1
           }
         }
       }

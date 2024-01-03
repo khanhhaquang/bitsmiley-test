@@ -1,6 +1,7 @@
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
+import Typewriter from '@/components/Typewriter'
 import {
   getFrameUrl,
   getIconUrl,
@@ -56,40 +57,52 @@ export const MintMachine: React.FC = () => {
 
         <div className="absolute left-[834px] top-[380px] flex w-[398px] flex-col gap-y-6">
           <div className="flex flex-col gap-y-3">
-            <div className="overflow-hidden whitespace-nowrap text-lg font-bold text-green">
-              OVERVIEW------------------------------------------
+            <div className="flex items-center whitespace-nowrap text-lg font-bold text-green">
+              <Typewriter
+                seq={0}
+                nodes="OVERVIEW-----------------------------"
+              />
             </div>
             <div className="flex items-center justify-between text-lg">
-              <span>[NAME]</span>
-              <span>SMILEY EXPRESS NERO</span>
+              <Typewriter seq={1} nodes="[NAME]" />
+              <Typewriter seq={2} nodes="SMILEY EXPRESS NERO" />
             </div>
             <div className="flex items-center justify-between text-lg">
-              <span>[ISSUE]</span>
-              <span>bitSmiley</span>
+              <Typewriter seq={3} nodes="[ISSUE]" />
+              <Typewriter seq={4} nodes="bitSmiley" />
             </div>
             <div className="flex items-center justify-between text-lg">
-              <span>[AMOUNT]</span>
-              <span>6000</span>
+              <Typewriter seq={5} nodes="[AMOUNT]" />
+              <Typewriter seq={6} nodes="6000" />
             </div>
           </div>
           <div className="flex flex-col gap-y-3">
-            <div className="overflow-hidden whitespace-nowrap text-lg font-bold text-green">
-              STATS---------------------------------------------
+            <div className="flex items-center whitespace-nowrap text-lg font-bold text-green">
+              <Typewriter
+                seq={7}
+                nodes="STATS--------------------------------"
+              />
             </div>
             <div className="flex items-center justify-between text-lg">
-              <span>[NAME]</span>
-              <span>????</span>
+              <Typewriter seq={8} nodes="[NAME]" />
+              <Typewriter seq={9} nodes="????" />
             </div>
             <div className="flex items-center justify-between text-lg">
-              <span>[UTILITY]</span>
-              <span>????</span>
+              <Typewriter seq={10} nodes="[UTILITY]" />
+              <Typewriter seq={11} nodes="????" />
             </div>
           </div>
-          <div className="flex items-center gap-x-2 text-lg font-bold text-green">
-            <span>
-              <Image src={getIconUrl('dot')} />
-            </span>
-            <span>MINING COMING SOON...</span>
+          <div className="flex items-center text-lg font-bold text-green">
+            <Typewriter
+              seq={12}
+              nodes={[
+                <Image
+                  src={getIconUrl('dot')}
+                  className="mr-1.5 inline-block"
+                />,
+                'MINING COMING SOON...'
+              ]}
+            />
           </div>
         </div>
       </div>

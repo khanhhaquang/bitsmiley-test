@@ -1,8 +1,10 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import account from './account'
+import common from './common'
 
 const allReducers = combineReducers({
-  account: account.reducer
+  account: account.reducer,
+  common: common.reducer
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
