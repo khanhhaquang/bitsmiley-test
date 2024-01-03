@@ -12,7 +12,7 @@ export const MintMachine: React.FC = () => {
     .map((_, idx) => getFrameUrl('question-mark-rotate-mini', idx + 1))
 
   return (
-    <div className="flex h-[1200px] -translate-y-9 items-center justify-center">
+    <div className="relative -mt-9 flex h-[1200px] items-center justify-center">
       <div className="relative flex h-[1200px] w-[1716px] shrink-0 items-center justify-center">
         <Image
           className="absolute h-[1200px] w-[1716px] shrink-0"

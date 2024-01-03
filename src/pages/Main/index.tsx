@@ -114,11 +114,31 @@ const Main: React.FC = () => {
         </div>
 
         <div
-          className="z-10 flex items-end justify-center pt-[68px]"
+          className="relative z-50 flex items-center justify-between pt-[68px]"
           style={{
-            paddingTop: `${width >= 1920 ? 68 : (1920 / width) * 68}px`
+            scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`,
+            paddingLeft: `${width >= 1920 ? 136 : (136 / 1920) * width}px`,
+            paddingRight: `${width >= 1920 ? 136 : (136 / 1920) * width}px`
           }}>
-          <Image src={getIconUrl('header', 'svg')} className="h-16 w-full" />
+          <ConnectWallet
+            className="invisible origin-top-left"
+            style={{
+              scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+            }}
+          />
+          <Image
+            src={getIconUrl('header', 'svg')}
+            className="h-16 w-full origin-top"
+            style={{
+              scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+            }}
+          />
+          <ConnectWallet
+            className="z-50 origin-top-right"
+            style={{
+              scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+            }}
+          />
         </div>
 
         <MintMachine />
@@ -168,21 +188,6 @@ const Main: React.FC = () => {
           <Articles />
         </div>
       </div>
-
-      <div
-        className="absolute right-[136px]"
-        style={{
-          top: `${width >= 1920 ? 80 : (80 / 1920) * width}px`,
-          right: `${width >= 1920 ? 136 : (136 / 1920) * width}px`
-        }}>
-        <ConnectWallet
-          style={{
-            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-          }}
-          className="origin-bottom-right"
-        />
-      </div>
-
       <CopyRightAndLinks />
     </div>
   )
