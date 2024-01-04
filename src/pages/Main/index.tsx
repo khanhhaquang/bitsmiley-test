@@ -6,7 +6,7 @@ import {
   getIllustrationUrl
 } from '@/utils/getImageUrl'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { LINKS } from '@/config/links'
+import { MEDIA } from '@/config/links'
 import { MintMachine } from './MintMachine'
 import { cn } from '@/utils/cn'
 import { CanvasFrames } from '@/components/CanvasFrames'
@@ -77,7 +77,7 @@ const Inventor: React.FC = () => {
             time.
           </div>
           <div
-            onClick={() => window.open(LINKS.whitePaper, '__blank')}
+            onClick={() => window.open(MEDIA.whitePaper, '__blank')}
             className={cn(
               'inline-block h-10 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 active:shadow-none',
               'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
@@ -231,17 +231,17 @@ const CopyRightAndLinks: React.FC = () => {
         }}>
         <span
           className="cursor-pointer"
-          onClick={() => window.open(LINKS.discord, '__blank')}>
+          onClick={() => window.open(MEDIA.discord, '__blank')}>
           [<span className="hover:underline active:no-underline">Discord</span>]
         </span>
         <span
           className="cursor-pointer"
-          onClick={() => window.open(LINKS.twitter, '__blank')}>
+          onClick={() => window.open(MEDIA.twitter, '__blank')}>
           [<span className="hover:underline active:no-underline">Twitter</span>]
         </span>
         <span
           className="cursor-pointer"
-          onClick={() => window.open(LINKS.whitePaper, '__blank')}>
+          onClick={() => window.open(MEDIA.whitePaper, '__blank')}>
           [
           <span className="hover:underline active:no-underline">
             Whitepaper

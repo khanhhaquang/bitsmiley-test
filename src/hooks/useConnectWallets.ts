@@ -3,6 +3,7 @@ import { useStoreActions } from '@/hooks/useStoreActions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'
 import { getLoginType } from '@/store/account/reducer'
+import { WALLETSITE } from '@/config/links'
 
 export const useConnectWallets = () => {
   const loginType = useSelector(getLoginType)
@@ -28,7 +29,7 @@ export const useConnectWallets = () => {
 
   const connectOkx = async () => {
     if (typeof window.okxwallet === 'undefined') {
-      console.log('OKX is not installed!')
+      window.open(WALLETSITE.okx, '__blank')
       return
     }
 
@@ -42,7 +43,7 @@ export const useConnectWallets = () => {
 
   const connectUnisat = async () => {
     if (typeof window.unisat === 'undefined') {
-      console.log('Unisat is not installed!')
+      window.open(WALLETSITE.unisat, '__blank')
       return
     }
 
