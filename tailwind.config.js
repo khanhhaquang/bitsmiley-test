@@ -8,7 +8,8 @@ const colors = {
   blue2: '#1C2A89',
   green: '#29F863',
   black2: '#010101',
-  grey2: '#8F8F8F'
+  grey2: '#8F8F8F',
+  red: '#CE2D2D'
 }
 
 /** @type {import('tailwindcss').Config} */
@@ -38,6 +39,7 @@ export default {
         'whitepaper-button': '6px 6px 0px 0px #172B8F'
       },
       backgroundImage: {
+        loading: 'url("/src/assets/illustrations/loading-bg.png")',
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")'
       }
     }

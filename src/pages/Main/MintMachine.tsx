@@ -44,10 +44,7 @@ export const MintMachine: React.FC = () => {
         <div className="absolute bottom-[428px] left-[692px] flex h-[237px] flex-col gap-y-5 text-sm">
           <div className="flex flex-col gap-y-2.5">
             <div className="flex items-center whitespace-nowrap font-bold text-green">
-              <Typewriter
-                seq={0}
-                nodes="OVERVIEW---------------------------"
-              />
+              <Typewriter seq={0} nodes="OVERVIEW---------------------------" />
             </div>
 
             <div className="flex items-center justify-between">
@@ -65,13 +62,13 @@ export const MintMachine: React.FC = () => {
 
               <div className="flex flex-col gap-y-2.5">
                 <div className="h-5 w-40">
-                  <Typewriter seq={2} nodes="SMILEY EXPRESS NERO" />
+                  <Typewriter seq={2} nodes="SMILEY EXPRESS CARD" />
                 </div>
                 <div className="h-5 w-40">
                   <Typewriter seq={4} nodes="bitSmiley" />
                 </div>
                 <div className="h-5 w-40">
-                  <Typewriter seq={6} nodes="6000" />
+                  <Typewriter seq={6} nodes="????" />
                 </div>
               </div>
             </div>
@@ -79,16 +76,13 @@ export const MintMachine: React.FC = () => {
 
           <div className="flex flex-col gap-y-2.5">
             <div className="flex items-center whitespace-nowrap font-bold text-green">
-              <Typewriter
-                seq={7}
-                nodes="STATS------------------------------"
-              />
+              <Typewriter seq={7} nodes="STATS------------------------------" />
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-y-2.5">
                 <div className="h-5">
-                  <Typewriter seq={8} nodes="[NAME]" />
+                  <Typewriter seq={8} nodes="[VALUE]" />
                 </div>
                 <div className="h-5">
                   <Typewriter seq={10} nodes="[UTILITY]" />
@@ -114,7 +108,7 @@ export const MintMachine: React.FC = () => {
                   src={getIconUrl('dot')}
                   className="mr-1.5 inline-block"
                 />,
-                'MINING COMING SOON...'
+                'MINTING COMING SOON...'
               ]}
             />
           </div>

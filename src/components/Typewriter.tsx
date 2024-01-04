@@ -6,8 +6,9 @@ import { useSelector } from 'react-redux'
 const DEFAULT_MS = 40
 
 export interface ITypewriterProps {
-  seq: number
+  seq: number | false
   nodes: string | ReactNode[]
+  loop?: boolean
   speed?: number
   cursor?: boolean
 }
@@ -17,6 +18,7 @@ let timer: number
 export default function Typewriter({
   seq,
   nodes,
+  loop = false,
   speed = DEFAULT_MS,
   cursor = true
 }: ITypewriterProps) {
@@ -40,17 +42,21 @@ export default function Typewriter({
     return nds
   }, [nodes])
 
-  const isStarted = currentSeq === seq
+  const isStarted = seq === currentSeq || seq === false
 
   useEffect(() => {
-    if (currentSeq !== seq) return
+    if (currentSeq !== seq && seq !== false) return
 
     timer = setTimeout(() => {
       if (currentNodeIndex < formattedNodes.length) {
         setCurrentNodeIndex(currentNodeIndex + 1)
       } else {
-        setCurrentTypewritterSeq(currentSeq + 1)
-        clearTimeout(timer)
+        if (loop) {
+          setCurrentNodeIndex(0)
+        } else {
+          setCurrentTypewritterSeq(currentSeq + 1)
+          clearTimeout(timer)
+        }
       }
     }, speed)
 
@@ -59,6 +65,7 @@ export default function Typewriter({
     }
   }, [
     seq,
+    loop,
     currentNodeIndex,
     currentSeq,
     speed,
