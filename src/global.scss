@@ -43,6 +43,7 @@ body {
 
   background-color: black !important;
   cursor: url('./assets/illustrations/cursor-default.svg'), default;
+  user-select: none;
 }
 
 img {
