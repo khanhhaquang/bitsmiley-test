@@ -38,6 +38,9 @@ body {
   font-family: 'psm', 'pss', 'smb', 'sdm', -apple-system, BlinkMacSystemFont,
     'Segoe UI', 'Roboto', 'Oxygen', 'Cantarell', 'Fira Sans', 'Droid Sans',
     'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
   background-color: black !important;
   cursor: url('./assets/illustrations/cursor-default.svg'), default;
 }

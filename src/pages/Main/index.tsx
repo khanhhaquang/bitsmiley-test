@@ -215,7 +215,7 @@ const CopyRightAndLinks: React.FC = () => {
         padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
       }}>
       <div
-        className="flex origin-bottom-left items-center gap-x-1.5 font-bold"
+        className="flex origin-bottom-left items-center gap-x-1.5"
         style={{
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
         }}>
@@ -225,7 +225,7 @@ const CopyRightAndLinks: React.FC = () => {
         <span className="cursor-default">bitSmiley team 2024</span>
       </div>
       <div
-        className="flex origin-bottom-right flex-col items-end gap-y-1.5 font-bold"
+        className="flex origin-bottom-right flex-col items-end gap-y-1.5"
         style={{
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
         }}>

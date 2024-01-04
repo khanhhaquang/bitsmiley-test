@@ -12,6 +12,8 @@ export interface ITypewriterProps {
   cursor?: boolean
 }
 
+let timer: number
+
 export default function Typewriter({
   seq,
   nodes,
@@ -42,13 +44,19 @@ export default function Typewriter({
 
   useEffect(() => {
     if (currentSeq !== seq) return
-    setTimeout(() => {
+
+    timer = setTimeout(() => {
       if (currentNodeIndex < formattedNodes.length) {
         setCurrentNodeIndex(currentNodeIndex + 1)
       } else {
         setCurrentTypewritterSeq(currentSeq + 1)
+        clearTimeout(timer)
       }
     }, speed)
+
+    return () => {
+      clearTimeout(timer)
+    }
   }, [
     seq,
     currentNodeIndex,
