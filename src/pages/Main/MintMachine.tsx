@@ -20,6 +20,11 @@ export const MintMachine: React.FC = () => {
           src={getIllustrationUrl('machine-static')}
         />
 
+        <Image
+          className="absolute left-[740px] top-[624px]"
+          src={getIllustrationUrl('mintbutton-disabled')}
+        />
+
         <div className="absolute bottom-[428px] left-[367px] z-10">
           <CanvasFrames
             fps={24}

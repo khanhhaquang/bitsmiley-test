@@ -1,6 +1,6 @@
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { getCurrentTypeWritterSeq } from '@/store/common/reducer'
-import { useState, useEffect, ReactNode, useMemo } from 'react'
+import { useState, useEffect, ReactNode, useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 const DEFAULT_MS = 40
@@ -13,8 +13,6 @@ export interface ITypewriterProps {
   cursor?: boolean
 }
 
-let timer: number
-
 export default function Typewriter({
   seq,
   nodes,
@@ -23,6 +21,7 @@ export default function Typewriter({
   cursor = true
 }: ITypewriterProps) {
   const { setCurrentTypewritterSeq } = useStoreActions()
+  const timerRef = useRef(0)
   const currentSeq = useSelector(getCurrentTypeWritterSeq)
   const [currentNodeIndex, setCurrentNodeIndex] = useState(0)
 
@@ -47,7 +46,7 @@ export default function Typewriter({
   useEffect(() => {
     if (currentSeq !== seq && seq !== false) return
 
-    timer = setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       if (currentNodeIndex < formattedNodes.length) {
         setCurrentNodeIndex(currentNodeIndex + 1)
       } else {
@@ -55,13 +54,13 @@ export default function Typewriter({
           setCurrentNodeIndex(0)
         } else {
           setCurrentTypewritterSeq(currentSeq + 1)
-          clearTimeout(timer)
+          clearTimeout(timerRef.current)
         }
       }
     }, speed)
 
     return () => {
-      clearTimeout(timer)
+      clearTimeout(timerRef.current)
     }
   }, [
     seq,

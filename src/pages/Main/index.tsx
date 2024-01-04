@@ -1,6 +1,5 @@
-// import mintMusicSrc from '@/assets/mint.mp3'
 import { MintPage } from './MintPage'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { useIsWalletUnlocked } from '@/hooks/useIsWalletUnlocked'
@@ -17,18 +16,25 @@ const Main: React.FC = () => {
 
   const isLoading = isLoadingArticles || isCheckingWallet || isLoadingImages
 
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const audio = useMemo(() => {
+    const newAudio = new Audio(
+      new URL('/src/assets/mint.mp3', import.meta.url).href
+    )
+    newAudio.volume = 0.7
+    newAudio.loop = true
+    return newAudio
+  }, [])
 
-  const playMusic = () => {
-    if (audioRef.current?.currentTime !== undefined) {
-      audioRef.current.currentTime = 0
+  const playMusic = useCallback(() => {
+    if (audio?.currentTime !== undefined) {
+      audio.currentTime = 0
     }
-    audioRef.current?.play()
+    audio?.play()
     setIsPlaying(true)
-  }
+  }, [audio])
 
   const pauseMusic = () => {
-    audioRef.current?.pause()
+    audio?.pause()
     setIsPlaying(false)
   }
 
@@ -36,16 +42,10 @@ const Main: React.FC = () => {
     if (!isLoading && isEntered) {
       playMusic()
     }
-  }, [isLoading, isEntered])
+  }, [isLoading, isEntered, playMusic])
 
   return (
     <div>
-      <audio
-        src={new URL('/src/assets/mint.mp3', import.meta.url).href}
-        ref={audioRef}
-        loop
-      />
-
       {isLoading || !isEntered ? (
         <LoadingPage
           onEnter={() => setIsEntered(true)}
