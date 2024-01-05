@@ -2,12 +2,15 @@ import { CanvasFrames } from '@/components/CanvasFrames'
 import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
 import Typewriter from '@/components/Typewriter'
+import { cn } from '@/utils/cn'
 import {
   getFrameUrl,
   getIconUrl,
   getIllustrationUrl
 } from '@/utils/getImageUrl'
-export const MintMachine: React.FC = () => {
+export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
+  hideScrollDown
+}) => {
   const questionMarkRotateMiniImgUrls = Array(49)
     .fill(1)
     .map((_, idx) => getFrameUrl('question-mark-rotate-mini', idx + 1))
@@ -18,6 +21,14 @@ export const MintMachine: React.FC = () => {
         <Image
           className="absolute h-[995px] w-[1423px] shrink-0"
           src={getIllustrationUrl('machine-static')}
+        />
+
+        <Image
+          className={cn(
+            'absolute left-1/2 top-[895px] -translate-x-1/2 animate-bounce',
+            hideScrollDown && 'invisible'
+          )}
+          src={getIconUrl('arrow-down', 'svg')}
         />
 
         <Image
@@ -58,7 +69,7 @@ export const MintMachine: React.FC = () => {
                   <Typewriter seq={1} nodes="[NAME]" />
                 </div>
                 <div className="h-5">
-                  <Typewriter seq={3} nodes="[ISSUE]" />
+                  <Typewriter seq={3} nodes="[ISSUER]" />
                 </div>
                 <div className="h-5">
                   <Typewriter seq={5} nodes="[AMOUNT]" />

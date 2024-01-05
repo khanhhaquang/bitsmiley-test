@@ -13,7 +13,7 @@ export const CopyRightAndLinks: React.FC<{
   const { width } = useWindowSize()
   return (
     <div
-      className="fixed bottom-[75px] left-0 z-50 flex w-full origin-bottom items-end justify-between px-[136px] text-white mix-blend-difference"
+      className="fixed bottom-[50px] left-0 z-50 flex w-full origin-bottom items-end justify-between px-[136px] text-white mix-blend-difference"
       style={{
         padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
       }}>

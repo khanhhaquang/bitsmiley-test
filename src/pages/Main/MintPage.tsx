@@ -1,5 +1,5 @@
 import { Image } from '@/components/Image'
-
+import { RefObject, useRef } from 'react'
 import {
   getFrameUrl,
   getIconUrl,
@@ -13,13 +13,16 @@ import { CanvasFrames } from '@/components/CanvasFrames'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { ConnectWallet } from '@/components/ConnectWallet'
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
+import { useOnScreen } from '@/hooks/useOnScreen'
 
 export const MintPage: React.FC<{
   isPlayingMusic: boolean
   playMusic: () => void
   pauseMusic: () => void
 }> = ({ playMusic, pauseMusic, isPlayingMusic }) => {
+  const whoIsBitSmileyRef = useRef<HTMLDivElement>(null)
   const { width } = useWindowSize()
+  const isOnScreen = useOnScreen(whoIsBitSmileyRef)
   return (
     <div className="max-h-screen w-screen">
       <div
@@ -28,9 +31,13 @@ export const MintPage: React.FC<{
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
         }}>
         <SpaceBg />
-        <MintMachine />
+        <MintMachine hideScrollDown={isOnScreen} />
         <div className="relative">
-          <Divider title="Who is bitSmiley" className="mb-[200px] mt-[136px]" />
+          <Divider
+            title="Who is bitSmiley"
+            className="mb-[200px] mt-[136px]"
+            titleRef={whoIsBitSmileyRef}
+          />
           <GlobalBg wrapperClassName="top-[400px] origin-top" />
         </div>
         <Inventor />
@@ -152,10 +159,11 @@ const Header: React.FC = () => {
   )
 }
 
-const Divider: React.FC<{ title: string; className?: string }> = ({
-  title,
-  className
-}) => {
+const Divider: React.FC<{
+  titleRef?: RefObject<HTMLDivElement> | null
+  title: string
+  className?: string
+}> = ({ title, className, titleRef }) => {
   const { width } = useWindowSize()
   return (
     <div
@@ -185,6 +193,7 @@ const Divider: React.FC<{ title: string; className?: string }> = ({
           ))}
       </div>
       <div
+        ref={titleRef}
         className="px-6 py-2.5 text-4xl"
         style={{
           fontSize: `${(width / 1920) * 36}px`
