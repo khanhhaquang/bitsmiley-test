@@ -51,18 +51,18 @@ export const ConnectWallet: React.FC<{
               </div>
               <div className="flex flex-col gap-y-6">
                 <WalletItem
-                  iconName="unisat"
-                  name="Unisat Wallet"
+                  iconName="okx"
+                  name="OKX Wallet"
                   connect={async () => {
-                    await connectUnisat()
+                    await connectOkx()
                     setIsOpen(false)
                   }}
                 />
                 <WalletItem
-                  iconName="okx"
-                  name="OKX wallet"
+                  iconName="unisat"
+                  name="Unisat Wallet"
                   connect={async () => {
-                    await connectOkx()
+                    await connectUnisat()
                     setIsOpen(false)
                   }}
                 />

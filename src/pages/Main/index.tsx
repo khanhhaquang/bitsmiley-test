@@ -20,7 +20,7 @@ const Main: React.FC = () => {
     const newAudio = new Audio(
       new URL('/src/assets/mint.mp3', import.meta.url).href
     )
-    newAudio.volume = 0.7
+    newAudio.volume = 0.5
     newAudio.loop = true
     return newAudio
   }, [])
