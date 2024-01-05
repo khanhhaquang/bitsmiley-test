@@ -4,6 +4,7 @@ import { LoadingPage } from '@/pages/Main/LoadingPage'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { useIsWalletUnlocked } from '@/hooks/useIsWalletUnlocked'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
+import { useScrollPosition } from '@/hooks/useScrollPosition'
 
 const Main: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -13,6 +14,8 @@ const Main: React.FC = () => {
   const { isLoading: isLoadingImages } = usePreloadResources()
 
   const [isEntered, setIsEntered] = useState(false)
+
+  const scrollPosition = useScrollPosition()
 
   const isLoading = isLoadingArticles || isCheckingWallet || isLoadingImages
 
@@ -37,6 +40,13 @@ const Main: React.FC = () => {
     audio?.pause()
     setIsPlaying(false)
   }
+
+  useEffect(() => {
+    if (isPlaying) {
+      audio.volume =
+        0.5 - scrollPosition / 3000 > 0.1 ? 0.5 - scrollPosition / 3000 : 0.1
+    }
+  }, [isPlaying, scrollPosition, audio])
 
   useEffect(() => {
     if (!isLoading && isEntered) {
