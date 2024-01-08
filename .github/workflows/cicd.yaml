@@ -83,4 +83,4 @@ jobs:
         run: |
           aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
 
-          # aws cloudfront create-invalidation --distribution-id EA1V5QWQJDZTR --paths "/*"
+          aws cloudfront create-invalidation --distribution-id EX53P5PVR1P1N --paths "/*"
