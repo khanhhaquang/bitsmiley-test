@@ -11,18 +11,19 @@ const Main: React.FC = () => {
 
   const { isLoading: isLoadingArticles } = useFetchArticles()
   const { isLoading: isCheckingWallet } = useIsWalletUnlocked()
-  const { isLoading: isLoadingImages } = usePreloadResources()
+  const { isLoading: isLoadingResources } = usePreloadResources()
 
   const [isEntered, setIsEntered] = useState(false)
 
   const scrollPosition = useScrollPosition()
 
-  const isLoading = isLoadingArticles || isCheckingWallet || isLoadingImages
+  const isLoading = isLoadingArticles || isCheckingWallet || isLoadingResources
 
   const audio = useMemo(() => {
     const newAudio = new Audio(
       new URL('/src/assets/mint.mp3', import.meta.url).href
     )
+    newAudio.preload = 'auto'
     newAudio.volume = 0.5
     newAudio.loop = true
     return newAudio

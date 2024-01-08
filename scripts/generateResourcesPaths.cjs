@@ -24,8 +24,11 @@ const allPngs = getResourcePaths('./dist/static/png')
 const allSvgs = getResourcePaths('./dist/static/svg')
 const allImages = [...allPngs, ...allSvgs]
 
-const imgsOutputFilePath = path.resolve(root, 'src/hooks/imgPaths.json')
+const outputFilePath = path.resolve(root, 'src/hooks/resourcePaths.json')
+
 fs.writeFileSync(
-  imgsOutputFilePath,
-  `[${allImages.map((i) => `"${i}"`).join(',')}]`
+  outputFilePath,
+  JSON.stringify({
+    images: allImages
+  })
 )
