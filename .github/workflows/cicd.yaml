@@ -57,6 +57,7 @@ jobs:
               echo "IS_DEPLOY=true" >> "$GITHUB_ENV"
               S3_SUBPATH=$S3_SUBPATH/test
           elif [[ $REF_TYPE == "tag" && $CURRENT_ENV =~ $DEPLOY_MAIN ]]; then
+              echo "IS_DEPLOY=true" >> "$GITHUB_ENV"
               echo "IS_DEPLOY_MAIN=true" >> "$GITHUB_ENV"
               S3_SUBPATH=$S3_SUBPATH/main
           fi
