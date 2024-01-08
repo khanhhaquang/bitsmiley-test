@@ -33,8 +33,9 @@ const Main: React.FC = () => {
     if (audio?.currentTime !== undefined) {
       audio.currentTime = 0
     }
-    audio?.play()
-    setIsPlaying(true)
+    audio?.play().then(() => {
+      setIsPlaying(true)
+    })
   }, [audio])
 
   const pauseMusic = () => {

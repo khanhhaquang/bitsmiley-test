@@ -8,7 +8,7 @@ import {
   getIconUrl,
   getIllustrationUrl
 } from '@/utils/getImageUrl'
-import { useState } from 'react'
+
 export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
@@ -26,27 +26,9 @@ export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
 }
 
 const MintButton: React.FC = () => {
-  const [isPressed, setIsPressed] = useState(false)
-  const isMintButtonDisabled = true
-
   return (
-    <div
-      className={cn(
-        'absolute z-10 left-[740px] top-[624px]',
-        !isMintButtonDisabled && 'cursor-pointer'
-      )}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)}
-      onMouseDown={() => setIsPressed(true)}>
-      <Image
-        src={getIllustrationUrl(
-          isMintButtonDisabled
-            ? 'mintbutton-disabled'
-            : isPressed
-            ? 'mintbutton-down'
-            : 'mintbutton-up'
-        )}
-      />
+    <div className="absolute z-10 left-[740px] top-[624px]">
+      <Image src={getIllustrationUrl('mintbutton-disabled')} />
     </div>
   )
 }
