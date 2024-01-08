@@ -76,3 +76,10 @@ jobs:
           aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
 
           aws cloudfront create-invalidation --distribution-id EA1V5QWQJDZTR --paths "/*"
+
+      - name: Deploy to S3 prod
+        if: env.IS_DEPLOY_MAIN == 'true'
+        run: |
+          aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
+
+          # aws cloudfront create-invalidation --distribution-id EA1V5QWQJDZTR --paths "/*"
