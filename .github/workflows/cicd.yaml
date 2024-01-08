@@ -57,6 +57,7 @@ jobs:
               echo "IS_DEPLOY=true" >> "$GITHUB_ENV"
               S3_SUBPATH=$S3_SUBPATH/test
           elif [[ $REF_TYPE == "tag" && $CURRENT_ENV =~ $DEPLOY_MAIN ]]; then
+              echo "IS_DEPLOY=true" >> "$GITHUB_ENV"
               echo "IS_DEPLOY_MAIN=true" >> "$GITHUB_ENV"
               S3_SUBPATH=$S3_SUBPATH/main
           fi
@@ -76,3 +77,10 @@ jobs:
           aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
 
           aws cloudfront create-invalidation --distribution-id EA1V5QWQJDZTR --paths "/*"
+
+      - name: Deploy to S3 prod
+        if: env.IS_DEPLOY_MAIN == 'true'
+        run: |
+          aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
+
+          aws cloudfront create-invalidation --distribution-id EX53P5PVR1P1N --paths "/*"
