@@ -8,5 +8,4 @@ export enum LoginTypeEnum {
 export interface IAccountInfo {
   address: string
   publicKey: string
-  compressedPublicKey?: string
 }

@@ -14,8 +14,7 @@ export const useConnectWallets = () => {
       if (!newAccountInfo) {
         setAccountInfo({
           address: '',
-          publicKey: '',
-          compressedPublicKey: ''
+          publicKey: ''
         })
         setLoginType(LoginTypeEnum.None)
         return
@@ -35,7 +34,10 @@ export const useConnectWallets = () => {
 
     try {
       const accountInfo = await window.okxwallet.bitcoin.connect()
-      handleAccountChanged(accountInfo, LoginTypeEnum.OKX)
+      handleAccountChanged(
+        { address: accountInfo.address, publicKey: accountInfo.publicKey },
+        LoginTypeEnum.OKX
+      )
     } catch (error) {
       console.error('okx connect error')
     }
@@ -54,14 +56,13 @@ export const useConnectWallets = () => {
         handleAccountChanged(
           {
             address: accounts[0],
-            publicKey,
-            compressedPublicKey: ''
+            publicKey
           },
           LoginTypeEnum.UNISAT
         )
       }
     } catch (error) {
-      console.error('okx connect error')
+      console.error('unisat connect error')
     }
   }
 
