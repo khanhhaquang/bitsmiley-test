@@ -7,30 +7,20 @@ import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 
 const initState: {
-  loginType: LoginTypeEnum
+  loginType: string
   accountInfo: IAccountInfo
 } = {
   loginType:
-    (getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE) as LoginTypeEnum) ||
-    LoginTypeEnum.None,
+    getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE) || LoginTypeEnum.None,
   accountInfo: {
-    address: getLocalStorage(LOCAL_STORAGE_KEYS.ADDRESS) || '',
-    publicKey: getLocalStorage(LOCAL_STORAGE_KEYS.PUBLIC_KEY) || '',
-    compressedPublicKey:
-      getLocalStorage(LOCAL_STORAGE_KEYS.COMPRESSED_PUBLIC_KEY) || ''
+    address: '',
+    publicKey: ''
   }
 }
 
 export default createReducer(initState, (builder) => {
   builder.addCase(actions.SET_ACCOUNT_INFO, (state, action) => {
     state.accountInfo = action.payload
-
-    setLocalStorage(LOCAL_STORAGE_KEYS.ADDRESS, action.payload.address)
-    setLocalStorage(LOCAL_STORAGE_KEYS.PUBLIC_KEY, action.payload.publicKey)
-    setLocalStorage(
-      LOCAL_STORAGE_KEYS.COMPRESSED_PUBLIC_KEY,
-      action.payload.compressedPublicKey || ''
-    )
   }),
     builder.addCase(actions.SET_LOGIN_TYPE, (state, action) => {
       state.loginType = action.payload
@@ -41,4 +31,7 @@ export default createReducer(initState, (builder) => {
 export const getAccountInfo = (state: RootState) => state.account.accountInfo
 export const getLoginType = (state: RootState) => state.account.loginType
 export const getIsConnected = (state: RootState) =>
-  !!state.account.accountInfo.address && !!state.account.loginType
+  !!state.account.accountInfo.address &&
+  (state.account.accountInfo.address) !== 'undefined' &&
+  !!state.account.loginType &&
+  state.account.loginType !== LoginTypeEnum.None
