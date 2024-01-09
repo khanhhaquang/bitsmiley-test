@@ -13,25 +13,44 @@ export const ConnectWallet: React.FC<{
   style?: CSSProperties
 }> = ({ className, style }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
 
   const isConnected = useSelector(getIsConnected)
   const accountInfo = useSelector(getAccountInfo)
-  const { connectOkx, connectUnisat } = useConnectWallets()
+  const { connectOkx, connectUnisat, disConnect } = useConnectWallets()
 
   return (
     <>
       <div
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          if (!isConnected) {
+            setIsOpen(true)
+          } else {
+            setIsLogoutDropdownOpen((v) => !v)
+          }
+        }}
         style={style}
         className={cn(
-          'cursor-pointer bg-white text-black px-5 py-2 font-bold shadow-connectwallet-button whitespace-nowrap',
-          'hover:bg-blue3 hover:shadow-connectwallet-button-hover',
-          'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue',
+          'relative bg-white cursor-pointer text-black px-5 py-2 font-bold whitespace-nowrap text-[15px]',
+          !isLogoutDropdownOpen && 'hover:bg-blue3',
+          !isConnected &&
+            'shadow-connectwallet-button hover:shadow-connectwallet-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue',
           className
         )}>
         {isConnected
           ? displayAddress(accountInfo.address, 4, 4)
           : 'CONNECT WALLET'}
+
+        <div
+          onClick={isLogoutDropdownOpen ? disConnect : undefined}
+          className={cn(
+            'absolute left-0 top-full z-10 flex h-0 w-full items-center justify-center bg-grey3 font-bold text-white hover:bg-grey4 text-[15px]',
+            isConnected && 'transition-all ease-in-out duration-100',
+            isLogoutDropdownOpen &&
+              'h-full px-5 py-2 border border-white border-t-0'
+          )}>
+          {isLogoutDropdownOpen ? 'LOGOUT' : ''}
+        </div>
       </div>
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>

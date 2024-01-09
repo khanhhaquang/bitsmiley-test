@@ -4,6 +4,7 @@ import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'
 import { getLoginType } from '@/store/account/reducer'
 import { WALLETSITE } from '@/config/links'
+import { clearStorage } from '@/utils/storage.ts'
 
 export const useConnectWallets = () => {
   const loginType = useSelector(getLoginType)
@@ -17,6 +18,7 @@ export const useConnectWallets = () => {
           publicKey: ''
         })
         setLoginType(LoginTypeEnum.None)
+        clearStorage()
         return
       }
 
@@ -66,6 +68,10 @@ export const useConnectWallets = () => {
     }
   }
 
+  const disConnect = () => {
+    handleAccountChanged(null, LoginTypeEnum.None)
+  }
+
   useEffect(() => {
     if (!window.okxwallet || loginType !== LoginTypeEnum.OKX) return
 
@@ -101,5 +107,5 @@ export const useConnectWallets = () => {
     }
   }, [handleAccountChanged, loginType])
 
-  return { connectOkx, connectUnisat }
+  return { connectOkx, connectUnisat, disConnect }
 }
