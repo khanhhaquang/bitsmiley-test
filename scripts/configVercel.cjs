@@ -6,7 +6,7 @@ const CONFIG = {
   version: 2,
   routes: [
     {
-      src: '/(.+\\.(png|ttf|otf|mp3))',
+      src: '/(.+\\.(svg|png|jpg|jpeg|ttf|otf|mp3))',
       headers: {
         'Cache-Control': 'public, max-age=31536000, immutable'
       }

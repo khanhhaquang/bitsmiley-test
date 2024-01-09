@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import images from './imgPaths.json'
+import resourcePaths from './resourcePaths.json'
 import FontFaceObserver from 'fontfaceobserver'
 import { useFetchArticles } from './useFetchArticles'
 
@@ -11,7 +11,7 @@ export const usePreloadResources = () => {
   const isLoading = isLoadingImages || isLoadingFonts || isLoadingFeeds
 
   const loadImages = useCallback(async () => {
-    const imagePromises = images.map((url) => {
+    const imagePromises = resourcePaths.images.map((url) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
         img.src = new URL(url, import.meta.url).href
@@ -34,9 +34,9 @@ export const usePreloadResources = () => {
       await Promise.all([...imagePromises, ...(mediumImgs || [])])
     } catch (error) {
       console.error('Error loading images:', error)
+    } finally {
+      setIsLoadingImages(false)
     }
-
-    setIsLoadingImages(false)
   }, [items])
 
   const loadFonts = async () => {
@@ -64,9 +64,9 @@ export const usePreloadResources = () => {
       await Promise.all([psm.load(), pss.load(), smb.load(), sdm.load()])
     } catch (error) {
       console.error('Error loading fonts:', error)
+    } finally {
+      setIsLoadingFonts(false)
     }
-
-    setIsLoadingFonts(false)
   }
 
   useEffect(() => {
@@ -83,5 +83,5 @@ export const usePreloadResources = () => {
     loadFonts()
   }, [items?.length, isLoadingFeeds, loadImages])
 
-  return { isLoading, isLoadingImages }
+  return { isLoading, isLoadingFonts, isLoadingImages }
 }

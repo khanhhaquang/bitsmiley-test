@@ -1,0 +1,17 @@
+**/*.svg
+**/*.html
+
+/node_modules
+
+/dist
+/.vscode/
+/.idea/
+
+.DS_Store
+*.pem
+
+.npm-debug.log*
+
+*.tsbuildinfo
+
+.env*.local
