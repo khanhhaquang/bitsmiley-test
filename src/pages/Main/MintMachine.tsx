@@ -92,31 +92,34 @@ const BoxContent: React.FC = () => {
     <div className="absolute bottom-[428px] left-[692px] flex h-[237px] flex-col gap-y-5 text-sm">
       <div className="flex flex-col gap-y-2.5">
         <div className="flex items-center whitespace-nowrap font-bold text-green">
-          <Typewriter seq={0} nodes="OVERVIEW---------------------------" />
+          <Typewriter
+            seq={0}
+            renderNodes={() => 'OVERVIEW---------------------------'}
+          />
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2.5">
             <div className="h-5">
-              <Typewriter seq={1} nodes="[NAME]" />
+              <Typewriter seq={1} renderNodes={() => '[NAME]'} />
             </div>
             <div className="h-5">
-              <Typewriter seq={3} nodes="[ISSUER]" />
+              <Typewriter seq={3} renderNodes={() => '[ISSUER]'} />
             </div>
             <div className="h-5">
-              <Typewriter seq={5} nodes="[AMOUNT]" />
+              <Typewriter seq={5} renderNodes={() => '[AMOUNT]'} />
             </div>
           </div>
 
           <div className="flex flex-col gap-y-2.5">
             <div className="h-5 w-40">
-              <Typewriter seq={2} nodes="SMILEY EXPRESS CARD" />
+              <Typewriter seq={2} renderNodes={() => 'SMILEY EXPRESS CARD'} />
             </div>
             <div className="h-5 w-40">
-              <Typewriter seq={4} nodes="bitSmiley" />
+              <Typewriter seq={4} renderNodes={() => 'bitSmiley'} />
             </div>
             <div className="h-5 w-40">
-              <Typewriter seq={6} nodes="????" />
+              <Typewriter seq={6} renderNodes={() => '????'} />
             </div>
           </div>
         </div>
@@ -124,39 +127,43 @@ const BoxContent: React.FC = () => {
 
       <div className="flex flex-col gap-y-2.5">
         <div className="flex items-center whitespace-nowrap font-bold text-green">
-          <Typewriter seq={7} nodes="STATS------------------------------" />
+          <Typewriter
+            seq={7}
+            renderNodes={() => 'STATS------------------------------'}
+          />
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2.5">
             <div className="h-5">
-              <Typewriter seq={8} nodes="[VALUE]" />
+              <Typewriter seq={8} renderNodes={() => '[VALUE]'} />
             </div>
             <div className="h-5">
-              <Typewriter seq={10} nodes="[UTILITY]" />
+              <Typewriter seq={10} renderNodes={() => '[UTILITY]'} />
             </div>
           </div>
 
           <div className="flex flex-col gap-y-2.5">
             <span className="h-5 w-40">
-              <Typewriter seq={9} nodes="????" />
+              <Typewriter seq={9} renderNodes={() => '????'} />
             </span>
             <span className="h-5 w-40">
-              <Typewriter seq={11} nodes="????" />
+              <Typewriter seq={11} renderNodes={() => '????'} />
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center font-bold text-green">
-        <Typewriter
-          seq={12}
-          nodes={[
-            <Image src={getIconUrl('dot')} className="mr-1.5 inline-block" />,
-            'MINTING COMING SOON...'
-          ]}
-        />
-      </div>
+      <Typewriter
+        wrapperClassName="flex items-center font-bold text-green"
+        seq={12}
+        renderNodes={() => [
+          <div className="mr-1.5 h-4">
+            <Image src={getIconUrl('dot', 'svg')} />
+          </div>,
+          'MINTING COMING SOON...'
+        ]}
+      />
     </div>
   )
 }

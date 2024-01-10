@@ -1,24 +1,29 @@
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { getCurrentTypeWritterSeq } from '@/store/common/reducer'
+import { cn } from '@/utils/cn'
 import { useState, useEffect, ReactNode, useMemo, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 const DEFAULT_MS = 40
 
 export interface ITypewriterProps {
-  seq: number | false
-  nodes: string | ReactNode[]
+  renderNodes: (currentNodeIndex: number) => string | ReactNode[]
+  seq?: number
   loop?: boolean
   speed?: number
   cursor?: boolean
+  wrapperClassName?: string
+  onStop?: () => void
 }
 
 export default function Typewriter({
   seq,
-  nodes,
+  renderNodes,
   loop = false,
   speed = DEFAULT_MS,
-  cursor = true
+  cursor = true,
+  wrapperClassName,
+  onStop
 }: ITypewriterProps) {
   const { setCurrentTypewritterSeq } = useStoreActions()
   const timerRef = useRef(0)
@@ -26,6 +31,8 @@ export default function Typewriter({
   const [currentNodeIndex, setCurrentNodeIndex] = useState(0)
 
   const formattedNodes = useMemo(() => {
+    const nodes = renderNodes(currentNodeIndex)
+
     if (!Array.isArray(nodes)) {
       const text = nodes as string
       return text.split('') as ReactNode[]
@@ -39,12 +46,12 @@ export default function Typewriter({
     }, [] as ReactNode[])
 
     return nds
-  }, [nodes])
+  }, [currentNodeIndex, renderNodes])
 
-  const isStarted = seq === currentSeq || seq === false
+  const isStarted = seq === currentSeq || seq === undefined
 
   useEffect(() => {
-    if (currentSeq !== seq && seq !== false) return
+    if (currentSeq !== seq && seq !== undefined) return
 
     timerRef.current = setTimeout(() => {
       if (currentNodeIndex < formattedNodes.length) {
@@ -53,8 +60,11 @@ export default function Typewriter({
         if (loop) {
           setCurrentNodeIndex(0)
         } else {
-          setCurrentTypewritterSeq(currentSeq + 1)
+          if (seq !== undefined) {
+            setCurrentTypewritterSeq(currentSeq + 1)
+          }
           clearTimeout(timerRef.current)
+          onStop?.()
         }
       }
     }, speed)
@@ -69,17 +79,18 @@ export default function Typewriter({
     currentSeq,
     speed,
     formattedNodes.length,
-    setCurrentTypewritterSeq
+    setCurrentTypewritterSeq,
+    onStop
   ])
 
   return (
-    <span className="flex items-center">
+    <span className={cn('flex items-center', wrapperClassName)}>
       {formattedNodes?.slice(0, currentNodeIndex).map((n, idx) => (
         <span key={idx} className="relative flex items-center justify-center">
           {/^\s*$/.test(n as string) ? '\u00A0' : n}
 
           {idx === formattedNodes?.slice(0, currentNodeIndex).length - 1 && (
-            <span className="absolute -right-4">
+            <span className="absolute -right-2">
               {isStarted ? cursor && '▎' : ''}
             </span>
           )}

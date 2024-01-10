@@ -9,7 +9,7 @@ import Typewriter from '@/components/Typewriter'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { Image } from '@/components/Image'
 import { cn } from '@/utils/cn'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 export const LoadingPage: React.FC<{
   onEnter: () => void
@@ -56,9 +56,8 @@ export const LoadingPage: React.FC<{
                 <Typewriter
                   loop
                   speed={300}
-                  seq={false}
                   cursor={false}
-                  nodes="..."
+                  renderNodes={() => '...'}
                 />
               </div>
             </div>
@@ -102,42 +101,28 @@ const SmileyLogo: React.FC = () => {
 }
 
 const ProgressLine: React.FC<{ onStop: () => void }> = ({ onStop }) => {
-  const NUM = 27
-  const timerRef = useRef(0)
-  const [current, setCurrent] = useState(0)
-
-  useEffect(() => {
-    if (current >= NUM) {
-      clearTimeout(timerRef.current)
-      onStop()
-      return
-    }
-
-    timerRef.current = setTimeout(() => {
-      setCurrent((v) => v + 1)
-    }, 120)
-
-    return () => {
-      clearTimeout(timerRef.current)
-    }
-  }, [current, onStop])
-
   return (
     <div className="relative">
       <Image src={getIllustrationUrl('loading-line', 'svg')} />
-      <div className="absolute left-[7px] top-[7px] flex items-center gap-x-[3px]">
-        {Array(NUM)
-          .fill(1)
-          .map((_, idx) => (
-            <div
-              key={idx}
-              className={cn(
-                'h-1.5 w-1.5 bg-white invisible',
-                idx <= current && 'visible'
-              )}
-            />
-          ))}
-      </div>
+      <Typewriter
+        wrapperClassName="absolute left-[7px] top-[7px] flex items-center gap-x-[3px]"
+        speed={120}
+        cursor={false}
+        onStop={onStop}
+        renderNodes={(current) =>
+          Array(27)
+            .fill(1)
+            .map((_, idx) => (
+              <div
+                key={idx}
+                className={cn(
+                  'h-1.5 w-1.5 bg-white invisible',
+                  idx <= current && 'visible'
+                )}
+              />
+            ))
+        }
+      />
     </div>
   )
 }
