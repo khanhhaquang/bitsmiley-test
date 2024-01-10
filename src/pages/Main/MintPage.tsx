@@ -1,10 +1,6 @@
 import { Image } from '@/components/Image'
 import { RefObject, useRef } from 'react'
-import {
-  getFrameUrl,
-  getIconUrl,
-  getIllustrationUrl
-} from '@/utils/getImageUrl'
+import { getFrameUrl, getIllustrationUrl } from '@/utils/getImageUrl'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { MEDIA } from '@/config/links'
 import { MintMachine } from './MintMachine'
@@ -14,6 +10,7 @@ import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { ConnectWallet } from '@/components/ConnectWallet'
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { useOnScreen } from '@/hooks/useOnScreen'
+import { CoinIcon, HeaderIcon } from '@/assets/icons'
 
 export const MintPage: React.FC<{
   isPlayingMusic: boolean
@@ -82,7 +79,9 @@ const Inventor: React.FC = () => {
       <div className="flex h-[230px] w-[700px] flex-col justify-between">
         <div className="flex items-center justify-start gap-x-2 text-[32px]">
           <span>Inventor of bitUSD</span>
-          <Image src={getIconUrl('coin', 'svg')} />
+          <span className="pb-1">
+            <CoinIcon />
+          </span>
         </div>
         <div>
           <div className="mb-4 text-2xl">
@@ -146,7 +145,7 @@ const Header: React.FC = () => {
         style={{
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
         }}>
-        <Image src={getIconUrl('header', 'svg')} className="max-h-14" />
+        <HeaderIcon className="max-h-14" />
       </div>
 
       <ConnectWallet

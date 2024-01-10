@@ -1,13 +1,10 @@
+import { ArrowDownIcon, DotIcon } from '@/assets/icons'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
 import Typewriter from '@/components/Typewriter'
 import { cn } from '@/utils/cn'
-import {
-  getFrameUrl,
-  getIconUrl,
-  getIllustrationUrl
-} from '@/utils/getImageUrl'
+import { getFrameUrl, getIllustrationUrl } from '@/utils/getImageUrl'
 
 export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
@@ -46,12 +43,11 @@ const ArrowDown: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
   return (
-    <Image
+    <ArrowDownIcon
       className={cn(
         'absolute left-1/2 top-[895px] -translate-x-1/2 animate-bounce',
         hideScrollDown && 'invisible'
       )}
-      src={getIconUrl('arrow-down', 'svg')}
     />
   )
 }
@@ -155,11 +151,11 @@ const BoxContent: React.FC = () => {
       </div>
 
       <Typewriter
-        wrapperClassName="flex items-center font-bold text-green"
+        wrapperClassName="font-bold text-green"
         seq={12}
         renderNodes={() => [
-          <div className="mr-1.5 h-4">
-            <Image src={getIconUrl('dot', 'svg')} />
+          <div className="mr-1.5 h-5 pt-0.5">
+            <DotIcon />
           </div>,
           'MINTING COMING SOON...'
         ]}

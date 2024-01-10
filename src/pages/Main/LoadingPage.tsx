@@ -1,15 +1,11 @@
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { CanvasFrames } from '@/components/CanvasFrames'
-import {
-  getFrameUrl,
-  getIconUrl,
-  getIllustrationUrl
-} from '@/utils/getImageUrl'
+import { getFrameUrl } from '@/utils/getImageUrl'
 import Typewriter from '@/components/Typewriter'
 import { useWindowSize } from '@/hooks/useWindowSize'
-import { Image } from '@/components/Image'
 import { cn } from '@/utils/cn'
 import { useState } from 'react'
+import { HeaderIcon, LoadingLineIcon } from '@/assets/icons'
 
 export const LoadingPage: React.FC<{
   onEnter: () => void
@@ -44,7 +40,9 @@ export const LoadingPage: React.FC<{
             height={119}
             imgLocalPaths={Array(13)
               .fill(1)
-              .map((_, idx) => getFrameUrl('smiley-rotating', `${idx + 1}`))}
+              .map((_, idx) =>
+                getFrameUrl('smiley-rotating', `smiley-rotating${idx + 1}`)
+              )}
           />
         </div>
 
@@ -94,7 +92,7 @@ const SmileyLogo: React.FC = () => {
         style={{
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
         }}>
-        <Image src={getIconUrl('header', 'svg')} className="max-h-14" />
+        <HeaderIcon className="max-h-14" />
       </div>
     </div>
   )
@@ -103,7 +101,7 @@ const SmileyLogo: React.FC = () => {
 const ProgressLine: React.FC<{ onStop: () => void }> = ({ onStop }) => {
   return (
     <div className="relative">
-      <Image src={getIllustrationUrl('loading-line', 'svg')} />
+      <LoadingLineIcon />
       <Typewriter
         wrapperClassName="absolute left-[7px] top-[7px] flex items-center gap-x-[3px]"
         speed={120}

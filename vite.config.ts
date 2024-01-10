@@ -22,5 +22,5 @@ export default defineConfig({
   esbuild: {
     drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
   },
-  plugins: [svgr(), react()]
+  plugins: [svgr({ include: '**/*.svg' }), react()]
 })

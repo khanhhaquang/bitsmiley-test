@@ -2,11 +2,12 @@ import { CSSProperties, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Modal } from './Modal'
 import { Image } from '@/components/Image'
-import { getIconUrl } from '@/utils/getImageUrl'
 import { cn } from '@/utils/cn'
 import { useConnectWallets } from '@/hooks/useConnectWallets'
 import { getAccountInfo, getIsConnected } from '@/store/account/reducer'
 import { displayAddress } from '@/utils/formatter'
+import { CloseIcon } from '@/assets/icons'
+import { getIllustrationUrl } from '@/utils/getImageUrl'
 
 export const ConnectWallet: React.FC<{
   className?: string
@@ -56,11 +57,10 @@ export const ConnectWallet: React.FC<{
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
           <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
-            <div
+            <CloseIcon
               onClick={() => setIsOpen(false)}
-              className="absolute right-2.5 top-2.5 z-[100] cursor-pointer">
-              <Image src={getIconUrl('close', 'svg')} />
-            </div>
+              className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
+            />
 
             <div className="p-11">
               <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
@@ -103,7 +103,10 @@ const WalletItem: React.FC<{
     <div
       className="relative flex cursor-pointer items-center gap-x-3 border-y-2 border-white bg-black py-2.5 pl-5"
       onClick={connect}>
-      <Image src={getIconUrl(iconName)} className="aspect-square w-[38px]" />
+      <Image
+        src={getIllustrationUrl(iconName)}
+        className="aspect-square w-[38px]"
+      />
       <svg
         className="absolute -left-2"
         width="10"
