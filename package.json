@@ -7,11 +7,9 @@
     "dev": "vite",
     "prebuild": "tsc && vite build",
     "build": "npm run prebuild && node scripts/generateResourcesPaths.cjs && npm run prebuild",
-    "build:dev": "npm run prebuild && node scripts/generateResourcesPaths.cjs && npm run prebuild && node scripts/configVercel.cjs",
     "preview": "vite preview",
     "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix",
-    "deploy:dev": "sh scripts/deploy_dev.sh"
+    "lint:fix": "eslint ./src --fix"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.0.1",
