@@ -38,13 +38,13 @@ export const MintPage: React.FC<{
             className="mb-[200px] mt-[136px]"
             titleRef={whoIsBitSmileyRef}
           />
-          <GlobalBg wrapperClassName="top-[280px] origin-top" />
+          <GlobalBg wrapperClassName="top-[400px] origin-top" />
         </div>
         <Inventor />
         <Divider title="Backed By" className="mb-[240px] mt-[400px]" />
         <BackedBy />
         <div className="relative">
-          <GlobalBg wrapperClassName="top-[150px]" imgClassName="rotate-180" />
+          <GlobalBg wrapperClassName="bottom-0" imgClassName="rotate-180" />
           <Divider title="Articles" className="mb-[200px] mt-[400px]" />
         </div>
         <div className="pb-[280px]">
@@ -107,24 +107,12 @@ const Inventor: React.FC = () => {
 }
 const BackedBy: React.FC = () => {
   return (
-    <div>
-      <div className="mb-12 flex items-center justify-center gap-x-40">
-        <div className="h-[153px] w-[462px] shrink-0">
-          <Image src={getIllustrationUrl('okx-logo')} />
-        </div>
-        <div className="h-[153px] w-[445px] shrink-0">
-          <Image src={getIllustrationUrl('abcde-logo')} />
-        </div>
+    <div className="flex items-center justify-center gap-x-40">
+      <div className="h-[153px] w-[462px] shrink-0">
+        <Image src={getIllustrationUrl('okx-logo')} />
       </div>
-      <div className="flex items-center justify-between">
-        <Image src={getIllustrationUrl('cms-logo')} />
-        <Image src={getIllustrationUrl('arkstream-logo')} />
-        <Image src={getIllustrationUrl('7updao-logo')} />
-      </div>
-      <div className="flex items-center justify-between">
-        <Image src={getIllustrationUrl('mtcapital-logo')} />
-        <Image src={getIllustrationUrl('candaq-logo')} />
-        <Image src={getIllustrationUrl('foresight-logo')} />
+      <div className="h-[153px] w-[445px] shrink-0">
+        <Image src={getIllustrationUrl('abcde-logo')} />
       </div>
     </div>
   )
