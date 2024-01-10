@@ -44,10 +44,10 @@ export const ConnectWallet: React.FC<{
         <div
           onClick={isLogoutDropdownOpen ? disConnect : undefined}
           className={cn(
-            'absolute left-0 top-full z-10 flex h-0 w-full items-center justify-center bg-grey3 font-bold text-white hover:bg-grey4 text-[15px]',
+            'absolute left-0 top-full z-10 flex w-full items-center justify-center bg-grey3 font-bold text-white h-0 hover:bg-grey4 text-[15px]',
             isConnected && 'transition-all ease-in-out duration-100',
             isLogoutDropdownOpen &&
-              'h-full px-5 py-2 border border-white border-t-0'
+              'h-auto px-5 py-2 border border-white border-t-transparent'
           )}>
           {isLogoutDropdownOpen ? 'LOGOUT' : ''}
         </div>
