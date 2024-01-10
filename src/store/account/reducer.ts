@@ -32,6 +32,6 @@ export const getAccountInfo = (state: RootState) => state.account.accountInfo
 export const getLoginType = (state: RootState) => state.account.loginType
 export const getIsConnected = (state: RootState) =>
   !!state.account.accountInfo.address &&
-  (state.account.accountInfo.address) !== 'undefined' &&
+  state.account.accountInfo.address !== 'undefined' &&
   !!state.account.loginType &&
   state.account.loginType !== LoginTypeEnum.None

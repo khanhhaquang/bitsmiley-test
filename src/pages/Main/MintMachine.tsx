@@ -27,7 +27,7 @@ export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
 
 const MintButton: React.FC = () => {
   return (
-    <div className="absolute z-10 left-[740px] top-[624px]">
+    <div className="absolute left-[740px] top-[624px] z-10">
       <Image src={getIllustrationUrl('mintbutton-disabled')} />
     </div>
   )
