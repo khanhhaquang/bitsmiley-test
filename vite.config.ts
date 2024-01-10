@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import path from 'path'
 import react from '@vitejs/plugin-react'
+import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
   base: './',
@@ -21,5 +22,5 @@ export default defineConfig({
   esbuild: {
     drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
   },
-  plugins: [react()]
+  plugins: [svgr(), react()]
 })
