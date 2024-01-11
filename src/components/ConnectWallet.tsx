@@ -7,7 +7,7 @@ import { useConnectWallets } from '@/hooks/useConnectWallets'
 import { getAccountInfo, getIsConnected } from '@/store/account/reducer'
 import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
-import { getIllustrationUrl } from '@/utils/getImageUrl'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 export const ConnectWallet: React.FC<{
   className?: string

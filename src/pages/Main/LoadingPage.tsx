@@ -1,6 +1,6 @@
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { CanvasFrames } from '@/components/CanvasFrames'
-import { getFrameUrl } from '@/utils/getImageUrl'
+import { getFrameUrl } from '@/utils/getAssetsUrl'
 import Typewriter from '@/components/Typewriter'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'

@@ -1,4 +1,4 @@
-export default function getImageUrl(path: string) {
+export const getAssetUrl = (path: string) => {
   return new URL(path, import.meta.url).href
 }
 
