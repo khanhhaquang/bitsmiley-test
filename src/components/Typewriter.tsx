@@ -90,7 +90,7 @@ export default function Typewriter({
           {/^\s*$/.test(n as string) ? '\u00A0' : n}
 
           {idx === formattedNodes?.slice(0, currentNodeIndex).length - 1 && (
-            <span className="absolute -right-2">
+            <span className="absolute -right-4">
               {isStarted ? cursor && '▎' : ''}
             </span>
           )}

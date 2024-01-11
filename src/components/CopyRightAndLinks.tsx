@@ -53,7 +53,7 @@ export const CopyRightAndLinks: React.FC<{
                 <span>{isPlayingMusic ? 'on' : 'off'}</span>
                 <div
                   className={cn(
-                    'absolute w-full bottom-1.5 h-0.5 invisible group-hover:visible',
+                    'absolute w-full bottom-1 h-0.5 invisible group-hover:visible',
                     isPlayingMusic ? 'bg-green' : 'bg-red'
                   )}
                 />

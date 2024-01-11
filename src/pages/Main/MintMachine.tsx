@@ -154,9 +154,7 @@ const BoxContent: React.FC = () => {
         wrapperClassName="font-bold text-green"
         seq={12}
         renderNodes={() => [
-          <div className="mr-1.5 h-5 pt-0.5">
-            <DotIcon />
-          </div>,
+          <DotIcon className="mr-1.5" />,
           'MINTING COMING SOON...'
         ]}
       />
