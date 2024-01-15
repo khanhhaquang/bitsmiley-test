@@ -4,7 +4,7 @@ import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'
 import { getLoginType } from '@/store/account/reducer'
 import { WALLETSITE } from '@/config/links'
-import { clearStorage } from '@/utils/storage.ts'
+import { clearLoginType } from '@/utils/storage.ts'
 
 export const useConnectWallets = () => {
   const loginType = useSelector(getLoginType)
@@ -18,7 +18,7 @@ export const useConnectWallets = () => {
           publicKey: ''
         })
         setLoginType(LoginTypeEnum.None)
-        clearStorage()
+        clearLoginType()
         return
       }
 

@@ -1,9 +1,8 @@
 import { Image } from '@/components/Image'
 import { RefObject, useRef } from 'react'
-import { getFrameUrl, getIllustrationUrl } from '@/utils/getImageUrl'
+import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { MEDIA } from '@/config/links'
-import { MintMachine } from './MintMachine'
 import { cn } from '@/utils/cn'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
@@ -11,6 +10,7 @@ import { ConnectWallet } from '@/components/ConnectWallet'
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { useOnScreen } from '@/hooks/useOnScreen'
 import { CoinIcon, HeaderIcon } from '@/assets/icons'
+import { MintMachine } from '@/components/MintMachine'
 
 export const MintPage: React.FC<{
   isPlayingMusic: boolean

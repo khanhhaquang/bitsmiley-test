@@ -1,11 +1,16 @@
 export enum LoginTypeEnum {
   None = '',
   OKX = 'okx',
-  UNISAT = 'unisat',
-  XVERSE = 'xverse'
+  UNISAT = 'unisat'
 }
 
 export interface IAccountInfo {
   address: string
   publicKey: string
+}
+
+export interface IReseponse<T> {
+  data: T
+  code: number
+  message: string
 }
