@@ -90,14 +90,16 @@ export const useInscribe = () => {
 
   const inscribe = async () => {
     if (loginType === LoginTypeEnum.OKX) {
-      okxInscribe()
-      return
+      const res = await okxInscribe()
+      return res
     }
 
     if (loginType === LoginTypeEnum.UNISAT) {
-      unisatInscribe()
-      return
+      const res = await unisatInscribe()
+      return res
     }
+
+    return null
   }
 
   return { inscribe, isInscribing }
@@ -176,7 +178,6 @@ function estimateUnisatFee(data: {
   const serviceFee = data.serviceFee ? Math.floor(baseFee + floatFee) : 0
 
   const total = balance + networkSats + serviceFee
-  console.log(balance, networkSats, total)
   const truncatedTotal = Math.floor(total / 1000) * 1000 // truncate
   const amount = truncatedTotal + devFee // add devFee at the end
 

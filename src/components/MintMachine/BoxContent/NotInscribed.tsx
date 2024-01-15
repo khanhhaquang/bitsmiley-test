@@ -1,6 +1,6 @@
 import { CrownIcon, StarIcon } from '@/assets/icons'
 
-export const WhitelistPayedMintStartedButNotInscribed: React.FC = () => {
+export const NotInscribed: React.FC = () => {
   return (
     <>
       <div className="absolute left-[336px] top-[318px] flex flex-col gap-y-1.5 font-smb text-sm">

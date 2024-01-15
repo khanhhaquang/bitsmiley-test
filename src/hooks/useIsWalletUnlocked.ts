@@ -1,6 +1,6 @@
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { LoginTypeEnum } from '@/types/common'
-import { clearStorage, getLocalStorage } from '@/utils/storage'
+import { clearLoginType, getLocalStorage } from '@/utils/storage'
 import { useCallback, useEffect, useState } from 'react'
 import { useStoreActions } from './useStoreActions'
 import { useSelector } from 'react-redux'
@@ -21,7 +21,7 @@ export const useIsWalletUnlocked = () => {
       publicKey: ''
     })
     setLoginType(LoginTypeEnum.None)
-    clearStorage()
+    clearLoginType()
   }, [setAccountInfo, setLoginType])
 
   const fetchAccountInfo = useCallback(async () => {

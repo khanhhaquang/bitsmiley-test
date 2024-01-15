@@ -5,6 +5,7 @@ import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { CloseIcon, DotIcon, LineIcon, StarIcon } from '@/assets/icons'
 import { Modal } from '@/components/Modal'
+import { useWindowSize } from '@/hooks/useWindowSize'
 
 export const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
   const cardComingOutRef = useRef<CanvasFramesRef>(null)
@@ -75,10 +76,15 @@ const MintedModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
+  const { width } = useWindowSize()
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
-        <div className="relative border-2 border-white bg-black">
+        <div
+          className="relative border-2 border-white bg-black"
+          style={{
+            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+          }}>
           <CloseIcon
             onClick={onClose}
             className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"

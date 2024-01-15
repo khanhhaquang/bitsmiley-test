@@ -1,13 +1,17 @@
 import { useMemo, useState } from 'react'
+import { cn } from '@/utils/cn'
 import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { cn } from '@/utils/cn'
+import { useInscribe } from '@/hooks/useInscribe'
 
-export const MintButton: React.FC<{ playCardComingout: () => void }> = ({
-  playCardComingout
-}) => {
-  const isMintButtonDisabled = true
+export const MintButton: React.FC<{
+  enabled?: boolean
+  onInscribe: () => void
+}> = ({ onInscribe, enabled }) => {
+  const { inscribe, isInscribing } = useInscribe()
   const [isPressed, setIsPressed] = useState(false)
+
+  const isMintButtonDisabled = !enabled || isInscribing
 
   const mintButtonImgName = useMemo(() => {
     if (isMintButtonDisabled) return 'mintbutton-disabled'
@@ -24,11 +28,12 @@ export const MintButton: React.FC<{ playCardComingout: () => void }> = ({
       )}
       <div
         onMouseDown={() => setIsPressed(true)}
-        onMouseUp={() => {
+        onMouseUp={async () => {
+          if (isMintButtonDisabled) return
           setIsPressed(false)
-          if (!isMintButtonDisabled) {
-            playCardComingout()
-          }
+
+          const res = await inscribe()
+          if (res) onInscribe()
         }}
         onMouseLeave={() => setIsPressed(false)}
         className={cn(
