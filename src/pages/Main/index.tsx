@@ -2,7 +2,7 @@ import { MintPage } from './MintPage'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
-import { useIsWalletUnlocked } from '@/hooks/useIsWalletUnlocked'
+import { useCheckWalletConnection } from '@/hooks/useCheckWalletConnection'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useScrollPosition } from '@/hooks/useScrollPosition'
 
@@ -10,8 +10,8 @@ const Main: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false)
 
   const { isLoading: isLoadingArticles } = useFetchArticles()
-  const { isLoading: isCheckingWallet } = useIsWalletUnlocked()
   const { isLoading: isLoadingResources } = usePreloadResources()
+  const { isLoading: isCheckingWallet } = useCheckWalletConnection()
 
   const [isEntered, setIsEntered] = useState(false)
 

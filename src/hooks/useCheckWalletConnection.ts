@@ -6,14 +6,16 @@ import { useStoreActions } from './useStoreActions'
 import { useSelector } from 'react-redux'
 import { getIsConnected } from '@/store/account/reducer'
 
-export const useIsWalletUnlocked = () => {
+export const useCheckWalletConnection = () => {
   const [isFetchingAccountsInfo, setIsFetchingAccountsInfo] = useState(true)
-  const [isUnlocked, setIsUnlocked] = useState<boolean | undefined>()
+  const [isWalletConnected, setIsWalletConnected] = useState<
+    boolean | undefined
+  >()
   const { setAccountInfo, setLoginType } = useStoreActions()
   const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
   const isConnected = useSelector(getIsConnected)
 
-  const isLoading = isUnlocked === undefined || isFetchingAccountsInfo
+  const isLoading = isWalletConnected === undefined || isFetchingAccountsInfo
 
   const clearConnectedInfo = useCallback(() => {
     setAccountInfo({
@@ -63,31 +65,32 @@ export const useIsWalletUnlocked = () => {
 
   useEffect(() => {
     if (localLoginType === LoginTypeEnum.OKX) {
-      window.okxwallet?.isUnlock?.().then((v) => setIsUnlocked(v))
+      const v = window.okxwallet?.isConnected?.()
+      setIsWalletConnected(v)
       return
     }
 
     if (localLoginType === LoginTypeEnum.UNISAT) {
-      setIsUnlocked(!!window.unisat?._isUnlocked)
+      setIsWalletConnected(!!window.unisat?._isConnected)
       return
     }
 
     clearConnectedInfo()
-    setIsUnlocked(false)
+    setIsWalletConnected(false)
     setIsFetchingAccountsInfo(false)
   }, [clearConnectedInfo, localLoginType])
 
   useEffect(() => {
-    if (isUnlocked === false) {
+    if (isWalletConnected === false) {
       clearConnectedInfo()
     }
-  }, [isUnlocked, clearConnectedInfo])
+  }, [isWalletConnected, clearConnectedInfo])
 
   useEffect(() => {
-    if (isUnlocked === true && !isConnected) {
+    if (isWalletConnected === true && !isConnected) {
       fetchAccountInfo()
     }
-  }, [isUnlocked, isConnected, fetchAccountInfo])
+  }, [isWalletConnected, isConnected, fetchAccountInfo])
 
   return { isLoading }
 }

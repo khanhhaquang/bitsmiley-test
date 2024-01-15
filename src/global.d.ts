@@ -3,6 +3,7 @@
 declare interface Window {
   okxwallet?: {
     bitcoin?: any
+    isConnected?: () => boolean
     isUnlock?: () => Promise<boolean>
   }
   unisat?: any
