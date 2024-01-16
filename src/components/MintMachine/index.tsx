@@ -51,7 +51,7 @@ export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
       <StaticMachine />
       <Lights />
       <MarqueeText />
-      <NumberPad />
+      <NumberPad onClick={() => setIsPlayingCardComingout(true)} />
       <BoxContent status={status} />
       <CardComingOut playing={isPlayingCardComingout} />
       <MintButton
@@ -68,7 +68,7 @@ const MarqueeText: React.FC = () => {
     <div className="absolute bottom-[139px] left-[205px] h-[104px] w-[660px]">
       <Marquee
         speed={75}
-        className="relative flex h-full w-full cursor-default items-center justify-center overflow-hidden whitespace-nowrap p-5 font-sdm text-[80px] text-yellow2">
+        className="relative flex size-full cursor-default items-center justify-center overflow-hidden whitespace-nowrap p-5 font-sdm text-[80px] text-yellow2">
         bitSmiley grand minting coming soon !!! bitSmiley grand minting coming
         soon !!!
       </Marquee>
@@ -100,7 +100,7 @@ const ArrowDown: React.FC<{ hideScrollDown: boolean }> = ({
 
 const Lights: React.FC = () => {
   return (
-    <div className="absolute inset-x-0 h-full w-full">
+    <div className="absolute inset-x-0 size-full">
       <CanvasFrames
         fps={1}
         width={1423}
