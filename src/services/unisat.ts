@@ -18,6 +18,7 @@ export interface IUnisatOrder {
     filename: string
     size: string
     status: 'pending' | 'unconfirmed' | 'confirmed'
+    inscriptionId?: string
   }[]
   count: number
   pendingCount: number
@@ -54,5 +55,27 @@ export const UnisatService = {
         '/v2/inscribe/order/create',
         data
       )
+  },
+  searchInscribeOrder: {
+    key: 'unisat.searchInscribeOrder',
+    call: (orderId: string) =>
+      axiosInstance.get<IReseponse<IUnisatOrder>>(
+        `/v2/inscribe/order/${orderId}`
+      )
+  },
+  getInscriptionInfo: {
+    key: 'unisat.getInscriptionInfo',
+    call: (inscriptionId: string) =>
+      axiosInstance.get(`/v1/indexer/inscription/info/${inscriptionId}`)
+  },
+  getAddressTxHistory: {
+    key: 'unisat.getAddressTxHistory',
+    call: (address: string) =>
+      axiosInstance.get(`/v1/indexer/address/${address}/history`)
+  },
+  getAddressInscriptionUtxo: {
+    key: 'unisat.getAddressInscriptionUtxo',
+    call: (address: string) =>
+      axiosInstance.get(`/v1/indexer/address/${address}/inscription-utxo-data`)
   }
 }

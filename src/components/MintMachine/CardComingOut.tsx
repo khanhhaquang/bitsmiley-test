@@ -24,6 +24,20 @@ export const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
         isOpen={isMintedModalOpen}
         onClose={() => setIsMintedModalOpen(false)}
       />
+      {playCardShine && (
+        <div className="absolute left-[1012px] top-[708px]">
+          <CanvasFrames
+            fps={10}
+            width={45}
+            height={70}
+            imgLocalPaths={Array(13)
+              .fill(1)
+              .map((_, idx) =>
+                getFrameUrl('arrow-indicator', `arrow-indicator${idx + 1}`)
+              )}
+          />
+        </div>
+      )}
       <div
         className={cn(
           'absolute left-0 top-0 z-50 block',
