@@ -12,11 +12,7 @@ import { useOnScreen } from '@/hooks/useOnScreen'
 import { CoinIcon, HeaderIcon } from '@/assets/icons'
 import { MintMachine } from '@/components/MintMachine'
 
-export const MintPage: React.FC<{
-  isPlayingMusic: boolean
-  playMusic: () => void
-  pauseMusic: () => void
-}> = ({ playMusic, pauseMusic, isPlayingMusic }) => {
+export const MintPage: React.FC = () => {
   const whoIsBitSmileyRef = useRef<HTMLDivElement>(null)
   const { width } = useWindowSize()
   const isOnScreen = useOnScreen(whoIsBitSmileyRef)
@@ -49,11 +45,7 @@ export const MintPage: React.FC<{
         </div>
       </div>
       <Header />
-      <CopyRightAndLinks
-        playMusic={playMusic}
-        pauseMusic={pauseMusic}
-        isPlayingMusic={isPlayingMusic}
-      />
+      <CopyRightAndLinks />
     </div>
   )
 }
@@ -137,7 +129,12 @@ const Articles: React.FC = () => {
           key={idx}
           className="aspect-square w-[370px] shrink-0 cursor-pointer"
           onClick={() => window.open(i.link, '__blank')}>
-          {i.img && <Image className="" src={i.img} />}
+          {i.img && (
+            <Image
+              className="aspect-square w-[370px] object-cover"
+              src={i.img}
+            />
+          )}
         </div>
       ))}
     </div>

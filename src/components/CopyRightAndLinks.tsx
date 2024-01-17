@@ -2,16 +2,43 @@ import { CopyrightIcon, PlayIcon } from '@/assets/icons'
 import { MEDIA } from '@/config/links'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'
+import { useEffect, useRef, useState } from 'react'
+import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { UnisatService } from '@/services/unisat'
 
 export const CopyRightAndLinks: React.FC<{
   musicControl?: boolean
-  isPlayingMusic: boolean
-  playMusic: () => void
-  pauseMusic: () => void
-}> = ({ musicControl = true, playMusic, pauseMusic, isPlayingMusic }) => {
+}> = ({ musicControl = true }) => {
   const { width } = useWindowSize()
+  const musicPlayerRef = useRef<MusicPlayerRef>(null)
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false)
+
+  const playMusic = () => {
+    musicPlayerRef.current?.playMusic()
+    setIsPlayingMusic(true)
+    setLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC, 'true')
+  }
+
+  const stopMusic = () => {
+    musicPlayerRef.current?.stopMusic()
+    setIsPlayingMusic(false)
+    setLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC, 'false')
+  }
+
+  useEffect(() => {
+    const localDisablePlayMusic =
+      getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) === 'false'
+
+    if (musicControl && !localDisablePlayMusic) {
+      playMusic()
+    }
+  }, [musicControl])
+
   return (
     <>
+      <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
       <div
         className="fixed bottom-[50px] left-0 z-50 px-[136px] text-white mix-blend-difference"
         style={{
@@ -23,7 +50,15 @@ export const CopyRightAndLinks: React.FC<{
             scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
           }}>
           <CopyrightIcon />
-          <span className="cursor-default">bitSmiley team 2024</span>
+          <span
+            className="cursor-default"
+            onClick={() =>
+              UnisatService.getInscriptionInfo.call(
+                'd7da12942710603eb0dcffd3b3c24ecbfee0aa2ed592c492d4f694dcd18931fai0'
+              )
+            }>
+            bitSmiley team 2024
+          </span>
         </div>
       </div>
 
@@ -45,11 +80,10 @@ export const CopyRightAndLinks: React.FC<{
               )}
               onClick={() => {
                 if (isPlayingMusic) {
-                  pauseMusic()
-                  return
+                  stopMusic()
+                } else {
+                  playMusic()
                 }
-
-                playMusic()
               }}>
               [
               <span className="group">

@@ -42,6 +42,12 @@ export interface ICreateUnisatInscribeOrderData {
   devFee?: number
 }
 
+export interface IInscriptionInfo {
+  utxo: {
+    txid: string
+  }
+}
+
 const axiosInstance = axios.create({
   baseURL: DOMAIN_URL.UNISATE_API,
   headers: { Authorization: 'Bearer ' + UNISAT_API_KEY }
@@ -66,7 +72,13 @@ export const UnisatService = {
   getInscriptionInfo: {
     key: 'unisat.getInscriptionInfo',
     call: (inscriptionId: string) =>
-      axiosInstance.get(`/v1/indexer/inscription/info/${inscriptionId}`)
+      axiosInstance.get<IReseponse<IInscriptionInfo>>(
+        `/v1/indexer/inscription/info/${inscriptionId}`
+      )
+  },
+  getTransactionInfo: {
+    key: 'unisat.getTransactionInfo',
+    call: (txId: string) => axiosInstance.get(`/v1/indexer/tx/${txId}`)
   },
   getAddressTxHistory: {
     key: 'unisat.getAddressTxHistory',

@@ -10,28 +10,14 @@ import { HeaderIcon, LoadingLineIcon } from '@/assets/icons'
 export const LoadingPage: React.FC<{
   onEnter: () => void
   isLoading: boolean
-  isPlayingMusic: boolean
-  playMusic: () => void
-  pauseMusic: () => void
-}> = ({
-  playMusic,
-  pauseMusic,
-  isLoading: isLoadingResources,
-  isPlayingMusic,
-  onEnter
-}) => {
+}> = ({ isLoading: isLoadingResources, onEnter }) => {
   const [isLoadingProgress, setIsLoadingProgress] = useState(true)
   const isLoading = isLoadingProgress || isLoadingResources
 
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-black bg-loading bg-cover bg-center bg-no-repeat">
       <SmileyLogo />
-      <CopyRightAndLinks
-        musicControl={false}
-        playMusic={playMusic}
-        pauseMusic={pauseMusic}
-        isPlayingMusic={isPlayingMusic}
-      />
+      <CopyRightAndLinks musicControl={false} />
       <div className="flex flex-col items-center text-white">
         <div className="mb-12">
           <CanvasFrames

@@ -31,7 +31,7 @@ const Providers: React.FC<TProps> = (props: TProps) => {
   return (
     <ReduxProvider store={rootStore}>
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen position="top-left" />
+        <ReactQueryDevtools initialIsOpen={false} position="top-left" />
         <BrowserRouter>
           <ModalsContainer />
           {props.children}
