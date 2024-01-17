@@ -100,19 +100,21 @@ const BackedBy: React.FC = () => {
   return (
     <div>
       <div className="mb-12 flex items-center justify-center gap-x-40">
-        <div className="h-[153px] w-[462px] shrink-0">
+        <div className="h-[153px] w-[288px] shrink-0 mix-blend-lighten">
           <Image src={getIllustrationUrl('okx-logo')} />
         </div>
         <div className="h-[153px] w-[445px] shrink-0">
           <Image src={getIllustrationUrl('abcde-logo')} />
         </div>
       </div>
-      <div className="flex items-center justify-between">
+
+      <div className="flex w-[1067px] items-center justify-between">
         <Image src={getIllustrationUrl('cms-logo')} />
         <Image src={getIllustrationUrl('arkstream-logo')} />
         <Image src={getIllustrationUrl('7updao-logo')} />
       </div>
-      <div className="flex items-center justify-between">
+
+      <div className="flex w-[1067px] items-center justify-between">
         <Image src={getIllustrationUrl('mtcapital-logo')} />
         <Image src={getIllustrationUrl('candaq-logo')} />
         <Image src={getIllustrationUrl('foresight-logo')} />
