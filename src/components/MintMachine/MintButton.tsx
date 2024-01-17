@@ -4,15 +4,24 @@ import { Image } from '@/components/Image'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useInscribe } from '@/hooks/useInscribe'
 import { CanvasFrames } from '../CanvasFrames'
+import { InscribeStatus } from '@/types/status'
+import { useSelector } from 'react-redux'
+import { getInscriptionStatus } from '@/store/account/reducer'
 
 export const MintButton: React.FC<{
-  enabled?: boolean
-  onInscribe: () => void
-}> = ({ onInscribe, enabled }) => {
+  isPlayingCardComingout: boolean
+  onMint: () => void
+}> = ({ isPlayingCardComingout, onMint }) => {
+  const inscriptionStatus = useSelector(getInscriptionStatus)
   const { inscribe, isInscribing } = useInscribe()
   const [isPressed, setIsPressed] = useState(false)
 
-  const isMintButtonDisabled = !enabled || isInscribing
+  const isMintButtonDisabled =
+    inscriptionStatus === InscribeStatus.NotConnected ||
+    inscriptionStatus === InscribeStatus.NotStarted ||
+    inscriptionStatus === InscribeStatus.Inscribed ||
+    isInscribing ||
+    isPlayingCardComingout
 
   const mintButtonImgName = useMemo(() => {
     if (isMintButtonDisabled) return 'mintbutton-disabled'
@@ -40,10 +49,16 @@ export const MintButton: React.FC<{
         onMouseDown={() => setIsPressed(true)}
         onMouseUp={async () => {
           if (isMintButtonDisabled) return
+
           setIsPressed(false)
 
-          const res = await inscribe()
-          if (res) onInscribe()
+          if (inscriptionStatus === InscribeStatus.NotInscribed) {
+            const res = await inscribe()
+            if (!res) return
+            onMint()
+          } else {
+            onMint()
+          }
         }}
         onMouseLeave={() => setIsPressed(false)}
         className={cn(

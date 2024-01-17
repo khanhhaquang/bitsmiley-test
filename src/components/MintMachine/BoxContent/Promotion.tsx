@@ -3,7 +3,7 @@ import Typewriter from '@/components/Typewriter'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { getFrameUrl } from '@/utils/getAssetsUrl'
 
-export const PartyNotStarted: React.FC = () => {
+export const Promotion: React.FC = () => {
   return (
     <>
       <div className="absolute bottom-[428px] left-[367px] z-10">

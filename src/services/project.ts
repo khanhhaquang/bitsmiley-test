@@ -10,7 +10,7 @@ export interface IProject {
 }
 
 export const ProjectService = {
-  getFeeds: {
+  getProjectInfo: {
     key: 'project.getProjectInfo',
     call: () => axiosInstance.get<IReseponse<IProject>>('/naiInfo/projectInfo')
   }

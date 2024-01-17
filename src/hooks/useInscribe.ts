@@ -4,12 +4,14 @@ import { getAccountInfo, getLoginType } from '@/store/account/reducer'
 import { LoginTypeEnum } from '@/types/common'
 import { UnisatService } from '@/services/unisat'
 import { usePolling } from './usePolling'
+import { useStoreActions } from './useStoreActions'
 
 const OUTPUT_VALUE = 546
 
 export const useInscribe = () => {
   const loginType = useSelector(getLoginType)
   const { address } = useSelector(getAccountInfo)
+  const { setTxId } = useStoreActions()
   const [isInscribing, setInscribing] = useState(false)
 
   const { resultRef, doPolling: pollOrderInfo } = usePolling({
@@ -34,6 +36,8 @@ export const useInscribe = () => {
           }
         ]
       })
+
+      setTxId(res.commitTx)
       return res.commitTx
     } catch (error) {
       console.error(error)
@@ -49,22 +53,6 @@ export const useInscribe = () => {
 
     try {
       setInscribing(true)
-      const balance = await window.unisat.getBalance()
-
-      const estimateAmout = estimateUnisatFee({
-        address,
-        feeRate: 1,
-        fileCount: 1,
-        fileSize: imgBase64.length,
-        contentTypeSize: 'image/webp'.length,
-        feeFileSize: imgBase64.length,
-        devFee: 0,
-        serviceFee: true
-      })
-
-      if (balance.confirmed <= estimateAmout) {
-        throw Error('insufficient balance')
-      }
 
       const createRes = await UnisatService.createInscribeOrder.call({
         feeRate: 1,
@@ -78,8 +66,6 @@ export const useInscribe = () => {
         ]
       })
 
-      const orderId = createRes?.data?.data?.orderId
-
       const amount = createRes.data.data.amount
       const payAddress = createRes.data.data.payAddress
 
@@ -89,9 +75,15 @@ export const useInscribe = () => {
 
       await window.unisat.sendBitcoin(payAddress, amount)
 
+      const orderId = createRes?.data?.data?.orderId
+
+      if (!orderId) {
+        throw Error('cannot get unisat orderId')
+      }
+
       await pollOrderInfo(orderId)
 
-      const inscriptionId = resultRef.current?.data.files[0].inscriptionId
+      const inscriptionId = resultRef.current?.data.files?.[0]?.inscriptionId
 
       if (!inscriptionId) {
         throw Error('cannot get unisat inscriptionId')
@@ -100,8 +92,9 @@ export const useInscribe = () => {
       const inscriptionInfoRes =
         await UnisatService.getInscriptionInfo.call(inscriptionId)
 
-      const txid = inscriptionInfoRes.data.data.utxo.txid
+      const txid = inscriptionInfoRes?.data?.data?.utxo?.txid
 
+      setTxId(txid)
       return txid
     } catch (error) {
       console.error(error)
@@ -125,85 +118,6 @@ export const useInscribe = () => {
   }
 
   return { inscribe, isInscribing }
-}
-
-function estimateUnisatFee(data: {
-  address: string
-  fileSize: number
-  fileCount: number
-  contentTypeSize: number
-  feeRate: number
-  feeFileSize: number
-  devFee: number
-  serviceFee: boolean
-}) {
-  const feeFileCount = 25 // do not change this
-  const address = data.address // the receiver address
-  const inscriptionBalance = OUTPUT_VALUE // the balance in each inscription
-  const fileCount = data.fileCount // the fileCount
-  const fileSize = data.fileSize // the total size of all files
-  const contentTypeSize = data.contentTypeSize // the size of contentType
-  const feeRate = data.feeRate // the feeRate
-  const feeFileSize = data.fileSize // the total size of first 25 files
-  const devFee = data.devFee // the fee for developer
-
-  const balance = inscriptionBalance * fileCount
-
-  let addrSize = 25 + 1 // p2pkh
-  if (address.indexOf('bc1q') == 0 || address.indexOf('tb1q') == 0) {
-    addrSize = 22 + 1
-  } else if (address.indexOf('bc1p') == 0 || address.indexOf('tb1p') == 0) {
-    addrSize = 34 + 1
-  } else if (address.indexOf('2') == 0 || address.indexOf('3') == 0) {
-    addrSize = 23 + 1
-  }
-
-  const baseSize = 88
-  let networkSats = Math.ceil(
-    ((fileSize + contentTypeSize) / 4 + (baseSize + 8 + addrSize + 8 + 23)) *
-      feeRate
-  )
-  if (fileCount > 1) {
-    networkSats = Math.ceil(
-      ((fileSize + contentTypeSize) / 4 +
-        (baseSize +
-          8 +
-          addrSize +
-          (35 + 8) * (fileCount - 1) +
-          8 +
-          23 +
-          (baseSize + 8 + addrSize + 0.5) * (fileCount - 1))) *
-        feeRate
-    )
-  }
-  let networkSatsByFeeCount = Math.ceil(
-    ((feeFileSize + contentTypeSize) / 4 + (baseSize + 8 + addrSize + 8 + 23)) *
-      feeRate
-  )
-  if (fileCount > 1) {
-    networkSatsByFeeCount = Math.ceil(
-      ((feeFileSize + contentTypeSize * (feeFileCount / fileCount)) / 4 +
-        (baseSize +
-          8 +
-          addrSize +
-          (35 + 8) * (fileCount - 1) +
-          8 +
-          23 +
-          (baseSize + 8 + addrSize + 0.5) *
-            Math.min(fileCount - 1, feeFileCount - 1))) *
-        feeRate
-    )
-  }
-
-  const baseFee = 1999 * Math.min(fileCount, feeFileCount) // 1999 base fee for top 25 files
-  const floatFee = Math.ceil(networkSatsByFeeCount * 0.0499) // 4.99% extra miner fee for top 25 transations
-  const serviceFee = data.serviceFee ? Math.floor(baseFee + floatFee) : 0
-
-  const total = balance + networkSats + serviceFee
-  const truncatedTotal = Math.floor(total / 1000) * 1000 // truncate
-  const amount = truncatedTotal + devFee // add devFee at the end
-
-  return amount
 }
 
 const imgHex =

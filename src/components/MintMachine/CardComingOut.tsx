@@ -6,8 +6,13 @@ import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { CloseIcon, DotIcon, LineIcon, StarIcon } from '@/assets/icons'
 import { Modal } from '@/components/Modal'
 import { useWindowSize } from '@/hooks/useWindowSize'
+import { useSelector } from 'react-redux'
+import { getInscriptionStatus, getTxId } from '@/store/account/reducer'
+import { getBtcScanUrl } from '@/utils/formatter'
+import { InscribeStatus } from '@/types/status'
 
 export const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
+  const inscriptionStatus = useSelector(getInscriptionStatus)
   const cardComingOutRef = useRef<CanvasFramesRef>(null)
   const [isMintedModalOpen, setIsMintedModalOpen] = useState(false)
   const [playCardShine, setPlayCardShine] = useState(false)
@@ -17,6 +22,12 @@ export const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
       cardComingOutRef?.current?.play()
     }
   }, [playing])
+
+  useEffect(() => {
+    if (inscriptionStatus === InscribeStatus.Inscribed) {
+      setPlayCardShine(false)
+    }
+  }, [inscriptionStatus])
 
   return (
     <>
@@ -90,6 +101,7 @@ const MintedModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
+  const txId = useSelector(getTxId)
   const { width } = useWindowSize()
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -142,7 +154,15 @@ const MintedModal: React.FC<{
               <DotIcon />
               <span>
                 your card is on the way [
-                <span className="cursor-pointer hover:underline">btcscan</span>]
+                <span
+                  className="cursor-pointer hover:underline"
+                  onClick={() => {
+                    if (!txId) return
+                    window.open(getBtcScanUrl(txId), '__blank')
+                  }}>
+                  btcscan
+                </span>
+                ]
               </span>
             </div>
 

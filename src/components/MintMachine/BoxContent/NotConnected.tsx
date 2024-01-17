@@ -1,6 +1,6 @@
 import { AsteriskIcon } from '@/assets/icons'
 
-export const PartyStartedButNotConnected: React.FC = () => {
+export const NotConnected: React.FC = () => {
   return (
     <>
       <div className="absolute left-[485px] top-[321px] flex items-center gap-x-[5px]">

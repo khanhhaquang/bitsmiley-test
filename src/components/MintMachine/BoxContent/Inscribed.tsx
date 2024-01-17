@@ -1,12 +1,16 @@
 import { LineIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
+import { getAccountInfo } from '@/store/account/reducer'
+import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { useSelector } from 'react-redux'
 export const Inscribed: React.FC = () => {
+  const { address } = useSelector(getAccountInfo)
   return (
     <>
       <div className="absolute left-[336px] top-[318px] flex flex-col gap-y-1.5 font-smb text-sm">
         <div>PLAYER:</div>
-        <div>39s...sda</div>
+        <div>{displayAddress(address, 3, 3)}</div>
       </div>
 
       <div className="absolute left-[580px] top-[371px] flex flex-col items-center gap-y-6">
