@@ -15,7 +15,7 @@ export const Inscribing: React.FC = () => {
       </div>
 
       <div className="absolute left-[468px] top-[444px] z-[100] text-sm">
-        Your payment is getting processed on-chain...(
+        Your minting is getting processed on-chain...(
         <span
           className="cursor-pointer text-green hover:underline"
           onClick={() => window.open(getBtcScanUrl(txid), '__blank')}>

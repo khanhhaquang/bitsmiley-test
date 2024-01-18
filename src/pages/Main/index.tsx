@@ -5,10 +5,12 @@ import { useCheckWalletConnection } from '@/hooks/useCheckWalletConnection'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useInscriptionStatus } from '@/hooks/useInscriptionStatus'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 const Main: React.FC = () => {
   const [isEntered, setIsEntered] = useState(false)
 
+  const { isLoading: isLoadingUserInfo } = useUserInfo()
   const { isLoading: isLoadingProjectInfo } = useProjectInfo()
   const { isLoading: isLoadingResources } = usePreloadResources()
   const { isLoading: isCheckingWallet } = useCheckWalletConnection()
@@ -16,6 +18,7 @@ const Main: React.FC = () => {
 
   const isLoading =
     (isCheckingWallet ||
+      isLoadingUserInfo ||
       isLoadingResources ||
       isLoadingInscriptionStatus ||
       isLoadingProjectInfo) &&

@@ -3,8 +3,7 @@ import { LoginTypeEnum } from '@/types/common'
 import { clearLoginType, getLocalStorage } from '@/utils/storage'
 import { useCallback, useEffect, useState } from 'react'
 import { useStoreActions } from './useStoreActions'
-import { useSelector } from 'react-redux'
-import { getIsConnected } from '@/store/account/reducer'
+import { useUserInfo } from './useUserInfo'
 
 export const useCheckWalletConnection = () => {
   const [isFetchingAccountsInfo, setIsFetchingAccountsInfo] = useState(true)
@@ -13,7 +12,7 @@ export const useCheckWalletConnection = () => {
   >()
   const { setAccountInfo, setLoginType } = useStoreActions()
   const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
-  const isConnected = useSelector(getIsConnected)
+  const { isConnected } = useUserInfo()
 
   const isLoading = isWalletConnected === undefined || isFetchingAccountsInfo
 

@@ -1,10 +1,48 @@
-import { CrownIcon, StarIcon } from '@/assets/icons'
-import { getAccountInfo } from '@/store/account/reducer'
+import { AsteriskIcon, CrownYellowIcon, StarIcon } from '@/assets/icons'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { displayAddress } from '@/utils/formatter'
-import { useSelector } from 'react-redux'
 
 export const NotInscribed: React.FC = () => {
-  const { address } = useSelector(getAccountInfo)
+  const { address, isWhitelist } = useUserInfo()
+
+  const renderWhitelistContent = () => {
+    return (
+      <>
+        <div className="absolute left-[555px] top-[342px] flex items-center gap-x-2 font-smb">
+          <StarIcon />
+          <StarIcon />
+          <span>CONGRATULATIONS</span>
+          <StarIcon />
+          <StarIcon />
+        </div>
+        <div className="absolute left-[477px] top-[401px] flex w-[438px] flex-col items-center gap-y-6">
+          <CrownYellowIcon className="h-[75px] w-[93px]" />
+          <div className="text-center text-sm leading-tight">
+            You are one of the few chosen ones. Hit the MINTING button below to
+            get your secret pass!
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  const renderNormalContent = () => {
+    return (
+      <>
+        <div className="absolute left-[498px] top-[345px] flex items-center gap-x-[5px]">
+          <AsteriskIcon />
+          <span className="font-smb text-sm">----- Dear BitSmiler -----</span>
+          <AsteriskIcon />
+        </div>
+
+        <div className="absolute left-[490px] top-[439px] w-[412px] text-center text-sm leading-tight">
+          Public minting is here, First come first serve. Every wallet has one
+          chance. Hit the MINTING button below to get your secret pass!
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <div className="absolute left-[336px] top-[318px] flex flex-col gap-y-1.5 font-smb text-sm">
@@ -12,21 +50,7 @@ export const NotInscribed: React.FC = () => {
         <div>{displayAddress(address, 3, 3)}</div>
       </div>
 
-      <div className="absolute left-[555px] top-[335px] flex items-center gap-x-2 font-smb">
-        <StarIcon />
-        <StarIcon />
-        <span>CONGRATULATIONS</span>
-        <StarIcon />
-        <StarIcon />
-      </div>
-
-      <div className="absolute left-[437px] top-[397px] flex w-[519px] flex-col items-center gap-y-6">
-        <CrownIcon />
-        <div className="text-center text-sm leading-tight">
-          We have prepared your exclusive bitSmiley card for you! Hit the MINT
-          button below to reveal your secret pass.
-        </div>
-      </div>
+      {isWhitelist ? renderWhitelistContent() : renderNormalContent()}
     </>
   )
 }

@@ -13,6 +13,7 @@ import OvalCoinBlueIcon from './oval-coin-blue.svg'
 import OvalCoinGreyIcon from './oval-coin-grey.svg'
 import StarIcon from './start.svg'
 import CrownIcon from './crown.svg'
+import CrownYellowIcon from './crown-yellow.svg'
 import LineIcon from './line.svg'
 
 export {
@@ -31,5 +32,6 @@ export {
   OvalCoinGreyIcon,
   StarIcon,
   CrownIcon,
+  CrownYellowIcon,
   LineIcon
 }

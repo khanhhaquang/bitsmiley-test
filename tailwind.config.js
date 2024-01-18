@@ -42,7 +42,9 @@ export default {
       },
       boxShadow: {
         'connectwallet-button': '6px 6px 0px 0px #919191',
+        'take-bitdisc-button': '3px 3px 0px 0px #919191',
         'connectwallet-button-hover': '6px 6px 0px 0px #2648EF',
+        'take-bitdisc-button-hover': '3px 3px 0px 0px #2648EF',
         'whitepaper-button': '6px 6px 0px 0px #172B8F'
       },
       backgroundImage: {

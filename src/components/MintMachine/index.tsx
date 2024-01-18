@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { ArrowDownIcon } from '@/assets/icons'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { Image } from '@/components/Image'
@@ -6,26 +5,19 @@ import { Marquee } from '@/components/Marquee'
 import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { BoxContent } from './BoxContent'
-import { CardComingOut } from './CardComingOut'
 import { MintButton } from './MintButton'
 
 export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
-  const [isPlayingCardComingout, setIsPlayingCardComingout] = useState(false)
-
   return (
     <div className="relative mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
       <StaticMachine />
       <Lights />
       <MarqueeText />
       <BoxContent />
-      <CardComingOut playing={isPlayingCardComingout} />
       <NumberPad />
-      <MintButton
-        isPlayingCardComingout={isPlayingCardComingout}
-        onMint={() => setIsPlayingCardComingout(true)}
-      />
+      <MintButton />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )

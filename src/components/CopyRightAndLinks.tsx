@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react'
 import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { UnisatService } from '@/services/unisat'
 
 export const CopyRightAndLinks: React.FC<{
   musicControl?: boolean
@@ -50,15 +49,7 @@ export const CopyRightAndLinks: React.FC<{
             scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
           }}>
           <CopyrightIcon />
-          <span
-            className="cursor-default"
-            onClick={() =>
-              UnisatService.getInscriptionInfo.call(
-                'd7da12942710603eb0dcffd3b3c24ecbfee0aa2ed592c492d4f694dcd18931fai0'
-              )
-            }>
-            bitSmiley team 2024
-          </span>
+          <span className="cursor-default">bitSmiley team 2024</span>
         </div>
       </div>
 

@@ -4,5 +4,6 @@ export enum InscribeStatus {
   NotStarted = 'NotStarted',
   NotInscribed = 'NotInscribed',
   Inscribing = 'Inscribing',
-  Inscribed = 'Inscribed'
+  InscriptionFailed = 'InscriptionFailed',
+  InscriptionSucceeded = 'InscriptionSucceeded'
 }

@@ -1,13 +1,12 @@
 import { CSSProperties, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { Modal } from './Modal'
 import { Image } from '@/components/Image'
 import { cn } from '@/utils/cn'
 import { useConnectWallets } from '@/hooks/useConnectWallets'
-import { getAccountInfo, getIsConnected } from '@/store/account/reducer'
 import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const ConnectWallet: React.FC<{
   className?: string
@@ -16,8 +15,7 @@ export const ConnectWallet: React.FC<{
   const [isOpen, setIsOpen] = useState(false)
   const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
 
-  const isConnected = useSelector(getIsConnected)
-  const accountInfo = useSelector(getAccountInfo)
+  const { address, isConnected } = useUserInfo()
   const { connectOkx, connectUnisat, disConnect } = useConnectWallets()
 
   return (
@@ -38,9 +36,7 @@ export const ConnectWallet: React.FC<{
             'shadow-connectwallet-button hover:shadow-connectwallet-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue',
           className
         )}>
-        {isConnected
-          ? displayAddress(accountInfo.address, 4, 4)
-          : 'CONNECT WALLET'}
+        {isConnected ? displayAddress(address, 4, 4) : 'CONNECT WALLET'}
 
         <div
           onClick={isLogoutDropdownOpen ? disConnect : undefined}

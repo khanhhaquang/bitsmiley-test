@@ -1,6 +1,8 @@
-const path = require('path')
-const fs = require('fs')
+import fs from 'fs'
+import path from 'path'
+import { URL } from 'url'
 
+const __dirname = new URL('.', import.meta.url).pathname
 const root = path.join(__dirname, '..')
 
 function getResourcePaths(directoryPath, allFileNames = []) {

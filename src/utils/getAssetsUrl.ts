@@ -13,6 +13,9 @@ export const getFrameUrl = (
   ).href
 }
 
-export const getIllustrationUrl = (name: string) => {
-  return new URL(`/src/assets/illustrations/${name}.png`, import.meta.url).href
+export const getIllustrationUrl = (name: string, format?: string) => {
+  return new URL(
+    `/src/assets/illustrations/${name}.${format || 'png'}`,
+    import.meta.url
+  ).href
 }

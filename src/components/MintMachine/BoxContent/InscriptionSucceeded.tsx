@@ -1,18 +1,55 @@
-import { Image } from '@/components/Image'
 import { useEffect, useRef, useState } from 'react'
-import { CanvasFrames, CanvasFramesRef } from '@/components/CanvasFrames'
+import { Image } from '@/components/Image'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
+import { displayAddress, getBtcScanUrl } from '@/utils/formatter'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { CloseIcon, DotIcon, LineIcon, StarIcon } from '@/assets/icons'
-import { Modal } from '@/components/Modal'
-import { useWindowSize } from '@/hooks/useWindowSize'
+import { CanvasFrames, CanvasFramesRef } from '@/components/CanvasFrames'
 import { useSelector } from 'react-redux'
-import { getInscriptionStatus, getTxId } from '@/store/account/reducer'
-import { getBtcScanUrl } from '@/utils/formatter'
-import { InscribeStatus } from '@/types/status'
+import { getTxId } from '@/store/account/reducer'
+import { useWindowSize } from '@/hooks/useWindowSize'
+import { Modal } from '@/components/Modal'
+import { CloseIcon, DotIcon, LineIcon, StarIcon } from '@/assets/icons'
 
-export const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
-  const inscriptionStatus = useSelector(getInscriptionStatus)
+export const InscriptionSucceeded: React.FC = () => {
+  const { address } = useUserInfo()
+  const [isPlayingCardComingout, setIsPlayingCardComingout] = useState(false)
+
+  return (
+    <>
+      <div className="absolute left-[336px] top-[318px] flex flex-col gap-y-1.5 font-smb text-sm">
+        <div>PLAYER:</div>
+        <div>{displayAddress(address, 3, 3)}</div>
+      </div>
+
+      <Image
+        src={getIllustrationUrl('disc')}
+        className="absolute left-[614px] top-[337px]"
+      />
+
+      <div className="absolute left-[537px] top-[496px] text-sm">
+        Your bitDisc Black is ready to be collected!
+      </div>
+
+      <div
+        onClick={() => {
+          if (!isPlayingCardComingout) setIsPlayingCardComingout(true)
+        }}
+        className={cn(
+          'absolute left-[613px] top-[532px] cursor-pointer z-[100]',
+          'bg-white cursor-pointer text-black px-3 py-1 uppercase font-bold whitespace-nowrap text-[15px]',
+          'hover:bg-blue3',
+          'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
+        )}>
+        take my bitdisc
+      </div>
+
+      <CardComingOut playing={isPlayingCardComingout} />
+    </>
+  )
+}
+
+const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
   const cardComingOutRef = useRef<CanvasFramesRef>(null)
   const [isMintedModalOpen, setIsMintedModalOpen] = useState(false)
   const [playCardShine, setPlayCardShine] = useState(false)
@@ -22,12 +59,6 @@ export const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
       cardComingOutRef?.current?.play()
     }
   }, [playing])
-
-  useEffect(() => {
-    if (inscriptionStatus === InscribeStatus.Inscribed) {
-      setPlayCardShine(false)
-    }
-  }, [inscriptionStatus])
 
   return (
     <>
@@ -128,8 +159,8 @@ const MintedModal: React.FC<{
             </div>
             <div className="mb-[72px] flex flex-col items-center">
               <Image
-                src={getIllustrationUrl('black-card')}
-                className="mb-9 h-[203px] w-[320px]"
+                src={getIllustrationUrl('disc')}
+                className="mb-9 h-[203px] object-cover mix-blend-lighten"
               />
               <div className="flex flex-col items-center gap-y-2.5">
                 <div className="bg-express-black bg-clip-text font-smb text-lg text-transparent">

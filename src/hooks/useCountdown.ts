@@ -43,7 +43,7 @@ export function useCountdown(
     value: isCountdownRunning,
     setTrue: startCountdown,
     setFalse: stopCountdown
-  } = useBoolean(false)
+  } = useBoolean(true)
 
   const resetCountdown = () => {
     stopCountdown()

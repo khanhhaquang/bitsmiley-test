@@ -8,20 +8,18 @@ import { InscribeStatus } from '@/types/status'
 import { useSelector } from 'react-redux'
 import { getInscriptionStatus } from '@/store/account/reducer'
 
-export const MintButton: React.FC<{
-  isPlayingCardComingout: boolean
-  onMint: () => void
-}> = ({ isPlayingCardComingout, onMint }) => {
+export const MintButton: React.FC = () => {
   const inscriptionStatus = useSelector(getInscriptionStatus)
-  const { inscribe, isInscribing } = useInscribe()
+  const { inscribe, isLoading: isInscribing } = useInscribe()
   const [isPressed, setIsPressed] = useState(false)
 
   const isMintButtonDisabled =
-    inscriptionStatus === InscribeStatus.NotConnected ||
+    inscriptionStatus === InscribeStatus.Promotion ||
     inscriptionStatus === InscribeStatus.NotStarted ||
-    inscriptionStatus === InscribeStatus.Inscribed ||
-    isInscribing ||
-    isPlayingCardComingout
+    inscriptionStatus === InscribeStatus.NotConnected ||
+    inscriptionStatus === InscribeStatus.InscriptionSucceeded ||
+    inscriptionStatus === InscribeStatus.Inscribing ||
+    isInscribing
 
   const mintButtonImgName = useMemo(() => {
     if (isMintButtonDisabled) return 'mintbutton-disabled'
@@ -53,11 +51,7 @@ export const MintButton: React.FC<{
           setIsPressed(false)
 
           if (inscriptionStatus === InscribeStatus.NotInscribed) {
-            const res = await inscribe()
-            if (!res) return
-            onMint()
-          } else {
-            onMint()
+            inscribe()
           }
         }}
         onMouseLeave={() => setIsPressed(false)}
