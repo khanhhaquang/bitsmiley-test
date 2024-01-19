@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { IReseponse } from '@/types/common'
 import { DOMAIN_URL, UNISAT_API_KEY } from '@/config/settings'
 
 export interface IUnisatOrder {
@@ -28,6 +27,12 @@ export interface IUnisatOrder {
   refundTxid: string
   refundAmount: number
   refundFeeRate: number
+}
+
+interface IUnisatResponse<T> {
+  code: number
+  data: T | null
+  msg: string
 }
 
 export interface ICreateUnisatInscribeOrderData {
@@ -77,7 +82,7 @@ export const UnisatService = {
   createInscribeOrder: {
     key: 'unisat.createInscribeOrder',
     call: (data: ICreateUnisatInscribeOrderData) =>
-      axiosInstance.post<IReseponse<IUnisatOrder>>(
+      axiosInstance.post<IUnisatResponse<IUnisatOrder>>(
         '/v2/inscribe/order/create',
         data
       )
@@ -85,30 +90,22 @@ export const UnisatService = {
   searchInscribeOrder: {
     key: 'unisat.searchInscribeOrder',
     call: (orderId: string) =>
-      axiosInstance.get<IReseponse<IUnisatOrder>>(
+      axiosInstance.get<IUnisatResponse<IUnisatOrder>>(
         `/v2/inscribe/order/${orderId}`
       )
   },
   getInscriptionInfo: {
     key: 'unisat.getInscriptionInfo',
     call: (inscriptionId: string) =>
-      axiosInstance.get<IReseponse<IInscriptionInfo>>(
+      axiosInstance.get<IUnisatResponse<IInscriptionInfo>>(
         `/v1/indexer/inscription/info/${inscriptionId}`
       )
   },
   getTransactionInfo: {
     key: 'unisat.getTransactionInfo',
     call: (txId: string) =>
-      axiosInstance.get<IReseponse<ITransactionInfo>>(`/v1/indexer/tx/${txId}`)
-  },
-  getAddressTxHistory: {
-    key: 'unisat.getAddressTxHistory',
-    call: (address: string) =>
-      axiosInstance.get(`/v1/indexer/address/${address}/history`)
-  },
-  getAddressInscriptionUtxo: {
-    key: 'unisat.getAddressInscriptionUtxo',
-    call: (address: string) =>
-      axiosInstance.get(`/v1/indexer/address/${address}/inscription-utxo-data`)
+      axiosInstance.get<IUnisatResponse<ITransactionInfo>>(
+        `/v1/indexer/tx/${txId}`
+      )
   }
 }

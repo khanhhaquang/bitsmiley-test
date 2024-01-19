@@ -151,13 +151,12 @@ const Header: React.FC = () => {
       style={{
         padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
       }}>
-      <div
-        className="flex origin-top-left"
+      <HeaderIcon
+        className="flex h-[54px] origin-top-left"
         style={{
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-        }}>
-        <HeaderIcon className="max-h-14" />
-      </div>
+        }}
+      />
 
       <ConnectWallet
         className="flex origin-top-right"

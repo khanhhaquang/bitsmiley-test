@@ -17,7 +17,7 @@ export const useInscribe = () => {
 
   const { resultRef: orderInfoRes, doPolling: pollOrderInfo } = usePolling({
     request: UnisatService.searchInscribeOrder.call,
-    shouldContinue: (data) => !data?.data.files?.[0]?.inscriptionId
+    shouldContinue: (data) => !data?.data?.files?.[0]?.inscriptionId
   })
 
   const { resultRef: inscriptionInfoRes, doPolling: pollInscriptionInfo } =
@@ -82,8 +82,8 @@ export const useInscribe = () => {
         ]
       })
 
-      const amount = createRes.data.data.amount
-      const payAddress = createRes.data.data.payAddress
+      const amount = createRes.data.data?.amount
+      const payAddress = createRes.data.data?.payAddress
 
       if (!amount || !payAddress) {
         throw Error('create order error')
@@ -99,7 +99,8 @@ export const useInscribe = () => {
 
       await pollOrderInfo(orderId)
 
-      const inscriptionId = orderInfoRes.current?.data.files?.[0]?.inscriptionId
+      const inscriptionId =
+        orderInfoRes.current?.data?.files?.[0]?.inscriptionId
 
       if (!inscriptionId) {
         throw Error('cannot get unisat inscriptionId')

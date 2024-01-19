@@ -30,8 +30,11 @@ export const useAddressStatus = () => {
     () => UnisatService.getTransactionInfo.call(txid),
     {
       enabled: !!txid,
-      refetchInterval: (res) =>
-        res?.data?.data?.confirmations ? false : 1000 * 60 * 5
+      refetchInterval: (res) => {
+        if (res?.data?.code === -1) return 1000 * 5
+
+        return res?.data?.data?.confirmations ? false : 1000 * 60 * 5
+      }
     }
   )
 
@@ -105,11 +108,11 @@ export const useAddressStatus = () => {
 
   useEffect(() => {
     // txid invalid
-    if (txnInfoRes?.data?.code === -1) {
+    if (txnInfoRes?.data?.msg === 'txid invalid') {
       setTxId('')
       deleteLocalStorage(LOCAL_STORAGE_KEYS.TXID)
     }
-  }, [setTxId, txnInfoRes?.data?.code])
+  }, [setTxId, txnInfoRes?.data?.msg])
 
   return { isLoading }
 }
