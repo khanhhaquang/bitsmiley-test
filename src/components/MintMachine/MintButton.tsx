@@ -16,10 +16,12 @@ export const MintButton: React.FC = () => {
 
   const isMintButtonDisabled =
     addressStauts === AddressStauts.Promotion ||
-    addressStauts === AddressStauts.NotStarted ||
     addressStauts === AddressStauts.NotConnected ||
-    addressStauts === AddressStauts.InscriptionSucceeded ||
+    addressStauts === AddressStauts.NotStarted ||
+    addressStauts === AddressStauts.CreatingOrder ||
     addressStauts === AddressStauts.Inscribing ||
+    addressStauts === AddressStauts.InscriptionConfirmed ||
+    addressStauts === AddressStauts.InscriptionSucceeded ||
     isCreatingOrder
 
   const mintButtonImgName = useMemo(() => {

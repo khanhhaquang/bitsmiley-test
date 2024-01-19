@@ -22,6 +22,7 @@ export const BoxContent: React.FC = () => {
     case AddressStauts.NotInscribed:
       return <NotInscribed />
     case AddressStauts.Inscribing:
+    case AddressStauts.InscriptionConfirmed:
       return <Inscribing />
     case AddressStauts.InscriptionFailed:
       return <InscriptionFailed />

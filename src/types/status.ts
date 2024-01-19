@@ -5,6 +5,7 @@ export enum AddressStauts {
   NotInscribed = 'NotInscribed',
   CreatingOrder = 'CreatingOrder',
   Inscribing = 'Inscribing',
+  InscriptionConfirmed = 'InscriptionConfirmed',
   InscriptionFailed = 'InscriptionFailed',
   InscriptionSucceeded = 'InscriptionSucceeded'
 }

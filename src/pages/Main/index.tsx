@@ -6,6 +6,7 @@ import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useAddressStatus } from '@/hooks/useAddressStatus'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { useUserNfts } from '@/hooks/useUserNfts'
 
 const Main: React.FC = () => {
   const [isEntered, setIsEntered] = useState(false)
@@ -15,12 +16,14 @@ const Main: React.FC = () => {
   const { isLoading: isLoadingResources } = usePreloadResources()
   const { isLoading: isCheckingWallet } = useCheckWalletConnection()
   const { isLoading: isLoadingAccountStatus } = useAddressStatus()
+  const { isLoading: isLoadingUserNfts } = useUserNfts()
 
   const isLoading =
     (isCheckingWallet ||
       isLoadingUserInfo ||
       isLoadingResources ||
       isLoadingAccountStatus ||
+      isLoadingUserNfts ||
       isLoadingProjectInfo) &&
     !isEntered
 
