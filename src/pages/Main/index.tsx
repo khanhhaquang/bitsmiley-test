@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
 import { useCheckWalletConnection } from '@/hooks/useCheckWalletConnection'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
-import { useInscriptionStatus } from '@/hooks/useInscriptionStatus'
+import { useAddressStatus } from '@/hooks/useAddressStatus'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
@@ -14,13 +14,13 @@ const Main: React.FC = () => {
   const { isLoading: isLoadingProjectInfo } = useProjectInfo()
   const { isLoading: isLoadingResources } = usePreloadResources()
   const { isLoading: isCheckingWallet } = useCheckWalletConnection()
-  const { isLoading: isLoadingInscriptionStatus } = useInscriptionStatus()
+  const { isLoading: isLoadingAccountStatus } = useAddressStatus()
 
   const isLoading =
     (isCheckingWallet ||
       isLoadingUserInfo ||
       isLoadingResources ||
-      isLoadingInscriptionStatus ||
+      isLoadingAccountStatus ||
       isLoadingProjectInfo) &&
     !isEntered
 

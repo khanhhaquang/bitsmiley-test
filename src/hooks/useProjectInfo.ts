@@ -9,7 +9,14 @@ export const useProjectInfo = () => {
 
   const nowTime = Number(data?.data?.data?.nowTime || 0)
   const startTime = Number(data?.data?.data?.startTime || 0)
-  const remainTime = startTime - nowTime
+  const mintEndTime = Number(data?.data?.data?.mintEndTime || 0)
+  const whitelistRemainTime = Math.floor((startTime - nowTime) / 1000)
+  const normalRemainTime = Math.floor((mintEndTime - nowTime) / 1000)
 
-  return { info: data?.data?.data, remainTime, isLoading }
+  return {
+    info: data?.data?.data,
+    whitelistRemainTime,
+    normalRemainTime,
+    isLoading
+  }
 }

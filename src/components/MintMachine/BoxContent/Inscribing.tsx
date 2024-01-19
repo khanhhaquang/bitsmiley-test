@@ -1,10 +1,11 @@
 import { AsteriskIcon } from '@/assets/icons'
-import { getTxId } from '@/store/account/reducer'
+import { getIsCreatingOrder, getTxId } from '@/store/account/reducer'
 import { getBtcScanUrl } from '@/utils/formatter'
 import { useSelector } from 'react-redux'
 
 export const Inscribing: React.FC = () => {
   const txid = useSelector(getTxId)
+  const isCreatingOrder = useSelector(getIsCreatingOrder)
 
   return (
     <>
@@ -15,13 +16,18 @@ export const Inscribing: React.FC = () => {
       </div>
 
       <div className="absolute left-[468px] top-[444px] z-[100] text-sm">
-        Your minting is getting processed on-chain...(
-        <span
-          className="cursor-pointer text-green hover:underline"
-          onClick={() => window.open(getBtcScanUrl(txid), '__blank')}>
-          BTCScan
-        </span>
-        )
+        Your minting is getting processed on-chain...
+        {!isCreatingOrder && txid && (
+          <>
+            (
+            <span
+              className="cursor-pointer text-green hover:underline"
+              onClick={() => window.open(getBtcScanUrl(txid), '__blank')}>
+              BTCScan
+            </span>
+            )
+          </>
+        )}
       </div>
     </>
   )

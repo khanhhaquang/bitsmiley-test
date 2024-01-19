@@ -5,13 +5,14 @@ import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { RootState } from '@/store/rootReducer'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { InscribeStatus } from '@/types/status'
+import { AddressStauts } from '@/types/status'
 
 const initState: {
   loginType: string
   accountInfo: IAccountInfo
   txid: string
-  inscriptionStatus: InscribeStatus
+  addressStatus: AddressStauts
+  isCreatingOrder: boolean
 } = {
   loginType:
     getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE) || LoginTypeEnum.None,
@@ -20,7 +21,8 @@ const initState: {
     publicKey: ''
   },
   txid: getLocalStorage(LOCAL_STORAGE_KEYS.TXID) || '',
-  inscriptionStatus: InscribeStatus.Promotion
+  addressStatus: AddressStauts.Promotion,
+  isCreatingOrder: false
 }
 
 export default createReducer(initState, (builder) => {
@@ -38,16 +40,22 @@ export default createReducer(initState, (builder) => {
     setLocalStorage(LOCAL_STORAGE_KEYS.TXID, action.payload)
   })
 
-  builder.addCase(actions.SET_INSCRIPTION_STATUS, (state, action) => {
-    state.inscriptionStatus = action.payload
+  builder.addCase(actions.SET_ADDRESS_STATUS, (state, action) => {
+    state.addressStatus = action.payload
+  })
+
+  builder.addCase(actions.SET_IS_CREATING_ORDER, (state, action) => {
+    state.isCreatingOrder = action.payload
   })
 })
 
 export const getTxId = (state: RootState) => state.account.txid
-export const getInscriptionStatus = (state: RootState) =>
-  state.account.inscriptionStatus
+export const getAddressStatus = (state: RootState) =>
+  state.account.addressStatus
 export const getAccountInfo = (state: RootState) => state.account.accountInfo
 export const getLoginType = (state: RootState) => state.account.loginType
+export const getIsCreatingOrder = (state: RootState) =>
+  state.account.isCreatingOrder
 export const getIsConnected = (state: RootState) =>
   !!state.account.accountInfo.address &&
   state.account.accountInfo.address !== 'undefined' &&

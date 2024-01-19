@@ -1,33 +1,33 @@
 import { useSelector } from 'react-redux'
-import { InscribeStatus } from '@/types/status'
+import { AddressStauts } from '@/types/status'
 import { Promotion } from './Promotion'
 import { NotConnected } from './NotConnected'
 import { NotInscribed } from './NotInscribed'
 import { Inscribing } from './Inscribing'
-import { getInscriptionStatus } from '@/store/account/reducer'
+import { getAddressStatus } from '@/store/account/reducer'
 import { NotStarted } from './NotStarted'
 import { InscriptionFailed } from './InscriptionFailed'
 import { InscriptionSucceeded } from './InscriptionSucceeded'
 
 export const BoxContent: React.FC = () => {
-  const inscriptionStatus = useSelector(getInscriptionStatus)
+  const addressStauts = useSelector(getAddressStatus)
 
-  switch (inscriptionStatus) {
-    case InscribeStatus.Promotion:
+  switch (addressStauts) {
+    case AddressStauts.Promotion:
       return <Promotion />
-    case InscribeStatus.NotConnected:
+    case AddressStauts.NotConnected:
       return <NotConnected />
-    case InscribeStatus.NotStarted:
+    case AddressStauts.NotStarted:
       return <NotStarted />
-    case InscribeStatus.NotInscribed:
+    case AddressStauts.NotInscribed:
       return <NotInscribed />
-    case InscribeStatus.Inscribing:
+    case AddressStauts.Inscribing:
       return <Inscribing />
-    case InscribeStatus.InscriptionFailed:
+    case AddressStauts.InscriptionFailed:
       return <InscriptionFailed />
-    case InscribeStatus.InscriptionSucceeded:
+    case AddressStauts.InscriptionSucceeded:
       return <InscriptionSucceeded />
     default:
-      return InscribeStatus.Promotion
+      return AddressStauts.Promotion
   }
 }

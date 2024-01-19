@@ -1,7 +1,7 @@
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { UnisatService } from '@/services/unisat'
-import { getTxId } from '@/store/account/reducer'
-import { InscribeStatus } from '@/types/status'
+import { getIsCreatingOrder, getTxId } from '@/store/account/reducer'
+import { AddressStauts } from '@/types/status'
 import { deleteLocalStorage, getLocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -13,12 +13,13 @@ import { useUserInfo } from './useUserInfo'
 const enableInscription =
   getLocalStorage(LOCAL_STORAGE_KEYS.ENABLE_INSCRIBE) === 'true'
 
-export const useInscriptionStatus = () => {
+export const useAddressStatus = () => {
   const txid = useSelector(getTxId)
-  const { isConnected } = useUserInfo()
-  const { setTxId, setInscriptionStatus } = useStoreActions()
+  const isCreatingOrder = useSelector(getIsCreatingOrder)
+  const { isConnected, isWhitelist } = useUserInfo()
+  const { setTxId, setAddressStatus } = useStoreActions()
   const [isCheckingTxid, setIsCheckingTxid] = useState(true)
-  const { remainTime } = useProjectInfo()
+  const { whitelistRemainTime, normalRemainTime } = useProjectInfo()
 
   const {
     data: txnInfoRes,
@@ -39,19 +40,31 @@ export const useInscriptionStatus = () => {
 
   useEffect(() => {
     if (!enableInscription) {
-      setInscriptionStatus(InscribeStatus.Promotion)
+      setAddressStatus(AddressStauts.Promotion)
       setIsCheckingTxid(false)
       return
     }
 
     if (!isConnected) {
-      setInscriptionStatus(InscribeStatus.NotConnected)
+      setAddressStatus(AddressStauts.NotConnected)
       setIsCheckingTxid(false)
       return
     }
 
-    if (remainTime > 0) {
-      setInscriptionStatus(InscribeStatus.NotStarted)
+    if (isWhitelist && whitelistRemainTime > 0) {
+      setAddressStatus(AddressStauts.NotStarted)
+      setIsCheckingTxid(false)
+      return
+    }
+
+    if (!isWhitelist && normalRemainTime > 0) {
+      setAddressStatus(AddressStauts.NotStarted)
+      setIsCheckingTxid(false)
+      return
+    }
+
+    if (isCreatingOrder) {
+      setAddressStatus(AddressStauts.Inscribing)
       setIsCheckingTxid(false)
       return
     }
@@ -59,7 +72,7 @@ export const useInscriptionStatus = () => {
     const localTxId = getLocalStorage(LOCAL_STORAGE_KEYS.TXID)
 
     if (!localTxId || localTxId === 'undefined') {
-      setInscriptionStatus(InscribeStatus.NotInscribed)
+      setAddressStatus(AddressStauts.NotInscribed)
       setIsCheckingTxid(false)
       return
     }
@@ -69,17 +82,26 @@ export const useInscriptionStatus = () => {
       setIsCheckingTxid(false)
       return
     }
-  }, [isConnected, remainTime, setInscriptionStatus, setTxId, txid])
+  }, [
+    isConnected,
+    isCreatingOrder,
+    isWhitelist,
+    normalRemainTime,
+    setAddressStatus,
+    setTxId,
+    txid,
+    whitelistRemainTime
+  ])
 
   useEffect(() => {
     if (!txnInfoRes?.data?.data || !isConnected) return
 
     if (txnInfoRes?.data?.data?.confirmations) {
-      setInscriptionStatus(InscribeStatus.InscriptionSucceeded)
+      setAddressStatus(AddressStauts.InscriptionSucceeded)
     } else {
-      setInscriptionStatus(InscribeStatus.Inscribing)
+      setAddressStatus(AddressStauts.Inscribing)
     }
-  }, [txnInfoRes?.data?.data, setInscriptionStatus, isConnected])
+  }, [txnInfoRes?.data?.data, isConnected, setAddressStatus])
 
   useEffect(() => {
     // txid invalid

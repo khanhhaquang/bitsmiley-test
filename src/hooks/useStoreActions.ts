@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import accountActions from '@/store/account/actions'
 import commonActions from '@/store/common/actions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
-import { InscribeStatus } from '@/types/status'
+import { AddressStauts } from '@/types/status'
 
 export const useStoreActions = () => {
   const dispatch = useDispatch()
@@ -29,9 +29,14 @@ export const useStoreActions = () => {
     (payload: string) => dispatch(accountActions.SET_TX_ID(payload)),
     [dispatch]
   )
-  const setInscriptionStatus = useCallback(
-    (payload: InscribeStatus) =>
-      dispatch(accountActions.SET_INSCRIPTION_STATUS(payload)),
+  const setAddressStatus = useCallback(
+    (payload: AddressStauts) =>
+      dispatch(accountActions.SET_ADDRESS_STATUS(payload)),
+    [dispatch]
+  )
+  const setIsCreatingOrder = useCallback(
+    (payload: boolean) =>
+      dispatch(accountActions.SET_IS_CREATING_ORDER(payload)),
     [dispatch]
   )
   const setCurrentTypewritterSeq = useCallback(
@@ -46,6 +51,7 @@ export const useStoreActions = () => {
     setLoginType,
     resetStorage,
     setTxId,
-    setInscriptionStatus
+    setAddressStatus,
+    setIsCreatingOrder
   }
 }

@@ -4,22 +4,23 @@ import { Image } from '@/components/Image'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useInscribe } from '@/hooks/useInscribe'
 import { CanvasFrames } from '../CanvasFrames'
-import { InscribeStatus } from '@/types/status'
+import { AddressStauts } from '@/types/status'
 import { useSelector } from 'react-redux'
-import { getInscriptionStatus } from '@/store/account/reducer'
+import { getAddressStatus, getIsCreatingOrder } from '@/store/account/reducer'
 
 export const MintButton: React.FC = () => {
-  const inscriptionStatus = useSelector(getInscriptionStatus)
-  const { inscribe, isLoading: isInscribing } = useInscribe()
+  const addressStauts = useSelector(getAddressStatus)
+  const isCreatingOrder = useSelector(getIsCreatingOrder)
+  const { inscribe } = useInscribe()
   const [isPressed, setIsPressed] = useState(false)
 
   const isMintButtonDisabled =
-    inscriptionStatus === InscribeStatus.Promotion ||
-    inscriptionStatus === InscribeStatus.NotStarted ||
-    inscriptionStatus === InscribeStatus.NotConnected ||
-    inscriptionStatus === InscribeStatus.InscriptionSucceeded ||
-    inscriptionStatus === InscribeStatus.Inscribing ||
-    isInscribing
+    addressStauts === AddressStauts.Promotion ||
+    addressStauts === AddressStauts.NotStarted ||
+    addressStauts === AddressStauts.NotConnected ||
+    addressStauts === AddressStauts.InscriptionSucceeded ||
+    addressStauts === AddressStauts.Inscribing ||
+    isCreatingOrder
 
   const mintButtonImgName = useMemo(() => {
     if (isMintButtonDisabled) return 'mintbutton-disabled'
@@ -50,7 +51,7 @@ export const MintButton: React.FC = () => {
 
           setIsPressed(false)
 
-          if (inscriptionStatus === InscribeStatus.NotInscribed) {
+          if (addressStauts === AddressStauts.NotInscribed) {
             inscribe()
           }
         }}

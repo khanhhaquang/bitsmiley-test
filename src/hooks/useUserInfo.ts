@@ -7,12 +7,12 @@ export const useUserInfo = () => {
   const isConnected = useSelector(getIsConnected)
   const { address } = useSelector(getAccountInfo)
   const { data, isLoading } = useQuery(
-    [UserService.getUserInfo.key, address],
-    () => UserService.getUserInfo.call(address),
+    [UserService.getHasActivatedInvitation.key, address],
+    () => UserService.getHasActivatedInvitation.call(address),
     { enabled: !!address }
   )
 
-  const isWhitelist = !!data?.data.data.whitelistStatus
+  const isWhitelist = !!data?.data.data
 
   return { address, isConnected, isWhitelist, isLoading }
 }

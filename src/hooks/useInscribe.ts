@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import { getLoginType } from '@/store/account/reducer'
 import { LoginTypeEnum } from '@/types/common'
@@ -14,17 +13,18 @@ const OUTPUT_VALUE = 546
 export const useInscribe = () => {
   const loginType = useSelector(getLoginType)
   const { address } = useUserInfo()
-  const { setTxId } = useStoreActions()
-  const [isInscribing, setInscribing] = useState(false)
+  const { setTxId, setIsCreatingOrder } = useStoreActions()
 
-  const {
-    resultRef,
-    doPolling: pollOrderInfo,
-    isPolling
-  } = usePolling({
+  const { resultRef: orderInfoRes, doPolling: pollOrderInfo } = usePolling({
     request: UnisatService.searchInscribeOrder.call,
     shouldContinue: (data) => !data?.data.files?.[0]?.inscriptionId
   })
+
+  const { resultRef: inscriptionInfoRes, doPolling: pollInscriptionInfo } =
+    usePolling({
+      request: UnisatService.getInscriptionInfo.call,
+      shouldContinue: (data) => !data?.data?.utxo?.txid
+    })
 
   const okxInscribe = async () => {
     if (!window.okxwallet?.bitcoin?.mint) {
@@ -32,7 +32,7 @@ export const useInscribe = () => {
     }
 
     try {
-      setInscribing(true)
+      setIsCreatingOrder(true)
 
       const imgHex = await convertImageToHex(
         getIllustrationUrl('bit-test', 'webp')
@@ -54,7 +54,7 @@ export const useInscribe = () => {
     } catch (error) {
       console.error(error)
     } finally {
-      setInscribing(false)
+      setIsCreatingOrder(false)
     }
   }
 
@@ -64,7 +64,7 @@ export const useInscribe = () => {
     }
 
     try {
-      setInscribing(true)
+      setIsCreatingOrder(true)
 
       const imgBase64 = await convertImageToBase64(
         getIllustrationUrl('bit-test', 'webp')
@@ -99,23 +99,26 @@ export const useInscribe = () => {
 
       await pollOrderInfo(orderId)
 
-      const inscriptionId = resultRef.current?.data.files?.[0]?.inscriptionId
+      const inscriptionId = orderInfoRes.current?.data.files?.[0]?.inscriptionId
 
       if (!inscriptionId) {
         throw Error('cannot get unisat inscriptionId')
       }
 
-      const inscriptionInfoRes =
-        await UnisatService.getInscriptionInfo.call(inscriptionId)
+      await pollInscriptionInfo(inscriptionId)
 
-      const txid = inscriptionInfoRes?.data?.data?.utxo?.txid
+      const txid = inscriptionInfoRes.current?.data?.utxo?.txid
+
+      if (!txid) {
+        throw Error('cannot get unisat txid')
+      }
 
       setTxId(txid)
       return txid
     } catch (error) {
       console.error(error)
     } finally {
-      setInscribing(false)
+      setIsCreatingOrder(false)
     }
   }
 
@@ -133,5 +136,5 @@ export const useInscribe = () => {
     return null
   }
 
-  return { inscribe, isLoading: isInscribing || isPolling }
+  return { inscribe }
 }

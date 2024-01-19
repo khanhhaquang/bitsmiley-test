@@ -6,11 +6,11 @@ import { displayAddress } from '@/utils/formatter'
 import { useMemo } from 'react'
 
 export const NotStarted: React.FC = () => {
-  const { remainTime } = useProjectInfo()
+  const { whitelistRemainTime, normalRemainTime } = useProjectInfo()
   const { address, isWhitelist } = useUserInfo()
 
   const [count] = useCountdown({
-    countStart: remainTime
+    countStart: isWhitelist ? whitelistRemainTime : normalRemainTime
   })
 
   const counterLabel = useMemo(() => {
