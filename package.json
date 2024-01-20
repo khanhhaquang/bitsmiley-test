@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "tsc && vite build",
+    "prebuild": "node scripts/convertImage.js && tsc && vite build",
     "build": "npm run prebuild && node scripts/generateResourcesPaths.js && npm run prebuild",
     "preview": "vite preview",
     "lint": "eslint ./src",

@@ -3,7 +3,7 @@ import { useQuery } from 'react-query'
 import { useUserInfo } from './useUserInfo'
 import { InscriptionParserService } from 'ordpool-parser'
 import { useStoreActions } from './useStoreActions'
-import { imgBase64 } from './imgBase64'
+import imgString from './imgString.json'
 
 export const useAddressInscription = () => {
   const { address } = useUserInfo()
@@ -21,7 +21,8 @@ export const useAddressInscription = () => {
           .find((t) => {
             const parsedInscriptions = InscriptionParserService.parse(t)
             const targetInscription = parsedInscriptions?.find(
-              (i) => i.getDataUri().toLowerCase() === imgBase64.toLowerCase()
+              (i) =>
+                i.getDataUri().toLowerCase() === imgString.base64.toLowerCase()
             )
             return !!targetInscription
           })

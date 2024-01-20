@@ -6,8 +6,7 @@ import { usePolling } from './usePolling'
 import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
 import { MempoolService } from '@/services/mempool'
-import { imgHex } from './imgHex'
-import { imgBase64 } from './imgBase64'
+import imgString from './imgString.json'
 
 const OUTPUT_VALUE = 546
 
@@ -41,7 +40,7 @@ export const useInscribe = () => {
         inscriptions: [
           {
             contentType: 'image/webp',
-            body: imgHex
+            body: imgString.hex
           }
         ]
       })
@@ -72,7 +71,7 @@ export const useInscribe = () => {
         files: [
           {
             filename: 'bitDisc',
-            dataURL: imgBase64
+            dataURL: imgString.base64
           }
         ]
       })
