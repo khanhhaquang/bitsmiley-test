@@ -55,7 +55,7 @@ export const MempoolService = {
   getAddressTransactions: {
     key: 'mempool.getAddressTransactions',
     call: (address: string) =>
-      axiosInstance.get<ITransactionInfo[]>(`/address/${address}/txs`)
+      axiosInstance.get<ITransactionInfo[]>(`/address/${address}/txs/mempool`)
   },
   getTransactionInfo: {
     key: 'mempool.getTransactionInfo',
