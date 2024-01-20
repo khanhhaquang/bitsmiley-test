@@ -5,7 +5,7 @@ import {
   getTxId
 } from '@/store/account/reducer'
 import { AddressStauts } from '@/types/status'
-import { deleteLocalStorage, getLocalStorage } from '@/utils/storage'
+import { getLocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useStoreActions } from './useStoreActions'
@@ -15,17 +15,19 @@ import { useUserInfo } from './useUserInfo'
 import { useUserNfts } from './useUserNfts'
 import { UserService } from '@/services/user'
 import { MempoolService } from '@/services/mempool'
+import { useAddressInscription } from './useAddressInscription'
 
 const enableInscription =
   getLocalStorage(LOCAL_STORAGE_KEYS.ENABLE_INSCRIBE) === 'true'
 
 export const useAddressStatus = () => {
   const txid = useSelector(getTxId)
+  const { isLoading: isFetchingInscription } = useAddressInscription()
   const { hasNftMinted } = useUserNfts()
   const addressStatus = useSelector(getAddressStatus)
   const isCreatingOrder = useSelector(getIsCreatingOrder)
   const { address, isConnected, isWhitelist } = useUserInfo()
-  const { setTxId, setAddressStatus } = useStoreActions()
+  const { setAddressStatus } = useStoreActions()
   const [isCheckingTxid, setIsCheckingTxid] = useState(true)
   const { whitelistRemainTime, normalRemainTime } = useProjectInfo()
 
@@ -37,14 +39,14 @@ export const useAddressStatus = () => {
     [MempoolService.getTransactionInfo.key, txid],
     () =>
       MempoolService.getTransactionInfo
-        .call(txid)
+        .call(txid as string)
         .then((res) => res)
         .catch((e) => e),
     {
       enabled: !!txid,
       refetchInterval: (res) => {
         if (!res) return false
-        return res?.data?.data?.status?.confirmed ? false : 1000 * 60 * 5
+        return res?.data?.status?.confirmed ? false : 1000 * 60
       }
     }
   )
@@ -82,6 +84,12 @@ export const useAddressStatus = () => {
       return
     }
 
+    if (isFetchingInscription) {
+      setAddressStatus(AddressStauts.CheckingInscription)
+      setIsCheckingTxid(false)
+      return
+    }
+
     if (hasNftMinted) {
       setAddressStatus(AddressStauts.InscriptionSucceeded)
       setIsCheckingTxid(false)
@@ -106,40 +114,31 @@ export const useAddressStatus = () => {
       return
     }
 
-    const localTxId = getLocalStorage(LOCAL_STORAGE_KEYS.TXID)
-
-    if (!localTxId || localTxId === 'undefined') {
+    if (!txid && !isFetchingInscription) {
       setAddressStatus(AddressStauts.NotInscribed)
       setIsCheckingTxid(false)
-      return
-    }
-
-    if (!!localTxId && localTxId !== 'undefined' && !txid) {
-      setTxId(localTxId)
-      setIsCheckingTxid(false)
-      return
     }
   }, [
     hasNftMinted,
     isConnected,
     isCreatingOrder,
+    isFetchingInscription,
     isWhitelist,
     normalRemainTime,
     setAddressStatus,
-    setTxId,
     txid,
     whitelistRemainTime
   ])
 
   useEffect(() => {
-    if (!txnInfoRes?.data?.data?.status || !isConnected) return
+    if (!txnInfoRes?.data?.status || !isConnected) return
 
-    if (txnInfoRes?.data?.data?.status?.confirmed) {
+    if (txnInfoRes?.data?.status?.confirmed) {
       setAddressStatus(AddressStauts.InscriptionConfirmed)
     } else {
       setAddressStatus(AddressStauts.Inscribing)
     }
-  }, [txnInfoRes?.data?.data, isConnected, setAddressStatus])
+  }, [txnInfoRes?.data, isConnected, setAddressStatus])
 
   useEffect(() => {
     const nfts = nftsData?.data?.data?.nfts
@@ -158,14 +157,6 @@ export const useAddressStatus = () => {
       setAddressStatus(AddressStauts.InscriptionFailed)
     }
   }, [nftsData?.data, setAddressStatus])
-
-  useEffect(() => {
-    // txid invalid
-    if (txnInfoRes?.response?.status === 400) {
-      setTxId('')
-      deleteLocalStorage(LOCAL_STORAGE_KEYS.TXID)
-    }
-  }, [setTxId, txnInfoRes?.response?.status])
 
   return { isLoading }
 }

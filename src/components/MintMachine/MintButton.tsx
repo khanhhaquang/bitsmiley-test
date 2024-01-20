@@ -18,6 +18,7 @@ export const MintButton: React.FC = () => {
     addressStauts === AddressStauts.Promotion ||
     addressStauts === AddressStauts.NotConnected ||
     addressStauts === AddressStauts.NotStarted ||
+    addressStauts === AddressStauts.CheckingInscription ||
     addressStauts === AddressStauts.CreatingOrder ||
     addressStauts === AddressStauts.Inscribing ||
     addressStauts === AddressStauts.InscriptionConfirmed ||

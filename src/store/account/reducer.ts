@@ -10,7 +10,7 @@ import { AddressStauts } from '@/types/status'
 const initState: {
   loginType: string
   accountInfo: IAccountInfo
-  txid: string
+  txid?: string
   addressStatus: AddressStauts
   isCreatingOrder: boolean
 } = {
@@ -20,7 +20,7 @@ const initState: {
     address: '',
     publicKey: ''
   },
-  txid: getLocalStorage(LOCAL_STORAGE_KEYS.TXID) || '',
+  txid: '',
   addressStatus: AddressStauts.Promotion,
   isCreatingOrder: false
 }
@@ -37,7 +37,6 @@ export default createReducer(initState, (builder) => {
 
   builder.addCase(actions.SET_TX_ID, (state, action) => {
     state.txid = action.payload
-    setLocalStorage(LOCAL_STORAGE_KEYS.TXID, action.payload)
   })
 
   builder.addCase(actions.SET_ADDRESS_STATUS, (state, action) => {

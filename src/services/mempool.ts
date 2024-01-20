@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { DOMAIN_URL } from '@/config/settings'
-import { IReseponse } from '@/types/common'
 
 const axiosInstance = axios.create({
   baseURL: DOMAIN_URL.MEMPOOL_API
@@ -53,14 +52,17 @@ export interface IRecommendedFee {
 }
 
 export const MempoolService = {
+  getAddressTransactions: {
+    key: 'mempool.getAddressTransactions',
+    call: (address: string) =>
+      axiosInstance.get<ITransactionInfo[]>(`/address/${address}/txs`)
+  },
   getTransactionInfo: {
     key: 'mempool.getTransactionInfo',
-    call: (txid: string) =>
-      axiosInstance.get<IReseponse<ITransactionInfo>>(`/tx/${txid}`)
+    call: (txid: string) => axiosInstance.get<ITransactionInfo>(`/tx/${txid}`)
   },
   getRecommendedFees: {
     key: 'mempool.getRecommendedFees',
-    call: () =>
-      axiosInstance.get<IReseponse<IRecommendedFee>>('/v1/fees/recommended')
+    call: () => axiosInstance.get<IRecommendedFee>('/v1/fees/recommended')
   }
 }

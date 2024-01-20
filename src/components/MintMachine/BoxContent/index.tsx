@@ -8,6 +8,7 @@ import { getAddressStatus } from '@/store/account/reducer'
 import { NotStarted } from './NotStarted'
 import { InscriptionFailed } from './InscriptionFailed'
 import { InscriptionSucceeded } from './InscriptionSucceeded'
+import { CheckingInscription } from './CheckingInscription'
 
 export const BoxContent: React.FC = () => {
   const addressStauts = useSelector(getAddressStatus)
@@ -17,6 +18,8 @@ export const BoxContent: React.FC = () => {
       return <Promotion />
     case AddressStauts.NotConnected:
       return <NotConnected />
+    case AddressStauts.CheckingInscription:
+      return <CheckingInscription />
     case AddressStauts.NotStarted:
       return <NotStarted />
     case AddressStauts.NotInscribed:

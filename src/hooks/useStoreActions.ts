@@ -26,7 +26,8 @@ export const useStoreActions = () => {
     [dispatch]
   )
   const setTxId = useCallback(
-    (payload: string) => dispatch(accountActions.SET_TX_ID(payload)),
+    (payload: string | undefined) =>
+      dispatch(accountActions.SET_TX_ID(payload)),
     [dispatch]
   )
   const setAddressStatus = useCallback(

@@ -74,7 +74,7 @@ export const useInscribe = () => {
       const recommendedFeeRes = await MempoolService.getRecommendedFees.call()
 
       const createRes = await UnisatService.createInscribeOrder.call({
-        feeRate: recommendedFeeRes?.data?.data?.fastestFee || 30,
+        feeRate: recommendedFeeRes?.data?.fastestFee || 30,
         receiveAddress: address,
         outputValue: OUTPUT_VALUE,
         files: [

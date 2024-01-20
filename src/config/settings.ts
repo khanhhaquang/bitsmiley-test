@@ -17,6 +17,5 @@ export const UNISAT_API_KEY = import.meta.env.VITE_UNISATE_API_KEY
 export const LOCAL_STORAGE_KEYS = {
   LOGIN_TYPE: 'login_type',
   ENABLE_INSCRIBE: 'enable_inscribe',
-  PLAY_MUSIC: 'play_music',
-  TXID: 'txid'
+  PLAY_MUSIC: 'play_music'
 }

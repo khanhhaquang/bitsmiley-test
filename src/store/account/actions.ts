@@ -3,7 +3,7 @@ import { createAction } from '@reduxjs/toolkit'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { AddressStauts } from '@/types/status'
 
-const SET_TX_ID = createAction<string>('account/SET_TX_ID')
+const SET_TX_ID = createAction<string | undefined>('account/SET_TX_ID')
 const SET_ACCOUNT_INFO = createAction<IAccountInfo>('account/SET_ACCOUNT_INFO')
 const SET_LOGIN_TYPE = createAction<LoginTypeEnum>('account/SET_LOGIN_TYPE')
 const SET_ADDRESS_STATUS = createAction<AddressStauts>(
