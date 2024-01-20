@@ -1,11 +1,9 @@
-// import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import {
   getAddressStatus,
   getIsCreatingOrder,
   getTxId
 } from '@/store/account/reducer'
 import { AddressStauts } from '@/types/status'
-// import { getLocalStorage } from '@/utils/storage'
 import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useStoreActions } from './useStoreActions'
@@ -19,13 +17,10 @@ import { getRemainCountdown } from '@/store/common/reducer'
 import { useCountdown } from './useCountdown'
 import { useProjectInfo } from './useProjectInfo'
 
-// const enableInscription =
-//   getLocalStorage(LOCAL_STORAGE_KEYS.ENABLE_INSCRIBE) === 'true'
-
 export const useAddressStatus = () => {
   const txid = useSelector(getTxId)
   const { isLoading: isFetchingInscription } = useAddressInscription()
-  const { hasNftMinted } = useUserNfts()
+  const { hasNftMinted, isLoading: isFetchingUserNfts } = useUserNfts()
   const addressStatus = useSelector(getAddressStatus)
   const isCreatingOrder = useSelector(getIsCreatingOrder)
   const { address, isConnected, isWhitelist } = useUserInfo()
@@ -48,14 +43,14 @@ export const useAddressStatus = () => {
     isLoading: isLoadingTransactionInfo,
     isRefetching: isRefetchingTransactionInfo
   } = useQuery(
-    [MempoolService.getTransactionInfo.key, txid],
+    [MempoolService.getTransactionInfo.key, txid, hasNftMinted],
     () =>
       MempoolService.getTransactionInfo
         .call(txid as string)
         .then((res) => res)
         .catch((e) => e),
     {
-      enabled: !!txid,
+      enabled: !!txid && !hasNftMinted,
       refetchInterval: (res) => {
         if (!res) return false
         return res?.data?.status?.confirmed ? false : 1000 * 60
@@ -68,11 +63,13 @@ export const useAddressStatus = () => {
     isLoading: isLoadingNfts,
     isRefetching: isRefetchingNfts
   } = useQuery(
-    [UserService.getNFTs.key, address, addressStatus],
+    [UserService.getNFTs.key, address, addressStatus, hasNftMinted],
     () => UserService.getNFTs.call(address),
     {
       enabled:
-        !!address && addressStatus === AddressStauts.InscriptionConfirmed,
+        !!address &&
+        addressStatus === AddressStauts.InscriptionConfirmed &&
+        !hasNftMinted,
       refetchInterval: (res) =>
         res?.data?.data?.nfts?.length ? false : 1000 * 5
     }
@@ -84,19 +81,13 @@ export const useAddressStatus = () => {
     (isLoadingNfts && !isRefetchingNfts)
 
   useEffect(() => {
-    // if (!enableInscription) {
-    //   setAddressStatus(AddressStauts.Promotion)
-    //   setIsCheckingTxid(false)
-    //   return
-    // }
-
     if (!isConnected) {
       setAddressStatus(AddressStauts.NotConnected)
       setIsCheckingTxid(false)
       return
     }
 
-    if (isFetchingInscription) {
+    if (isFetchingInscription || isFetchingUserNfts) {
       setAddressStatus(AddressStauts.CheckingInscription)
       setIsCheckingTxid(false)
       return
@@ -132,10 +123,13 @@ export const useAddressStatus = () => {
     isWhitelist,
     isNotStarted,
     setAddressStatus,
-    txid
+    txid,
+    isFetchingUserNfts
   ])
 
   useEffect(() => {
+    if (hasNftMinted || isFetchingUserNfts) return
+
     if (!txnInfoRes?.data?.status || !isConnected) return
 
     if (txnInfoRes?.data?.status?.confirmed) {
@@ -143,9 +137,17 @@ export const useAddressStatus = () => {
     } else {
       setAddressStatus(AddressStauts.Inscribing)
     }
-  }, [txnInfoRes?.data, isConnected, setAddressStatus])
+  }, [
+    hasNftMinted,
+    isConnected,
+    isFetchingUserNfts,
+    setAddressStatus,
+    txnInfoRes?.data?.status
+  ])
 
   useEffect(() => {
+    if (hasNftMinted || isFetchingUserNfts) return
+
     const nfts = nftsData?.data?.data?.nfts
 
     if (!nfts?.length) return
@@ -163,7 +165,12 @@ export const useAddressStatus = () => {
     if (nftFailed) {
       setAddressStatus(AddressStauts.InscriptionFailed)
     }
-  }, [nftsData?.data?.data?.nfts, setAddressStatus])
+  }, [
+    hasNftMinted,
+    isFetchingUserNfts,
+    nftsData?.data?.data?.nfts,
+    setAddressStatus
+  ])
 
   return { isLoading }
 }

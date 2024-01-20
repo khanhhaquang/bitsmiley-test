@@ -4,9 +4,11 @@ import { InscriptionParserService } from 'ordpool-parser'
 import { useStoreActions } from './useStoreActions'
 import imgString from './imgString.json'
 import { useCallback, useEffect, useState } from 'react'
+import { useUserNfts } from './useUserNfts'
 
 export const useAddressInscription = () => {
   const { address } = useUserInfo()
+  const { hasNftMinted, isLoading: isFetchingUserNfts } = useUserNfts()
   const { setTxId } = useStoreActions()
   const [isChecking, setIsChecking] = useState(true)
 
@@ -27,21 +29,29 @@ export const useAddressInscription = () => {
   }
 
   const fetchTxns = useCallback(async () => {
+    if (!address || hasNftMinted) {
+      setIsChecking(false)
+      return
+    }
+
+    if (isFetchingUserNfts) return
+
     try {
       const res = await MempoolService.getAddressTransactions.call(address)
       const targetTxn = getTargetTxn(res.data)
-      setTxId(targetTxn?.txid)
+      if (targetTxn) {
+        setTxId(targetTxn?.txid)
+      }
     } catch (e) {
-      setTxId('')
+      /* empty */
     } finally {
       setIsChecking(false)
     }
-  }, [address, setTxId])
+  }, [address, hasNftMinted, isFetchingUserNfts, setTxId])
 
   useEffect(() => {
-    if (!address) return
     fetchTxns()
-  }, [address, fetchTxns])
+  }, [fetchTxns])
 
   return {
     isLoading: isChecking

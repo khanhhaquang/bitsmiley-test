@@ -1,8 +1,11 @@
 import { UserService } from '@/services/user'
 import { useQuery } from 'react-query'
 import { useUserInfo } from './useUserInfo'
+import { useEffect, useMemo } from 'react'
+import { useStoreActions } from './useStoreActions'
 
 export const useUserNfts = () => {
+  const { setTxId } = useStoreActions()
   const { address } = useUserInfo()
 
   const { data: nftsDataRes, isLoading } = useQuery(
@@ -13,11 +16,19 @@ export const useUserNfts = () => {
     }
   )
 
-  const nfts = nftsDataRes?.data?.data?.nfts
-
-  const hasNftMinted = nfts?.find(
-    (n) => !!n.inscription_id && !n.invalid_reason
+  const mintedNft = useMemo(
+    () =>
+      nftsDataRes?.data?.data?.nfts?.find(
+        (n) => !!n.inscription_id && !n.invalid_reason
+      ),
+    [nftsDataRes]
   )
 
-  return { nfts, hasNftMinted, isLoading }
+  useEffect(() => {
+    if (mintedNft) {
+      setTxId(mintedNft.txid)
+    }
+  }, [mintedNft, setTxId])
+
+  return { hasNftMinted: !!mintedNft, isLoading }
 }
