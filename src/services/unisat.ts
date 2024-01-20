@@ -53,26 +53,6 @@ export interface IInscriptionInfo {
   }
 }
 
-export interface ITransactionInfo {
-  blkid: string
-  confirmations: number
-  height: number
-  idx: number
-  inSatoshi: number
-  locktime: number
-  nIn: number
-  nInInscription: number
-  nLostInscription: number
-  nNewInscription: number
-  nOut: number
-  nOutInscription: number
-  outSatoshi: number
-  size: number
-  timestamp: number
-  txid: string
-  witOffset: number
-}
-
 const axiosInstance = axios.create({
   baseURL: DOMAIN_URL.UNISATE_API,
   headers: { Authorization: 'Bearer ' + UNISAT_API_KEY }
@@ -99,13 +79,6 @@ export const UnisatService = {
     call: (inscriptionId: string) =>
       axiosInstance.get<IUnisatResponse<IInscriptionInfo>>(
         `/v1/indexer/inscription/info/${inscriptionId}`
-      )
-  },
-  getTransactionInfo: {
-    key: 'unisat.getTransactionInfo',
-    call: (txId: string) =>
-      axiosInstance.get<IUnisatResponse<ITransactionInfo>>(
-        `/v1/indexer/tx/${txId}`
       )
   }
 }

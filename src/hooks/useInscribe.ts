@@ -7,6 +7,7 @@ import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { convertImageToBase64, convertImageToHex } from '@/utils/converter'
+import { MempoolService } from '@/services/mempool'
 
 const OUTPUT_VALUE = 546
 
@@ -70,8 +71,10 @@ export const useInscribe = () => {
         getIllustrationUrl('bit-test', 'webp')
       )
 
+      const recommendedFeeRes = await MempoolService.getRecommendedFees.call()
+
       const createRes = await UnisatService.createInscribeOrder.call({
-        feeRate: 1,
+        feeRate: recommendedFeeRes?.data?.data?.fastestFee || 30,
         receiveAddress: address,
         outputValue: OUTPUT_VALUE,
         files: [

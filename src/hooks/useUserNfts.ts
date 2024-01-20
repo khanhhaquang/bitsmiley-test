@@ -5,7 +5,7 @@ import { useUserInfo } from './useUserInfo'
 export const useUserNfts = () => {
   const { address } = useUserInfo()
 
-  const { data: nftsData, isLoading } = useQuery(
+  const { data: nftsDataRes, isLoading } = useQuery(
     [UserService.getNFTs.key, address],
     () => UserService.getNFTs.call(address),
     {
@@ -13,7 +13,11 @@ export const useUserNfts = () => {
     }
   )
 
-  const hasNftMinted = !!nftsData?.data?.[0]?.inscription_id
+  const nfts = nftsDataRes?.data?.data?.nfts
 
-  return { nfts: nftsData?.data, hasNftMinted, isLoading }
+  const hasNftMinted = nfts?.find(
+    (n) => !!n.inscription_id && !n.invalid_reason
+  )
+
+  return { nfts, hasNftMinted, isLoading }
 }

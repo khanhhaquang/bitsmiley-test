@@ -1,5 +1,4 @@
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { UnisatService } from '@/services/unisat'
 import {
   getAddressStatus,
   getIsCreatingOrder,
@@ -15,6 +14,7 @@ import { useProjectInfo } from './useProjectInfo'
 import { useUserInfo } from './useUserInfo'
 import { useUserNfts } from './useUserNfts'
 import { UserService } from '@/services/user'
+import { MempoolService } from '@/services/mempool'
 
 const enableInscription =
   getLocalStorage(LOCAL_STORAGE_KEYS.ENABLE_INSCRIBE) === 'true'
@@ -34,13 +34,17 @@ export const useAddressStatus = () => {
     isLoading: isLoadingTransactionInfo,
     isRefetching: isRefetchingTransactionInfo
   } = useQuery(
-    [UnisatService.getTransactionInfo.key, txid],
-    () => UnisatService.getTransactionInfo.call(txid),
+    [MempoolService.getTransactionInfo.key, txid],
+    () =>
+      MempoolService.getTransactionInfo
+        .call(txid)
+        .then((res) => res)
+        .catch((e) => e),
     {
       enabled: !!txid,
       refetchInterval: (res) => {
-        if (res?.data?.code === -1) return 1000 * 5
-        return res?.data?.data?.confirmations ? false : 1000 * 60 * 5
+        if (!res) return false
+        return res?.data?.data?.status?.confirmed ? false : 1000 * 60 * 5
       }
     }
   )
@@ -55,7 +59,8 @@ export const useAddressStatus = () => {
     {
       enabled:
         !!address && addressStatus === AddressStauts.InscriptionConfirmed,
-      refetchInterval: (res) => (res?.data?.length ? false : 1000 * 5)
+      refetchInterval: (res) =>
+        res?.data?.data?.nfts?.length ? false : 1000 * 5
     }
   )
 
@@ -127,9 +132,9 @@ export const useAddressStatus = () => {
   ])
 
   useEffect(() => {
-    if (!txnInfoRes?.data?.data || !isConnected) return
+    if (!txnInfoRes?.data?.data?.status || !isConnected) return
 
-    if (txnInfoRes?.data?.data?.confirmations) {
+    if (txnInfoRes?.data?.data?.status?.confirmed) {
       setAddressStatus(AddressStauts.InscriptionConfirmed)
     } else {
       setAddressStatus(AddressStauts.Inscribing)
@@ -137,10 +142,12 @@ export const useAddressStatus = () => {
   }, [txnInfoRes?.data?.data, isConnected, setAddressStatus])
 
   useEffect(() => {
-    const nftScceed = nftsData?.data?.find(
+    const nfts = nftsData?.data?.data?.nfts
+
+    const nftScceed = nfts?.find(
       (n) => !!n?.inscription_id && !n?.invalid_reason
     )
-    const nftFailed = nftsData?.data?.find((n) => !!n?.invalid_reason)
+    const nftFailed = nfts?.find((n) => !!n?.invalid_reason)
 
     if (nftScceed) {
       setAddressStatus(AddressStauts.InscriptionSucceeded)
@@ -154,11 +161,11 @@ export const useAddressStatus = () => {
 
   useEffect(() => {
     // txid invalid
-    if (txnInfoRes?.data?.msg === 'txid invalid') {
+    if (txnInfoRes?.response?.status === 400) {
       setTxId('')
       deleteLocalStorage(LOCAL_STORAGE_KEYS.TXID)
     }
-  }, [setTxId, txnInfoRes?.data?.msg])
+  }, [setTxId, txnInfoRes?.response?.status])
 
   return { isLoading }
 }

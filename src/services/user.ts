@@ -2,7 +2,8 @@ import axiosInstance from '@/config/axios'
 import { IReseponse } from '@/types/common'
 
 export interface INftsData {
-  data?: {
+  count?: number
+  nfts?: {
     txid?: string
     nft_id?: string
     address?: string
@@ -23,15 +24,8 @@ export const UserService = {
   getNFTs: {
     key: 'user.getNFTs',
     call: (address: string) =>
-      axiosInstance
-        .post<IReseponse<string>>(
-          `/user/getNFTs?address=${address}&pageNumber=0`
-        )
-        .then((res) => {
-          if (res?.data.data === 'internal server error') {
-            return { data: [] }
-          }
-          return JSON.parse(res.data.data) as INftsData
-        })
+      axiosInstance.post<IReseponse<INftsData>>(
+        `/user/getNFTs?address=${address}&pageNumber=0`
+      )
   }
 }
