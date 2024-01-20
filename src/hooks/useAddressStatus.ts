@@ -1,11 +1,11 @@
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+// import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import {
   getAddressStatus,
   getIsCreatingOrder,
   getTxId
 } from '@/store/account/reducer'
 import { AddressStauts } from '@/types/status'
-import { getLocalStorage } from '@/utils/storage'
+// import { getLocalStorage } from '@/utils/storage'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useStoreActions } from './useStoreActions'
@@ -17,8 +17,8 @@ import { UserService } from '@/services/user'
 import { MempoolService } from '@/services/mempool'
 import { useAddressInscription } from './useAddressInscription'
 
-const enableInscription =
-  getLocalStorage(LOCAL_STORAGE_KEYS.ENABLE_INSCRIBE) === 'true'
+// const enableInscription =
+//   getLocalStorage(LOCAL_STORAGE_KEYS.ENABLE_INSCRIBE) === 'true'
 
 export const useAddressStatus = () => {
   const txid = useSelector(getTxId)
@@ -72,11 +72,11 @@ export const useAddressStatus = () => {
     (isLoadingNfts && !isRefetchingNfts)
 
   useEffect(() => {
-    if (!enableInscription) {
-      setAddressStatus(AddressStauts.Promotion)
-      setIsCheckingTxid(false)
-      return
-    }
+    // if (!enableInscription) {
+    //   setAddressStatus(AddressStauts.Promotion)
+    //   setIsCheckingTxid(false)
+    //   return
+    // }
 
     if (!isConnected) {
       setAddressStatus(AddressStauts.NotConnected)

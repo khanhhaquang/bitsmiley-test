@@ -5,9 +5,9 @@ import { UnisatService } from '@/services/unisat'
 import { usePolling } from './usePolling'
 import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { convertImageToBase64, convertImageToHex } from '@/utils/converter'
 import { MempoolService } from '@/services/mempool'
+import { imgHex } from './imgHex'
+import { imgBase64 } from './imgBase64'
 
 const OUTPUT_VALUE = 546
 
@@ -34,10 +34,6 @@ export const useInscribe = () => {
 
     try {
       setIsCreatingOrder(true)
-
-      const imgHex = await convertImageToHex(
-        getIllustrationUrl('bit-test', 'webp')
-      )
 
       const res = await window.okxwallet?.bitcoin.mint({
         type: 62,
@@ -66,10 +62,6 @@ export const useInscribe = () => {
 
     try {
       setIsCreatingOrder(true)
-
-      const imgBase64 = await convertImageToBase64(
-        getIllustrationUrl('bit-test', 'webp')
-      )
 
       const recommendedFeeRes = await MempoolService.getRecommendedFees.call()
 
