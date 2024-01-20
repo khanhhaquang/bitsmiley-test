@@ -45,9 +45,14 @@ export const useStoreActions = () => {
       dispatch(commonActions.SET_CURRENT_TYPEWRITTER_SEQ(payload)),
     [dispatch]
   )
+  const setRemainCountdown = useCallback(
+    (payload: number) => dispatch(commonActions.SET_REMAIN_COUNT_DOWN(payload)),
+    [dispatch]
+  )
 
   return {
     setCurrentTypewritterSeq,
+    setRemainCountdown,
     setAccountInfo,
     setLoginType,
     resetStorage,

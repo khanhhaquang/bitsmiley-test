@@ -1,17 +1,14 @@
 import { AsteriskIcon, CrownYellowIcon, StarIcon } from '@/assets/icons'
-import { useCountdown } from '@/hooks/useCountdown'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { getRemainCountdown } from '@/store/common/reducer'
 import { displayAddress } from '@/utils/formatter'
 import { useMemo } from 'react'
+import { useSelector } from 'react-redux'
 
 export const NotStarted: React.FC = () => {
-  const { whitelistRemainTime, normalRemainTime } = useProjectInfo()
   const { address, isWhitelist } = useUserInfo()
 
-  const [count] = useCountdown({
-    countStart: isWhitelist ? whitelistRemainTime : normalRemainTime
-  })
+  const count = useSelector(getRemainCountdown)
 
   const counterLabel = useMemo(() => {
     const padNum = (n: number) => n.toString().padStart(2, '0')

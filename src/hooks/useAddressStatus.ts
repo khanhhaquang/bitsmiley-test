@@ -6,16 +6,18 @@ import {
 } from '@/store/account/reducer'
 import { AddressStauts } from '@/types/status'
 // import { getLocalStorage } from '@/utils/storage'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useStoreActions } from './useStoreActions'
 import { useQuery } from 'react-query'
-import { useProjectInfo } from './useProjectInfo'
 import { useUserInfo } from './useUserInfo'
 import { useUserNfts } from './useUserNfts'
 import { UserService } from '@/services/user'
 import { MempoolService } from '@/services/mempool'
 import { useAddressInscription } from './useAddressInscription'
+import { getRemainCountdown } from '@/store/common/reducer'
+import { useCountdown } from './useCountdown'
+import { useProjectInfo } from './useProjectInfo'
 
 // const enableInscription =
 //   getLocalStorage(LOCAL_STORAGE_KEYS.ENABLE_INSCRIBE) === 'true'
@@ -27,9 +29,19 @@ export const useAddressStatus = () => {
   const addressStatus = useSelector(getAddressStatus)
   const isCreatingOrder = useSelector(getIsCreatingOrder)
   const { address, isConnected, isWhitelist } = useUserInfo()
-  const { setAddressStatus } = useStoreActions()
+  const { setRemainCountdown, setAddressStatus } = useStoreActions()
   const [isCheckingTxid, setIsCheckingTxid] = useState(true)
-  const { whitelistRemainTime, normalRemainTime } = useProjectInfo()
+  const remainCountdown = useSelector(getRemainCountdown)
+  const { remainTime } = useProjectInfo()
+  const isNotStarted = useMemo(() => remainCountdown > 0, [remainCountdown])
+
+  const [count] = useCountdown({
+    countStart: remainTime
+  })
+
+  useEffect(() => {
+    if (count >= 0) setRemainCountdown(count)
+  }, [count, setRemainCountdown])
 
   const {
     data: txnInfoRes,
@@ -96,13 +108,7 @@ export const useAddressStatus = () => {
       return
     }
 
-    if (isWhitelist && whitelistRemainTime > 0) {
-      setAddressStatus(AddressStauts.NotStarted)
-      setIsCheckingTxid(false)
-      return
-    }
-
-    if (!isWhitelist && normalRemainTime > 0) {
+    if (isNotStarted) {
       setAddressStatus(AddressStauts.NotStarted)
       setIsCheckingTxid(false)
       return
@@ -124,10 +130,9 @@ export const useAddressStatus = () => {
     isCreatingOrder,
     isFetchingInscription,
     isWhitelist,
-    normalRemainTime,
+    isNotStarted,
     setAddressStatus,
-    txid,
-    whitelistRemainTime
+    txid
   ])
 
   useEffect(() => {
@@ -143,6 +148,8 @@ export const useAddressStatus = () => {
   useEffect(() => {
     const nfts = nftsData?.data?.data?.nfts
 
+    if (!nfts?.length) return
+
     const nftScceed = nfts?.find(
       (n) => !!n?.inscription_id && !n?.invalid_reason
     )
@@ -156,7 +163,7 @@ export const useAddressStatus = () => {
     if (nftFailed) {
       setAddressStatus(AddressStauts.InscriptionFailed)
     }
-  }, [nftsData?.data, setAddressStatus])
+  }, [nftsData?.data?.data?.nfts, setAddressStatus])
 
   return { isLoading }
 }
