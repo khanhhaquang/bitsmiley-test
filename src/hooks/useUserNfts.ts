@@ -1,12 +1,12 @@
-import { UserService } from '@/services/user'
+import { INft, InvalidReasonEnum, UserService } from '@/services/user'
 import { useQuery } from 'react-query'
 import { useUserInfo } from './useUserInfo'
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useStoreActions } from './useStoreActions'
 
 export const useUserNfts = () => {
   const { setTxId, setInscriptionId } = useStoreActions()
-  const { address } = useUserInfo()
+  const { address, isWhitelist } = useUserInfo()
 
   const { data: nftsDataRes, isLoading } = useQuery(
     [UserService.getNFTs.key, address],
@@ -14,6 +14,31 @@ export const useUserNfts = () => {
     {
       enabled: !!address
     }
+  )
+
+  const getDisbleMinting = useCallback(
+    (nfts?: INft[]) => {
+      if (!nfts?.length) return false
+
+      if (isWhitelist) {
+        return !!nfts.some(
+          (n) =>
+            !!n.inscription_id &&
+            !!n.invalid_reason &&
+            n.invalid_reason !== InvalidReasonEnum.NotStarted
+        )
+      }
+
+      return !!nfts.some(
+        (n) =>
+          !!n.inscription_id &&
+          !!n.invalid_reason &&
+          n.invalid_reason !== InvalidReasonEnum.NotStarted &&
+          n.invalid_reason !== InvalidReasonEnum.WhitelistMaxCountReached &&
+          n.invalid_reason !== InvalidReasonEnum.NotWhitelisted
+      )
+    },
+    [isWhitelist]
   )
 
   const mintedNft = useMemo(
@@ -24,12 +49,23 @@ export const useUserNfts = () => {
     [nftsDataRes]
   )
 
+  const disableMinting = useMemo(
+    () => getDisbleMinting(nftsDataRes?.data?.data?.nfts),
+    [getDisbleMinting, nftsDataRes?.data?.data?.nfts]
+  )
+
   useEffect(() => {
     if (mintedNft) {
       setTxId(mintedNft.txid)
       setInscriptionId(mintedNft.inscription_id)
+      return
     }
-  }, [mintedNft, setTxId, setInscriptionId])
+  }, [mintedNft, setInscriptionId, setTxId])
 
-  return { hasNftMinted: !!mintedNft, isLoading }
+  return {
+    disableMinting,
+    hasNftMinted: !!mintedNft,
+    isLoading,
+    getDisbleMinting
+  }
 }

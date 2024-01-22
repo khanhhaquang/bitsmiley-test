@@ -23,7 +23,12 @@ const FETCH_TRANSACTION_INFO_INTERVAL = 300000
 export const useAddressStatus = () => {
   const txid = useSelector(getTxId)
   const { isLoading: isFetchingInscription } = useAddressInscription()
-  const { hasNftMinted, isLoading: isFetchingUserNfts } = useUserNfts()
+  const {
+    disableMinting,
+    hasNftMinted,
+    getDisbleMinting,
+    isLoading: isFetchingUserNfts
+  } = useUserNfts()
   const addressStatus = useSelector(getAddressStatus)
   const isCreatingOrder = useSelector(getIsCreatingOrder)
   const { address, isConnected, isWhitelist } = useUserInfo()
@@ -107,6 +112,12 @@ export const useAddressStatus = () => {
       return
     }
 
+    if (disableMinting) {
+      setAddressStatus(AddressStauts.Promotion)
+      setIsCheckingTxid(false)
+      return
+    }
+
     if (isNotStarted) {
       setAddressStatus(AddressStauts.NotStarted)
       setIsCheckingTxid(false)
@@ -124,15 +135,16 @@ export const useAddressStatus = () => {
       setIsCheckingTxid(false)
     }
   }, [
-    hasNftMinted,
-    isConnected,
-    isCreatingOrder,
-    isFetchingInscription,
-    isWhitelist,
-    isNotStarted,
-    setAddressStatus,
     txid,
-    isFetchingUserNfts
+    isConnected,
+    isWhitelist,
+    hasNftMinted,
+    isNotStarted,
+    disableMinting,
+    isCreatingOrder,
+    setAddressStatus,
+    isFetchingUserNfts,
+    isFetchingInscription
   ])
 
   useEffect(() => {
@@ -146,10 +158,10 @@ export const useAddressStatus = () => {
       setAddressStatus(AddressStauts.Inscribing)
     }
   }, [
-    hasNftMinted,
     isConnected,
-    isFetchingUserNfts,
+    hasNftMinted,
     setAddressStatus,
+    isFetchingUserNfts,
     txnInfoRes?.data?.status
   ])
 
@@ -159,6 +171,13 @@ export const useAddressStatus = () => {
     const nfts = nftsData?.data?.data?.nfts
 
     if (!nfts?.length) return
+
+    const disableMinting = getDisbleMinting(nfts)
+
+    if (disableMinting) {
+      setAddressStatus(AddressStauts.Promotion)
+      return
+    }
 
     const nftScceed = nfts?.find(
       (n) => !!n?.inscription_id && !n?.invalid_reason
@@ -176,10 +195,11 @@ export const useAddressStatus = () => {
     }
   }, [
     hasNftMinted,
-    isFetchingUserNfts,
-    nftsData?.data?.data?.nfts,
+    getDisbleMinting,
+    setInscriptionId,
     setAddressStatus,
-    setInscriptionId
+    isFetchingUserNfts,
+    nftsData?.data?.data?.nfts
   ])
 
   return { isLoading }
