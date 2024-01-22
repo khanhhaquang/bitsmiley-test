@@ -9,9 +9,15 @@ import { NotStarted } from './NotStarted'
 import { InscriptionFailed } from './InscriptionFailed'
 import { InscriptionSucceeded } from './InscriptionSucceeded'
 import { CheckingInscription } from './CheckingInscription'
+import { useAddressStatus } from '@/hooks/useAddressStatus'
 
 export const BoxContent: React.FC = () => {
+  const { isLoading } = useAddressStatus()
   const addressStauts = useSelector(getAddressStatus)
+
+  if (isLoading) {
+    return <CheckingInscription />
+  }
 
   switch (addressStauts) {
     case AddressStauts.Promotion:

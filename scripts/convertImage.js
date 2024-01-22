@@ -14,7 +14,7 @@ function convertImgToHex(url) {
 function convertImgToBase64(url) {
   const file = fs.readFileSync(path.resolve(root, url))
   const base64 = new Buffer(file).toString('base64')
-  return `data:image/gif;base64,${base64}`
+  return `data:image/png;base64,${base64}`
 }
 
 function main() {

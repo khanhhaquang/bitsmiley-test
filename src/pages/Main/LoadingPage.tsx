@@ -6,12 +6,18 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'
 import { useState } from 'react'
 import { HeaderIcon, LoadingLineIcon } from '@/assets/icons'
+import { getLocalStorage } from '@/utils/storage'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+
+const hasVisited =
+  !!getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) &&
+  getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) !== 'undefined'
 
 export const LoadingPage: React.FC<{
   onEnter: () => void
   isLoading: boolean
 }> = ({ isLoading: isLoadingResources, onEnter }) => {
-  const [isLoadingProgress, setIsLoadingProgress] = useState(true)
+  const [isLoadingProgress, setIsLoadingProgress] = useState(!hasVisited)
   const isLoading = isLoadingProgress || isLoadingResources
 
   return (
@@ -45,9 +51,11 @@ export const LoadingPage: React.FC<{
                 />
               </div>
             </div>
-            <div className="mb-12">
-              <ProgressLine onStop={() => setIsLoadingProgress(false)} />
-            </div>
+            {!!isLoadingProgress && (
+              <div className="mb-12">
+                <ProgressLine onStop={() => setIsLoadingProgress(false)} />
+              </div>
+            )}
           </>
         ) : (
           <div

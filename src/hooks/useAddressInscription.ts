@@ -15,15 +15,13 @@ export const useAddressInscription = () => {
   const getTargetTxn = useCallback((txns: ITransactionInfo[] | undefined) => {
     if (!txns?.length) return null
 
-    const targetTxn = txns
-      .sort((a, b) => a.status.block_time - b.status.block_time)
-      .find((t) => {
-        const parsedInscriptions = InscriptionParserService.parse(t)
-        const targetInscription = parsedInscriptions?.find(
-          (i) => i.getDataUri().toLowerCase() === imgString.base64.toLowerCase()
-        )
-        return !!targetInscription
-      })
+    const targetTxn = txns.find((t) => {
+      const parsedInscriptions = InscriptionParserService.parse(t)
+      const targetInscription = parsedInscriptions?.find(
+        (i) => i.getDataUri().toLowerCase() === imgString.base64.toLowerCase()
+      )
+      return !!targetInscription
+    })
 
     return targetTxn
   }, [])

@@ -16,10 +16,8 @@ import { useAddressInscription } from './useAddressInscription'
 import { getRemainCountdown } from '@/store/common/reducer'
 import { useCountdown } from './useCountdown'
 import { useProjectInfo } from './useProjectInfo'
-import { sleep } from '@/utils/sleep'
 
 const FETCH_USER_NFTS_INTERVAL = 5000
-const FETCH_TRANSACTION_INFO_DELAY = 5000
 const FETCH_TRANSACTION_INFO_INTERVAL = 300000
 
 export const useAddressStatus = () => {
@@ -54,17 +52,14 @@ export const useAddressStatus = () => {
     isLoading: isLoadingTransactionInfo,
     isRefetching: isRefetchingTransactionInfo
   } = useQuery(
-    [MempoolService.getTransactionInfo.key, txid, addressStatus, hasNftMinted],
-    async () => {
-      await sleep(FETCH_TRANSACTION_INFO_DELAY)
-      return MempoolService.getTransactionInfo
+    [MempoolService.getTransactionInfo.key, txid, hasNftMinted],
+    async () =>
+      MempoolService.getTransactionInfo
         .call(txid as string)
         .then((res) => res)
-        .catch((e) => e)
-    },
+        .catch((e) => e),
     {
-      enabled:
-        !!txid && addressStatus === AddressStauts.Inscribing && !hasNftMinted,
+      enabled: !!txid && !hasNftMinted,
       refetchInterval: (res) => {
         if (!res) return false
         return res?.data?.status?.confirmed
