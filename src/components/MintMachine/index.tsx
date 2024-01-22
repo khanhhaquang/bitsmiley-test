@@ -25,13 +25,8 @@ export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
 
 const MarqueeText: React.FC = () => {
   return (
-    <div className="absolute bottom-[139px] left-[205px] h-[104px] w-[660px]">
-      <Marquee
-        speed={75}
-        className="relative flex size-full cursor-default items-center justify-center overflow-hidden whitespace-nowrap border p-5 font-sdm text-[80px] text-yellow2">
-        <span className="mr-6">bitSmiley Grand minting is here!</span>
-        <span className="mr-6">bitSmiley Grand minting is here!</span>
-        <span className="mr-6">bitSmiley Grand minting is here!</span>
+    <div className="absolute bottom-[146px] left-[205px] h-[104px] w-[660px]">
+      <Marquee speed={75} className="font-sdm text-[80px] text-yellow2">
         <span className="mr-6">bitSmiley Grand minting is here!</span>
       </Marquee>
     </div>

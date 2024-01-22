@@ -8,6 +8,7 @@ import {
   useCallback,
   useMemo,
   ReactNode,
+  CSSProperties,
   FC,
   forwardRef,
   Children,
@@ -17,17 +18,48 @@ import {
 import './index.scss'
 
 type MarqueeProps = {
+  style?: CSSProperties
   className?: string
+  autoFill?: boolean
   play?: boolean
+  pauseOnHover?: boolean
+  pauseOnClick?: boolean
   direction?: 'left' | 'right' | 'up' | 'down'
   speed?: number
+  delay?: number
+  loop?: number
+  gradient?: boolean
+  gradientColor?: string
+  gradientWidth?: number | string
+  onFinish?: () => void
+  onCycleComplete?: () => void
+  onMount?: () => void
   children?: ReactNode
 } & RefAttributes<HTMLDivElement>
 
 export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
-  { className = '', play = true, direction = 'left', speed = 50, children },
+  {
+    style = {},
+    className = '',
+    autoFill = false,
+    play = true,
+    pauseOnHover = false,
+    pauseOnClick = false,
+    direction = 'left',
+    speed = 50,
+    delay = 0,
+    loop = 0,
+    gradient = false,
+    gradientColor = 'white',
+    gradientWidth = 200,
+    onFinish,
+    onCycleComplete,
+    onMount,
+    children
+  },
   ref
 ) {
+  const [containerWidth, setContainerWidth] = useState(0)
   const [marqueeWidth, setMarqueeWidth] = useState(0)
   const [multiplier, setMultiplier] = useState(1)
   const [isMounted, setIsMounted] = useState(false)
@@ -47,7 +79,7 @@ export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
         marqueeWidth = marqueeRect.height
       }
 
-      if (containerWidth && marqueeWidth) {
+      if (autoFill && containerWidth && marqueeWidth) {
         setMultiplier(
           marqueeWidth < containerWidth
             ? Math.ceil(containerWidth / marqueeWidth)
@@ -57,9 +89,10 @@ export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
         setMultiplier(1)
       }
 
+      setContainerWidth(containerWidth)
       setMarqueeWidth(marqueeWidth)
     }
-  }, [containerRef, direction])
+  }, [autoFill, containerRef, direction])
 
   useEffect(() => {
     if (!isMounted) return
@@ -84,10 +117,32 @@ export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
     setIsMounted(true)
   }, [])
 
+  useEffect(() => {
+    if (typeof onMount === 'function') {
+      onMount()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const duration = useMemo(() => {
+    if (autoFill) {
+      return (marqueeWidth * multiplier) / speed
+    } else {
+      return marqueeWidth < containerWidth
+        ? containerWidth / speed
+        : marqueeWidth / speed
+    }
+  }, [autoFill, containerWidth, marqueeWidth, multiplier, speed])
+
   const containerStyle = useMemo(
     () => ({
-      ['--pause-on-hover' as string]: !play ? 'paused' : 'running',
-      ['--pause-on-click' as string]: !play ? 'paused' : 'running',
+      ...style,
+      ['--pause-on-hover' as string]:
+        !play || pauseOnHover ? 'paused' : 'running',
+      ['--pause-on-click' as string]:
+        !play || (pauseOnHover && !pauseOnClick) || pauseOnClick
+          ? 'paused'
+          : 'running',
       ['--width' as string]:
         direction === 'up' || direction === 'down' ? `100vh` : '100%',
       ['--transform' as string]:
@@ -97,16 +152,28 @@ export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
             ? 'rotate(90deg)'
             : 'none'
     }),
-    [play, direction]
+    [style, play, pauseOnHover, pauseOnClick, direction]
+  )
+
+  const gradientStyle = useMemo(
+    () => ({
+      ['--gradient-color' as string]: gradientColor,
+      ['--gradient-width' as string]:
+        typeof gradientWidth === 'number' ? `${gradientWidth}px` : gradientWidth
+    }),
+    [gradientColor, gradientWidth]
   )
 
   const marqueeStyle = useMemo(
     () => ({
       ['--play' as string]: play ? 'running' : 'paused',
       ['--direction' as string]: direction === 'left' ? 'normal' : 'reverse',
-      ['--duration' as string]: `${(marqueeWidth * multiplier) / speed}s`
+      ['--duration' as string]: `${duration}s`,
+      ['--delay' as string]: `${delay}s`,
+      ['--iteration-count' as string]: loop ? `${loop}` : 'infinite',
+      ['--min-width' as string]: autoFill ? `auto` : '100%'
     }),
-    [play, direction, marqueeWidth, multiplier, speed]
+    [play, direction, duration, delay, loop, autoFill]
   )
 
   const childStyle = useMemo(
@@ -147,7 +214,12 @@ export const Marquee: FC<MarqueeProps> = forwardRef(function Marquee(
       ref={containerRef}
       style={containerStyle}
       className={'rfm-marquee-container ' + className}>
-      <div className="rfm-marquee" style={marqueeStyle}>
+      {gradient && <div style={gradientStyle} className="rfm-overlay" />}
+      <div
+        className="rfm-marquee"
+        style={marqueeStyle}
+        onAnimationIteration={onCycleComplete}
+        onAnimationEnd={onFinish}>
         <div className="rfm-initial-child-container" ref={marqueeRef}>
           {Children.map(children, (child) => {
             return (
