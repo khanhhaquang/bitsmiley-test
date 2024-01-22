@@ -28,9 +28,11 @@ const MarqueeText: React.FC = () => {
     <div className="absolute bottom-[139px] left-[205px] h-[104px] w-[660px]">
       <Marquee
         speed={75}
-        className="relative flex size-full cursor-default items-center justify-center overflow-hidden whitespace-nowrap p-5 font-sdm text-[80px] text-yellow2">
-        bitSmiley grand minting coming soon !!! bitSmiley grand minting coming
-        soon !!!
+        className="relative flex size-full cursor-default items-center justify-center overflow-hidden whitespace-nowrap border p-5 font-sdm text-[80px] text-yellow2">
+        <span className="mr-6">bitSmiley Grand minting is here!</span>
+        <span className="mr-6">bitSmiley Grand minting is here!</span>
+        <span className="mr-6">bitSmiley Grand minting is here!</span>
+        <span className="mr-6">bitSmiley Grand minting is here!</span>
       </Marquee>
     </div>
   )

@@ -16,8 +16,10 @@ import { useAddressInscription } from './useAddressInscription'
 import { getRemainCountdown } from '@/store/common/reducer'
 import { useCountdown } from './useCountdown'
 import { useProjectInfo } from './useProjectInfo'
+import { sleep } from '@/utils/sleep'
 
 const FETCH_USER_NFTS_INTERVAL = 5000
+const FETCH_TRANSACTION_INFO_DELAY = 5000
 const FETCH_TRANSACTION_INFO_INTERVAL = 300000
 
 export const useAddressStatus = () => {
@@ -53,11 +55,13 @@ export const useAddressStatus = () => {
     isRefetching: isRefetchingTransactionInfo
   } = useQuery(
     [MempoolService.getTransactionInfo.key, txid, addressStatus, hasNftMinted],
-    () =>
-      MempoolService.getTransactionInfo
+    async () => {
+      await sleep(FETCH_TRANSACTION_INFO_DELAY)
+      return MempoolService.getTransactionInfo
         .call(txid as string)
         .then((res) => res)
-        .catch((e) => e),
+        .catch((e) => e)
+    },
     {
       enabled:
         !!txid && addressStatus === AddressStauts.Inscribing && !hasNftMinted,
@@ -172,13 +176,6 @@ export const useAddressStatus = () => {
 
     if (!nfts?.length) return
 
-    const disableMinting = getDisbleMinting(nfts)
-
-    if (disableMinting) {
-      setAddressStatus(AddressStauts.Promotion)
-      return
-    }
-
     const nftScceed = nfts?.find(
       (n) => !!n?.inscription_id && !n?.invalid_reason
     )
@@ -187,6 +184,13 @@ export const useAddressStatus = () => {
     if (nftScceed) {
       setInscriptionId(nftScceed.inscription_id)
       setAddressStatus(AddressStauts.InscriptionSucceeded)
+      return
+    }
+
+    const disableMinting = getDisbleMinting(nfts)
+
+    if (disableMinting) {
+      setAddressStatus(AddressStauts.Promotion)
       return
     }
 

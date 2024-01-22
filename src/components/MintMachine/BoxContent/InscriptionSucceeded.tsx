@@ -9,7 +9,12 @@ import { useSelector } from 'react-redux'
 import { getInscriptionId } from '@/store/account/reducer'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { Modal } from '@/components/Modal'
-import { CloseIcon, DotIcon, LineIcon, StarIcon } from '@/assets/icons'
+import {
+  BitDiscBlackIcon,
+  BitSmilerIcon,
+  CloseIcon,
+  DotIcon
+} from '@/assets/icons'
 
 export const InscriptionSucceeded: React.FC = () => {
   const { address } = useUserInfo()
@@ -148,44 +153,25 @@ const MintedModal: React.FC<{
             className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
           />
 
-          <div className="px-[72px] pb-14 pt-[72px]">
-            <div className="mb-9 flex items-center justify-between">
-              <StarIcon className="mr-3 h-[29px] w-5" />
-              <StarIcon className="h-[29px] w-5" />
-              <span className="mx-[18px] font-smb text-[28px]">
-                CONGRATULATIONS
-              </span>
-              <StarIcon className="h-[29px] w-5" />
-              <StarIcon className="ml-3 h-[29px] w-5" />
-            </div>
-            <div className="mb-[72px] flex flex-col items-center">
+          <div className="bg-black px-[72px] pb-14 pt-[72px]">
+            <div className="mb-[72px] flex flex-col items-center justify-center">
               <Image
-                src={getIllustrationUrl('disc')}
-                className="mb-9 h-[203px] object-cover mix-blend-lighten"
+                src={getIllustrationUrl('bitDiskBlack')}
+                className="h-[450px]"
               />
-              <div className="flex flex-col items-center gap-y-2.5">
-                <div className="bg-express-black bg-clip-text font-smb text-lg text-transparent">
-                  SMILEY EXPRESS BLACK
-                </div>
-                <div className="relative h-[14px] w-[88px]">
-                  <span className="absolute -top-2 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap bg-black px-1.5">
-                    <span className="bg-express-black bg-clip-text text-lg text-transparent">
-                      bitSmiler OG
-                    </span>
-                  </span>
-                  <LineIcon className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
-              </div>
+              <BitDiscBlackIcon className="mb-2" />
+              <BitSmilerIcon />
             </div>
+
             <div className="mb-6 w-[528px] text-sm leading-tight">
-              You are now the proud owner of SMILEY EXPRESS BLACK card. For you,
-              one of the bitSmiler OG, we have a lot of exciting bits ahead for
-              you.
+              You are now the proud owner of bitDisc BLACK. For you, one of the
+              bitSmiler OG, we have a lot of exciting bits ahead for you.
             </div>
+
             <div className="mb-9 flex items-center gap-x-2 uppercase text-green">
               <DotIcon />
               <span>
-                your card is on the way [
+                Check your inscription here [
                 <span
                   className="cursor-pointer hover:underline"
                   onClick={() => {

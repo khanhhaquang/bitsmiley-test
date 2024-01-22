@@ -15,6 +15,8 @@ import StarIcon from './start.svg'
 import CrownIcon from './crown.svg'
 import CrownYellowIcon from './crown-yellow.svg'
 import LineIcon from './line.svg'
+import BitDiscBlackIcon from './bitDiskBlack.svg'
+import BitSmilerIcon from './bitSmiler.svg'
 
 export {
   DotIcon,
@@ -33,5 +35,7 @@ export {
   StarIcon,
   CrownIcon,
   CrownYellowIcon,
-  LineIcon
+  LineIcon,
+  BitDiscBlackIcon,
+  BitSmilerIcon
 }
