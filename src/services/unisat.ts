@@ -1,5 +1,4 @@
-import axios from 'axios'
-import { DOMAIN_URL, UNISAT_API_KEY } from '@/config/settings'
+import axiosInstance from '@/config/axios'
 
 export interface IUnisatOrder {
   orderId: string
@@ -36,15 +35,13 @@ interface IUnisatResponse<T> {
 }
 
 export interface ICreateUnisatInscribeOrderData {
-  receiveAddress: string
-  feeRate: number
-  outputValue: number
-  files: {
-    filename: string
-    dataURL: string
-  }[]
+  dataURL: string
   devAddress?: string
   devFee?: number
+  feeRate: number
+  filename: string
+  outputValue: number
+  receiveAddress: string
 }
 
 export interface IInscriptionInfo {
@@ -53,32 +50,28 @@ export interface IInscriptionInfo {
   }
 }
 
-const axiosInstance = axios.create({
-  baseURL: DOMAIN_URL.UNISATE_API,
-  headers: { Authorization: 'Bearer ' + UNISAT_API_KEY }
-})
-
 export const UnisatService = {
   createInscribeOrder: {
     key: 'unisat.createInscribeOrder',
     call: (data: ICreateUnisatInscribeOrderData) =>
       axiosInstance.post<IUnisatResponse<IUnisatOrder>>(
-        '/v2/inscribe/order/create',
-        data
+        '/unisat/createOrder',
+        null,
+        { params: data }
       )
   },
   searchInscribeOrder: {
     key: 'unisat.searchInscribeOrder',
     call: (orderId: string) =>
       axiosInstance.get<IUnisatResponse<IUnisatOrder>>(
-        `/v2/inscribe/order/${orderId}`
+        `/unisat/inscribe/order/${orderId}`
       )
   },
   getInscriptionInfo: {
     key: 'unisat.getInscriptionInfo',
     call: (inscriptionId: string) =>
       axiosInstance.get<IUnisatResponse<IInscriptionInfo>>(
-        `/v1/indexer/inscription/info/${inscriptionId}`
+        `/unisat/indexer/inscription/info/${inscriptionId}`
       )
   }
 }

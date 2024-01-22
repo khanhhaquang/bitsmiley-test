@@ -15,7 +15,7 @@ export const useInscribe = () => {
   const loginType = useSelector(getLoginType)
   const { address } = useUserInfo()
   const { setTxId, setIsCreatingOrder } = useStoreActions()
-  const { mintStartBlock } = useProjectInfo()
+  const { getCanMint } = useProjectInfo()
 
   const { resultRef: orderInfoRes, doPolling: pollOrderInfo } = usePolling({
     request: UnisatService.searchInscribeOrder.call,
@@ -70,12 +70,8 @@ export const useInscribe = () => {
         feeRate: recommendedFeeRes?.data?.fastestFee || 30,
         receiveAddress: address,
         outputValue: OUTPUT_VALUE,
-        files: [
-          {
-            filename: 'bitDisc',
-            dataURL: imgString.base64
-          }
-        ]
+        filename: 'bitDisc',
+        dataURL: imgString.base64
       })
 
       const amount = createRes.data.data?.amount
@@ -124,7 +120,10 @@ export const useInscribe = () => {
     try {
       const currentBlockHeightRes =
         await MempoolService.getBlockTipHeight.call()
-      if (currentBlockHeightRes.data < mintStartBlock) {
+
+      const canMint = getCanMint(currentBlockHeightRes?.data)
+
+      if (!canMint) {
         setIsCreatingOrder(false)
         throw Error('minting not started yet')
       }

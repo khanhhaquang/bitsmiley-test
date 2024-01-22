@@ -6,6 +6,9 @@ export interface IProject {
   startTime: string
   mintEndTime: string
   nowTime: string
+  whitelistStartBlockHeight: string
+  publicStartBlockHeight: string
+  whitelistEndBlockHeight: string
 }
 
 export const ProjectService = {

@@ -14,7 +14,6 @@ export const useStoreActions = () => {
     [dispatch]
   )
 
-  // account
   const setAccountInfo = useCallback(
     (payload: IAccountInfo) =>
       dispatch(accountActions.SET_ACCOUNT_INFO(payload)),
@@ -28,6 +27,11 @@ export const useStoreActions = () => {
   const setTxId = useCallback(
     (payload: string | undefined) =>
       dispatch(accountActions.SET_TX_ID(payload)),
+    [dispatch]
+  )
+  const setInscriptionId = useCallback(
+    (payload: string | undefined) =>
+      dispatch(accountActions.SET_INSCRIPTION_ID(payload)),
     [dispatch]
   )
   const setAddressStatus = useCallback(
@@ -57,6 +61,7 @@ export const useStoreActions = () => {
     setLoginType,
     resetStorage,
     setTxId,
+    setInscriptionId,
     setAddressStatus,
     setIsCreatingOrder
   }

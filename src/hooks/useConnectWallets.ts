@@ -5,32 +5,30 @@ import { useCallback, useEffect } from 'react'
 import { getLoginType } from '@/store/account/reducer'
 import { WALLETSITE } from '@/config/links'
 import { clearLoginType } from '@/utils/storage.ts'
+import { openUrl } from '@/utils/getAssetsUrl'
 
 export const useConnectWallets = () => {
   const loginType = useSelector(getLoginType)
-  const { setAccountInfo, setLoginType } = useStoreActions()
+  const { setAccountInfo, setLoginType, resetStorage } = useStoreActions()
 
   const handleAccountChanged = useCallback(
     (newAccountInfo: IAccountInfo | null, loginType: LoginTypeEnum) => {
       if (!newAccountInfo) {
-        setAccountInfo({
-          address: '',
-          publicKey: ''
-        })
-        setLoginType(LoginTypeEnum.None)
+        resetStorage()
         clearLoginType()
         return
       }
 
+      resetStorage()
       setAccountInfo(newAccountInfo)
       setLoginType(loginType)
     },
-    [setAccountInfo, setLoginType]
+    [resetStorage, setAccountInfo, setLoginType]
   )
 
   const connectOkx = async () => {
     if (typeof window.okxwallet === 'undefined') {
-      window.open(WALLETSITE.okx, '__blank')
+      openUrl(WALLETSITE.okx)
       return
     }
 
@@ -47,7 +45,7 @@ export const useConnectWallets = () => {
 
   const connectUnisat = async () => {
     if (typeof window.unisat === 'undefined') {
-      window.open(WALLETSITE.unisat, '__blank')
+      openUrl(WALLETSITE.unisat)
       return
     }
 

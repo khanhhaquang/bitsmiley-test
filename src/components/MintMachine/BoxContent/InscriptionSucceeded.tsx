@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Image } from '@/components/Image'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
-import { displayAddress, getBtcScanUrl } from '@/utils/formatter'
-import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { displayAddress, getOrdScanUrl } from '@/utils/formatter'
+import { getFrameUrl, getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
 import { CanvasFrames, CanvasFramesRef } from '@/components/CanvasFrames'
 import { useSelector } from 'react-redux'
-import { getTxId } from '@/store/account/reducer'
+import { getInscriptionId } from '@/store/account/reducer'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { Modal } from '@/components/Modal'
 import { CloseIcon, DotIcon, LineIcon, StarIcon } from '@/assets/icons'
@@ -133,7 +133,7 @@ const MintedModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
-  const txId = useSelector(getTxId)
+  const inscriptionId = useSelector(getInscriptionId)
   const { width } = useWindowSize()
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -189,10 +189,10 @@ const MintedModal: React.FC<{
                 <span
                   className="cursor-pointer hover:underline"
                   onClick={() => {
-                    if (!txId) return
-                    window.open(getBtcScanUrl(txId), '__blank')
+                    if (!inscriptionId) return
+                    openUrl(getOrdScanUrl(inscriptionId))
                   }}>
-                  btcscan
+                  OrdScan
                 </span>
                 ]
               </span>

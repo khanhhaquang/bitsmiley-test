@@ -1,6 +1,6 @@
 import { Image } from '@/components/Image'
 import { RefObject, useRef } from 'react'
-import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { getFrameUrl, getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { MEDIA } from '@/config/links'
 import { cn } from '@/utils/cn'
@@ -84,7 +84,7 @@ const Inventor: React.FC = () => {
             time.
           </div>
           <div
-            onClick={() => window.open(MEDIA.whitePaper, '__blank')}
+            onClick={() => openUrl(MEDIA.whitePaper)}
             className={cn(
               'inline-block h-10 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 active:shadow-none',
               'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
@@ -130,7 +130,7 @@ const Articles: React.FC = () => {
         <div
           key={idx}
           className="aspect-square w-[370px] shrink-0 cursor-pointer"
-          onClick={() => window.open(i.link, '__blank')}>
+          onClick={() => openUrl(i.link)}>
           {i.img && (
             <Image
               className="aspect-square w-[370px] object-cover"

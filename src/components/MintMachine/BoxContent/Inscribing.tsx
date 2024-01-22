@@ -1,6 +1,7 @@
 import { AsteriskIcon } from '@/assets/icons'
 import { getIsCreatingOrder, getTxId } from '@/store/account/reducer'
 import { getBtcScanUrl } from '@/utils/formatter'
+import { openUrl } from '@/utils/getAssetsUrl'
 import { useSelector } from 'react-redux'
 
 export const Inscribing: React.FC = () => {
@@ -22,7 +23,7 @@ export const Inscribing: React.FC = () => {
             (
             <span
               className="cursor-pointer text-green hover:underline"
-              onClick={() => window.open(getBtcScanUrl(txid), '__blank')}>
+              onClick={() => openUrl(getBtcScanUrl(txid))}>
               BTCScan
             </span>
             )

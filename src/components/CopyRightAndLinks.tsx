@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { openUrl } from '@/utils/getAssetsUrl'
 
 export const CopyRightAndLinks: React.FC<{
   musicControl?: boolean
@@ -96,21 +97,21 @@ export const CopyRightAndLinks: React.FC<{
           )}
           <span
             className="cursor-pointer"
-            onClick={() => window.open(MEDIA.discord, '__blank')}>
+            onClick={() => openUrl(MEDIA.discord)}>
             [
             <span className="hover:underline active:no-underline">Discord</span>
             ]
           </span>
           <span
             className="cursor-pointer"
-            onClick={() => window.open(MEDIA.twitter, '__blank')}>
+            onClick={() => openUrl(MEDIA.twitter)}>
             [
             <span className="hover:underline active:no-underline">Twitter</span>
             ]
           </span>
           <span
             className="cursor-pointer"
-            onClick={() => window.open(MEDIA.whitePaper, '__blank')}>
+            onClick={() => openUrl(MEDIA.whitePaper)}>
             [
             <span className="hover:underline active:no-underline">
               Whitepaper

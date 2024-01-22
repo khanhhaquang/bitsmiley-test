@@ -1,9 +1,7 @@
 import { useQuery } from 'react-query'
 import { ProjectService } from '@/services/project'
 import { useUserInfo } from './useUserInfo'
-
-const whitelistStartBlock = 826772
-const publicStartBlock = 826773
+import { useCallback } from 'react'
 
 export const useProjectInfo = () => {
   const { isWhitelist } = useUserInfo()
@@ -11,8 +9,6 @@ export const useProjectInfo = () => {
     ProjectService.getProjectInfo.key,
     ProjectService.getProjectInfo.call
   )
-
-  const mintStartBlock = isWhitelist ? whitelistStartBlock : publicStartBlock
 
   const nowTime = Number(data?.data?.data?.nowTime || 0)
   const startTime = Number(data?.data?.data?.startTime || 0)
@@ -27,10 +23,43 @@ export const useProjectInfo = () => {
   )
   const remainTime = isWhitelist ? whitelistRemainTime : normalRemainTime
 
+  const getCanMint = useCallback(
+    (currentBlockHeight?: number) => {
+      const whitelistStartBlockHeight = Number(
+        data?.data?.data?.whitelistStartBlockHeight || 0
+      )
+      const publicStartBlockHeight = Number(
+        data?.data?.data?.publicStartBlockHeight || 0
+      )
+      const whitelistEndBlockHeight = Number(
+        data?.data?.data?.whitelistEndBlockHeight || 0
+      )
+
+      if (
+        !whitelistEndBlockHeight ||
+        !publicStartBlockHeight ||
+        !whitelistEndBlockHeight ||
+        !currentBlockHeight
+      )
+        return false
+
+      if (isWhitelist) {
+        return (
+          (currentBlockHeight >= whitelistStartBlockHeight &&
+            currentBlockHeight <= whitelistEndBlockHeight) ||
+          currentBlockHeight >= publicStartBlockHeight
+        )
+      } else {
+        return currentBlockHeight >= publicStartBlockHeight
+      }
+    },
+    [data, isWhitelist]
+  )
+
   return {
     info: data?.data?.data,
     remainTime,
-    mintStartBlock,
-    isLoading
+    isLoading,
+    getCanMint
   }
 }

@@ -10,20 +10,16 @@ export const useCheckWalletConnection = () => {
   const [isWalletConnected, setIsWalletConnected] = useState<
     boolean | undefined
   >()
-  const { setAccountInfo, setLoginType } = useStoreActions()
+  const { resetStorage, setAccountInfo } = useStoreActions()
   const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
   const { isConnected } = useUserInfo()
 
   const isLoading = isWalletConnected === undefined || isFetchingAccountsInfo
 
   const clearConnectedInfo = useCallback(() => {
-    setAccountInfo({
-      address: '',
-      publicKey: ''
-    })
-    setLoginType(LoginTypeEnum.None)
+    resetStorage()
     clearLoginType()
-  }, [setAccountInfo, setLoginType])
+  }, [resetStorage])
 
   const fetchAccountInfo = useCallback(async () => {
     if (localLoginType === LoginTypeEnum.OKX) {

@@ -17,6 +17,9 @@ import { getRemainCountdown } from '@/store/common/reducer'
 import { useCountdown } from './useCountdown'
 import { useProjectInfo } from './useProjectInfo'
 
+const FETCH_USER_NFTS_INTERVAL = 5000
+const FETCH_TRANSACTION_INFO_INTERVAL = 300000
+
 export const useAddressStatus = () => {
   const txid = useSelector(getTxId)
   const { isLoading: isFetchingInscription } = useAddressInscription()
@@ -24,7 +27,8 @@ export const useAddressStatus = () => {
   const addressStatus = useSelector(getAddressStatus)
   const isCreatingOrder = useSelector(getIsCreatingOrder)
   const { address, isConnected, isWhitelist } = useUserInfo()
-  const { setRemainCountdown, setAddressStatus } = useStoreActions()
+  const { setRemainCountdown, setAddressStatus, setInscriptionId } =
+    useStoreActions()
   const [isCheckingTxid, setIsCheckingTxid] = useState(true)
   const remainCountdown = useSelector(getRemainCountdown)
   const { remainTime } = useProjectInfo()
@@ -43,17 +47,20 @@ export const useAddressStatus = () => {
     isLoading: isLoadingTransactionInfo,
     isRefetching: isRefetchingTransactionInfo
   } = useQuery(
-    [MempoolService.getTransactionInfo.key, txid, hasNftMinted],
+    [MempoolService.getTransactionInfo.key, txid, addressStatus, hasNftMinted],
     () =>
       MempoolService.getTransactionInfo
         .call(txid as string)
         .then((res) => res)
         .catch((e) => e),
     {
-      enabled: !!txid && !hasNftMinted,
+      enabled:
+        !!txid && addressStatus === AddressStauts.Inscribing && !hasNftMinted,
       refetchInterval: (res) => {
         if (!res) return false
-        return res?.data?.status?.confirmed ? false : 1000 * 60
+        return res?.data?.status?.confirmed
+          ? false
+          : FETCH_TRANSACTION_INFO_INTERVAL
       }
     }
   )
@@ -63,15 +70,16 @@ export const useAddressStatus = () => {
     isLoading: isLoadingNfts,
     isRefetching: isRefetchingNfts
   } = useQuery(
-    [UserService.getNFTs.key, address, addressStatus, hasNftMinted],
+    [UserService.getNFTs.key, txid, address, addressStatus, hasNftMinted],
     () => UserService.getNFTs.call(address),
     {
       enabled:
+        !!txid &&
         !!address &&
         addressStatus === AddressStauts.InscriptionConfirmed &&
         !hasNftMinted,
       refetchInterval: (res) =>
-        res?.data?.data?.nfts?.length ? false : 1000 * 5
+        res?.data?.data?.nfts?.length ? false : FETCH_USER_NFTS_INTERVAL
     }
   )
 
@@ -158,6 +166,7 @@ export const useAddressStatus = () => {
     const nftFailed = nfts?.find((n) => !!n?.invalid_reason)
 
     if (nftScceed) {
+      setInscriptionId(nftScceed.inscription_id)
       setAddressStatus(AddressStauts.InscriptionSucceeded)
       return
     }
@@ -169,7 +178,8 @@ export const useAddressStatus = () => {
     hasNftMinted,
     isFetchingUserNfts,
     nftsData?.data?.data?.nfts,
-    setAddressStatus
+    setAddressStatus,
+    setInscriptionId
   ])
 
   return { isLoading }

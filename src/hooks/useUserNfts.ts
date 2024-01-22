@@ -5,7 +5,7 @@ import { useEffect, useMemo } from 'react'
 import { useStoreActions } from './useStoreActions'
 
 export const useUserNfts = () => {
-  const { setTxId } = useStoreActions()
+  const { setTxId, setInscriptionId } = useStoreActions()
   const { address } = useUserInfo()
 
   const { data: nftsDataRes, isLoading } = useQuery(
@@ -27,8 +27,9 @@ export const useUserNfts = () => {
   useEffect(() => {
     if (mintedNft) {
       setTxId(mintedNft.txid)
+      setInscriptionId(mintedNft.inscription_id)
     }
-  }, [mintedNft, setTxId])
+  }, [mintedNft, setTxId, setInscriptionId])
 
   return { hasNftMinted: !!mintedNft, isLoading }
 }

@@ -13,8 +13,9 @@ export const displayAddress = (
 }
 
 export const getBtcScanUrl = (txid: string) => {
-  if (import.meta.env.PROD) {
-    return `https://mempool.space/tx/${txid}`
-  }
-  return `https://mempool.space/testnet/tx/${txid}`
+  return `https://mempool.space/tx/${txid}`
+}
+
+export const getOrdScanUrl = (inscriptionId: string) => {
+  return `https://ordinals.com/inscription/${inscriptionId}`
 }

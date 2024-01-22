@@ -11,6 +11,7 @@ const initState: {
   loginType: string
   accountInfo: IAccountInfo
   txid?: string
+  inscriptionId?: string
   addressStatus: AddressStauts
   isCreatingOrder: boolean
 } = {
@@ -21,6 +22,7 @@ const initState: {
     publicKey: ''
   },
   txid: '',
+  inscriptionId: '',
   addressStatus: AddressStauts.Promotion,
   isCreatingOrder: false
 }
@@ -46,9 +48,15 @@ export default createReducer(initState, (builder) => {
   builder.addCase(actions.SET_IS_CREATING_ORDER, (state, action) => {
     state.isCreatingOrder = action.payload
   })
+
+  builder.addCase(actions.SET_INSCRIPTION_ID, (state, action) => {
+    state.inscriptionId = action.payload
+  })
 })
 
 export const getTxId = (state: RootState) => state.account.txid
+export const getInscriptionId = (state: RootState) =>
+  state.account.inscriptionId
 export const getAddressStatus = (state: RootState) =>
   state.account.addressStatus
 export const getAccountInfo = (state: RootState) => state.account.accountInfo

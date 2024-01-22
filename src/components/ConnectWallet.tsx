@@ -1,4 +1,4 @@
-import { CSSProperties, useState } from 'react'
+import { CSSProperties, useRef, useState } from 'react'
 import { Modal } from './Modal'
 import { Image } from '@/components/Image'
 import { cn } from '@/utils/cn'
@@ -7,6 +7,7 @@ import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { useClickOutside } from '@/hooks/useClickOutside'
 
 export const ConnectWallet: React.FC<{
   className?: string
@@ -18,14 +19,18 @@ export const ConnectWallet: React.FC<{
   const { address, isConnected } = useUserInfo()
   const { connectOkx, connectUnisat, disConnect } = useConnectWallets()
 
+  const buttonRef = useRef<HTMLDivElement>(null)
+  useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false), true)
+
   return (
     <>
       <div
+        ref={buttonRef}
         onClick={() => {
           if (!isConnected) {
             setIsOpen(true)
           } else {
-            setIsLogoutDropdownOpen((v) => !v)
+            setIsLogoutDropdownOpen(true)
           }
         }}
         style={style}

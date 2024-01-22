@@ -5,37 +5,28 @@ import { useStoreActions } from './useStoreActions'
 import imgString from './imgString.json'
 import { useCallback, useEffect, useState } from 'react'
 import { useUserNfts } from './useUserNfts'
-import { useProjectInfo } from './useProjectInfo'
 
 export const useAddressInscription = () => {
   const { address } = useUserInfo()
   const { hasNftMinted, isLoading: isFetchingUserNfts } = useUserNfts()
   const { setTxId } = useStoreActions()
-  const { mintStartBlock } = useProjectInfo()
   const [isChecking, setIsChecking] = useState(true)
 
-  const getTargetTxn = useCallback(
-    (txns: ITransactionInfo[] | undefined) => {
-      if (!txns?.length) return null
+  const getTargetTxn = useCallback((txns: ITransactionInfo[] | undefined) => {
+    if (!txns?.length) return null
 
-      const targetTxn = txns
-        .sort((a, b) => a.status.block_time - b.status.block_time)
-        .find((t) => {
-          const parsedInscriptions = InscriptionParserService.parse(t)
-          const targetInscription = parsedInscriptions?.find(
-            (i) =>
-              i.getDataUri().toLowerCase() === imgString.base64.toLowerCase()
-          )
-          return (
-            !!targetInscription &&
-            (t.status?.block_height || 0) > mintStartBlock
-          )
-        })
+    const targetTxn = txns
+      .sort((a, b) => a.status.block_time - b.status.block_time)
+      .find((t) => {
+        const parsedInscriptions = InscriptionParserService.parse(t)
+        const targetInscription = parsedInscriptions?.find(
+          (i) => i.getDataUri().toLowerCase() === imgString.base64.toLowerCase()
+        )
+        return !!targetInscription
+      })
 
-      return targetTxn
-    },
-    [mintStartBlock]
-  )
+    return targetTxn
+  }, [])
 
   const fetchTxns = useCallback(async () => {
     if (!address || hasNftMinted) {
@@ -47,7 +38,7 @@ export const useAddressInscription = () => {
 
     try {
       const res = await MempoolService.getAddressTransactions.call(address)
-      const targetTxn = getTargetTxn(res.data)
+      const targetTxn = getTargetTxn(res?.data)
       if (targetTxn) {
         setTxId(targetTxn?.txid)
       }

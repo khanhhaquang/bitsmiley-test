@@ -19,3 +19,7 @@ export const getIllustrationUrl = (name: string, format?: string) => {
     import.meta.url
   ).href
 }
+
+export const openUrl = (url: string) => {
+  window.open(url, '_blank')
+}
