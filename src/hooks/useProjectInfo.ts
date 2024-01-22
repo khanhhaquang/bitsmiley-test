@@ -2,12 +2,17 @@ import { useQuery } from 'react-query'
 import { ProjectService } from '@/services/project'
 import { useUserInfo } from './useUserInfo'
 
+const whitelistStartBlock = 826772
+const publicStartBlock = 826773
+
 export const useProjectInfo = () => {
   const { isWhitelist } = useUserInfo()
   const { data, isLoading } = useQuery(
     ProjectService.getProjectInfo.key,
     ProjectService.getProjectInfo.call
   )
+
+  const mintStartBlock = isWhitelist ? whitelistStartBlock : publicStartBlock
 
   const nowTime = Number(data?.data?.data?.nowTime || 0)
   const startTime = Number(data?.data?.data?.startTime || 0)
@@ -25,6 +30,7 @@ export const useProjectInfo = () => {
   return {
     info: data?.data?.data,
     remainTime,
+    mintStartBlock,
     isLoading
   }
 }

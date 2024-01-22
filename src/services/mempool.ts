@@ -64,5 +64,9 @@ export const MempoolService = {
   getRecommendedFees: {
     key: 'mempool.getRecommendedFees',
     call: () => axiosInstance.get<IRecommendedFee>('/v1/fees/recommended')
+  },
+  getBlockTipHeight: {
+    key: 'mempool.getBlockTipHeight',
+    call: () => axiosInstance.get<number>('/blocks/tip/height')
   }
 }

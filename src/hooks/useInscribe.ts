@@ -7,6 +7,7 @@ import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
 import { MempoolService } from '@/services/mempool'
 import imgString from './imgString.json'
+import { useProjectInfo } from './useProjectInfo'
 
 const OUTPUT_VALUE = 546
 
@@ -14,6 +15,7 @@ export const useInscribe = () => {
   const loginType = useSelector(getLoginType)
   const { address } = useUserInfo()
   const { setTxId, setIsCreatingOrder } = useStoreActions()
+  const { mintStartBlock } = useProjectInfo()
 
   const { resultRef: orderInfoRes, doPolling: pollOrderInfo } = usePolling({
     request: UnisatService.searchInscribeOrder.call,
@@ -117,7 +119,24 @@ export const useInscribe = () => {
     }
   }
 
+  const checkingMintingStarted = async () => {
+    setIsCreatingOrder(true)
+    try {
+      const currentBlockHeightRes =
+        await MempoolService.getBlockTipHeight.call()
+      if (currentBlockHeightRes.data < mintStartBlock) {
+        setIsCreatingOrder(false)
+        throw Error('minting not started yet')
+      }
+    } catch (e) {
+      setIsCreatingOrder(false)
+      throw Error('minting not started yet')
+    }
+  }
+
   const inscribe = async () => {
+    await checkingMintingStarted()
+
     if (loginType === LoginTypeEnum.OKX) {
       const res = await okxInscribe()
       return res

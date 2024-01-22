@@ -36,6 +36,7 @@ export const InscriptionSucceeded: React.FC = () => {
           if (!isPlayingCardComingout) setIsPlayingCardComingout(true)
         }}
         className={cn(
+          isPlayingCardComingout && 'invisible',
           'absolute left-[613px] top-[532px] cursor-pointer z-[100]',
           'bg-white cursor-pointer text-black px-3 py-1 uppercase font-bold whitespace-nowrap text-[15px]',
           'hover:bg-blue3',

@@ -5,28 +5,37 @@ import { useStoreActions } from './useStoreActions'
 import imgString from './imgString.json'
 import { useCallback, useEffect, useState } from 'react'
 import { useUserNfts } from './useUserNfts'
+import { useProjectInfo } from './useProjectInfo'
 
 export const useAddressInscription = () => {
   const { address } = useUserInfo()
   const { hasNftMinted, isLoading: isFetchingUserNfts } = useUserNfts()
   const { setTxId } = useStoreActions()
+  const { mintStartBlock } = useProjectInfo()
   const [isChecking, setIsChecking] = useState(true)
 
-  const getTargetTxn = (txns: ITransactionInfo[] | undefined) => {
-    if (!txns?.length) return null
+  const getTargetTxn = useCallback(
+    (txns: ITransactionInfo[] | undefined) => {
+      if (!txns?.length) return null
 
-    const targetTxn = txns
-      .sort((a, b) => a.status.block_time - b.status.block_time)
-      .find((t) => {
-        const parsedInscriptions = InscriptionParserService.parse(t)
-        const targetInscription = parsedInscriptions?.find(
-          (i) => i.getDataUri().toLowerCase() === imgString.base64.toLowerCase()
-        )
-        return !!targetInscription
-      })
+      const targetTxn = txns
+        .sort((a, b) => a.status.block_time - b.status.block_time)
+        .find((t) => {
+          const parsedInscriptions = InscriptionParserService.parse(t)
+          const targetInscription = parsedInscriptions?.find(
+            (i) =>
+              i.getDataUri().toLowerCase() === imgString.base64.toLowerCase()
+          )
+          return (
+            !!targetInscription &&
+            (t.status?.block_height || 0) > mintStartBlock
+          )
+        })
 
-    return targetTxn
-  }
+      return targetTxn
+    },
+    [mintStartBlock]
+  )
 
   const fetchTxns = useCallback(async () => {
     if (!address || hasNftMinted) {
@@ -47,7 +56,7 @@ export const useAddressInscription = () => {
     } finally {
       setIsChecking(false)
     }
-  }, [address, hasNftMinted, isFetchingUserNfts, setTxId])
+  }, [address, getTargetTxn, hasNftMinted, isFetchingUserNfts, setTxId])
 
   useEffect(() => {
     fetchTxns()
