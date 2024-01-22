@@ -74,9 +74,11 @@ jobs:
       - name: Deploy to S3 dev
         if: env.IS_DEPLOY_DEVELOP == 'true'
         run: |
-          aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
+          aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete --cache-control "public, max-age=604800, immutable"
 
           aws cloudfront create-invalidation --distribution-id EA1V5QWQJDZTR --paths "/*"
+
+          aws s3 cp s3://$S3_BUCKET/$S3_SUBPATH/index.html s3://$S3_BUCKET/$S3_SUBPATH/index.html --metadata-directive REPLACE --cache-control max-age=0 --content-type "text/html"
 
       - name: Deploy to S3 prod
         if: env.IS_DEPLOY_MAIN == 'true'
