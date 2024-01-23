@@ -16,11 +16,25 @@ export const useProjectInfo = () => {
       const whitelistStartBlockHeight = Number(
         res?.data?.data?.whitelistStartBlockHeight || 0
       )
+      const whitelistEndBlockHeight = Number(
+        res?.data?.data?.whitelistEndBlockHeight || 0
+      )
+      const publicStartBlockHeight = Number(
+        res?.data?.data?.publicStartBlockHeight || 0
+      )
       const whitelistRemainBlock = Math.max(
         0,
         whitelistStartBlockHeight - nowBlockHeight - 1
       )
-      return whitelistRemainBlock
+
+      const isWhitelistEnded = nowBlockHeight >= whitelistEndBlockHeight
+
+      const normalRemainBlock = Math.max(
+        0,
+        publicStartBlockHeight - nowBlockHeight - 1
+      )
+
+      return isWhitelistEnded ? normalRemainBlock : whitelistRemainBlock
     },
     []
   )
@@ -50,7 +64,7 @@ export const useProjectInfo = () => {
     [getNormalRemainBlock, getWhitelistRemainBlock, isWhitelist]
   )
 
-  const { data, isLoading } = useQuery(
+  const { data, isLoading, isFetching } = useQuery(
     [ProjectService.getProjectInfo.key, isWhitelist],
     ProjectService.getProjectInfo.call,
     {
@@ -71,5 +85,5 @@ export const useProjectInfo = () => {
     getWhitelistRemainBlock
   ])
 
-  return { isLoading, getCanMint }
+  return { isLoading, getCanMint, isFetching }
 }
