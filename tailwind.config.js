@@ -50,6 +50,8 @@ export default {
       backgroundImage: {
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")',
+        'mint-success-modal':
+          'url("/src/assets/illustrations/mint-success-modal-bg.png")',
         'gold-og':
           'linear-gradient(180deg, #FFC700 0%, #FFF8DD 19%, #8F6F00 45.5%, #FFC700 67%, #876A00 100%)',
         'express-black':

@@ -41,7 +41,7 @@ export const useInscribe = () => {
         from: address,
         inscriptions: [
           {
-            contentType: 'image/png',
+            contentType: 'image/webp',
             body: imgString.hex
           }
         ]

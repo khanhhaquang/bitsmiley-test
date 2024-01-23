@@ -9,12 +9,7 @@ import { useSelector } from 'react-redux'
 import { getInscriptionId } from '@/store/account/reducer'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { Modal } from '@/components/Modal'
-import {
-  BitDiscBlackIcon,
-  BitSmilerIcon,
-  CloseIcon,
-  DotIcon
-} from '@/assets/icons'
+import { BitDiscBlackIcon, CloseIcon } from '@/assets/icons'
 
 export const InscriptionSucceeded: React.FC = () => {
   const { address } = useUserInfo()
@@ -45,7 +40,7 @@ export const InscriptionSucceeded: React.FC = () => {
           'absolute left-[613px] top-[532px] cursor-pointer z-[100]',
           'bg-white cursor-pointer text-black px-3 py-1 uppercase font-bold whitespace-nowrap text-[15px]',
           'hover:bg-blue3',
-          'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
+          'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:bg-blue'
         )}>
         take my bitdisc
       </div>
@@ -144,7 +139,7 @@ const MintedModal: React.FC<{
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
         <div
-          className="relative border-2 border-white bg-black"
+          className="relative border border-white bg-black"
           style={{
             scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
           }}>
@@ -153,46 +148,40 @@ const MintedModal: React.FC<{
             className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
           />
 
-          <div className="bg-black px-[72px] pb-14 pt-[72px]">
-            <div className="mb-[72px] flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-center gap-y-6 bg-black bg-mint-success-modal bg-cover bg-no-repeat px-[42px] pb-6 pt-[42px]">
+            <div className="font-smb text-[28px]">CONGRATULATIONS</div>
+
+            <div className="flex flex-col items-center justify-center">
               <Image
-                src={getIllustrationUrl('bitDiskBlack')}
-                className="h-[450px]"
+                src={getIllustrationUrl('bit-disk')}
+                className="w-[333px]"
               />
-              <BitDiscBlackIcon className="mb-2" />
-              <BitSmilerIcon />
+              <BitDiscBlackIcon />
             </div>
 
-            <div className="mb-6 w-[528px] text-sm leading-tight">
-              You are now the proud owner of bitDisc BLACK. For you, one of the
-              bitSmiler OG, we have a lot of exciting bits ahead for you.
-            </div>
-
-            <div className="mb-9 flex items-center gap-x-2 uppercase text-green">
-              <DotIcon />
-              <span>
-                Check your inscription here [
-                <span
-                  className="cursor-pointer hover:underline"
-                  onClick={() => {
-                    if (!inscriptionId) return
-                    openUrl(getOrdScanUrl(inscriptionId))
-                  }}>
-                  OrdScan
+            <div className="w-[439px] text-center text-sm">
+              You are now the proud owner of bitDisc BLACK as a status of true
+              bitSmiley OG. You can find the on-chain version in your wallet{' '}
+              {!!inscriptionId && (
+                <span className="cursor-pointer text-green">
+                  (
+                  <span
+                    onClick={() => openUrl(getOrdScanUrl(inscriptionId))}
+                    className="hover:underline">
+                    ORDSCAN
+                  </span>
+                  )
                 </span>
-                ]
-              </span>
+              )}
             </div>
 
-            <div className="flex items-center justify-center">
-              <div
-                onClick={onClose}
-                className={cn(
-                  'relative inline-block bg-white cursor-pointer text-black px-5 py-2 font-bold whitespace-nowrap text-[15px] hover:bg-blue3',
-                  'shadow-connectwallet-button hover:shadow-connectwallet-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
-                )}>
-                CONFIRM
-              </div>
+            <div
+              onClick={onClose}
+              className={cn(
+                'relative inline-block bg-white cursor-pointer text-black px-3 py-1 font-bold whitespace-nowrap text-[15px] hover:bg-blue3',
+                'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:bg-blue'
+              )}>
+              Confirm
             </div>
           </div>
         </div>

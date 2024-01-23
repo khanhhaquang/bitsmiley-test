@@ -1,0 +1,25 @@
+.bit-smiley-disclaimer::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 8px;
+}
+
+/* Track */
+.bit-smiley-disclaimer::-webkit-scrollbar-track {
+  width: 4px;
+  background-color: transparent;
+  margin: 8px;
+}
+
+/* Handle */
+.bit-smiley-disclaimer::-webkit-scrollbar-thumb {
+  width: 4px;
+  border-radius: 8px;
+  background-color: #2648ef80;
+}
+
+/* Handle on hover */
+.bit-smiley-disclaimer::-webkit-scrollbar-thumb:hover {
+  width: 4px;
+  border-radius: 8px;
+  background-color: #2648ef80;
+}

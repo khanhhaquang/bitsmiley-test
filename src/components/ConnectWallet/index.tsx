@@ -1,7 +1,6 @@
-import { CSSProperties, useEffect, useRef, useState } from 'react'
-import { Modal } from './Modal'
+import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
 import { Image } from '@/components/Image'
-import { cn } from '@/utils/cn'
+import { Modal } from '@/components/Modal'
 import { useConnectWallets } from '@/hooks/useConnectWallets'
 import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
@@ -10,6 +9,20 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { cn } from '@/utils/cn'
+import './index.scss'
+
+const DISCLAIMER_TEXTS = [
+  'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
+  'Eligibility: Ensure you meet eligibility criteria and geographical restrictions before participating.',
+  'Risk Acknowledgment: NFT values may fluctuate, and returns are not guaranteed. Participate only if you accept these risks.',
+  'No Investment Advice: We do not provide financial advice regarding NFT purchases.',
+  'No Warranty: The platform is provided "as-is" without warranties or guarantees.',
+  'Security: Safeguard your account credentials. We are not responsible for unauthorized access or loss of NFTs.',
+  'Regulatory Compliance: Comply with cryptocurrency and NFT transaction laws in your jurisdiction',
+  "Dispute Resolution: Disputes will be resolved following bitSmiley's policies.",
+  'By participating, you agree to this disclaimer. Proceed with caution and make informed decisions. For assistance, contact our support team.'
+]
 
 export const ConnectWallet: React.FC<{
   className?: string
@@ -91,63 +104,93 @@ const SelectWalletModal: React.FC<{
     }
   }, [isConfirmed])
 
+  const renderWallets = () => {
+    return (
+      <>
+        <CloseIcon
+          onClick={onClose}
+          className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
+        />
+        <div className="p-11">
+          <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
+          <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
+            We are working on adding more wallets. Don’t have any wallet listed
+            here? Select a provider below to create one
+          </div>
+          <div className="flex flex-col gap-y-6">
+            <WalletItem
+              iconName="okx"
+              name="OKX Wallet"
+              connect={async () => {
+                await connectOkx()
+                onClose()
+              }}
+            />
+            <WalletItem
+              iconName="unisat"
+              name="Unisat Wallet"
+              connect={async () => {
+                await connectUnisat()
+                onClose()
+              }}
+            />
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  const renderDisclaimer = () => {
+    return (
+      <div className="px-[42px] pb-6 pt-[42px]">
+        <div className="mb-12 whitespace-nowrap text-center text-2xl">
+          ONE MORE THING
+        </div>
+        <div className="mb-6 w-[416px] whitespace-pre-wrap text-center font-psm text-sm">
+          Welcome to the bitSmiley NFT Minting Event. Please read and confirm
+          the following disclaimer before participating:
+        </div>
+
+        <div className="h-[280px] w-[416px] border border-dashed border-blue bg-black/50 pr-[5px]">
+          <div
+            className={cn(
+              'h-full overflow-y-scroll p-3 pr-[7px] font-psm text-sm leading-tight text-blue',
+              'bit-smiley-disclaimer'
+            )}>
+            {DISCLAIMER_TEXTS.map((t, idx) => (
+              <Fragment key={idx}>
+                <li className="flex items-start gap-x-2">
+                  <div className="mt-2 h-[3px] w-[3px] shrink-0 rounded-full bg-blue" />
+                  <div>{t}</div>
+                </li>
+                {idx !== DISCLAIMER_TEXTS.length - 1 && (
+                  <div className="h-2.5" />
+                )}
+              </Fragment>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 text-center">
+          <div
+            onClick={() => setIsConfirmed(true)}
+            className={cn(
+              'inline-block bg-white cursor-pointer text-black px-3 py-1 font-bold whitespace-nowrap text-sm font-psm',
+              'hover:bg-blue3',
+              'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:bg-blue'
+            )}>
+            Confirm
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
         <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
-          <CloseIcon
-            onClick={onClose}
-            className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
-          />
-
-          {isConfirmed ? (
-            <div className="p-11">
-              <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
-              <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
-                We are working on adding more wallets. Don’t have any wallet
-                listed here? Select a provider below to create one
-              </div>
-              <div className="flex flex-col gap-y-6">
-                <WalletItem
-                  iconName="okx"
-                  name="OKX Wallet"
-                  connect={async () => {
-                    await connectOkx()
-                    onClose()
-                  }}
-                />
-                <WalletItem
-                  iconName="unisat"
-                  name="Unisat Wallet"
-                  connect={async () => {
-                    await connectUnisat()
-                    onClose()
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="p-11">
-              <div className="mb-12 whitespace-nowrap text-center">
-                Disclaimer
-              </div>
-              <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
-                We are working on adding more wallets. Don’t have any wallet
-                listed here? Select a provider below to create one
-              </div>
-              <div className="text-center">
-                <div
-                  onClick={() => setIsConfirmed(true)}
-                  className={cn(
-                    'inline-block bg-white cursor-pointer text-black px-3 py-1 font-bold whitespace-nowrap text-[15px] font-psm',
-                    'hover:bg-blue3',
-                    'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
-                  )}>
-                  Confirm
-                </div>
-              </div>
-            </div>
-          )}
+          {isConfirmed ? renderWallets() : renderDisclaimer()}
         </div>
       </div>
     </Modal>
