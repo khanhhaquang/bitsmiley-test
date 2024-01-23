@@ -8,7 +8,7 @@ const initState: {
   remainBlock: number
 } = {
   currentTypewritterSeq: 0,
-  remainBlock: 0
+  remainBlock: -1
 }
 
 export default createReducer(initState, (builder) => {

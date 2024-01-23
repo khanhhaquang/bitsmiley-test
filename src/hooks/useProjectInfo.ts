@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query'
 import { IProject, ProjectService } from '@/services/project'
 import { useUserInfo } from './useUserInfo'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useStoreActions } from './useStoreActions'
 import { AxiosResponse } from 'axios'
 import { IReseponse } from '@/types/common'
@@ -64,10 +64,16 @@ export const useProjectInfo = () => {
     [getNormalRemainBlock, getWhitelistRemainBlock, isWhitelist]
   )
 
-  const { data, isLoading, isFetching } = useQuery(
-    [ProjectService.getProjectInfo.key, isWhitelist],
+  const isFetchedUserInfo = useMemo(
+    () => typeof isWhitelist === 'boolean',
+    [isWhitelist]
+  )
+
+  const { data, isLoading } = useQuery(
+    [ProjectService.getProjectInfo.key, isFetchedUserInfo],
     ProjectService.getProjectInfo.call,
     {
+      enabled: isFetchedUserInfo,
       refetchInterval: (res) => (getCanMint(res) ? false : 10 * 1000)
     }
   )
@@ -85,5 +91,5 @@ export const useProjectInfo = () => {
     getWhitelistRemainBlock
   ])
 
-  return { isLoading, getCanMint, isFetching }
+  return { isLoading, getCanMint }
 }

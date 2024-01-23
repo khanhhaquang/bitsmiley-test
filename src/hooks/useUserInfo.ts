@@ -12,7 +12,7 @@ export const useUserInfo = () => {
     { enabled: !!address }
   )
 
-  const isWhitelist = !!data?.data.data
+  const isWhitelist = data?.data?.data
 
   return { address, isConnected, isWhitelist, isLoading }
 }

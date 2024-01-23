@@ -34,6 +34,7 @@ export const useAddressStatus = () => {
   const { setAddressStatus, setInscriptionId } = useStoreActions()
   const [isCheckingTxid, setIsCheckingTxid] = useState(true)
   const isNotStarted = useMemo(() => remainBlock > 0, [remainBlock])
+  const isLoadingRemainBlockNum = useMemo(() => remainBlock < 0, [remainBlock])
 
   const {
     data: txnInfoRes,
@@ -87,7 +88,11 @@ export const useAddressStatus = () => {
       return
     }
 
-    if (isFetchingInscription || isFetchingUserNfts) {
+    if (
+      isFetchingInscription ||
+      isFetchingUserNfts ||
+      isLoadingRemainBlockNum
+    ) {
       setAddressStatus(AddressStauts.CheckingInscription)
       setIsCheckingTxid(false)
       return
@@ -131,7 +136,8 @@ export const useAddressStatus = () => {
     isCreatingOrder,
     setAddressStatus,
     isFetchingUserNfts,
-    isFetchingInscription
+    isFetchingInscription,
+    isLoadingRemainBlockNum
   ])
 
   useEffect(() => {
