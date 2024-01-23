@@ -3,12 +3,10 @@ import { IReseponse } from '@/types/common'
 
 export interface IProject {
   nftCount: string
-  startTime: string
-  mintEndTime: string
-  nowTime: string
-  whitelistStartBlockHeight: string
+  blockHeight: string
   publicStartBlockHeight: string
   whitelistEndBlockHeight: string
+  whitelistStartBlockHeight: string
 }
 
 export const ProjectService = {

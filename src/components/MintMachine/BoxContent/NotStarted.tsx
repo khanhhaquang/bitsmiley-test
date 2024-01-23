@@ -1,26 +1,13 @@
 import { AsteriskIcon, CrownYellowIcon, StarIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { getRemainCountdown } from '@/store/common/reducer'
+import { getRemainBlock } from '@/store/common/reducer'
 import { displayAddress } from '@/utils/formatter'
-import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
 export const NotStarted: React.FC = () => {
   const { address, isWhitelist } = useUserInfo()
 
-  const count = useSelector(getRemainCountdown)
-
-  const counterLabel = useMemo(() => {
-    const padNum = (n: number) => n.toString().padStart(2, '0')
-
-    const days = Math.floor(count / 86400)
-    const hours = Math.floor((count % 86400) / 3600)
-    const minutes = Math.floor(((count % 86400) % 3600) / 60)
-    const seconds = ((count % 86400) % 3600) % 60
-
-    if (days) return `${padNum(days)}d:${padNum(hours)}h:${padNum(minutes)}m`
-    return `${padNum(hours)}h:${padNum(minutes)}m:${padNum(seconds)}s`
-  }, [count])
+  const remainBlock = useSelector(getRemainBlock)
 
   const renderWhitelistContent = () => {
     return (
@@ -73,8 +60,8 @@ export const NotStarted: React.FC = () => {
         grand minting in
       </div>
 
-      <div className="absolute left-[564px] top-[558px] font-smb text-2xl uppercase text-green">
-        {counterLabel}
+      <div className="absolute left-[440px] top-[558px] font-smb text-2xl uppercase text-green">
+        Remain Block Number: {remainBlock}
       </div>
     </>
   )

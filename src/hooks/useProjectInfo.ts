@@ -1,65 +1,75 @@
 import { useQuery } from 'react-query'
-import { ProjectService } from '@/services/project'
+import { IProject, ProjectService } from '@/services/project'
 import { useUserInfo } from './useUserInfo'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useStoreActions } from './useStoreActions'
+import { AxiosResponse } from 'axios'
+import { IReseponse } from '@/types/common'
 
 export const useProjectInfo = () => {
+  const { setRemainBlock } = useStoreActions()
   const { isWhitelist } = useUserInfo()
-  const { data, isLoading } = useQuery(
-    ProjectService.getProjectInfo.key,
-    ProjectService.getProjectInfo.call
+
+  const getWhitelistRemainBlock = useCallback(
+    (res?: AxiosResponse<IReseponse<IProject>>) => {
+      const nowBlockHeight = Number(res?.data?.data?.blockHeight || 0)
+      const whitelistStartBlockHeight = Number(
+        res?.data?.data?.whitelistStartBlockHeight || 0
+      )
+      const whitelistRemainBlock = Math.max(
+        0,
+        whitelistStartBlockHeight - nowBlockHeight - 1
+      )
+      return whitelistRemainBlock
+    },
+    []
   )
 
-  const nowTime = Number(data?.data?.data?.nowTime || 0)
-  const startTime = Number(data?.data?.data?.startTime || 0)
-  const mintEndTime = Number(data?.data?.data?.mintEndTime || 0)
-  const whitelistRemainTime = Math.max(
-    0,
-    Math.floor((startTime - nowTime) / 1000)
+  const getNormalRemainBlock = useCallback(
+    (res?: AxiosResponse<IReseponse<IProject>>) => {
+      const nowBlockHeight = Number(res?.data?.data?.blockHeight || 0)
+      const publicStartBlockHeight = Number(
+        res?.data?.data?.publicStartBlockHeight || 0
+      )
+      const normalRemainBlock = Math.max(
+        0,
+        publicStartBlockHeight - nowBlockHeight - 1
+      )
+      return normalRemainBlock
+    },
+    []
   )
-  const normalRemainTime = Math.max(
-    0,
-    Math.floor((mintEndTime - nowTime) / 1000)
-  )
-  const remainTime = isWhitelist ? whitelistRemainTime : normalRemainTime
 
   const getCanMint = useCallback(
-    (currentBlockHeight?: number) => {
-      const whitelistStartBlockHeight = Number(
-        data?.data?.data?.whitelistStartBlockHeight || 0
-      )
-      const publicStartBlockHeight = Number(
-        data?.data?.data?.publicStartBlockHeight || 0
-      )
-      const whitelistEndBlockHeight = Number(
-        data?.data?.data?.whitelistEndBlockHeight || 0
-      )
-
-      if (
-        !whitelistEndBlockHeight ||
-        !publicStartBlockHeight ||
-        !whitelistEndBlockHeight ||
-        !currentBlockHeight
-      )
-        return false
-
-      if (isWhitelist) {
-        return (
-          (currentBlockHeight >= whitelistStartBlockHeight &&
-            currentBlockHeight <= whitelistEndBlockHeight) ||
-          currentBlockHeight >= publicStartBlockHeight
-        )
-      } else {
-        return currentBlockHeight >= publicStartBlockHeight
-      }
+    (res?: AxiosResponse<IReseponse<IProject>>) => {
+      const whitelistRemainBlock = getWhitelistRemainBlock(res)
+      const normalRemainBlock = getNormalRemainBlock(res)
+      const remainBlock = isWhitelist ? whitelistRemainBlock : normalRemainBlock
+      return remainBlock <= 0
     },
-    [data, isWhitelist]
+    [getNormalRemainBlock, getWhitelistRemainBlock, isWhitelist]
   )
 
-  return {
-    info: data?.data?.data,
-    remainTime,
-    isLoading,
-    getCanMint
-  }
+  const { data, isLoading } = useQuery(
+    [ProjectService.getProjectInfo.key, isWhitelist],
+    ProjectService.getProjectInfo.call,
+    {
+      refetchInterval: (res) => (getCanMint(res) ? false : 10 * 1000)
+    }
+  )
+
+  useEffect(() => {
+    const whitelistRemainBlock = getWhitelistRemainBlock(data)
+    const normalRemainBlock = getNormalRemainBlock(data)
+    const remainBlock = isWhitelist ? whitelistRemainBlock : normalRemainBlock
+    setRemainBlock(remainBlock)
+  }, [
+    data,
+    isWhitelist,
+    setRemainBlock,
+    getNormalRemainBlock,
+    getWhitelistRemainBlock
+  ])
+
+  return { isLoading, getCanMint }
 }

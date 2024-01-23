@@ -13,9 +13,7 @@ import { useUserNfts } from './useUserNfts'
 import { UserService } from '@/services/user'
 import { MempoolService } from '@/services/mempool'
 import { useAddressInscription } from './useAddressInscription'
-import { getRemainCountdown } from '@/store/common/reducer'
-import { useCountdown } from './useCountdown'
-import { useProjectInfo } from './useProjectInfo'
+import { getRemainBlock } from '@/store/common/reducer'
 
 const FETCH_USER_NFTS_INTERVAL = 5000
 const FETCH_TRANSACTION_INFO_INTERVAL = 300000
@@ -29,23 +27,13 @@ export const useAddressStatus = () => {
     getDisbleMinting,
     isLoading: isFetchingUserNfts
   } = useUserNfts()
+  const remainBlock = useSelector(getRemainBlock)
   const addressStatus = useSelector(getAddressStatus)
   const isCreatingOrder = useSelector(getIsCreatingOrder)
   const { address, isConnected, isWhitelist } = useUserInfo()
-  const { setRemainCountdown, setAddressStatus, setInscriptionId } =
-    useStoreActions()
+  const { setAddressStatus, setInscriptionId } = useStoreActions()
   const [isCheckingTxid, setIsCheckingTxid] = useState(true)
-  const remainCountdown = useSelector(getRemainCountdown)
-  const { remainTime } = useProjectInfo()
-  const isNotStarted = useMemo(() => remainCountdown > 0, [remainCountdown])
-
-  const [count] = useCountdown({
-    countStart: remainTime
-  })
-
-  useEffect(() => {
-    if (count >= 0) setRemainCountdown(count)
-  }, [count, setRemainCountdown])
+  const isNotStarted = useMemo(() => remainBlock > 0, [remainBlock])
 
   const {
     data: txnInfoRes,

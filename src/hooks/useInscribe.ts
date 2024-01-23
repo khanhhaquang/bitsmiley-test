@@ -8,6 +8,7 @@ import { useUserInfo } from './useUserInfo'
 import { MempoolService } from '@/services/mempool'
 import imgString from './imgString.json'
 import { useProjectInfo } from './useProjectInfo'
+import { ProjectService } from '@/services/project'
 
 const OUTPUT_VALUE = 546
 
@@ -118,10 +119,8 @@ export const useInscribe = () => {
   const checkingMintingStarted = async () => {
     setIsCreatingOrder(true)
     try {
-      const currentBlockHeightRes =
-        await MempoolService.getBlockTipHeight.call()
-
-      const canMint = getCanMint(currentBlockHeightRes?.data)
+      const res = await ProjectService.getProjectInfo.call()
+      const canMint = getCanMint(res)
 
       if (!canMint) {
         setIsCreatingOrder(false)
