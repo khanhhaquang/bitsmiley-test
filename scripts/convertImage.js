@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-const imgPath = 'src/assets/illustrations/bit-smiley.webp'
+const imgPath = 'src/assets/illustrations/bit-test-mint.webp'
 
 const __dirname = new URL('.', import.meta.url).pathname
 const root = path.join(__dirname, '..')
