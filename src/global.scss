@@ -42,12 +42,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   background-color: black !important;
-  cursor: url('./assets/icons/cursor-default.svg'), default;
+  cursor: url('./assets/icons/cursor-default.svg') 8 0, default;
   user-select: none;
 }
 
 a {
-  cursor: url('./assets/icons/cursor-pointer.svg'), pointer;
+  cursor: url('./assets/icons/cursor-pointer.svg') 8 0, pointer;
 }
 
 img {

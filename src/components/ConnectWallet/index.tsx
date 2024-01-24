@@ -151,16 +151,16 @@ const SelectWalletModal: React.FC<{
           the following disclaimer before participating:
         </div>
 
-        <div className="h-[280px] w-[416px] border border-dashed border-blue bg-black/50 pr-[5px]">
+        <div className="h-[280px] w-[416px] border border-dashed border-white bg-black/50 pr-[5px]">
           <div
             className={cn(
-              'h-full overflow-y-scroll p-3 pr-[7px] font-psm text-sm leading-tight text-blue',
+              'h-full overflow-y-scroll p-3 pr-[7px] font-psm text-sm leading-tight text-white',
               'bit-smiley-disclaimer'
             )}>
             {DISCLAIMER_TEXTS.map((t, idx) => (
               <Fragment key={idx}>
                 <li className="flex items-start gap-x-2">
-                  <div className="mt-2 h-[3px] w-[3px] shrink-0 rounded-full bg-blue" />
+                  <div className="mt-2 h-[3px] w-[3px] shrink-0 rounded-full bg-white" />
                   <div>{t}</div>
                 </li>
                 {idx !== DISCLAIMER_TEXTS.length - 1 && (
@@ -187,11 +187,9 @@ const SelectWalletModal: React.FC<{
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
-        <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
-          {isConfirmed ? renderWallets() : renderDisclaimer()}
-        </div>
+    <Modal isOpen={isOpen} onClose={onClose} backdrop={!!isConfirmed}>
+      <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+        {isConfirmed ? renderWallets() : renderDisclaimer()}
       </div>
     </Modal>
   )
