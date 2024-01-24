@@ -8,5 +8,6 @@ export enum AddressStauts {
   Inscribing = 'Inscribing',
   InscriptionConfirmed = 'InscriptionConfirmed',
   InscriptionFailed = 'InscriptionFailed',
-  InscriptionSucceeded = 'InscriptionSucceeded'
+  InscriptionSucceeded = 'InscriptionSucceeded',
+  ReachedMaximum = 'ReachedMaximum'
 }

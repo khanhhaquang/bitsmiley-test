@@ -1,15 +1,13 @@
 import { useQuery } from 'react-query'
 import { IProject, ProjectService } from '@/services/project'
 import { useUserInfo } from './useUserInfo'
-import { useCallback, useEffect, useMemo } from 'react'
-import { useStoreActions } from './useStoreActions'
+import { useCallback, useMemo } from 'react'
 import { AxiosResponse } from 'axios'
 import { IReseponse } from '@/types/common'
 
 const FETCH_PROJECT_INFO_INTERVAL = 10000
 
 export const useProjectInfo = () => {
-  const { setRemainBlock } = useStoreActions()
   const { isWhitelist } = useUserInfo()
 
   const getNormalRemainBlock = useCallback(
@@ -57,7 +55,7 @@ export const useProjectInfo = () => {
       const remainBlock = isWhitelist ? whitelistRemainBlock : normalRemainBlock
       return remainBlock <= 0
     },
-    [getNormalRemainBlock, getWhitelistRemainBlock, isWhitelist]
+    [isWhitelist, getNormalRemainBlock, getWhitelistRemainBlock]
   )
 
   const isFetchedUserInfo = useMemo(
@@ -87,24 +85,40 @@ export const useProjectInfo = () => {
       nowBlockHeight >= whitelistStartBlockHeight &&
       nowBlockHeight < whitelistEndBlockHeight
     )
-  }, [
-    data?.data?.data?.blockHeight,
-    data?.data?.data?.whitelistEndBlockHeight,
-    data?.data?.data?.whitelistStartBlockHeight
-  ])
+  }, [data])
 
-  useEffect(() => {
+  const remainBlock = useMemo(() => {
+    if (!data?.data.data) return 0
+
     const whitelistRemainBlock = getWhitelistRemainBlock(data)
     const normalRemainBlock = getNormalRemainBlock(data)
-    const remainBlock = isWhitelist ? whitelistRemainBlock : normalRemainBlock
-    setRemainBlock(remainBlock)
-  }, [
-    data,
-    isWhitelist,
-    setRemainBlock,
-    getNormalRemainBlock,
-    getWhitelistRemainBlock
-  ])
+    const num = isWhitelist ? whitelistRemainBlock : normalRemainBlock
+    return num
+  }, [data, getNormalRemainBlock, getWhitelistRemainBlock, isWhitelist])
 
-  return { isLoading, isDuringWhitelist, getCanMint }
+  const isReachedMaximum = useMemo(() => {
+    if (!data?.data?.data) return false
+
+    const currentNftCount = Number(data?.data?.data?.nftCount || 0)
+    const publicMax = Number(data?.data?.data?.publicMax || 0)
+    const whitelistMax = Number(data?.data?.data?.whitelistMax || 0)
+    const totalMx = publicMax + whitelistMax
+    if (isDuringWhitelist) {
+      return currentNftCount >= whitelistMax
+    }
+    return currentNftCount >= totalMx
+  }, [data, isDuringWhitelist])
+
+  const isNotStarted = useMemo(() => remainBlock > 0, [remainBlock])
+  const isLoadingRemainBlock = useMemo(() => remainBlock < 0, [remainBlock])
+
+  return {
+    getCanMint,
+    isLoading,
+    remainBlock,
+    isNotStarted,
+    isReachedMaximum,
+    isDuringWhitelist,
+    isLoadingRemainBlock
+  }
 }

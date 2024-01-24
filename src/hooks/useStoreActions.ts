@@ -49,16 +49,11 @@ export const useStoreActions = () => {
       dispatch(commonActions.SET_CURRENT_TYPEWRITTER_SEQ(payload)),
     [dispatch]
   )
-  const setRemainBlock = useCallback(
-    (payload: number) => dispatch(commonActions.SET_REMAIN_BLOCK(payload)),
-    [dispatch]
-  )
 
   return {
     setTxId,
     setLoginType,
     resetStorage,
-    setRemainBlock,
     setAccountInfo,
     setInscriptionId,
     setAddressStatus,

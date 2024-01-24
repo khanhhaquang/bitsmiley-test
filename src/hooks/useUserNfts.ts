@@ -6,9 +6,9 @@ import { useStoreActions } from './useStoreActions'
 import { useProjectInfo } from './useProjectInfo'
 
 export const useUserNfts = () => {
-  const { setTxId, setInscriptionId } = useStoreActions()
-  const { isDuringWhitelist } = useProjectInfo()
   const { address } = useUserInfo()
+  const { isDuringWhitelist } = useProjectInfo()
+  const { setTxId, setInscriptionId } = useStoreActions()
 
   const { data: nftsDataRes, isLoading } = useQuery(
     [UserService.getNFTs.key, address],

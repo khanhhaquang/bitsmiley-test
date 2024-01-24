@@ -10,10 +10,10 @@ import { useUserNfts } from '@/hooks/useUserNfts'
 const Main: React.FC = () => {
   const [isEntered, setIsEntered] = useState(false)
 
-  const { isLoading: isLoadingUserInfo } = useUserInfo()
-  const { isLoading: isLoadingProjectInfo } = useProjectInfo()
   const { isLoading: isLoadingResources } = usePreloadResources()
+  const { isLoading: isLoadingProjectInfo } = useProjectInfo()
   const { isLoading: isCheckingWallet } = useCheckWalletConnection()
+  const { isLoading: isLoadingUserInfo } = useUserInfo()
   const { isLoading: isLoadingUserNfts } = useUserNfts()
 
   const isLoading =

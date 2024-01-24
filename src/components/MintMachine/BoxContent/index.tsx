@@ -38,6 +38,6 @@ export const BoxContent: React.FC = () => {
     case AddressStauts.InscriptionSucceeded:
       return <InscriptionSucceeded />
     default:
-      return AddressStauts.Promotion
+      return <Promotion />
   }
 }

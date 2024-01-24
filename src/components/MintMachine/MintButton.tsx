@@ -23,6 +23,7 @@ export const MintButton: React.FC = () => {
     addressStauts === AddressStauts.Inscribing ||
     addressStauts === AddressStauts.InscriptionConfirmed ||
     addressStauts === AddressStauts.InscriptionSucceeded ||
+    addressStauts === AddressStauts.ReachedMaximum ||
     isCreatingOrder
 
   const mintButtonImgName = useMemo(() => {

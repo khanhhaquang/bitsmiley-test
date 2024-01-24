@@ -4,7 +4,7 @@ import {
   getTxId
 } from '@/store/account/reducer'
 import { AddressStauts } from '@/types/status'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useStoreActions } from './useStoreActions'
 import { useQuery } from 'react-query'
@@ -13,23 +13,26 @@ import { useUserNfts } from './useUserNfts'
 import { UserService } from '@/services/user'
 import { MempoolService } from '@/services/mempool'
 import { useAddressInscription } from './useAddressInscription'
-import { getRemainBlock } from '@/store/common/reducer'
+import { useProjectInfo } from './useProjectInfo'
 
 const FETCH_USER_NFTS_INTERVAL = 5000
 const FETCH_TRANSACTION_INFO_INTERVAL = 300000
 
 export const useAddressStatus = () => {
   const { address, isConnected } = useUserInfo()
+  const {
+    isReachedMaximum,
+    isLoadingRemainBlock,
+    isNotStarted,
+    isLoading: isLoadingProjectInfo
+  } = useProjectInfo()
   const { setAddressStatus, setInscriptionId } = useStoreActions()
 
   const txid = useSelector(getTxId)
-  const remainBlock = useSelector(getRemainBlock)
   const addressStatus = useSelector(getAddressStatus)
   const isCreatingOrder = useSelector(getIsCreatingOrder)
 
   const [isCheckingTxid, setIsCheckingTxid] = useState(true)
-  const isNotStarted = useMemo(() => remainBlock > 0, [remainBlock])
-  const isLoadingRemainBlockNum = useMemo(() => remainBlock < 0, [remainBlock])
 
   const {
     disableMinting,
@@ -84,21 +87,22 @@ export const useAddressStatus = () => {
 
   const isLoading =
     isCheckingTxid ||
+    isLoadingProjectInfo ||
     (isLoadingTransactionInfo && !isRefetchingTransactionInfo) ||
     (isLoadingNfts && !isRefetchingNfts)
 
   useEffect(() => {
+    if (isLoadingProjectInfo) {
+      return
+    }
+
     if (!isConnected) {
       setAddressStatus(AddressStauts.NotConnected)
       setIsCheckingTxid(false)
       return
     }
 
-    if (
-      isFetchingInscription ||
-      isFetchingUserNfts ||
-      isLoadingRemainBlockNum
-    ) {
+    if (isFetchingInscription || isFetchingUserNfts || isLoadingRemainBlock) {
       setAddressStatus(AddressStauts.CheckingInscription)
       setIsCheckingTxid(false)
       return
@@ -106,6 +110,12 @@ export const useAddressStatus = () => {
 
     if (hasNftMinted) {
       setAddressStatus(AddressStauts.InscriptionSucceeded)
+      setIsCheckingTxid(false)
+      return
+    }
+
+    if (isReachedMaximum) {
+      setAddressStatus(AddressStauts.ReachedMaximum)
       setIsCheckingTxid(false)
       return
     }
@@ -150,10 +160,12 @@ export const useAddressStatus = () => {
     disableMinting,
     isFetchingNfts,
     isCreatingOrder,
+    isReachedMaximum,
     setAddressStatus,
     isFetchingUserNfts,
+    isLoadingProjectInfo,
+    isLoadingRemainBlock,
     isFetchingInscription,
-    isLoadingRemainBlockNum,
     isFetchingTransactionInfo
   ])
 

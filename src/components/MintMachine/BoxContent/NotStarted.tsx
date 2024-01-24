@@ -1,13 +1,11 @@
 import { AsteriskIcon, CrownYellowIcon, StarIcon } from '@/assets/icons'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { getRemainBlock } from '@/store/common/reducer'
 import { displayAddress } from '@/utils/formatter'
-import { useSelector } from 'react-redux'
 
 export const NotStarted: React.FC = () => {
+  const { remainBlock } = useProjectInfo()
   const { address, isWhitelist } = useUserInfo()
-
-  const remainBlock = useSelector(getRemainBlock)
 
   const renderWhitelistContent = () => {
     return (
