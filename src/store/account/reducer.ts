@@ -23,7 +23,7 @@ const initState: {
   },
   txid: '',
   inscriptionId: '',
-  addressStatus: AddressStauts.Promotion,
+  addressStatus: AddressStauts.NotConnected,
   isCreatingOrder: false
 }
 

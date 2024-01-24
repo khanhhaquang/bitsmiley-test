@@ -1,8 +1,10 @@
 import { AsteriskIcon, CrownYellowIcon, StarIcon } from '@/assets/icons'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { displayAddress } from '@/utils/formatter'
 
 export const NotInscribed: React.FC = () => {
+  const { isDuringWhitelist } = useProjectInfo()
   const { address, isWhitelist } = useUserInfo()
 
   const renderWhitelistContent = () => {
@@ -50,7 +52,9 @@ export const NotInscribed: React.FC = () => {
         <div>{displayAddress(address, 3, 3)}</div>
       </div>
 
-      {isWhitelist ? renderWhitelistContent() : renderNormalContent()}
+      {isWhitelist && isDuringWhitelist
+        ? renderWhitelistContent()
+        : renderNormalContent()}
     </>
   )
 }

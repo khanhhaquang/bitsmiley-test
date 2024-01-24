@@ -6,38 +6,11 @@ import { useStoreActions } from './useStoreActions'
 import { AxiosResponse } from 'axios'
 import { IReseponse } from '@/types/common'
 
+const FETCH_PROJECT_INFO_INTERVAL = 10000
+
 export const useProjectInfo = () => {
   const { setRemainBlock } = useStoreActions()
   const { isWhitelist } = useUserInfo()
-
-  const getWhitelistRemainBlock = useCallback(
-    (res?: AxiosResponse<IReseponse<IProject>>) => {
-      const nowBlockHeight = Number(res?.data?.data?.blockHeight || 0)
-      const whitelistStartBlockHeight = Number(
-        res?.data?.data?.whitelistStartBlockHeight || 0
-      )
-      const whitelistEndBlockHeight = Number(
-        res?.data?.data?.whitelistEndBlockHeight || 0
-      )
-      const publicStartBlockHeight = Number(
-        res?.data?.data?.publicStartBlockHeight || 0
-      )
-      const whitelistRemainBlock = Math.max(
-        0,
-        whitelistStartBlockHeight - nowBlockHeight - 1
-      )
-
-      const isWhitelistEnded = nowBlockHeight >= whitelistEndBlockHeight
-
-      const normalRemainBlock = Math.max(
-        0,
-        publicStartBlockHeight - nowBlockHeight - 1
-      )
-
-      return isWhitelistEnded ? normalRemainBlock : whitelistRemainBlock
-    },
-    []
-  )
 
   const getNormalRemainBlock = useCallback(
     (res?: AxiosResponse<IReseponse<IProject>>) => {
@@ -52,6 +25,29 @@ export const useProjectInfo = () => {
       return normalRemainBlock
     },
     []
+  )
+
+  const getWhitelistRemainBlock = useCallback(
+    (res?: AxiosResponse<IReseponse<IProject>>) => {
+      const nowBlockHeight = Number(res?.data?.data?.blockHeight || 0)
+      const whitelistStartBlockHeight = Number(
+        res?.data?.data?.whitelistStartBlockHeight || 0
+      )
+      const whitelistEndBlockHeight = Number(
+        res?.data?.data?.whitelistEndBlockHeight || 0
+      )
+      const whitelistRemainBlock = Math.max(
+        0,
+        whitelistStartBlockHeight - nowBlockHeight - 1
+      )
+
+      const isWhitelistEnded = nowBlockHeight >= whitelistEndBlockHeight
+
+      const normalRemainBlock = getNormalRemainBlock(res)
+
+      return isWhitelistEnded ? normalRemainBlock : whitelistRemainBlock
+    },
+    [getNormalRemainBlock]
   )
 
   const getCanMint = useCallback(
@@ -74,9 +70,28 @@ export const useProjectInfo = () => {
     ProjectService.getProjectInfo.call,
     {
       enabled: isFetchedUserInfo,
-      refetchInterval: (res) => (getCanMint(res) ? false : 10 * 1000)
+      refetchInterval: (res) =>
+        getCanMint(res) ? false : FETCH_PROJECT_INFO_INTERVAL
     }
   )
+
+  const isDuringWhitelist = useMemo(() => {
+    const nowBlockHeight = Number(data?.data?.data?.blockHeight || 0)
+    const whitelistStartBlockHeight = Number(
+      data?.data?.data?.whitelistStartBlockHeight || 0
+    )
+    const whitelistEndBlockHeight = Number(
+      data?.data?.data?.whitelistEndBlockHeight || 0
+    )
+    return (
+      nowBlockHeight >= whitelistStartBlockHeight &&
+      nowBlockHeight < whitelistEndBlockHeight
+    )
+  }, [
+    data?.data?.data?.blockHeight,
+    data?.data?.data?.whitelistEndBlockHeight,
+    data?.data?.data?.whitelistStartBlockHeight
+  ])
 
   useEffect(() => {
     const whitelistRemainBlock = getWhitelistRemainBlock(data)
@@ -91,5 +106,5 @@ export const useProjectInfo = () => {
     getWhitelistRemainBlock
   ])
 
-  return { isLoading, getCanMint }
+  return { isLoading, isDuringWhitelist, getCanMint }
 }

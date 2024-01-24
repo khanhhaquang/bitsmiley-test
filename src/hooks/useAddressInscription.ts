@@ -7,9 +7,9 @@ import { useCallback, useEffect, useState } from 'react'
 import { useUserNfts } from './useUserNfts'
 
 export const useAddressInscription = () => {
-  const { address } = useUserInfo()
-  const { hasNftMinted, isLoading: isFetchingUserNfts } = useUserNfts()
   const { setTxId } = useStoreActions()
+  const { address, isConnected } = useUserInfo()
+  const { hasNftMinted, isLoading: isFetchingUserNfts } = useUserNfts()
   const [isChecking, setIsChecking] = useState(true)
 
   const getTargetTxn = useCallback((txns: ITransactionInfo[] | undefined) => {
@@ -48,8 +48,12 @@ export const useAddressInscription = () => {
   }, [address, getTargetTxn, hasNftMinted, isFetchingUserNfts, setTxId])
 
   useEffect(() => {
-    fetchTxns()
-  }, [fetchTxns])
+    if (isConnected) {
+      fetchTxns()
+    } else {
+      setIsChecking(true)
+    }
+  }, [fetchTxns, isConnected])
 
   return {
     isLoading: isChecking

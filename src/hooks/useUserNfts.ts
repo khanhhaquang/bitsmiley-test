@@ -3,10 +3,12 @@ import { useQuery } from 'react-query'
 import { useUserInfo } from './useUserInfo'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useStoreActions } from './useStoreActions'
+import { useProjectInfo } from './useProjectInfo'
 
 export const useUserNfts = () => {
   const { setTxId, setInscriptionId } = useStoreActions()
-  const { address, isWhitelist } = useUserInfo()
+  const { isDuringWhitelist } = useProjectInfo()
+  const { address } = useUserInfo()
 
   const { data: nftsDataRes, isLoading } = useQuery(
     [UserService.getNFTs.key, address],
@@ -20,7 +22,7 @@ export const useUserNfts = () => {
     (nfts?: INft[]) => {
       if (!nfts?.length) return false
 
-      if (isWhitelist) {
+      if (isDuringWhitelist) {
         return !!nfts.some(
           (n) =>
             !!n.inscription_id &&
@@ -38,7 +40,7 @@ export const useUserNfts = () => {
           n.invalid_reason !== InvalidReasonEnum.NotWhitelisted
       )
     },
-    [isWhitelist]
+    [isDuringWhitelist]
   )
 
   const mintedNft = useMemo(

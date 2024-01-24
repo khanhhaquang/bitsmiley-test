@@ -19,26 +19,31 @@ const FETCH_USER_NFTS_INTERVAL = 5000
 const FETCH_TRANSACTION_INFO_INTERVAL = 300000
 
 export const useAddressStatus = () => {
+  const { address, isConnected } = useUserInfo()
+  const { setAddressStatus, setInscriptionId } = useStoreActions()
+
   const txid = useSelector(getTxId)
-  const { isLoading: isFetchingInscription } = useAddressInscription()
+  const remainBlock = useSelector(getRemainBlock)
+  const addressStatus = useSelector(getAddressStatus)
+  const isCreatingOrder = useSelector(getIsCreatingOrder)
+
+  const [isCheckingTxid, setIsCheckingTxid] = useState(true)
+  const isNotStarted = useMemo(() => remainBlock > 0, [remainBlock])
+  const isLoadingRemainBlockNum = useMemo(() => remainBlock < 0, [remainBlock])
+
   const {
     disableMinting,
     hasNftMinted,
     getDisbleMinting,
     isLoading: isFetchingUserNfts
   } = useUserNfts()
-  const remainBlock = useSelector(getRemainBlock)
-  const addressStatus = useSelector(getAddressStatus)
-  const isCreatingOrder = useSelector(getIsCreatingOrder)
-  const { address, isConnected, isWhitelist } = useUserInfo()
-  const { setAddressStatus, setInscriptionId } = useStoreActions()
-  const [isCheckingTxid, setIsCheckingTxid] = useState(true)
-  const isNotStarted = useMemo(() => remainBlock > 0, [remainBlock])
-  const isLoadingRemainBlockNum = useMemo(() => remainBlock < 0, [remainBlock])
+
+  const { isLoading: isFetchingInscription } = useAddressInscription()
 
   const {
     data: txnInfoRes,
     isLoading: isLoadingTransactionInfo,
+    isFetching: isFetchingTransactionInfo,
     isRefetching: isRefetchingTransactionInfo
   } = useQuery(
     [MempoolService.getTransactionInfo.key, txid, hasNftMinted],
@@ -60,6 +65,7 @@ export const useAddressStatus = () => {
 
   const {
     data: nftsData,
+    isFetching: isFetchingNfts,
     isLoading: isLoadingNfts,
     isRefetching: isRefetchingNfts
   } = useQuery(
@@ -122,28 +128,43 @@ export const useAddressStatus = () => {
       return
     }
 
-    if (!txid && !isFetchingInscription) {
+    if (
+      !txid &&
+      !isFetchingInscription &&
+      !isFetchingUserNfts &&
+      !isFetchingTransactionInfo &&
+      !isFetchingNfts &&
+      !isFetchingInscription &&
+      address &&
+      !!isConnected
+    ) {
       setAddressStatus(AddressStauts.NotInscribed)
       setIsCheckingTxid(false)
     }
   }, [
     txid,
+    address,
     isConnected,
-    isWhitelist,
     hasNftMinted,
     isNotStarted,
     disableMinting,
+    isFetchingNfts,
     isCreatingOrder,
     setAddressStatus,
     isFetchingUserNfts,
     isFetchingInscription,
-    isLoadingRemainBlockNum
+    isLoadingRemainBlockNum,
+    isFetchingTransactionInfo
   ])
 
   useEffect(() => {
-    if (hasNftMinted || isFetchingUserNfts) return
-
-    if (!txnInfoRes?.data?.status || !isConnected) return
+    if (
+      hasNftMinted ||
+      !txnInfoRes?.data?.status ||
+      !isConnected ||
+      isFetchingUserNfts
+    )
+      return
 
     if (txnInfoRes?.data?.status?.confirmed) {
       setAddressStatus(AddressStauts.InscriptionConfirmed)
@@ -159,7 +180,7 @@ export const useAddressStatus = () => {
   ])
 
   useEffect(() => {
-    if (hasNftMinted || isFetchingUserNfts) return
+    if (hasNftMinted || isFetchingUserNfts || !isConnected) return
 
     const nfts = nftsData?.data?.data?.nfts
 
@@ -187,9 +208,10 @@ export const useAddressStatus = () => {
       setAddressStatus(AddressStauts.InscriptionFailed)
     }
   }, [
+    isConnected,
     hasNftMinted,
-    getDisbleMinting,
     setInscriptionId,
+    getDisbleMinting,
     setAddressStatus,
     isFetchingUserNfts,
     nftsData?.data?.data?.nfts

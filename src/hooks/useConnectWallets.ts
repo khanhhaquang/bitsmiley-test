@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import { useQueryClient } from 'react-query'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'
@@ -8,6 +9,7 @@ import { clearLoginType } from '@/utils/storage.ts'
 import { openUrl } from '@/utils/getAssetsUrl'
 
 export const useConnectWallets = () => {
+  const queryClient = useQueryClient()
   const loginType = useSelector(getLoginType)
   const { setAccountInfo, setLoginType, resetStorage } = useStoreActions()
 
@@ -20,9 +22,11 @@ export const useConnectWallets = () => {
       }
 
       resetStorage()
+      queryClient.clear()
       setAccountInfo(newAccountInfo)
       setLoginType(loginType)
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [resetStorage, setAccountInfo, setLoginType]
   )
 
