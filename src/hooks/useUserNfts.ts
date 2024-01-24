@@ -4,11 +4,15 @@ import { useUserInfo } from './useUserInfo'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useStoreActions } from './useStoreActions'
 import { useProjectInfo } from './useProjectInfo'
+import { useSelector } from 'react-redux'
+import { getUserNfts } from '@/store/account/reducer'
 
 export const useUserNfts = () => {
   const { address } = useUserInfo()
   const { isDuringWhitelist } = useProjectInfo()
-  const { setTxId, setInscriptionId } = useStoreActions()
+
+  const userNfts = useSelector(getUserNfts)
+  const { setTxId, setInscriptionId, setUserNfts } = useStoreActions()
 
   const { data: nftsDataRes, isLoading } = useQuery(
     [UserService.getNFTs.key, address],
@@ -63,6 +67,14 @@ export const useUserNfts = () => {
       return
     }
   }, [mintedNft, setInscriptionId, setTxId])
+
+  useEffect(() => {
+    const nfts = nftsDataRes?.data?.data?.nfts
+
+    if (!userNfts.length && !!nfts?.length) {
+      setUserNfts(nfts || [])
+    }
+  }, [nftsDataRes, setUserNfts, userNfts])
 
   return {
     disableMinting,

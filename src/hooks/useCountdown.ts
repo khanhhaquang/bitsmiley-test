@@ -27,7 +27,6 @@ export function useCountdown(
 export function useCountdown(
   countdownOption: CountdownOption
 ): [number, CountdownControllers] {
-  // default values
   const intervalMs = countdownOption.intervalMs ?? 1000
   const isIncrement = countdownOption.isIncrement ?? false
   const countStop = countdownOption.countStop ?? 0

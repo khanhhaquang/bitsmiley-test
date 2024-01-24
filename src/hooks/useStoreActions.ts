@@ -3,8 +3,10 @@ import { useDispatch } from 'react-redux'
 
 import accountActions from '@/store/account/actions'
 import commonActions from '@/store/common/actions'
+import addressStatusActions from '@/store/addressStatus/actions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { AddressStauts } from '@/types/status'
+import { INft } from '@/services/user'
 
 export const useStoreActions = () => {
   const dispatch = useDispatch()
@@ -34,11 +36,6 @@ export const useStoreActions = () => {
       dispatch(accountActions.SET_INSCRIPTION_ID(payload)),
     [dispatch]
   )
-  const setAddressStatus = useCallback(
-    (payload: AddressStauts) =>
-      dispatch(accountActions.SET_ADDRESS_STATUS(payload)),
-    [dispatch]
-  )
   const setIsCreatingOrder = useCallback(
     (payload: boolean) =>
       dispatch(accountActions.SET_IS_CREATING_ORDER(payload)),
@@ -49,9 +46,24 @@ export const useStoreActions = () => {
       dispatch(commonActions.SET_CURRENT_TYPEWRITTER_SEQ(payload)),
     [dispatch]
   )
+  const setUserNfts = useCallback(
+    (payload: INft[]) => dispatch(accountActions.SET_USER_NFTS(payload)),
+    [dispatch]
+  )
+  const setAddressStatus = useCallback(
+    (payload: AddressStauts) =>
+      dispatch(addressStatusActions.SET_ADDRESS_STATUS(payload)),
+    [dispatch]
+  )
+  const setIsOpenHistory = useCallback(
+    (payload: boolean) => dispatch(commonActions.SET_IS_OPEN_HISTORY(payload)),
+    [dispatch]
+  )
 
   return {
     setTxId,
+    setUserNfts,
+    setIsOpenHistory,
     setLoginType,
     resetStorage,
     setAccountInfo,

@@ -5,7 +5,7 @@ import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'
 import { getLoginType } from '@/store/account/reducer'
 import { WALLETSITE } from '@/config/links'
-import { clearLoginType } from '@/utils/storage.ts'
+import { clearConfirmedMinted, clearLoginType } from '@/utils/storage.ts'
 import { openUrl } from '@/utils/getAssetsUrl'
 
 export const useConnectWallets = () => {
@@ -18,6 +18,7 @@ export const useConnectWallets = () => {
       if (!newAccountInfo) {
         resetStorage()
         clearLoginType()
+        clearConfirmedMinted()
         return
       }
 

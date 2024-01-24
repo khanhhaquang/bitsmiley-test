@@ -52,10 +52,10 @@ export const Modal: React.FC<TProps> = ({
   return createPortal(
     <div
       className={cn(
-        'fixed left-0 right-0 bottom-0 top-0 w-screen z-[100] h-screen animation-all',
+        'fixed left-0 right-0 bottom-0 top-0 w-screen z-[100] h-screen',
         className
       )}>
-      <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
+      <div className="flex h-full w-full animate-fade items-center justify-center bg-black2/80 text-white">
         <div ref={innerRef}>{children}</div>
       </div>
     </div>,

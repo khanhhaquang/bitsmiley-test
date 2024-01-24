@@ -6,7 +6,8 @@ import { useInscribe } from '@/hooks/useInscribe'
 import { CanvasFrames } from '../CanvasFrames'
 import { AddressStauts } from '@/types/status'
 import { useSelector } from 'react-redux'
-import { getAddressStatus, getIsCreatingOrder } from '@/store/account/reducer'
+import { getIsCreatingOrder } from '@/store/account/reducer'
+import { getAddressStatus } from '@/store/addressStatus/reducer'
 
 export const MintButton: React.FC = () => {
   const addressStauts = useSelector(getAddressStatus)
@@ -19,11 +20,11 @@ export const MintButton: React.FC = () => {
     addressStauts === AddressStauts.NotConnected ||
     addressStauts === AddressStauts.NotStarted ||
     addressStauts === AddressStauts.CheckingInscription ||
-    addressStauts === AddressStauts.CreatingOrder ||
     addressStauts === AddressStauts.Inscribing ||
     addressStauts === AddressStauts.InscriptionConfirmed ||
     addressStauts === AddressStauts.InscriptionSucceeded ||
-    addressStauts === AddressStauts.ReachedMaximum ||
+    addressStauts === AddressStauts.MintingEnded ||
+    addressStauts === AddressStauts.DisableMinting ||
     isCreatingOrder
 
   const mintButtonImgName = useMemo(() => {

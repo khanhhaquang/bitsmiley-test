@@ -6,6 +6,10 @@ import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { BoxContent } from './BoxContent'
 import { MintButton } from './MintButton'
+import { History } from './History'
+import { useSelector } from 'react-redux'
+import { getAddressStatus } from '@/store/addressStatus/reducer'
+import { AddressStauts } from '@/types/status'
 
 export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
@@ -18,16 +22,24 @@ export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
       <BoxContent />
       <NumberPad />
       <MintButton />
+      <History />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )
 }
 
 const MarqueeText: React.FC = () => {
+  const addressStatus = useSelector(getAddressStatus)
+  const isMintingEnded = addressStatus === AddressStauts.MintingEnded
+
+  const label = isMintingEnded
+    ? 'BITSMILEY GRAND MINTING FINISHED'
+    : 'BITSMILEY GRAND MINTING IS HERE!'
+
   return (
     <div className="absolute bottom-[146px] left-[205px] h-[104px] w-[660px]">
       <Marquee speed={75} className="font-sdm text-[80px] text-yellow2">
-        <span className="mr-6">bitSmiley Grand minting is here!</span>
+        <span className="mr-6">{label}</span>
       </Marquee>
     </div>
   )

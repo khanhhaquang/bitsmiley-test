@@ -1,23 +1,21 @@
 import { useSelector } from 'react-redux'
 import { AddressStauts } from '@/types/status'
+
+import { getAddressStatus } from '@/store/addressStatus/reducer'
+
 import { Promotion } from './Promotion'
+import { Inscribing } from './Inscribing'
+import { NotStarted } from './NotStarted'
 import { NotConnected } from './NotConnected'
 import { NotInscribed } from './NotInscribed'
-import { Inscribing } from './Inscribing'
-import { getAddressStatus } from '@/store/account/reducer'
-import { NotStarted } from './NotStarted'
+import { MintingEnded } from './MintingEnded'
+import { DisableMinting } from './DisableMinting'
 import { InscriptionFailed } from './InscriptionFailed'
-import { InscriptionSucceeded } from './InscriptionSucceeded'
 import { CheckingInscription } from './CheckingInscription'
-import { useAddressStatus } from '@/hooks/useAddressStatus'
+import { InscriptionSucceeded } from './InscriptionSucceeded'
 
 export const BoxContent: React.FC = () => {
-  const { isLoading } = useAddressStatus()
   const addressStauts = useSelector(getAddressStatus)
-
-  if (isLoading) {
-    return <CheckingInscription />
-  }
 
   switch (addressStauts) {
     case AddressStauts.Promotion:
@@ -35,8 +33,12 @@ export const BoxContent: React.FC = () => {
       return <Inscribing />
     case AddressStauts.InscriptionFailed:
       return <InscriptionFailed />
+    case AddressStauts.DisableMinting:
+      return <DisableMinting />
     case AddressStauts.InscriptionSucceeded:
       return <InscriptionSucceeded />
+    case AddressStauts.MintingEnded:
+      return <MintingEnded />
     default:
       return <Promotion />
   }

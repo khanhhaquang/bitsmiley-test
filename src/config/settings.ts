@@ -9,5 +9,6 @@ export const DOMAIN_URL: {
 export const LOCAL_STORAGE_KEYS = {
   LOGIN_TYPE: 'login_type',
   PLAY_MUSIC: 'play_music',
-  CONFIRMED: 'confirmed'
+  CONFIRMED: 'confirmed',
+  CONFIRMED_MINTED: 'confirm_minted'
 }

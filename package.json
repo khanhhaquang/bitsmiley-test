@@ -23,6 +23,7 @@
     "react-query": "^3.39.3",
     "react-redux": "^9.0.4",
     "react-router-dom": "^6.21.1",
+    "react-tooltip": "^5.26.0",
     "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {

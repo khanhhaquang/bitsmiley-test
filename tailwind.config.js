@@ -14,6 +14,7 @@ const colors = {
   grey2: '#8F8F8F',
   grey3: '#232323',
   grey4: '#3C3C3C',
+  grey5: '#ffffff4d',
   red: '#CE2D2D',
   pink: '#FF64AE'
 }
@@ -30,6 +31,15 @@ export default {
   theme: {
     extend: {
       colors: colors,
+      animation: {
+        fade: 'fadeOut 300ms ease-in-out'
+      },
+      keyframes: () => ({
+        fadeOut: {
+          '0%': { opacity: '0%' },
+          '100%': { opacity: '100%' }
+        }
+      }),
       fontFamily: {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
         pss: ['pss', ...defaultTheme.fontFamily.sans],

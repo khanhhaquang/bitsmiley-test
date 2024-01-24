@@ -41,7 +41,10 @@ export const Promotion: React.FC = () => {
 
             <div className="flex flex-col gap-y-2.5">
               <div className="h-5 w-40">
-                <Typewriter seq={2} renderNodes={() => 'SMILEY EXPRESS CARD'} />
+                <Typewriter
+                  seq={2}
+                  renderNodes={() => 'SMILEY EXPRESS BITDISC'}
+                />
               </div>
               <div className="h-5 w-40">
                 <Typewriter seq={4} renderNodes={() => 'bitSmiley'} />

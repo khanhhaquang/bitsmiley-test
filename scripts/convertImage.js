@@ -13,7 +13,7 @@ function convertImgToHex(url) {
 
 function convertImgToBase64(url) {
   const file = fs.readFileSync(path.resolve(root, url))
-  const base64 = new Buffer(file).toString('base64')
+  const base64 = new Buffer.from(file).toString('base64')
   return `data:image/webp;base64,${base64}`
 }
 

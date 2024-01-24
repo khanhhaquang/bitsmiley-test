@@ -7,13 +7,59 @@ import { getFrameUrl, getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
 import { CanvasFrames, CanvasFramesRef } from '@/components/CanvasFrames'
 import { useSelector } from 'react-redux'
 import { getInscriptionId } from '@/store/account/reducer'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { Modal } from '@/components/Modal'
-import { BitDiscBlackIcon, CloseIcon } from '@/assets/icons'
+import { AsteriskIcon, BitDiscBlackIcon, CloseIcon } from '@/assets/icons'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+
+const localConfirmedMinted =
+  getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED) === 'true'
 
 export const InscriptionSucceeded: React.FC = () => {
   const { address } = useUserInfo()
   const [isPlayingCardComingout, setIsPlayingCardComingout] = useState(false)
+  const [confirmMinted, setConfirmMinted] = useState(localConfirmedMinted)
+
+  useEffect(() => {
+    if (!localConfirmedMinted) {
+      setConfirmMinted(false)
+    }
+  }, [])
+
+  const confirmNft = () => {
+    setConfirmMinted(true)
+    const localV =
+      getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED) === 'true'
+    if (!localV) {
+      setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED, 'true')
+    }
+  }
+
+  if (confirmMinted) {
+    return (
+      <>
+        <div className="absolute left-[335px] top-[325px] flex flex-col gap-y-1.5 font-smb text-sm">
+          <div>PLAYER:</div>
+          <div>{displayAddress(address, 3, 3)}</div>
+        </div>
+
+        <div className="absolute left-[526px] top-[345px] flex items-center gap-x-[5px]">
+          <AsteriskIcon />
+          <span className="font-smb text-sm">--- Dear BitSmiler ---</span>
+          <AsteriskIcon />
+        </div>
+
+        <div className="absolute left-[660px] top-[415px]">
+          <Image src={getIllustrationUrl('disc-green')} />
+        </div>
+
+        <div className="absolute left-[527px] top-[539px] w-[339px] text-center text-sm">
+          You have minted a bitDisc Black, as a true symbol of bitSmiley
+          supporter.
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
@@ -45,12 +91,15 @@ export const InscriptionSucceeded: React.FC = () => {
         take my bitdisc
       </div>
 
-      <CardComingOut playing={isPlayingCardComingout} />
+      <CardComingOut playing={isPlayingCardComingout} onConfirm={confirmNft} />
     </>
   )
 }
 
-const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
+const CardComingOut: React.FC<{ playing: boolean; onConfirm: () => void }> = ({
+  playing,
+  onConfirm
+}) => {
   const cardComingOutRef = useRef<CanvasFramesRef>(null)
   const [isMintedModalOpen, setIsMintedModalOpen] = useState(false)
   const [playCardShine, setPlayCardShine] = useState(false)
@@ -65,6 +114,10 @@ const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
     <>
       <MintedModal
         isOpen={isMintedModalOpen}
+        onConfirm={() => {
+          onConfirm()
+          setIsMintedModalOpen(false)
+        }}
         onClose={() => setIsMintedModalOpen(false)}
       />
       {playCardShine && (
@@ -132,16 +185,12 @@ const CardComingOut: React.FC<{ playing: boolean }> = ({ playing }) => {
 const MintedModal: React.FC<{
   isOpen: boolean
   onClose: () => void
-}> = ({ isOpen, onClose }) => {
+  onConfirm: () => void
+}> = ({ isOpen, onClose, onConfirm }) => {
   const inscriptionId = useSelector(getInscriptionId)
-  const { width } = useWindowSize()
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div
-        className="relative border border-white bg-black"
-        style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-        }}>
+      <div className="relative border border-white bg-black">
         <CloseIcon
           onClick={onClose}
           className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
@@ -172,7 +221,7 @@ const MintedModal: React.FC<{
           </div>
 
           <div
-            onClick={onClose}
+            onClick={onConfirm}
             className={cn(
               'relative inline-block bg-white cursor-pointer text-black px-3 py-1 font-bold whitespace-nowrap text-[15px] hover:bg-blue3',
               'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:bg-blue'

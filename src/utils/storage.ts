@@ -19,11 +19,15 @@ const clearStorage = () => {
 const clearLoginType = () => {
   deleteLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
 }
+const clearConfirmedMinted = () => {
+  deleteLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED)
+}
 
 export {
   clearStorage,
   setLocalStorage,
   deleteLocalStorage,
   getLocalStorage,
-  clearLoginType
+  clearLoginType,
+  clearConfirmedMinted
 }

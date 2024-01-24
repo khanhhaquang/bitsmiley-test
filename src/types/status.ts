@@ -4,10 +4,10 @@ export enum AddressStauts {
   NotStarted = 'NotStarted',
   CheckingInscription = 'CheckingInscription',
   NotInscribed = 'NotInscribed',
-  CreatingOrder = 'CreatingOrder',
   Inscribing = 'Inscribing',
   InscriptionConfirmed = 'InscriptionConfirmed',
   InscriptionFailed = 'InscriptionFailed',
+  DisableMinting = 'DisableMinting',
   InscriptionSucceeded = 'InscriptionSucceeded',
-  ReachedMaximum = 'ReachedMaximum'
+  MintingEnded = 'MintingEnded'
 }
