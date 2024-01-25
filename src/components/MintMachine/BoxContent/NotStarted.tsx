@@ -1,10 +1,10 @@
-import { AsteriskIcon, CrownYellowIcon, StarIcon } from '@/assets/icons'
+import { CrownYellowIcon, StarIcon } from '@/assets/icons'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { displayAddress } from '@/utils/formatter'
+import { DearBitSmiler, PlayerInfo } from './Common'
 
 export const NotStarted: React.FC = () => {
-  const { address, isWhitelist } = useUserInfo()
+  const { isWhitelist } = useUserInfo()
   const { remainBlock, isWhitelistEnded, isReachWhitelistMaximum } =
     useProjectInfo()
 
@@ -12,7 +12,7 @@ export const NotStarted: React.FC = () => {
     if (isWhitelistEnded) {
       return (
         <>
-          <div className="absolute left-[514px] top-[345px] font-smb text-sm">
+          <div className="absolute left-[514px] top-[350px] font-smb text-sm">
             whitelist minting finished
           </div>
           <div className="absolute left-[477px] top-[410px] w-[438px] text-center text-sm">
@@ -26,7 +26,7 @@ export const NotStarted: React.FC = () => {
     if (isReachWhitelistMaximum) {
       return (
         <>
-          <div className="absolute left-[514px] top-[345px] font-smb text-sm">
+          <div className="absolute left-[514px] top-[350px] font-smb text-sm">
             whitelist minting finished
           </div>
           <div className="absolute left-[477px] top-[410px] w-[438px] text-center text-sm">
@@ -40,7 +40,7 @@ export const NotStarted: React.FC = () => {
 
     return (
       <>
-        <div className="absolute left-[555px] top-[342px] flex items-center gap-x-2 font-smb">
+        <div className="absolute left-[555px] top-[350px] flex items-center gap-x-2 font-smb">
           <StarIcon />
           <StarIcon />
           <span>CONGRATULATIONS</span>
@@ -62,11 +62,7 @@ export const NotStarted: React.FC = () => {
   const renderNormalContent = () => {
     return (
       <>
-        <div className="absolute left-[498px] top-[345px] flex items-center gap-x-[5px]">
-          <AsteriskIcon />
-          <span className="font-smb text-sm">----- Dear BitSmiler -----</span>
-          <AsteriskIcon />
-        </div>
+        <DearBitSmiler />
 
         <div className="absolute left-[477px] top-[410px] w-[438px] text-center text-sm">
           The public minting session for bitDisc Black is coming. Keep an eye on
@@ -78,10 +74,7 @@ export const NotStarted: React.FC = () => {
 
   return (
     <>
-      <div className="absolute left-[336px] top-[318px] flex flex-col gap-y-1.5 font-smb text-sm">
-        <div>PLAYER:</div>
-        <div>{displayAddress(address, 3, 3)}</div>
-      </div>
+      <PlayerInfo />
 
       {isWhitelist ? renderWhitelistContent() : renderNormalContent()}
 

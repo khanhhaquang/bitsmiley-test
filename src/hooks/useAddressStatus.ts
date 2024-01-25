@@ -29,11 +29,7 @@ export const useAddressStatus = () => {
     isLoadingRemainBlock,
     isLoading: isLoadingProjectInfo
   } = useProjectInfo()
-  const {
-    disableMinting,
-    hasNftMinted,
-    isLoading: isLoadingUserNfts
-  } = useUserNfts()
+  const { hasNftMinted, isLoading: isLoadingUserNfts } = useUserNfts()
 
   const { isLoadingNfts, isFetchingNfts } = usePollNewNfts()
   const { isLoadingTxnInfo, isFetchingTxnInfo } = usePollTxnInfo()
@@ -77,12 +73,6 @@ export const useAddressStatus = () => {
       return
     }
 
-    if (disableMinting) {
-      setAddressStatus(AddressStauts.DisableMinting)
-      setIsCheckingTxid(false)
-      return
-    }
-
     if (isNotStarted) {
       setAddressStatus(AddressStauts.NotStarted)
       setIsCheckingTxid(false)
@@ -111,7 +101,6 @@ export const useAddressStatus = () => {
     isConnected,
     hasNftMinted,
     isNotStarted,
-    disableMinting,
     isFetchingNfts,
     isCreatingOrder,
     setAddressStatus,
@@ -238,7 +227,7 @@ const usePollTxnInfo = () => {
 
 const usePollNewNfts = () => {
   const { address, isConnected } = useUserInfo()
-  const { refetch: refetchProjectInfo } = useProjectInfo()
+  const { refetch: refetchProjectInfo, isNotStarted } = useProjectInfo()
 
   const { setAddressStatus, setInscriptionId, setUserNfts } = useStoreActions()
 
@@ -292,7 +281,8 @@ const usePollNewNfts = () => {
       return
     }
 
-    setAddressStatus(AddressStauts.InscriptionFailed)
+    if (isNotStarted) return
+
     const disableMinting = getDisbleMinting(nfts)
 
     if (disableMinting) {
@@ -306,6 +296,7 @@ const usePollNewNfts = () => {
   }, [
     setUserNfts,
     isConnected,
+    isNotStarted,
     hasNftMinted,
     getDisbleMinting,
     setAddressStatus,

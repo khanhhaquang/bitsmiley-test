@@ -1,22 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { Image } from '@/components/Image'
-import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
-import { displayAddress, getOrdScanUrl } from '@/utils/formatter'
+import { getOrdScanUrl } from '@/utils/formatter'
 import { getFrameUrl, getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
 import { CanvasFrames, CanvasFramesRef } from '@/components/CanvasFrames'
 import { useSelector } from 'react-redux'
 import { getInscriptionId } from '@/store/account/reducer'
 import { Modal } from '@/components/Modal'
-import { AsteriskIcon, BitDiscBlackIcon, CloseIcon } from '@/assets/icons'
+import { BitDiscBlackIcon, CloseIcon } from '@/assets/icons'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { DearBitSmiler, PlayerInfo } from './Common'
 
 const localConfirmedMinted =
   getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED) === 'true'
 
 export const InscriptionSucceeded: React.FC = () => {
-  const { address } = useUserInfo()
   const [isPlayingCardComingout, setIsPlayingCardComingout] = useState(false)
   const [confirmMinted, setConfirmMinted] = useState(localConfirmedMinted)
 
@@ -38,16 +37,8 @@ export const InscriptionSucceeded: React.FC = () => {
   if (confirmMinted) {
     return (
       <>
-        <div className="absolute left-[335px] top-[325px] flex flex-col gap-y-1.5 font-smb text-sm">
-          <div>PLAYER:</div>
-          <div>{displayAddress(address, 3, 3)}</div>
-        </div>
-
-        <div className="absolute left-[526px] top-[345px] flex items-center gap-x-[5px]">
-          <AsteriskIcon />
-          <span className="font-smb text-sm">--- Dear BitSmiler ---</span>
-          <AsteriskIcon />
-        </div>
+        <PlayerInfo />
+        <DearBitSmiler />
 
         <div className="absolute left-[660px] top-[415px]">
           <Image src={getIllustrationUrl('disc-green')} />
@@ -63,10 +54,7 @@ export const InscriptionSucceeded: React.FC = () => {
 
   return (
     <>
-      <div className="absolute left-[336px] top-[318px] flex flex-col gap-y-1.5 font-smb text-sm">
-        <div>PLAYER:</div>
-        <div>{displayAddress(address, 3, 3)}</div>
-      </div>
+      <PlayerInfo />
 
       <Image
         src={getIllustrationUrl('disc')}

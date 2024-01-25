@@ -1,11 +1,11 @@
-import { AsteriskIcon, CrownYellowIcon, StarIcon } from '@/assets/icons'
+import { CrownYellowIcon, StarIcon } from '@/assets/icons'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { displayAddress } from '@/utils/formatter'
+import { DearBitSmiler, PlayerInfo } from './Common'
 
 export const NotInscribed: React.FC = () => {
+  const { isWhitelist } = useUserInfo()
   const { isDuringWhitelist } = useProjectInfo()
-  const { address, isWhitelist } = useUserInfo()
 
   const renderWhitelistContent = () => {
     return (
@@ -31,11 +31,7 @@ export const NotInscribed: React.FC = () => {
   const renderNormalContent = () => {
     return (
       <>
-        <div className="absolute left-[498px] top-[345px] flex items-center gap-x-[5px]">
-          <AsteriskIcon />
-          <span className="font-smb text-sm">----- Dear BitSmiler -----</span>
-          <AsteriskIcon />
-        </div>
+        <DearBitSmiler />
 
         <div className="absolute left-[490px] top-[439px] w-[412px] text-center text-sm leading-tight">
           Public minting is here, First come first serve. Every wallet has one
@@ -47,10 +43,7 @@ export const NotInscribed: React.FC = () => {
 
   return (
     <>
-      <div className="absolute left-[336px] top-[318px] flex flex-col gap-y-1.5 font-smb text-sm">
-        <div>PLAYER:</div>
-        <div>{displayAddress(address, 3, 3)}</div>
-      </div>
+      <PlayerInfo />
 
       {isWhitelist && isDuringWhitelist
         ? renderWhitelistContent()

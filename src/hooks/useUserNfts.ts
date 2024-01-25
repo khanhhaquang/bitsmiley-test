@@ -55,11 +55,6 @@ export const useUserNfts = () => {
     [nftsDataRes]
   )
 
-  const disableMinting = useMemo(
-    () => getDisbleMinting(nftsDataRes?.data?.data?.nfts),
-    [getDisbleMinting, nftsDataRes?.data?.data?.nfts]
-  )
-
   useEffect(() => {
     if (mintedNft) {
       setTxId(mintedNft.txid)
@@ -77,7 +72,6 @@ export const useUserNfts = () => {
   }, [nftsDataRes, setUserNfts, userNfts])
 
   return {
-    disableMinting,
     hasNftMinted: !!mintedNft,
     isLoading,
     getDisbleMinting

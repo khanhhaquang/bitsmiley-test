@@ -10,14 +10,18 @@ import { openUrl } from '@/utils/getAssetsUrl'
 import { Tooltip } from 'react-tooltip'
 import { getIsOpenHistory } from '@/store/common/reducer'
 import { useStoreActions } from '@/hooks/useStoreActions'
+import { getAddressStatus } from '@/store/addressStatus/reducer'
+import { AddressStauts } from '@/types/status'
 
 export const History: React.FC = () => {
   const userNfts = useSelector(getUserNfts)
+  const addressStatus = useSelector(getAddressStatus)
   const isOpenHistory = useSelector(getIsOpenHistory)
 
   const { setIsOpenHistory } = useStoreActions()
 
-  if (!userNfts.length) return null
+  if (!userNfts.length || addressStatus === AddressStauts.MintingEnded)
+    return null
 
   return (
     <div className="absolute left-[935px] top-[341px] cursor-pointer">

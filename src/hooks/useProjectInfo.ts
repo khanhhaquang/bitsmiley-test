@@ -73,9 +73,7 @@ export const useProjectInfo = () => {
       refetchInterval: (res) => {
         const currentNc = Number(res?.data?.data.nftCount || 0)
         const pubcNc = Number(res?.data?.data?.publicMax || 0)
-        const whitelistNc = Number(res?.data?.data?.whitelistMax || 0)
-        const totalNc = pubcNc + whitelistNc
-        const isRechedMx = currentNc && totalNc && currentNc >= totalNc
+        const isRechedMx = currentNc >= pubcNc
 
         return getIsStarted(res) || isRechedMx
           ? false
@@ -108,10 +106,6 @@ export const useProjectInfo = () => {
     () => Number(data?.data?.data?.whitelistMax || 0),
     [data]
   )
-  const totalMax = useMemo(
-    () => publicMax + whitelistMax,
-    [publicMax, whitelistMax]
-  )
 
   const isDuringWhitelist = useMemo(() => {
     return (
@@ -139,10 +133,10 @@ export const useProjectInfo = () => {
     [currentNftCount, whitelistMax]
   )
 
-  const isReachedTotalMax = useMemo(() => {
-    if (!currentNftCount) return false
-    return currentNftCount >= totalMax
-  }, [currentNftCount, totalMax])
+  const isReachedTotalMax = useMemo(
+    () => currentNftCount && currentNftCount >= publicMax,
+    [currentNftCount, publicMax]
+  )
 
   const isNotStarted = useMemo(() => remainBlock > 0, [remainBlock])
   const isLoadingRemainBlock = useMemo(() => remainBlock < 0, [remainBlock])
@@ -158,11 +152,7 @@ export const useProjectInfo = () => {
       const pmx = Number(res?.data?.data?.publicMax || 0)
       const wmx = Number(res?.data?.data?.whitelistMax || 0)
 
-      if (isWhitelist && !isWhitelistEnded) {
-        return nct < wmx
-      }
-
-      return nct < wmx + pmx
+      return isWhitelist && !isWhitelistEnded ? nct < wmx : nct < pmx
     },
     [getIsStarted, isWhitelist, isWhitelistEnded]
   )

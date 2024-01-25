@@ -1,4 +1,3 @@
-import { AsteriskIcon } from '@/assets/icons'
 import { MEDIA } from '@/config/links'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -6,6 +5,7 @@ import { getUserNfts } from '@/store/account/reducer'
 import { cn } from '@/utils/cn'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { useSelector } from 'react-redux'
+import { DearBitSmiler } from './Common'
 
 export const MintingEnded: React.FC = () => {
   const userNfts = useSelector(getUserNfts)
@@ -50,11 +50,7 @@ export const MintingEnded: React.FC = () => {
 
   return (
     <>
-      <div className="absolute left-[520px] top-[338px] flex items-center gap-x-[5px]">
-        <AsteriskIcon />
-        <span className="font-smb text-sm">--- Dear BitSmiler ---</span>
-        <AsteriskIcon />
-      </div>
+      <DearBitSmiler />
 
       <div className="absolute left-[531px] top-[436px] text-sm">
         bitDisc minting session has finished.
