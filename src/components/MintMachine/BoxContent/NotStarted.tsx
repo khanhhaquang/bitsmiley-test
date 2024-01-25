@@ -68,7 +68,7 @@ export const NotStarted: React.FC = () => {
           <AsteriskIcon />
         </div>
 
-        <div className="absolute left-[477px] top-[410px] text-sm">
+        <div className="absolute left-[477px] top-[410px] w-[438px] text-center text-sm">
           The public minting session for bitDisc Black is coming. Keep an eye on
           the ticking clock. Every wallet has one chance to win!
         </div>

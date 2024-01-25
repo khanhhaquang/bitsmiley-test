@@ -70,8 +70,17 @@ export const useProjectInfo = () => {
     [ProjectService.getProjectInfo.key],
     ProjectService.getProjectInfo.call,
     {
-      refetchInterval: (res) =>
-        getIsStarted(res) ? false : FETCH_PROJECT_INFO_INTERVAL
+      refetchInterval: (res) => {
+        const currentNc = Number(res?.data?.data.nftCount || 0)
+        const pubcNc = Number(res?.data?.data?.publicMax || 0)
+        const whitelistNc = Number(res?.data?.data?.whitelistMax || 0)
+        const totalNc = pubcNc + whitelistNc
+        const isRechedMx = currentNc && totalNc && currentNc >= totalNc
+
+        return getIsStarted(res) || isRechedMx
+          ? false
+          : FETCH_PROJECT_INFO_INTERVAL
+      }
     }
   )
 
@@ -106,7 +115,7 @@ export const useProjectInfo = () => {
 
   const isDuringWhitelist = useMemo(() => {
     return (
-      nowBlockHeight >= whitelistStartBlockHeight &&
+      nowBlockHeight >= whitelistStartBlockHeight - 1 &&
       nowBlockHeight < whitelistEndBlockHeight
     )
   }, [nowBlockHeight, whitelistEndBlockHeight, whitelistStartBlockHeight])
