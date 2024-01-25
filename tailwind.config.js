@@ -31,15 +31,15 @@ export default {
   theme: {
     extend: {
       colors: colors,
-      animation: {
-        fade: 'fadeOut 300ms ease-in-out'
-      },
       keyframes: () => ({
-        fadeOut: {
-          '0%': { opacity: '0%' },
-          '100%': { opacity: '100%' }
+        popOut: {
+          '0%': { scale: '30%' },
+          '100%': { scale: '100%' }
         }
       }),
+      animation: {
+        pop: 'popOut 150ms ease-in-out'
+      },
       fontFamily: {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
         pss: ['pss', ...defaultTheme.fontFamily.sans],

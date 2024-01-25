@@ -55,8 +55,10 @@ export const Modal: React.FC<TProps> = ({
         'fixed left-0 right-0 bottom-0 top-0 w-screen z-[100] h-screen',
         className
       )}>
-      <div className="flex h-full w-full animate-fade items-center justify-center bg-black2/80 text-white">
-        <div ref={innerRef}>{children}</div>
+      <div className="flex h-full w-full items-center justify-center bg-black2/80 text-white">
+        <div ref={innerRef} className="animate-pop">
+          {children}
+        </div>
       </div>
     </div>,
     document.querySelector('#smiley-modals')!

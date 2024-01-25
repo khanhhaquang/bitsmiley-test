@@ -52,7 +52,7 @@ export const MintingEnded: React.FC = () => {
     <>
       <DearBitSmiler />
 
-      <div className="absolute left-[531px] top-[436px] text-sm">
+      <div className="absolute left-[540px] top-[436px] text-sm">
         bitDisc minting session has finished.
       </div>
 
