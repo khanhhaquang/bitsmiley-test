@@ -113,16 +113,9 @@ const SelectWalletModal: React.FC<{
         />
         <div className="p-11">
           <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
-          <div className="mb-12 w-[336px] whitespace-break-spaces font-psm text-sm">
-            <div>
-              Don’t have any wallet listed here? Select a provider below to
-              create one.
-            </div>
-            <br />
-            <div>
-              Please make sure you are using BTC taproot address when logging
-              in.
-            </div>
+          <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
+            We are working on adding more wallets. Don’t have any wallet listed
+            here? Select a provider below to create one
           </div>
           <div className="flex flex-col gap-y-6">
             <WalletItem
@@ -195,7 +188,7 @@ const SelectWalletModal: React.FC<{
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={!!isConfirmed}>
-      <div className="relative border-4 border-black bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+      <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         {isConfirmed ? renderWallets() : renderDisclaimer()}
       </div>
     </Modal>

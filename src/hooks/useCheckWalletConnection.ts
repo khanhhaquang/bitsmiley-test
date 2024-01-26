@@ -8,7 +8,6 @@ import {
 import { useCallback, useEffect, useState } from 'react'
 import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
-import { validateTaprootAddress } from '@/utils/btc'
 
 export const useCheckWalletConnection = () => {
   const [isFetchingAccountsInfo, setIsFetchingAccountsInfo] = useState(true)
@@ -32,9 +31,6 @@ export const useCheckWalletConnection = () => {
       try {
         const accounts = await window?.okxwallet?.bitcoin.getAccounts()
         const publicKey = await window?.okxwallet?.bitcoin.getPublicKey()
-
-        if (!validateTaprootAddress(accounts?.[0])) return
-
         setAccountInfo({
           address: accounts?.[0],
           publicKey
@@ -51,9 +47,6 @@ export const useCheckWalletConnection = () => {
       try {
         const accounts = await window?.unisat?.getAccounts()
         const publicKey = await window?.unisat?.getPublicKey()
-
-        if (!validateTaprootAddress(accounts?.[0])) return
-
         setAccountInfo({
           address: accounts?.[0],
           publicKey
