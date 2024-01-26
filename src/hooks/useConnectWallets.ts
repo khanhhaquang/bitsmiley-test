@@ -7,6 +7,7 @@ import { getLoginType } from '@/store/account/reducer'
 import { WALLETSITE } from '@/config/links'
 import { clearConfirmedMinted, clearLoginType } from '@/utils/storage.ts'
 import { openUrl } from '@/utils/getAssetsUrl'
+import { validateTaprootAddress } from '@/utils/btc'
 
 export const useConnectWallets = () => {
   const queryClient = useQueryClient()
@@ -15,7 +16,7 @@ export const useConnectWallets = () => {
 
   const handleAccountChanged = useCallback(
     (newAccountInfo: IAccountInfo | null, loginType: LoginTypeEnum) => {
-      if (!newAccountInfo) {
+      if (!newAccountInfo || !validateTaprootAddress(newAccountInfo?.address)) {
         resetStorage()
         clearLoginType()
         clearConfirmedMinted()
