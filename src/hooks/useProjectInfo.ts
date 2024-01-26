@@ -4,11 +4,15 @@ import { useUserInfo } from './useUserInfo'
 import { useCallback, useMemo } from 'react'
 import { AxiosResponse } from 'axios'
 import { IReseponse } from '@/types/common'
+import { useSelector } from 'react-redux'
+import { getAddressStatus } from '@/store/addressStatus/reducer'
+import { AddressStauts } from '@/types/status'
 
 const FETCH_PROJECT_INFO_INTERVAL = 10000
 
 export const useProjectInfo = () => {
   const { isWhitelist } = useUserInfo()
+  const addressStatus = useSelector(getAddressStatus)
 
   const getNormalRemainBlock = useCallback(
     (res?: AxiosResponse<IReseponse<IProject>>) => {
@@ -75,7 +79,9 @@ export const useProjectInfo = () => {
         const pubcNc = Number(res?.data?.data?.publicMax || 0)
         const isRechedMx = currentNc >= pubcNc
 
-        return getIsStarted(res) || isRechedMx
+        return getIsStarted(res) ||
+          isRechedMx ||
+          addressStatus === AddressStauts.InscriptionSucceeded
           ? false
           : FETCH_PROJECT_INFO_INTERVAL
       }

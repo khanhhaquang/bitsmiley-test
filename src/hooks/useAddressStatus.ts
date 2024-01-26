@@ -188,7 +188,7 @@ const usePollTxnInfo = () => {
     {
       enabled: !!txid && !hasNftMinted,
       refetchInterval: (res) => {
-        if (!res) return false
+        if (res?.response?.status === 404) return FETCH_USER_NFTS_INTERVAL
         return res?.data?.status?.confirmed
           ? false
           : FETCH_TRANSACTION_INFO_INTERVAL

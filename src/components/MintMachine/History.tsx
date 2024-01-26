@@ -17,18 +17,28 @@ export const History: React.FC = () => {
   const userNfts = useSelector(getUserNfts)
   const addressStatus = useSelector(getAddressStatus)
   const isOpenHistory = useSelector(getIsOpenHistory)
-
   const { setIsOpenHistory } = useStoreActions()
 
-  if (!userNfts.length || addressStatus === AddressStauts.MintingEnded)
+  if (!userNfts.length) {
     return null
+  }
 
-  return (
-    <div className="absolute left-[935px] top-[341px] cursor-pointer">
+  const renderIcon = () => {
+    if (!userNfts.length || addressStatus === AddressStauts.MintingEnded) {
+      return null
+    }
+
+    return (
       <HistoryIcon
         className="text-blue3 hover:text-blue1 active:to-blue"
         onClick={() => setIsOpenHistory(true)}
       />
+    )
+  }
+
+  return (
+    <div className="absolute left-[935px] top-[341px] cursor-pointer">
+      {renderIcon()}
       <HistoryModal
         userNfts={userNfts}
         isOpen={isOpenHistory}
@@ -83,13 +93,10 @@ const HistoryModal: React.FC<{
                         )}>
                         {nft.invalid_reason ? (
                           <>
-                            <span>
-                              Invalid
-                              <span
-                                id="invalid-reason"
-                                className="cursor-pointer">
-                                ⓘ
-                              </span>
+                            <span
+                              id="invalid-reason"
+                              className="cursor-pointer">
+                              Invalidⓘ
                             </span>
                             <Tooltip
                               noArrow
