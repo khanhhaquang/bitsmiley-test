@@ -1,14 +1,15 @@
 import { ReactNode } from 'react'
+import store from '@/store/rootReducer'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { BrowserRouter } from 'react-router-dom'
 import { ModalsContainer } from './components/Modal'
-import { rootStore } from './store/rootReducer'
 import { Provider as ReduxProvider } from 'react-redux'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      retry: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
       refetchOnWindowFocus: false
@@ -18,7 +19,7 @@ const queryClient = new QueryClient({
 
 const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <ReduxProvider store={rootStore}>
+    <ReduxProvider store={store}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} position="top-left" />
         <BrowserRouter>

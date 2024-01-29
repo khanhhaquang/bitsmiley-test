@@ -1,4 +1,4 @@
-import axiosInstance from '@/config/axios'
+import { axiosInstance } from '@/config/axios'
 import { IReseponse } from '@/types/common'
 
 export interface IProject {

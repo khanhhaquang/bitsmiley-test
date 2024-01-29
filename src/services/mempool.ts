@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { axios } from '@/config/axios'
 import { DOMAIN_URL } from '@/config/settings'
 
 const axiosInstance = axios.create({

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { axios } from '@/config/axios'
 
 const MEDIUM_URL =
   'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@bitsmiley_labs'

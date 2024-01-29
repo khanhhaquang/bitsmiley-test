@@ -2,12 +2,12 @@ import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { getFrameUrl } from '@/utils/getAssetsUrl'
 import Typewriter from '@/components/Typewriter'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'
 import { useState } from 'react'
-import { HeaderIcon, LoadingLineIcon } from '@/assets/icons'
+import { LoadingLineIcon } from '@/assets/icons'
 import { getLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { Header } from '@/components/Header'
 
 const hasVisited =
   !!getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) &&
@@ -22,7 +22,7 @@ export const LoadingPage: React.FC<{
 
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-black bg-loading bg-cover bg-center bg-no-repeat">
-      <SmileyLogo />
+      <Header />
       <CopyRightAndLinks musicControl={false} />
       <div className="flex flex-col items-center text-white">
         <div className="mb-12">
@@ -68,25 +68,6 @@ export const LoadingPage: React.FC<{
             Enter bitSmiley
           </div>
         )}
-      </div>
-    </div>
-  )
-}
-
-const SmileyLogo: React.FC = () => {
-  const { width } = useWindowSize()
-  return (
-    <div
-      className="absolute left-0 top-[50px] z-50 flex w-screen origin-top items-start justify-between text-white"
-      style={{
-        padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-      }}>
-      <div
-        className="flex origin-top-left"
-        style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-        }}>
-        <HeaderIcon className="max-h-14" />
       </div>
     </div>
   )

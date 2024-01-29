@@ -59,6 +59,10 @@ export const useStoreActions = () => {
     (payload: boolean) => dispatch(commonActions.SET_IS_OPEN_HISTORY(payload)),
     [dispatch]
   )
+  const setNetworkError = useCallback(
+    (payload: boolean) => dispatch(commonActions.SET_NETWORK_ERROR(payload)),
+    [dispatch]
+  )
 
   return {
     setTxId,
@@ -70,6 +74,7 @@ export const useStoreActions = () => {
     setInscriptionId,
     setAddressStatus,
     setIsCreatingOrder,
+    setNetworkError,
     setCurrentTypewritterSeq
   }
 }

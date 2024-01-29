@@ -6,11 +6,11 @@ import { MEDIA } from '@/config/links'
 import { cn } from '@/utils/cn'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
-import { ConnectWallet } from '@/components/ConnectWallet'
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { useOnScreen } from '@/hooks/useOnScreen'
-import { CoinIcon, HeaderIcon } from '@/assets/icons'
+import { CoinIcon } from '@/assets/icons'
 import { MintMachine } from '@/components/MintMachine'
+import { Header } from '@/components/Header'
 
 export const MintPage: React.FC = () => {
   const whoIsBitSmileyRef = useRef<HTMLDivElement>(null)
@@ -44,7 +44,7 @@ export const MintPage: React.FC = () => {
           <Articles />
         </div>
       </div>
-      <Header />
+      <Header wallet />
       <CopyRightAndLinks />
     </div>
   )
@@ -139,31 +139,6 @@ const Articles: React.FC = () => {
           )}
         </div>
       ))}
-    </div>
-  )
-}
-
-const Header: React.FC = () => {
-  const { width } = useWindowSize()
-  return (
-    <div
-      className="absolute left-0 top-[50px] z-50 flex w-screen origin-top items-start justify-between text-white"
-      style={{
-        padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-      }}>
-      <HeaderIcon
-        className="flex h-[54px] origin-top-left"
-        style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-        }}
-      />
-
-      <ConnectWallet
-        className="flex origin-top-right"
-        style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-        }}
-      />
     </div>
   )
 }

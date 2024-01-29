@@ -1,5 +1,8 @@
-import axios from 'axios'
-import { DOMAIN_URL } from './settings'
+import axios, { AxiosInstance, AxiosStatic } from 'axios'
+import axiosRetry from 'axios-retry'
+import store from '@/store/rootReducer'
+import { DOMAIN_URL } from '@/config/settings'
+import commonActions from '@/store/common/actions'
 
 const axiosInstance = axios.create({
   baseURL: DOMAIN_URL.API,
@@ -10,4 +13,31 @@ const axiosInstance = axios.create({
   }
 })
 
-export default axiosInstance
+backOff(axios)
+backOff(axiosInstance)
+
+function backOff(ax: AxiosInstance | AxiosStatic) {
+  axiosRetry(ax, {
+    retries: 4,
+    shouldResetTimeout: true,
+    retryCondition: (error) => {
+      if (error?.status === 429 || error?.status === 404) {
+        return true
+      }
+
+      store.dispatch(commonActions.SET_NETWORK_ERROR(true))
+      return false
+    },
+    retryDelay: (retryCount) => {
+      const delay = 2 ** (retryCount - 1) * 1000 * 10
+      return delay
+    },
+    onRetry: (retryCount, error) => {
+      if (retryCount === 4 && !!error) {
+        store.dispatch(commonActions.SET_NETWORK_ERROR(true))
+      }
+    }
+  })
+}
+
+export { axios, axiosInstance }

@@ -27,7 +27,9 @@ export const rootReducer = (state: any, action: { type: string }) => {
 
 export type RootState = ReturnType<typeof rootReducer>
 
-export const rootStore = configureStore({
+const rootStore = configureStore({
   reducer: rootReducer,
   devTools: import.meta.env.DEV
 })
+
+export default rootStore

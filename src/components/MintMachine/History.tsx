@@ -30,14 +30,14 @@ export const History: React.FC = () => {
 
     return (
       <HistoryIcon
-        className="text-blue3 hover:text-blue1 active:to-blue"
+        className="cursor-pointer text-blue3 hover:text-blue1 active:to-blue"
         onClick={() => setIsOpenHistory(true)}
       />
     )
   }
 
   return (
-    <div className="absolute left-[935px] top-[341px] cursor-pointer">
+    <div className="absolute left-[935px] top-[341px] z-[100]">
       {renderIcon()}
       <HistoryModal
         userNfts={userNfts}

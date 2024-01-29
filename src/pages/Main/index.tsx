@@ -1,14 +1,18 @@
 import { MintPage } from './MintPage'
 import { useState } from 'react'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
+import { NetworkErrorPage } from '@/pages/Main/NetworkErrorPage'
 import { useCheckWalletConnection } from '@/hooks/useCheckWalletConnection'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserNfts } from '@/hooks/useUserNfts'
 import { useAddressStatus } from '@/hooks/useAddressStatus'
+import { useSelector } from 'react-redux'
+import { getNetworkError } from '@/store/common/reducer'
 
 const Main: React.FC = () => {
+  const isNetworkError = useSelector(getNetworkError)
   const [isEntered, setIsEntered] = useState(false)
 
   const { isLoading: isLoadingResources } = usePreloadResources()
@@ -26,6 +30,8 @@ const Main: React.FC = () => {
       isLoadingAddressStatus ||
       isLoadingProjectInfo) &&
     !isEntered
+
+  if (isNetworkError) return <NetworkErrorPage />
 
   return (
     <div>
