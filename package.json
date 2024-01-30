@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/convertImage.js && tsc && vite build",
-    "build": "npm run prebuild && node scripts/generateResourcesPaths.js && npm run prebuild",
+    "prebuild:dev": "node scripts/convertImage.js && tsc && vite build --mode development",
+    "prebuild:pro": "node scripts/convertImage.js && tsc && vite build --mode production",
+    "build:dev": "npm run prebuild:dev && node scripts/generateResourcesPaths.js && npm run prebuild:dev",
+    "build:pro": "npm run prebuild:pro && node scripts/generateResourcesPaths.js && npm run prebuild:pro",
     "preview": "vite preview",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",

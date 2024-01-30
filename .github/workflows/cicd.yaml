@@ -64,16 +64,20 @@ jobs:
 
           echo "S3_SUBPATH=$S3_SUBPATH" >> $GITHUB_ENV
 
-      - name: Run the build process
-        if: env.IS_DEPLOY == 'true'
-        run: |
-          npm ci
+      # - name: Run the build process
+      #   if: env.IS_DEPLOY == 'true'
+      #   run: |
+      #     npm ci
 
-          npm run build
+      #     npm run build
 
       - name: Deploy to S3 dev
         if: env.IS_DEPLOY_DEVELOP == 'true'
         run: |
+          npm ci
+
+          npm run build:dev
+
           aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
 
           aws cloudfront create-invalidation --distribution-id EA1V5QWQJDZTR --paths "/*"
@@ -81,6 +85,10 @@ jobs:
       - name: Deploy to S3 prod
         if: env.IS_DEPLOY_MAIN == 'true'
         run: |
+          npm ci
+
+          npm run build:pro
+
           aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
 
           aws cloudfront create-invalidation --distribution-id EX53P5PVR1P1N --paths "/*"
