@@ -1,7 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 
-const imgPath = 'src/assets/illustrations/bit-test-mint.webp'
+const mode = process.argv[2]
+const imgPath =
+  mode === 'development'
+    ? 'src/assets/illustrations/bit-test-mint.webp'
+    : 'src/assets/illustrations/bit-mint.webp'
 
 const __dirname = new URL('.', import.meta.url).pathname
 const root = path.join(__dirname, '..')

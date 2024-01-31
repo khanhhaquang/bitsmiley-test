@@ -70,7 +70,7 @@ export const usePreloadResources = () => {
   }
 
   useEffect(() => {
-    if (import.meta.env.MODE === 'development') {
+    if (import.meta.env.DEV) {
       setIsLoadingFonts(false)
       setIsLoadingImages(false)
       return
