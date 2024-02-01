@@ -16,7 +16,7 @@ export const MintingEnded: React.FC = () => {
 
   const renderConnectedAndHasHistory = () => {
     return (
-      <div className="absolute left-[565px] top-[525px]">
+      <div className="absolute left-1/2 top-[525px] -translate-x-1/2">
         <div
           onClick={() => setIsOpenHistory(true)}
           className={cn(
@@ -31,7 +31,7 @@ export const MintingEnded: React.FC = () => {
 
   const renderNotConnected = () => {
     return (
-      <div className="absolute left-[509px] top-[521px] w-[375px] text-center font-psm text-sm">
+      <div className="absolute left-1/2 top-[521px] w-[375px] -translate-x-1/2 text-center font-psm text-sm">
         You were a bit late this time.Stay tuned for more exciting things
         incoming!
         <div>
@@ -52,7 +52,7 @@ export const MintingEnded: React.FC = () => {
     <>
       <DearBitSmiler />
 
-      <div className="absolute left-[540px] top-[436px] text-sm">
+      <div className="absolute left-1/2 top-[436px] -translate-x-1/2 text-sm">
         bitDisc minting session has finished.
       </div>
 

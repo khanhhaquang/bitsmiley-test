@@ -59,6 +59,7 @@ export default {
       },
       backgroundImage: {
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
+        mobile: 'url("/src/assets/illustrations/mobile-bg.png")',
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")',
         'mint-success-modal':
           'url("/src/assets/illustrations/mint-success-modal-bg.png")',
