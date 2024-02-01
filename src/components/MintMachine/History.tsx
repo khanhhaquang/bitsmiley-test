@@ -37,7 +37,7 @@ export const History: React.FC = () => {
   }
 
   return (
-    <div className="absolute left-[935px] top-[341px] z-[100]">
+    <div className="absolute bottom-[624px] left-[935px] z-[100]">
       {renderIcon()}
       <HistoryModal
         userNfts={userNfts}

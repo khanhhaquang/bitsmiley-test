@@ -12,7 +12,7 @@ export const Inscribing: React.FC = () => {
     <>
       <PlayerInfo />
 
-      <div className="absolute left-[468px] top-[444px] z-[100] text-sm">
+      <div className="absolute left-1/2 top-[444px] z-[100] -translate-x-1/2 text-sm">
         Your minting is getting processed on-chain...
         {!isCreatingOrder && txid && (
           <>

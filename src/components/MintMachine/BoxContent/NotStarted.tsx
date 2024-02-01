@@ -1,7 +1,7 @@
-import { CrownYellowIcon, StarIcon } from '@/assets/icons'
+import { CrownYellowIcon } from '@/assets/icons'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { DearBitSmiler, PlayerInfo } from './Common'
+import { Congradulation, DearBitSmiler, PlayerInfo } from './Common'
 
 export const NotStarted: React.FC = () => {
   const { isWhitelist } = useUserInfo()
@@ -12,10 +12,10 @@ export const NotStarted: React.FC = () => {
     if (isWhitelistEnded) {
       return (
         <>
-          <div className="absolute left-[514px] top-[350px] font-smb text-sm">
+          <div className="absolute bottom-[624px] left-1/2 -translate-x-1/2 font-smb text-sm">
             whitelist minting finished
           </div>
-          <div className="absolute left-[477px] top-[410px] w-[438px] text-center text-sm">
+          <div className="absolute left-1/2 top-[410px] w-[438px] -translate-x-1/2 text-center text-sm">
             Dear whitelisted player, you are a bit late. The whitelist minting
             session is over. You can still join the public session!
           </div>
@@ -26,10 +26,10 @@ export const NotStarted: React.FC = () => {
     if (isReachWhitelistMaximum) {
       return (
         <>
-          <div className="absolute left-[514px] top-[350px] font-smb text-sm">
+          <div className="absolute bottom-[624px] left-1/2 -translate-x-1/2 font-smb text-sm">
             whitelist minting finished
           </div>
-          <div className="absolute left-[477px] top-[410px] w-[438px] text-center text-sm">
+          <div className="absolute left-1/2 top-[410px] w-[438px] -translate-x-1/2 text-center text-sm">
             Dear whitelisted player, you are a bit late. All the whitelist
             bitDisc Black have been minted. You can still join the public
             session!
@@ -40,15 +40,9 @@ export const NotStarted: React.FC = () => {
 
     return (
       <>
-        <div className="absolute left-[555px] top-[350px] flex items-center gap-x-2 font-smb">
-          <StarIcon />
-          <StarIcon />
-          <span>CONGRATULATIONS</span>
-          <StarIcon />
-          <StarIcon />
-        </div>
+        <Congradulation />
 
-        <div className="absolute left-[477px] top-[384px] flex w-[438px] flex-col items-center gap-y-4">
+        <div className="absolute left-1/2 top-[384px] flex w-[438px] -translate-x-1/2 flex-col items-center gap-y-4">
           <CrownYellowIcon />
           <div className="text-center text-sm leading-tight">
             You are one of the few chosen ones. Minting session for whitelisted
@@ -64,7 +58,7 @@ export const NotStarted: React.FC = () => {
       <>
         <DearBitSmiler />
 
-        <div className="absolute left-[477px] top-[410px] w-[438px] text-center text-sm">
+        <div className="absolute left-1/2 top-[410px] w-[438px] -translate-x-1/2 text-center text-sm">
           The public minting session for bitDisc Black is coming. Keep an eye on
           the ticking clock. Every wallet has one chance to win!
         </div>

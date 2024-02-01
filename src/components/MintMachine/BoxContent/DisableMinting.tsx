@@ -5,11 +5,11 @@ export const DisableMinting: React.FC = () => {
     <>
       <PlayerInfo />
 
-      <div className="absolute left-[668px] top-[431px] font-smb text-sm">
+      <div className="absolute left-1/2 top-[431px] -translate-x-1/2 font-smb text-sm">
         ohhh...
       </div>
 
-      <div className="absolute left-[468px] top-[467px] w-[456px] text-center text-sm">
+      <div className="absolute left-1/2 top-[467px] w-[456px] -translate-x-1/2 text-center text-sm">
         Something went wrong during the minting process.
       </div>
     </>

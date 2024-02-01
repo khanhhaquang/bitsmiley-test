@@ -1,10 +1,10 @@
-import { AsteriskIcon } from '@/assets/icons'
+import { AsteriskIcon, StarIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { displayAddress } from '@/utils/formatter'
 
 export const DearBitSmiler: React.FC = () => {
   return (
-    <div className="absolute left-[526px] top-[345px] flex items-center gap-x-[5px]">
+    <div className="absolute bottom-[624px] left-1/2 flex -translate-x-1/2 items-center gap-x-[5px]">
       <AsteriskIcon />
       <span className="font-smb text-sm">--- Dear BitSmiler ---</span>
       <AsteriskIcon />
@@ -18,9 +18,23 @@ export const PlayerInfo: React.FC = () => {
   if (!address) return null
 
   return (
-    <div className="absolute left-[336px] top-[325px] flex flex-col gap-y-1.5 font-smb text-sm">
-      <div>PLAYER:</div>
-      <div>{displayAddress(address, 3, 3)}</div>
+    <>
+      <div className="absolute bottom-[624px] left-[336px] flex flex-col gap-y-1.5 font-smb text-sm">
+        <div>PLAYER:</div>
+        <div>{displayAddress(address, 3, 3)}</div>
+      </div>
+    </>
+  )
+}
+
+export const Congradulation: React.FC = () => {
+  return (
+    <div className="absolute bottom-[624px] left-1/2 flex -translate-x-1/2 items-center gap-x-2 font-smb">
+      <StarIcon />
+      <StarIcon />
+      <span>CONGRATULATIONS</span>
+      <StarIcon />
+      <StarIcon />
     </div>
   )
 }
