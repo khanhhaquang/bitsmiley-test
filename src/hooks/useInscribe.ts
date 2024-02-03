@@ -28,8 +28,27 @@ export const useInscribe = () => {
       request: UnisatService.getInscriptionInfo.call,
       shouldContinue: (data) => !data?.data?.utxo?.txid
     })
+  const JSONStringify = (option: unknown) => {
+    const seen = new WeakSet()
+    return JSON.stringify(option, (_key, val) => {
+      if (typeof val === 'object' && val !== null) {
+        if (seen.has(val)) {
+          return
+        }
+        seen.add(val)
+      }
+      return val
+    })
+  }
 
   const okxInscribe = async () => {
+    alert(`window.okxwallet: ${JSONStringify(window?.okxwallet)}`)
+    alert(
+      `window.okxwallet.bitcoin: ${JSONStringify(window?.okxwallet?.bitcoin)}`
+    )
+    alert(`mint: ${window?.okxwallet?.bitcoin?.mint}`)
+    alert(`typeof mint: ${typeof window?.okxwallet?.bitcoin?.mint}`)
+
     if (!window.okxwallet?.bitcoin?.mint) {
       throw Error('cannot find okx wallet')
     }
@@ -51,6 +70,7 @@ export const useInscribe = () => {
       setTxId(res.commitTx)
       return res.commitTx
     } catch (error) {
+      alert(error)
       console.error(error)
     } finally {
       setIsCreatingOrder(false)
