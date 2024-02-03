@@ -140,7 +140,7 @@ export const useProjectInfo = () => {
   )
 
   const isReachedTotalMax = useMemo(
-    () => currentNftCount && currentNftCount < publicMax,
+    () => currentNftCount && currentNftCount >= publicMax,
     [currentNftCount, publicMax]
   )
 
