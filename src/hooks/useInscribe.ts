@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import { getLoginType } from '@/store/account/reducer'
 import { LoginTypeEnum } from '@/types/common'
-import { UnisatService } from '@/services/unisat'
+import { OrderStatus, UnisatService } from '@/services/unisat'
 import { usePolling } from './usePolling'
 import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
@@ -77,8 +77,10 @@ export const useInscribe = () => {
 
       const amount = createRes.data.data?.amount
       const payAddress = createRes.data.data?.payAddress
+      const isOrderPending =
+        createRes?.data?.data?.status === OrderStatus.pending
 
-      if (!amount || !payAddress) {
+      if (!amount || !payAddress || !isOrderPending) {
         throw Error('create order error')
       }
 

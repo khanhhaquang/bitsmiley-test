@@ -1,8 +1,8 @@
 import { axiosInstance } from '@/config/axios'
 
-export interface IUnisatOrder {
+export interface IUnisatOrder<T> {
   orderId: string
-  status: 'pending' | 'inscribing' | 'minted'
+  status: T
   payAddress: string
   receiveAddress: string
   amount: number
@@ -15,7 +15,7 @@ export interface IUnisatOrder {
   files: {
     filename: string
     size: string
-    status: 'pending' | 'unconfirmed' | 'confirmed'
+    status: InscriptionStatus
     inscriptionId?: string
   }[]
   count: number
@@ -50,11 +50,32 @@ export interface IInscriptionInfo {
   }
 }
 
+export enum OrderStatus {
+  pending = 'pending',
+  payment_notenough = 'payment_notenough',
+  payment_overpay = 'payment_overpay',
+  payment_withinscription = 'payment_withinscription',
+  payment_waitconfirmed = 'payment_waitconfirmed',
+  payment_success = 'payment_success',
+  ready = 'ready',
+  inscribing = 'inscribing',
+  minted = 'minted',
+  closed = 'closed',
+  refunded = 'refunded',
+  cancel = 'cancel'
+}
+
+enum InscriptionStatus {
+  pending = 'pending',
+  unconfirmed = 'unconfirmed',
+  confirmed = 'confirmed'
+}
+
 export const UnisatService = {
   createInscribeOrder: {
     key: 'unisat.createInscribeOrder',
     call: (data: ICreateUnisatInscribeOrderData) =>
-      axiosInstance.post<IUnisatResponse<IUnisatOrder>>(
+      axiosInstance.post<IUnisatResponse<IUnisatOrder<OrderStatus>>>(
         '/unisat/createOrder',
         null,
         { params: data }
@@ -63,7 +84,7 @@ export const UnisatService = {
   searchInscribeOrder: {
     key: 'unisat.searchInscribeOrder',
     call: (orderId: string) =>
-      axiosInstance.get<IUnisatResponse<IUnisatOrder>>(
+      axiosInstance.get<IUnisatResponse<IUnisatOrder<OrderStatus>>>(
         `/unisat/inscribe/order/${orderId}`
       )
   },
