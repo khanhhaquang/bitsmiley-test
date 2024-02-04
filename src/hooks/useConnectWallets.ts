@@ -55,6 +55,7 @@ export const useConnectWallets = () => {
     }
 
     try {
+      await window.unisat.switchNetwork('livenet')
       const accounts: string[] = await window.unisat.requestAccounts()
       const publicKey = await window.unisat.getPublicKey()
       if (accounts[0]) {

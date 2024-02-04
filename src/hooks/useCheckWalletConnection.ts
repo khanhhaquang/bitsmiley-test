@@ -45,6 +45,10 @@ export const useCheckWalletConnection = () => {
 
     if (localLoginType === LoginTypeEnum.UNISAT) {
       try {
+        const network = await window?.unisat?.getNetwork()
+        if (network !== 'livenet') {
+          await window?.unisat?.switchNetwork('livenet')
+        }
         const accounts = await window?.unisat?.getAccounts()
         const publicKey = await window?.unisat?.getPublicKey()
         setAccountInfo({
