@@ -1,4 +1,4 @@
-import { DearBitSmiler } from './Common'
+import { DearBitSmiler } from '@/components/MintMachine/Common'
 
 export const NotConnected: React.FC = () => {
   return (

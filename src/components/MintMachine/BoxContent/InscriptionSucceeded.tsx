@@ -10,7 +10,7 @@ import { Modal } from '@/components/Modal'
 import { BitDiscBlackIcon, CloseIcon } from '@/assets/icons'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { DearBitSmiler, PlayerInfo } from './Common'
+import { DearBitSmiler, PlayerInfo } from '@/components/MintMachine/Common'
 
 const localConfirmedMinted =
   getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED) === 'true'

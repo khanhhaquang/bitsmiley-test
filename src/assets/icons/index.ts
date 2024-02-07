@@ -17,6 +17,7 @@ import CrownYellowIcon from './crown-yellow.svg'
 import LineIcon from './line.svg'
 import BitDiscBlackIcon from './bitDiskBlack.svg'
 import HistoryIcon from './history.svg'
+import CloseSolidIcon from './close-solid.svg'
 
 export {
   DotIcon,
@@ -37,5 +38,6 @@ export {
   CrownYellowIcon,
   LineIcon,
   BitDiscBlackIcon,
-  HistoryIcon
+  HistoryIcon,
+  CloseSolidIcon
 }

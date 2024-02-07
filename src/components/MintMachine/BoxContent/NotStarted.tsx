@@ -1,7 +1,11 @@
 import { CrownYellowIcon } from '@/assets/icons'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { Congradulation, DearBitSmiler, PlayerInfo } from './Common'
+import {
+  Congradulation,
+  DearBitSmiler,
+  PlayerInfo
+} from '@/components/MintMachine/Common'
 
 export const NotStarted: React.FC = () => {
   const { isWhitelist } = useUserInfo()
