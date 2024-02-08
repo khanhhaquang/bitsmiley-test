@@ -283,7 +283,8 @@ const usePollNewNfts = () => {
 
     if (isNotStarted) return
 
-    const disableMinting = getDisbleMinting(nfts)
+    // const disableMinting = getDisbleMinting(nfts)
+    const disableMinting = true
 
     if (disableMinting) {
       setAddressStatus(AddressStauts.DisableMinting)

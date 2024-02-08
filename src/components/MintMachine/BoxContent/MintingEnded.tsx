@@ -5,7 +5,7 @@ import { getUserNfts } from '@/store/account/reducer'
 import { cn } from '@/utils/cn'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { useSelector } from 'react-redux'
-import { DearBitSmiler } from './Common'
+import { DearBitSmiler } from '@/components/MintMachine/Common'
 
 export const MintingEnded: React.FC = () => {
   const userNfts = useSelector(getUserNfts)

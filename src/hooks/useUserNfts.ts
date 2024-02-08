@@ -1,18 +1,18 @@
-import { INft, InvalidReasonEnum, UserService } from '@/services/user'
+import { UserService } from '@/services/user'
 import { useQuery } from 'react-query'
 import { useUserInfo } from './useUserInfo'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useStoreActions } from './useStoreActions'
-import { useProjectInfo } from './useProjectInfo'
+// import { useProjectInfo } from './useProjectInfo'
 import { useSelector } from 'react-redux'
 import { getUserNfts } from '@/store/account/reducer'
 
 export const useUserNfts = () => {
   const { address } = useUserInfo()
-  const { isDuringWhitelist } = useProjectInfo()
+  // const { isDuringWhitelist } = useProjectInfo()
 
   const userNfts = useSelector(getUserNfts)
-  const { setTxId, setInscriptionId, setUserNfts } = useStoreActions()
+  const { setUserNfts } = useStoreActions()
 
   const { data: nftsDataRes, isLoading } = useQuery(
     [UserService.getNFTs.key, address],
@@ -22,30 +22,32 @@ export const useUserNfts = () => {
     }
   )
 
-  const getDisbleMinting = useCallback(
-    (nfts?: INft[]) => {
-      if (!nfts?.length) return false
+  const getDisbleMinting = () => {}
 
-      if (isDuringWhitelist) {
-        return !!nfts.some(
-          (n) =>
-            !!n.inscription_id &&
-            !!n.invalid_reason &&
-            n.invalid_reason !== InvalidReasonEnum.NotStarted
-        )
-      }
+  // const getDisbleMinting = useCallback(
+  //   (nfts?: INft[]) => {
+  //     if (!nfts?.length) return false
 
-      return !!nfts.some(
-        (n) =>
-          !!n.inscription_id &&
-          !!n.invalid_reason &&
-          n.invalid_reason !== InvalidReasonEnum.NotStarted &&
-          n.invalid_reason !== InvalidReasonEnum.WhitelistMaxCountReached &&
-          n.invalid_reason !== InvalidReasonEnum.NotWhitelisted
-      )
-    },
-    [isDuringWhitelist]
-  )
+  //     if (isDuringWhitelist) {
+  //       return !!nfts.some(
+  //         (n) =>
+  //           !!n.inscription_id &&
+  //           !!n.invalid_reason &&
+  //           n.invalid_reason !== InvalidReasonEnum.NotStarted
+  //       )
+  //     }
+
+  //     return !!nfts.some(
+  //       (n) =>
+  //         !!n.inscription_id &&
+  //         !!n.invalid_reason &&
+  //         n.invalid_reason !== InvalidReasonEnum.NotStarted &&
+  //         n.invalid_reason !== InvalidReasonEnum.WhitelistMaxCountReached &&
+  //         n.invalid_reason !== InvalidReasonEnum.NotWhitelisted
+  //     )
+  //   },
+  //   [isDuringWhitelist]
+  // )
 
   const mintedNft = useMemo(
     () =>
@@ -55,13 +57,13 @@ export const useUserNfts = () => {
     [nftsDataRes]
   )
 
-  useEffect(() => {
-    if (mintedNft) {
-      setTxId(mintedNft.txid)
-      setInscriptionId(mintedNft.inscription_id)
-      return
-    }
-  }, [mintedNft, setInscriptionId, setTxId])
+  // useEffect(() => {
+  //   if (mintedNft) {
+  //     setTxId(mintedNft.txid)
+  //     setInscriptionId(mintedNft.inscription_id)
+  //     return
+  //   }
+  // }, [mintedNft, setInscriptionId, setTxId])
 
   useEffect(() => {
     const nfts = nftsDataRes?.data?.data?.nfts

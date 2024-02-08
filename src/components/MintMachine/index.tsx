@@ -4,24 +4,28 @@ import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
 import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { BoxContent } from './BoxContent'
-import { MintButton } from './MintButton'
 import { History } from './History'
-import { useSelector } from 'react-redux'
-import { getAddressStatus } from '@/store/addressStatus/reducer'
-import { AddressStauts } from '@/types/status'
+import { CheckButton } from './CheckButton'
+import { useState } from 'react'
+import { InscriptionChecker } from './InscriptionChecker'
 
 export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
+  const [checkInscriptionId, setCheckInscriptionId] = useState('')
   return (
     <div className="relative mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
       <StaticMachine />
       <Lights />
       <MarqueeText />
-      <BoxContent />
+      {/* <BoxContent /> */}
+      <InscriptionChecker
+        inscriptionId={checkInscriptionId}
+        setInscriptionId={setCheckInscriptionId}
+      />
       <NumberPad />
-      <MintButton />
+      {/* <MintButton /> */}
+      <CheckButton inscriptionId={checkInscriptionId} />
       <History />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
@@ -29,12 +33,7 @@ export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
 }
 
 const MarqueeText: React.FC = () => {
-  const addressStatus = useSelector(getAddressStatus)
-  const isMintingEnded = addressStatus === AddressStauts.MintingEnded
-
-  const label = isMintingEnded
-    ? 'BITSMILEY GRAND MINTING FINISHED'
-    : 'BITSMILEY GRAND MINTING IS HERE!'
+  const label = 'THANK YOU FOR YOUR SUPPORT'
 
   return (
     <div className="absolute bottom-[146px] left-[205px] h-[104px] w-[660px]">

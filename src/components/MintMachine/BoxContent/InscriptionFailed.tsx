@@ -1,4 +1,4 @@
-import { PlayerInfo } from './Common'
+import { PlayerInfo } from '@/components/MintMachine/Common'
 
 export const InscriptionFailed: React.FC = () => {
   return (

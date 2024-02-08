@@ -2,7 +2,7 @@ import { getIsCreatingOrder, getTxId } from '@/store/account/reducer'
 import { getBtcScanUrl } from '@/utils/formatter'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { useSelector } from 'react-redux'
-import { PlayerInfo } from './Common'
+import { PlayerInfo } from '@/components/MintMachine/Common'
 
 export const Inscribing: React.FC = () => {
   const txid = useSelector(getTxId)
