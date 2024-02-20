@@ -8,6 +8,7 @@ import { LoadingLineIcon } from '@/assets/icons'
 import { getLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { Header } from '@/components/Header'
+import { Button } from '@/components/Button'
 
 const hasVisited =
   !!getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) &&
@@ -58,15 +59,7 @@ export const LoadingPage: React.FC<{
             )}
           </>
         ) : (
-          <div
-            onClick={() => onEnter()}
-            className={cn(
-              'cursor-pointer bg-white text-black px-5 py-2 font-bold shadow-connectwallet-button whitespace-nowrap',
-              'hover:bg-blue3 hover:shadow-connectwallet-button-hover',
-              'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
-            )}>
-            Enter bitSmiley
-          </div>
+          <Button onClick={() => onEnter()}>Enter bitSmiley</Button>
         )}
       </div>
     </div>

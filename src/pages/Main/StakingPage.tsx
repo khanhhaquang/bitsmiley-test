@@ -9,10 +9,11 @@ import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { useOnScreen } from '@/hooks/useOnScreen'
 import { CoinIcon } from '@/assets/icons'
-import { MintMachine } from '@/components/MintMachine'
+import { StakingMachine } from '@/components/StakingMachine'
 import { Header } from '@/components/Header'
+import { Button } from '@/components/Button'
 
-export const MintPage: React.FC = () => {
+export const StakingPage: React.FC = () => {
   const whoIsBitSmileyRef = useRef<HTMLDivElement>(null)
   const { width } = useWindowSize()
   const isOnScreen = useOnScreen(whoIsBitSmileyRef)
@@ -24,7 +25,7 @@ export const MintPage: React.FC = () => {
           scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
         }}>
         <SpaceBg />
-        <MintMachine hideScrollDown={isOnScreen} />
+        <StakingMachine hideScrollDown={isOnScreen} />
         <div className="relative">
           <Divider
             title="Who is bitSmiley"
@@ -83,14 +84,11 @@ const Inventor: React.FC = () => {
             <span className="text-yellow">Fintegra</span> products at the same
             time.
           </div>
-          <div
+          <Button
             onClick={() => openUrl(MEDIA.whitePaper)}
-            className={cn(
-              'inline-block h-10 cursor-pointer bg-blue px-5 py-2 font-bold shadow-whitepaper-button hover:bg-blue1 active:shadow-none',
-              'active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue'
-            )}>
+            className="inline-block h-10 bg-blue text-white shadow-whitepaper-button hover:bg-blue1">
             Whitepaper
-          </div>
+          </Button>
         </div>
       </div>
     </div>

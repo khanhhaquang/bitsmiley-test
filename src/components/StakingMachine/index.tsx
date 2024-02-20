@@ -4,36 +4,27 @@ import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
 import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { History } from './History'
-import { CheckButton } from './CheckButton'
-import { useState } from 'react'
-import { InscriptionChecker } from './InscriptionChecker'
+import { HistoryButton } from './HistoryButton'
+import { BoxContent } from './BoxContent'
 
-export const MintMachine: React.FC<{ hideScrollDown: boolean }> = ({
+export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
-  const [checkInscriptionId, setCheckInscriptionId] = useState('')
   return (
     <div className="relative mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
       <StaticMachine />
       <Lights />
       <MarqueeText />
-      {/* <BoxContent /> */}
-      <InscriptionChecker
-        inscriptionId={checkInscriptionId}
-        setInscriptionId={setCheckInscriptionId}
-      />
+      <BoxContent />
       <NumberPad />
-      {/* <MintButton /> */}
-      <CheckButton inscriptionId={checkInscriptionId} />
-      <History />
+      <HistoryButton />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )
 }
 
 const MarqueeText: React.FC = () => {
-  const label = 'THANK YOU FOR YOUR SUPPORT'
+  const label = 'NFT STAKING IS HERE'
 
   return (
     <div className="absolute bottom-[146px] left-[205px] h-[104px] w-[660px]">

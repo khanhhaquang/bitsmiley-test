@@ -1,6 +1,7 @@
 import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
+import { Button } from '@/components/Button'
 import { useConnectWallets } from '@/hooks/useConnectWallets'
 import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
@@ -172,15 +173,12 @@ const SelectWalletModal: React.FC<{
         </div>
 
         <div className="mt-6 text-center">
-          <div
-            onClick={() => setIsConfirmed(true)}
-            className={cn(
-              'inline-block bg-white cursor-pointer text-black px-3 py-1 font-bold whitespace-nowrap text-sm font-psm',
-              'hover:bg-blue3',
-              'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:bg-blue'
-            )}>
+          <Button
+            size="xs"
+            className="inline-block font-psm shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover"
+            onClick={() => setIsConfirmed(true)}>
             Confirm
-          </div>
+          </Button>
         </div>
       </div>
     )
