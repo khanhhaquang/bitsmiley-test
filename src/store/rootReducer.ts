@@ -2,9 +2,11 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import account from './account'
 import common from './common'
 import addressStatus from './addressStatus'
+import stakingStatus from './stakingStatus'
 
 const allReducers = combineReducers({
   addressStatus: addressStatus.reducer,
+  stakingStatus: stakingStatus.reducer,
   account: account.reducer,
   common: common.reducer
 })

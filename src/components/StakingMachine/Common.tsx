@@ -4,9 +4,9 @@ import { displayAddress } from '@/utils/formatter'
 
 export const DearBitSmiler: React.FC = () => {
   return (
-    <div className="absolute bottom-[636px] left-1/2 flex -translate-x-1/2 items-center gap-x-[5px]">
+    <div className="absolute bottom-[656px] left-1/2 flex -translate-x-1/2 items-center gap-x-[5px]">
       <AsteriskIcon />
-      <span className="font-smb text-sm">--- Dear BitSmiler ---</span>
+      <span className="font-smb text-sm">------ Dear BitSmiler ------</span>
       <AsteriskIcon />
     </div>
   )

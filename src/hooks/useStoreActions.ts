@@ -4,8 +4,9 @@ import { useDispatch } from 'react-redux'
 import accountActions from '@/store/account/actions'
 import commonActions from '@/store/common/actions'
 import addressStatusActions from '@/store/addressStatus/actions'
+import stakingStatusActions from '@/store/stakingStatus/actions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
-import { AddressStauts } from '@/types/status'
+import { AddressStauts, StakingStatus } from '@/types/status'
 import { INft } from '@/services/user'
 
 export const useStoreActions = () => {
@@ -55,6 +56,11 @@ export const useStoreActions = () => {
       dispatch(addressStatusActions.SET_ADDRESS_STATUS(payload)),
     [dispatch]
   )
+  const setStakingStatus = useCallback(
+    (payload: StakingStatus) =>
+      dispatch(stakingStatusActions.SET_STAKING_STATUS(payload)),
+    [dispatch]
+  )
   const setIsOpenHistory = useCallback(
     (payload: boolean) => dispatch(commonActions.SET_IS_OPEN_HISTORY(payload)),
     [dispatch]
@@ -73,6 +79,7 @@ export const useStoreActions = () => {
     setAccountInfo,
     setInscriptionId,
     setAddressStatus,
+    setStakingStatus,
     setIsCreatingOrder,
     setNetworkError,
     setCurrentTypewritterSeq
