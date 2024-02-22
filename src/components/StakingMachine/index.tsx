@@ -47,7 +47,7 @@ const StaticMachine: React.FC = () => {
   return (
     <Image
       className="absolute h-[995px] w-[1423px] shrink-0"
-      src={getIllustrationUrl('machine-static')}
+      src={getIllustrationUrl('machine-static', 'webp')}
     />
   )
 }

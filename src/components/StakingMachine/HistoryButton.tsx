@@ -3,16 +3,18 @@ import { cn } from '@/utils/cn'
 import { Image } from '@/components/Image'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { CanvasFrames } from '@/components/CanvasFrames'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const HistoryButton: React.FC = () => {
+  const { address } = useUserInfo()
   const [isPressed, setIsPressed] = useState(false)
 
-  const isDisabled = true
+  const isDisabled = !address
 
   const buttonImgName = useMemo(() => {
-    if (isDisabled) return 'historybutton-disabled'
-    if (isPressed) return 'historybutton-down'
-    return 'historybutton-up'
+    if (isDisabled) return 'history-button-disabled'
+    if (isPressed) return 'history-button-down'
+    return 'history-button-up'
   }, [isDisabled, isPressed])
 
   return (
@@ -31,17 +33,19 @@ export const HistoryButton: React.FC = () => {
           />
         </div>
       )}
-      <div
-        onMouseDown={() => setIsPressed(true)}
+      <button
+        type="button"
         onMouseUp={async () => setIsPressed(false)}
+        onMouseDown={() => setIsPressed(true)}
         onMouseLeave={() => setIsPressed(false)}
         className={cn(
           'absolute left-[740px] top-[626px] z-50 h-[76px]',
           'flex flex-col justify-end',
-          !isDisabled && 'cursor-pointer'
+          !isDisabled && 'cursor-pointer',
+          isDisabled && 'cursor-not-allowed'
         )}>
         <Image src={getIllustrationUrl(buttonImgName)} />
-      </div>
+      </button>
     </>
   )
 }
