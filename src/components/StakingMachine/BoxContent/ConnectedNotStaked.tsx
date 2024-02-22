@@ -1,10 +1,14 @@
 import { BitJade, CloseIcon, RightAngle } from '@/assets/icons'
+import { Image } from '@/components/Image'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
+import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useState } from 'react'
 
 export const ConnectedNotStaked: React.FC = () => {
-  const [isChooseModalOpen, setIsChooseModalOpen] = useState(true)
+  const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
+
   return (
     <>
       <ChooseNftModal
@@ -55,6 +59,8 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
   onClose
 }) => {
+  const [selected, setSelected] = useState(0)
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="relative border-2 border-black bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
@@ -64,7 +70,26 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         />
         <div className="flex flex-col items-center p-11">
           <div className="mb-8 whitespace-nowrap">Choose one NFT to stake</div>
-          <div className="mb-8 font-psm text-sm">
+          <div className="grid max-h-[345px] grid-cols-3 gap-5 overflow-y-scroll border border-dashed border-white/50 p-6">
+            {Array(5)
+              .fill(1)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  onClick={() => setSelected(index)}
+                  className="flex cursor-pointer flex-col items-center gap-y-1.5">
+                  <Image
+                    src={getIllustrationUrl('bit-mint', 'webp')}
+                    className={cn(
+                      'h-[203px] w-[207px]',
+                      index === selected && 'border-4 border-white'
+                    )}
+                  />
+                  <div className="font-psm text-sm">bitDisc-black #1923</div>
+                </div>
+              ))}
+          </div>
+          <div className="my-8 font-psm text-sm">
             Each wallet can select one NFT to stake.
           </div>
           <Button size="xs" className="w-[120px] font-psm text-sm">
