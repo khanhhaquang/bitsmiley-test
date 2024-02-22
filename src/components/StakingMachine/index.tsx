@@ -11,7 +11,7 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
   return (
-    <div className="relative mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
+    <div className="relative mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center scroll-smooth">
       <StaticMachine />
       <Lights />
       <MarqueeText />
@@ -46,7 +46,7 @@ const NumberPad: React.FC = () => {
 const StaticMachine: React.FC = () => {
   return (
     <Image
-      className="absolute h-[995px] w-[1423px] shrink-0"
+      className="absolute z-0 h-[995px] w-[1423px] shrink-0"
       src={getIllustrationUrl('machine-static', 'webp')}
     />
   )
@@ -56,12 +56,14 @@ const ArrowDown: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
   return (
-    <ArrowDownIcon
+    <a
+      href="#whoIsBitSmiley"
       className={cn(
         'absolute left-1/2 top-[895px] -translate-x-1/2 animate-bounce',
         hideScrollDown && 'invisible'
-      )}
-    />
+      )}>
+      <ArrowDownIcon />
+    </a>
   )
 }
 

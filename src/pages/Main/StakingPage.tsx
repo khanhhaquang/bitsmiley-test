@@ -26,7 +26,7 @@ export const StakingPage: React.FC = () => {
         }}>
         <SpaceBg />
         <StakingMachine hideScrollDown={isOnScreen} />
-        <div className="relative">
+        <div className="relative" id="whoIsBitSmiley">
           <Divider
             title="Who is bitSmiley"
             className="mb-[200px] mt-[136px]"

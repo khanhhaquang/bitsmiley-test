@@ -9,13 +9,13 @@ export const NotConnected: React.FC = () => {
       <div className="absolute left-1/2 top-[366px] flex -translate-x-1/2 items-center justify-center gap-x-14">
         <Image src={getIllustrationUrl('disccoins')} />
         <div className="w-[384px] text-sm">
-          <div>
+          <p>
             Now, you can stake your bitDisc to mine bitGem. The bitGem earned be
             converted to respective whitelist token amount available to purchase
             at TGE.
-          </div>
+          </p>
           <br />
-          <div>Connect wallet to find more...</div>
+          <p>Connect wallet to find more...</p>
         </div>
       </div>
     </>
