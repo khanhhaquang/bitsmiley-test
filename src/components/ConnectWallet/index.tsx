@@ -2,7 +2,7 @@ import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
-import { useConnectWallets } from '@/hooks/useConnectWallets'
+import { useBtcConnectWallet } from '@/hooks/useBtcConnectWallet'
 import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -34,7 +34,7 @@ export const ConnectWallet: React.FC<{
   const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
 
   const { address, isConnected } = useUserInfo()
-  const { disConnect } = useConnectWallets()
+  const { disConnect } = useBtcConnectWallet()
 
   const buttonRef = useRef<HTMLDivElement>(null)
   useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))

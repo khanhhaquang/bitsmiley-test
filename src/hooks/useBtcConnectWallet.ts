@@ -8,7 +8,7 @@ import { WALLETSITE } from '@/config/links'
 import { clearConfirmedMinted, clearLoginType } from '@/utils/storage.ts'
 import { openUrl } from '@/utils/getAssetsUrl'
 
-export const useConnectWallets = () => {
+export const useBtcConnectWallet = () => {
   const queryClient = useQueryClient()
   const loginType = useSelector(getLoginType)
   const { setAccountInfo, setLoginType, resetStorage } = useStoreActions()
