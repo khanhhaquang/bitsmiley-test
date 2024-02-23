@@ -15,5 +15,6 @@ export enum AddressStauts {
 export enum StakingStatus {
   NotConnected = 'NotConnected',
   ConnectedNotStaked = 'ConnectedNotStaked',
-  StakingOnGoing = 'StakingOnGoing'
+  StakingOnGoing = 'StakingOnGoing',
+  StakingFinished = 'StakingFinished'
 }
