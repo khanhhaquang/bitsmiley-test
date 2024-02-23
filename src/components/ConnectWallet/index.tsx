@@ -11,7 +11,9 @@ import { useClickOutside } from '@/hooks/useClickOutside'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { cn } from '@/utils/cn'
+import EvmConnector from './EvmConnector'
 import './index.scss'
+import { useAccount, useDisconnect } from 'wagmi'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -32,9 +34,9 @@ export const ConnectWallet: React.FC<{
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
   const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
-
-  const { address, isConnected } = useUserInfo()
-  const { disConnect } = useBtcConnectWallet()
+  const { disConnect: disconnectBtc } = useBtcConnectWallet()
+  const { disconnect: disconnectEvm } = useDisconnect()
+  const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
 
   const buttonRef = useRef<HTMLDivElement>(null)
   useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
@@ -43,11 +45,11 @@ export const ConnectWallet: React.FC<{
     <>
       <div
         onClick={() => {
-          if (!isConnected) {
+          if (!isEvmConnected) {
             setIsConnectWalletModalOpen(true)
           }
 
-          if (isConnected && !isLogoutDropdownOpen) {
+          if (isEvmConnected && !isLogoutDropdownOpen) {
             setIsLogoutDropdownOpen(true)
           }
         }}
@@ -55,21 +57,22 @@ export const ConnectWallet: React.FC<{
         className={cn(
           'relative bg-white cursor-pointer text-black px-5 py-2 font-bold whitespace-nowrap text-[15px]',
           !isLogoutDropdownOpen && 'hover:bg-blue3',
-          !isConnected &&
+          !isEvmConnected &&
             'shadow-connectwallet-button hover:shadow-connectwallet-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue',
           className
         )}>
-        {isConnected ? displayAddress(address, 4, 4) : 'CONNECT WALLET'}
+        {isEvmConnected ? displayAddress(evmAddress, 4, 4) : 'CONNECT WALLET'}
 
         <div
           ref={buttonRef}
           onClick={() => {
-            disConnect()
+            disconnectBtc()
+            disconnectEvm()
             setIsLogoutDropdownOpen(false)
           }}
           className={cn(
             'absolute left-0 top-full z-10 flex w-full items-center justify-center bg-grey3 font-bold text-white h-0 hover:bg-grey4 text-[15px]',
-            isConnected && 'transition-all ease-in-out duration-100',
+            isEvmConnected && 'transition-all ease-in-out duration-100',
             isLogoutDropdownOpen &&
               'h-auto px-5 py-2 border border-white border-t-transparent'
           )}>
@@ -119,14 +122,7 @@ const SelectWalletModal: React.FC<{
             here? Select a provider below to create one
           </div>
           <div className="flex flex-col gap-y-6">
-            <WalletItem
-              iconName="metamask"
-              name="Metamask wallet"
-              connect={async () => {
-                await connectOkx()
-                onClose()
-              }}
-            />
+            <EvmConnector onClose={onClose} />
             <WalletItem
               iconName="okx"
               name="OKX Wallet"
@@ -201,7 +197,7 @@ const SelectWalletModal: React.FC<{
   )
 }
 
-const WalletItem: React.FC<{
+export const WalletItem: React.FC<{
   connect: () => void
   name: string
   iconName: string
