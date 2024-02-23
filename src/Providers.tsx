@@ -1,10 +1,12 @@
 import { ReactNode } from 'react'
-import store from '@/store/rootReducer'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
-import { BrowserRouter } from 'react-router-dom'
-import { ModalsContainer } from './components/Modal'
 import { Provider as ReduxProvider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
+import { WagmiProvider } from 'wagmi'
+import store from '@/store/rootReducer'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ModalsContainer } from '@/components/Modal'
+import { config } from '@/config/wagmi'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,13 +22,15 @@ const queryClient = new QueryClient({
 const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <ReduxProvider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} position="top-left" />
-        <BrowserRouter>
-          <ModalsContainer />
-          {children}
-        </BrowserRouter>
-      </QueryClientProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+          <BrowserRouter>
+            <ModalsContainer />
+            {children}
+          </BrowserRouter>
+        </QueryClientProvider>
+      </WagmiProvider>
     </ReduxProvider>
   )
 }

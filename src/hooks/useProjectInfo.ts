@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { IProject, ProjectService } from '@/services/project'
 import { useUserInfo } from './useUserInfo'
 import { useCallback, useMemo } from 'react'

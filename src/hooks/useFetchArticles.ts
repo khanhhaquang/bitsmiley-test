@@ -1,4 +1,4 @@
-// import { useQuery } from 'react-query'
+// import { useQuery } from '@tanstack/react-query'
 // import { FeedService } from '@/services/feed'
 
 // const imgUrlReg = /https:\/\/.*?(gif|png|jpg)/gi

@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { useQueryClient } from 'react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'

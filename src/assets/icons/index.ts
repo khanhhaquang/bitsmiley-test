@@ -22,6 +22,7 @@ import CloseSolidIcon from './close-solid.svg'
 import RightAngle from './right-angle.svg'
 import BitGold from './bit-gold.svg'
 import BitJade from './bit-jade.svg'
+import MetamaskIcon from './metamask.svg'
 
 export {
   DotIcon,
@@ -47,5 +48,6 @@ export {
   CloseSolidIcon,
   RightAngle,
   BitGold,
-  BitJade
+  BitJade,
+  MetamaskIcon
 }

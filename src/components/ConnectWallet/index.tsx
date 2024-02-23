@@ -120,6 +120,14 @@ const SelectWalletModal: React.FC<{
           </div>
           <div className="flex flex-col gap-y-6">
             <WalletItem
+              iconName="metamask"
+              name="Metamask wallet"
+              connect={async () => {
+                await connectOkx()
+                onClose()
+              }}
+            />
+            <WalletItem
               iconName="okx"
               name="OKX Wallet"
               connect={async () => {
@@ -204,7 +212,7 @@ const WalletItem: React.FC<{
       onClick={connect}>
       <Image
         src={getIllustrationUrl(iconName)}
-        className="aspect-square w-[38px]"
+        className="aspect-square h-[38px] w-[38px]"
       />
       <svg
         className="absolute -left-2"
