@@ -8,6 +8,7 @@ import { useState } from 'react'
 
 export const ConnectedNotStaked: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
+  const [isNoNftModalOpen, setIsNoNftModalOpen] = useState(false)
 
   return (
     <>
@@ -15,7 +16,11 @@ export const ConnectedNotStaked: React.FC = () => {
         isOpen={isChooseModalOpen}
         onClose={() => setIsChooseModalOpen(false)}
       />
-      <div className="absolute left-1/2 top-[362px] flex -translate-x-1/2 items-center justify-center gap-x-[83px]">
+      <NoNftModal
+        isOpen={isNoNftModalOpen}
+        onClose={() => setIsNoNftModalOpen(false)}
+      />
+      <div className="flex items-center justify-center gap-x-[83px] pt-16">
         <div className="flex h-full w-[288px] flex-col items-center gap-y-4 text-sm">
           <div className="text-nowrap font-smb text-cyan">
             Limited edition staking
@@ -52,6 +57,35 @@ export const ConnectedNotStaked: React.FC = () => {
         </div>
       </div>
     </>
+  )
+}
+
+const NoNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
+  isOpen,
+  onClose
+}) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <div className="relative border-2 border-black bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+        <CloseIcon
+          onClick={onClose}
+          className="absolute right-6 top-6 cursor-pointer"
+        />
+        <div className="flex flex-col items-center p-11">
+          <div className="mb-8 whitespace-nowrap">No NFT found</div>
+          <p className="my-8 font-psm text-sm">
+            You don’t have any recognized NFT in this wallet address. Wanna
+            purchase one? Check out the market. [here]
+          </p>
+          <Button
+            size="xs"
+            className="w-[120px] font-psm text-sm"
+            onClick={onClose}>
+            Ok
+          </Button>
+        </div>
+      </div>
+    </Modal>
   )
 }
 

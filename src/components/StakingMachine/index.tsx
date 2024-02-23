@@ -6,18 +6,23 @@ import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { HistoryButton } from './HistoryButton'
 import { BoxContent } from './BoxContent'
+import { useState } from 'react'
 
 export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
+  const [isHistoryPage, setIsHistoryPage] = useState(false)
   return (
-    <div className="relative mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center scroll-smooth">
+    <div className="relative z-10 mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
+      <BoxContent
+        isHistoryPage={isHistoryPage}
+        onBackClick={() => setIsHistoryPage(false)}
+      />
       <StaticMachine />
       <Lights />
       <MarqueeText />
-      <BoxContent />
       <NumberPad />
-      <HistoryButton />
+      <HistoryButton onClick={() => setIsHistoryPage(true)} />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )

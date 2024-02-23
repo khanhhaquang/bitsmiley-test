@@ -4,7 +4,11 @@ import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
-export const HistoryButton: React.FC = () => {
+type HistoryButtonProps = {
+  onClick: () => void
+}
+
+export const HistoryButton: React.FC<HistoryButtonProps> = ({ onClick }) => {
   const { address } = useUserInfo()
   const [isPressed, setIsPressed] = useState(false)
 
@@ -19,6 +23,7 @@ export const HistoryButton: React.FC = () => {
   return (
     <button
       type="button"
+      onClick={onClick}
       onMouseUp={async () => setIsPressed(false)}
       onMouseDown={() => setIsPressed(true)}
       onMouseLeave={() => setIsPressed(false)}

@@ -4,9 +4,9 @@ import { DearBitSmiler } from '../Common'
 
 export const NotConnected: React.FC = () => {
   return (
-    <>
+    <div className="flex flex-col gap-y-9 pt-8">
       <DearBitSmiler />
-      <div className="absolute left-1/2 top-[366px] flex -translate-x-1/2 items-center justify-center gap-x-14">
+      <div className="flex items-center justify-center gap-x-14">
         <Image src={getIllustrationUrl('disccoins')} />
         <div className="w-[384px] text-sm">
           <p>
@@ -18,6 +18,6 @@ export const NotConnected: React.FC = () => {
           <p>Connect wallet to find more...</p>
         </div>
       </div>
-    </>
+    </div>
   )
 }

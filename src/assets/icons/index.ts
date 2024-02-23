@@ -5,6 +5,7 @@ import CloseIcon from './close.svg'
 import HeaderIcon from './header.svg'
 import CopyrightIcon from './copyright.svg'
 import ArrowDownIcon from './arrow-down.svg'
+import ArrowLeftIcon from './arrow-left.svg'
 import LoadingLineIcon from './loading-line.svg'
 import AsteriskIcon from './asterisk.svg'
 import GoldCoinIcon from './gold-coin.svg'
@@ -27,6 +28,7 @@ export {
   CoinIcon,
   CloseIcon,
   HeaderIcon,
+  ArrowLeftIcon,
   ArrowDownIcon,
   CopyrightIcon,
   LoadingLineIcon,

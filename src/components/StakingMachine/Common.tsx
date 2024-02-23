@@ -4,7 +4,7 @@ import { displayAddress } from '@/utils/formatter'
 
 export const DearBitSmiler: React.FC = () => {
   return (
-    <div className="absolute bottom-[656px] left-1/2 flex -translate-x-1/2 items-center gap-x-[5px]">
+    <div className="mx-auto flex items-center gap-x-[5px]">
       <AsteriskIcon />
       <span className="font-smb text-sm">------ Dear BitSmiler ------</span>
       <AsteriskIcon />
