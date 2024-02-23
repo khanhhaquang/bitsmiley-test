@@ -2,6 +2,8 @@ import { getStakingStatus } from '@/store/stakingStatus/reducer'
 import { StakingStatus } from '@/types/status'
 import { useSelector } from 'react-redux'
 import { NotConnected } from './NotConnected'
+import { StakingOnGoing } from './StakingOnGoing'
+import { StakingFinished } from './StakingFinished'
 import { ConnectedNotStaked } from './ConnectedNotStaked'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useMemo } from 'react'
@@ -32,6 +34,10 @@ export const BoxContent: React.FC<BoxContentProps> = ({
         return <NotConnected />
       case StakingStatus.ConnectedNotStaked:
         return <ConnectedNotStaked />
+      case StakingStatus.StakingOnGoing:
+        return <StakingOnGoing />
+      case StakingStatus.StakingFinished:
+        return <StakingFinished />
       default:
         return <NotConnected />
     }
