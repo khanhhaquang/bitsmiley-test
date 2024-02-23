@@ -6,7 +6,7 @@ const merlinTestnet = {
   name: 'Merlin testnet',
   nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://testnet-rpc.merlinchain.io  '] }
+    default: { http: ['https://testnet-rpc.merlinchain.io'] }
   },
   blockExplorers: {
     default: { name: 'Etherscan', url: 'https://testnet-scan.merlinchain.io' }
