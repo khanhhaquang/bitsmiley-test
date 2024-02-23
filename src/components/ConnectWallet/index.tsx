@@ -90,7 +90,7 @@ const SelectWalletModal: React.FC<{
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
   const [isConfirmed, setIsConfirmed] = useState(false)
-  const { connectOkx, connectUnisat } = useConnectWallets()
+  const { connectOkx, connectUnisat } = useBtcConnectWallet()
 
   useEffect(() => {
     const isConfirmedLocal = getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED)
