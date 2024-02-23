@@ -55,10 +55,10 @@ export const ConnectedNotStaked: React.FC = () => {
             Stake now
           </Button>
 
-          <RightAngle className="absolute left-0 top-0" />
-          <RightAngle className="absolute right-0 top-0 rotate-90" />
-          <RightAngle className="absolute bottom-0 right-0 rotate-180" />
-          <RightAngle className="absolute bottom-0 left-0 -rotate-90" />
+          <RightAngle className="absolute left-0 top-0 text-green2" />
+          <RightAngle className="absolute right-0 top-0 rotate-90 text-green2" />
+          <RightAngle className="absolute bottom-0 right-0 rotate-180 text-green2" />
+          <RightAngle className="absolute bottom-0 left-0 -rotate-90 text-green2" />
         </div>
       </div>
     </>

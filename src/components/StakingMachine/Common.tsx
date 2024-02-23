@@ -1,5 +1,6 @@
-import { AsteriskIcon, StarIcon } from '@/assets/icons'
+import { AsteriskIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
 
 export const DearBitSmiler: React.FC = () => {
@@ -12,39 +13,15 @@ export const DearBitSmiler: React.FC = () => {
   )
 }
 
-export const InscriptionCheckerTitle: React.FC = () => {
-  return (
-    <div className="absolute bottom-[636px] left-1/2 flex -translate-x-1/2 items-center gap-x-[5px]">
-      <AsteriskIcon />
-      <span className="font-smb text-sm">----- truth teller -----</span>
-      <AsteriskIcon />
-    </div>
-  )
-}
-
-export const PlayerInfo: React.FC = () => {
+export const PlayerInfo: React.FC<{ className?: string }> = ({ className }) => {
   const { address } = useUserInfo()
 
   if (!address) return null
 
   return (
-    <>
-      <div className="absolute bottom-[636px] left-[336px] flex flex-col gap-y-1.5 font-smb text-sm">
-        <div>PLAYER:</div>
-        <div>{displayAddress(address, 3, 3)}</div>
-      </div>
-    </>
-  )
-}
-
-export const Congradulation: React.FC = () => {
-  return (
-    <div className="absolute bottom-[636px] left-1/2 flex -translate-x-1/2 items-center gap-x-2 font-smb">
-      <StarIcon />
-      <StarIcon />
-      <span>CONGRATULATIONS</span>
-      <StarIcon />
-      <StarIcon />
+    <div className={cn('flex flex-col gap-y-1.5 font-smb text-sm', className)}>
+      <div>bitSmiler:</div>
+      <div>{displayAddress(address, 3, 3)}</div>
     </div>
   )
 }
