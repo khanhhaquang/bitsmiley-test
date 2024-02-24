@@ -8,6 +8,7 @@ import { ConnectedNotStaked } from './ConnectedNotStaked'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useMemo } from 'react'
 import { History } from './History'
+import { useReadStakingContractStakingEnded } from '@/contracts/Staking'
 
 type BoxContentProps = {
   isHistoryPage: boolean
@@ -18,6 +19,7 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   onBackClick,
   isHistoryPage
 }) => {
+  const isStakingEnded = useReadStakingContractStakingEnded()
   const { address } = useUserInfo()
   const stakingStatus = useSelector(getStakingStatus)
 
@@ -26,6 +28,11 @@ export const BoxContent: React.FC<BoxContentProps> = ({
       if (isHistoryPage) {
         return <History onBackClick={onBackClick} />
       }
+
+      if (isStakingEnded.data) {
+        return <StakingFinished />
+      }
+
       return <ConnectedNotStaked />
     }
 
@@ -36,12 +43,10 @@ export const BoxContent: React.FC<BoxContentProps> = ({
         return <ConnectedNotStaked />
       case StakingStatus.StakingOnGoing:
         return <StakingOnGoing />
-      case StakingStatus.StakingFinished:
-        return <StakingFinished />
       default:
         return <NotConnected />
     }
-  }, [address, isHistoryPage, onBackClick, stakingStatus])
+  }, [address, isHistoryPage, isStakingEnded.data, onBackClick, stakingStatus])
 
   return (
     <div className="absolute left-1/2 top-[300px] z-10 -translate-x-1/2">

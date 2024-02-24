@@ -4,23 +4,28 @@ import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useChainId } from 'wagmi'
 import { useWriteErc721SafeTransferFrom } from '@/contracts/ERC721'
-import { stakingContractAddress } from '@/contracts/Staking'
+import {
+  stakingContractAddress,
+  useReadStakingContractMaxParticipants,
+  useReadStakingContractTotalParticipants
+} from '@/contracts/Staking'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const ConnectedNotStaked: React.FC = () => {
   const [isNoNftModalOpen, setIsNoNftModalOpen] = useState(false)
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
-  const [isNetworkErrorModalOpen, setIsNetworkErrorModalOpen] = useState(false)
+  const maxParticipants = useReadStakingContractMaxParticipants()
+  const totalParticipants = useReadStakingContractTotalParticipants()
+
+  const remainSlot = useMemo(() => {
+    return (maxParticipants.data || 0) - (totalParticipants.data || 0)
+  }, [maxParticipants, totalParticipants])
 
   return (
     <>
-      <NetworkErrorModal
-        isOpen={isNetworkErrorModalOpen}
-        onClose={() => setIsNetworkErrorModalOpen(false)}
-      />
       <ChooseNftModal
         isOpen={isChooseModalOpen}
         onClose={() => setIsChooseModalOpen(false)}
@@ -39,7 +44,7 @@ export const ConnectedNotStaked: React.FC = () => {
           </div>
           <div className="mt-3 flex items-center justify-center gap-x-2">
             <span className="text-[28px] font-semibold text-warning">
-              30/100
+              {remainSlot}/{maxParticipants.data || '-'}
             </span>
             <span className="text-[15px]">left</span>
           </div>
@@ -111,6 +116,7 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     //TODO: Fetching NFTs list, and select one them
     // Now is hardcode for testing
     const stakingAddress = stakingContractAddress[chainId]
+
     erc721TransferFrom.writeContractAsync({
       account: address,
       args: [address, stakingAddress, BigInt(0), '0x']
@@ -153,40 +159,6 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             className="w-[120px] font-psm text-sm"
             onClick={() => handleProceed()}>
             Proceed
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  )
-}
-
-const NetworkErrorModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
-  isOpen,
-  onClose
-}) => {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="relative border-2 border-black bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
-        <CloseIcon
-          onClick={onClose}
-          className="absolute right-2.5 top-2.5 cursor-pointer"
-        />
-        <div className="flex flex-col items-center gap-y-9 p-6 pt-[42px]">
-          <div className="whitespace-nowrap">network switch</div>
-          <div className="flex w-[361px] flex-col items-center gap-y-6">
-            <div className="w-[325px] font-psm text-sm">
-              To stake your NFT, make sure the network of your wallet is set to:
-            </div>
-            <Image
-              src={getIllustrationUrl('merlin-chain')}
-              className="mix-blend-lighten"
-            />
-          </div>
-          <Button
-            size="xs"
-            className="w-[80px] font-psm text-sm"
-            onClick={onClose}>
-            Ok
           </Button>
         </div>
       </div>

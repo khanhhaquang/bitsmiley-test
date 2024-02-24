@@ -13,6 +13,8 @@ import { cn } from '@/utils/cn'
 import EvmConnector from './EvmConnector'
 import './index.scss'
 import { useAccount, useDisconnect } from 'wagmi'
+import useReconnectEvm from '@/hooks/useReconnectEvm'
+import WrongNetworkModal from '../WrongNetworkModal'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -36,9 +38,11 @@ export const ConnectWallet: React.FC<{
   const { disConnect: disconnectBtc } = useBtcConnectWallet()
   const { disconnect: disconnectEvm } = useDisconnect()
   const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
-
   const buttonRef = useRef<HTMLDivElement>(null)
   useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
+
+  const { isError: isNetworkError, setIsError: setIsNetworkError } =
+    useReconnectEvm()
 
   return (
     <>
@@ -78,7 +82,10 @@ export const ConnectWallet: React.FC<{
           {isLogoutDropdownOpen ? 'LOGOUT' : ''}
         </div>
       </div>
-
+      <WrongNetworkModal
+        isOpen={isNetworkError}
+        onClose={() => setIsNetworkError(false)}
+      />
       <SelectWalletModal
         isOpen={isConnectWalletModalOpen}
         onClose={() => setIsConnectWalletModalOpen(false)}
