@@ -6,12 +6,14 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useMemo, useState } from 'react'
 import { useChainId } from 'wagmi'
-import { useWriteErc721SafeTransferFrom } from '@/contracts/ERC721'
 import {
   stakingContractAddress,
+  useReadStakingContractGetUserStakes,
   useReadStakingContractMaxParticipants,
   useReadStakingContractTotalParticipants
 } from '@/contracts/Staking'
+import { useWriteContract } from 'wagmi'
+import { erc721Abi } from 'viem'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const ConnectedNotStaked: React.FC = () => {
@@ -110,17 +112,33 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const chainId = useChainId()
   const { address } = useUserInfo()
   const [selected, setSelected] = useState(0)
-  const erc721TransferFrom = useWriteErc721SafeTransferFrom()
 
-  const handleProceed = () => {
+  const { writeContractAsync } = useWriteContract()
+
+  const { refetch: refetchUserStakes } = useReadStakingContractGetUserStakes({
+    args: [address]
+  })
+
+  const handleProceed = async () => {
     //TODO: Fetching NFTs list, and select one them
     // Now is hardcode for testing
     const stakingAddress = stakingContractAddress[chainId]
+    const erc721Addres = '0x629026E41cc87e0c16819FFe8fB85d387A623336'
 
-    erc721TransferFrom.writeContractAsync({
-      account: address,
-      args: [address, stakingAddress, BigInt(0), '0x']
-    })
+    try {
+      const txid = await writeContractAsync({
+        abi: erc721Abi,
+        address: erc721Addres,
+        functionName: 'safeTransferFrom',
+        args: [address, stakingAddress, BigInt(7), '0x']
+      })
+
+      refetchUserStakes()
+
+      console.log(txid)
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   return (

@@ -3,8 +3,27 @@ import { PlayerInfo } from '../Common'
 import { Image } from '@/components/Image'
 import { BitGold, RightAngle } from '@/assets/icons'
 import { Button } from '@/components/Button'
+import stakingAbi from '@/abi/Staking.json'
+import { stakingContractAddress } from '@/contracts/Staking'
+import { useChainId, useWriteContract } from 'wagmi'
 
 export const StakingFinished: React.FC = () => {
+  const chainId = useChainId()
+  const { writeContractAsync } = useWriteContract()
+
+  const handleRetrive = async () => {
+    try {
+      const txid = await writeContractAsync({
+        abi: stakingAbi,
+        functionName: 'withdraw',
+        address: stakingContractAddress[chainId]
+      })
+      console.log(txid)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <div className="pt-4">
       <div className="mb-10 flex items-end gap-[104px]">
@@ -20,8 +39,9 @@ export const StakingFinished: React.FC = () => {
             className="border-[3px] border-white"
           />
           <Button
+            size="xs"
             className="absolute left-1/2 top-1/2 z-10 w-[100px] -translate-x-1/2 -translate-y-1/2"
-            size="xs">
+            onClick={handleRetrive}>
             Retrieve
           </Button>
           <div className="absolute left-0 top-0 h-full w-full bg-black/50"></div>

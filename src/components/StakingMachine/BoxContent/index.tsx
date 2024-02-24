@@ -8,7 +8,10 @@ import { ConnectedNotStaked } from './ConnectedNotStaked'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useMemo } from 'react'
 import { History } from './History'
-import { useReadStakingContractStakingEnded } from '@/contracts/Staking'
+import {
+  useReadStakingContractGetUserStakes,
+  useReadStakingContractStakingEnded
+} from '@/contracts/Staking'
 
 type BoxContentProps = {
   isHistoryPage: boolean
@@ -21,6 +24,11 @@ export const BoxContent: React.FC<BoxContentProps> = ({
 }) => {
   const isStakingEnded = useReadStakingContractStakingEnded()
   const { address } = useUserInfo()
+  const userStakes = useReadStakingContractGetUserStakes({
+    args: [address]
+  })
+
+  const staked = useMemo(() => userStakes?.data?.length, [userStakes])
   const stakingStatus = useSelector(getStakingStatus)
 
   const renderContent = useMemo(() => {
@@ -31,6 +39,10 @@ export const BoxContent: React.FC<BoxContentProps> = ({
 
       if (isStakingEnded.data) {
         return <StakingFinished />
+      }
+
+      if (staked) {
+        return <StakingOnGoing />
       }
 
       return <ConnectedNotStaked />
@@ -46,7 +58,14 @@ export const BoxContent: React.FC<BoxContentProps> = ({
       default:
         return <NotConnected />
     }
-  }, [address, isHistoryPage, isStakingEnded.data, onBackClick, stakingStatus])
+  }, [
+    address,
+    isHistoryPage,
+    isStakingEnded.data,
+    onBackClick,
+    stakingStatus,
+    staked
+  ])
 
   return (
     <div className="absolute left-1/2 top-[300px] z-10 -translate-x-1/2">
