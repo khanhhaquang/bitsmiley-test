@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { IProject, ProjectService } from '@/services/project'
 import { useUserInfo } from './useUserInfo'
 import { useCallback, useMemo } from 'react'
 import { AxiosResponse } from 'axios'
-import { IReseponse } from '@/types/common'
+import { IResponse } from '@/types/common'
 import { useSelector } from 'react-redux'
 import { getAddressStatus } from '@/store/addressStatus/reducer'
 import { AddressStauts } from '@/types/status'
@@ -12,10 +12,11 @@ const FETCH_PROJECT_INFO_INTERVAL = 10000
 
 export const useProjectInfo = () => {
   const { isWhitelist } = useUserInfo()
+  const queryClient = useQueryClient()
   const addressStatus = useSelector(getAddressStatus)
 
   const getNormalRemainBlock = useCallback(
-    (res?: AxiosResponse<IReseponse<IProject>>) => {
+    (res?: AxiosResponse<IResponse<IProject>>) => {
       const nowBlockHeight = Number(res?.data?.data?.blockHeight || 0)
       const publicStartBlockHeight = Number(
         res?.data?.data?.publicStartBlockHeight || 0
@@ -30,7 +31,7 @@ export const useProjectInfo = () => {
   )
 
   const getWhitelistRemainBlock = useCallback(
-    (res?: AxiosResponse<IReseponse<IProject>>) => {
+    (res?: AxiosResponse<IResponse<IProject>>) => {
       const nowBlockHeight = Number(res?.data?.data?.blockHeight || 0)
       const whitelistStartBlockHeight = Number(
         res?.data?.data?.whitelistStartBlockHeight || 0
@@ -61,7 +62,7 @@ export const useProjectInfo = () => {
   )
 
   const getIsStarted = useCallback(
-    (res?: AxiosResponse<IReseponse<IProject>>) => {
+    (res?: AxiosResponse<IResponse<IProject>>) => {
       const whitelistRemainBlock = getWhitelistRemainBlock(res)
       const normalRemainBlock = getNormalRemainBlock(res)
       const remainBlock = isWhitelist ? whitelistRemainBlock : normalRemainBlock
@@ -70,23 +71,24 @@ export const useProjectInfo = () => {
     [isWhitelist, getNormalRemainBlock, getWhitelistRemainBlock]
   )
 
-  const { data, isLoading, refetch } = useQuery(
-    [ProjectService.getProjectInfo.key],
-    ProjectService.getProjectInfo.call,
-    {
-      refetchInterval: (res) => {
-        const currentNc = Number(res?.data?.data.nftCount || 0)
-        const pubcNc = Number(res?.data?.data?.publicMax || 0)
-        const isRechedMx = currentNc >= pubcNc
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: [ProjectService.getProjectInfo.key],
+    queryFn: ProjectService.getProjectInfo.call,
+    refetchInterval: ({ queryKey }) => {
+      const res = queryClient.getQueryData(queryKey) as AxiosResponse<
+        IResponse<IProject>
+      >
+      const currentNc = Number(res?.data?.data.nftCount || 0)
+      const pubcNc = Number(res?.data?.data?.publicMax || 0)
+      const isRechedMx = currentNc >= pubcNc
 
-        return getIsStarted(res) ||
-          isRechedMx ||
-          addressStatus === AddressStauts.InscriptionSucceeded
-          ? false
-          : FETCH_PROJECT_INFO_INTERVAL
-      }
+      return getIsStarted(res) ||
+        isRechedMx ||
+        addressStatus === AddressStauts.InscriptionSucceeded
+        ? false
+        : FETCH_PROJECT_INFO_INTERVAL
     }
-  )
+  })
 
   const nowBlockHeight = useMemo(
     () => Number(data?.data?.data?.blockHeight || 0),
@@ -148,7 +150,7 @@ export const useProjectInfo = () => {
   const isLoadingRemainBlock = useMemo(() => remainBlock < 0, [remainBlock])
 
   const getCanMint = useCallback(
-    (res?: AxiosResponse<IReseponse<IProject>>) => {
+    (res?: AxiosResponse<IResponse<IProject>>) => {
       if (!res?.data?.data) return false
 
       const isStarted = getIsStarted(res)

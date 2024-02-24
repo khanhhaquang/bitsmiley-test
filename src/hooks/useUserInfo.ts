@@ -22,7 +22,7 @@ export const useUserInfo = () => {
   return {
     address: evmAddress || ('' as Address),
     isConnected: isEvmConnected,
-    isWhitelis: false,
+    isWhitelist: false,
     isLoading: false
   }
 }
