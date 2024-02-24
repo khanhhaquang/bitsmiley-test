@@ -35,19 +35,35 @@ body {
   box-sizing: border-box;
   overflow: overlay;
   margin: 0;
-  font-family: 'psm', 'pss', 'smb', 'sdm', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', 'Roboto', 'Oxygen', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+  font-family:
+    'psm',
+    'pss',
+    'smb',
+    'sdm',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   background-color: black !important;
-  cursor: url('./assets/icons/cursor-default.svg') 8 0, default;
+  cursor:
+    url('./assets/icons/cursor-default.svg') 8 0,
+    default;
   user-select: none;
 }
 
 a {
-  cursor: url('./assets/icons/cursor-pointer.svg') 8 0, pointer;
+  cursor:
+    url('./assets/icons/cursor-pointer.svg') 8 0,
+    pointer;
 }
 
 img {
@@ -56,4 +72,15 @@ img {
 
 .no-scroll {
   overflow: hidden;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
 }
