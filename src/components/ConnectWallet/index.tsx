@@ -51,7 +51,6 @@ export const ConnectWallet: React.FC<{
           if (!isEvmConnected) {
             setIsConnectWalletModalOpen(true)
           }
-
           if (isEvmConnected && !isLogoutDropdownOpen) {
             setIsLogoutDropdownOpen(true)
           }

@@ -10,6 +10,7 @@ import {
   stakingContractAddress,
   useReadStakingContractGetUserStakes,
   useReadStakingContractMaxParticipants,
+  useReadStakingContractNftContractAddr,
   useReadStakingContractTotalParticipants
 } from '@/contracts/Staking'
 import { useWriteContract } from 'wagmi'
@@ -23,7 +24,12 @@ export const ConnectedNotStaked: React.FC = () => {
   const totalParticipants = useReadStakingContractTotalParticipants()
 
   const remainSlot = useMemo(() => {
-    return (maxParticipants.data || 0) - (totalParticipants.data || 0)
+    const max = maxParticipants.data || 0
+    const current = totalParticipants.data || 0
+
+    if (!max) return '-'
+
+    return max - current
   }, [maxParticipants, totalParticipants])
 
   return (
@@ -114,7 +120,7 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const [selected, setSelected] = useState(0)
 
   const { writeContractAsync } = useWriteContract()
-
+  const nftAddress = useReadStakingContractNftContractAddr()
   const { refetch: refetchUserStakes } = useReadStakingContractGetUserStakes({
     args: [address]
   })
@@ -123,21 +129,23 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     //TODO: Fetching NFTs list, and select one them
     // Now is hardcode for testing
     const stakingAddress = stakingContractAddress[chainId]
-    const erc721Addres = '0x629026E41cc87e0c16819FFe8fB85d387A623336'
+    const erc721Address = nftAddress.data
+    const tokenId = 0
 
-    try {
-      const txid = await writeContractAsync({
-        abi: erc721Abi,
-        address: erc721Addres,
-        functionName: 'safeTransferFrom',
-        args: [address, stakingAddress, BigInt(7), '0x']
-      })
-
-      refetchUserStakes()
-
-      console.log(txid)
-    } catch (e) {
-      console.error(e)
+    if (erc721Address) {
+      try {
+        const txId = await writeContractAsync({
+          abi: erc721Abi,
+          address: erc721Address,
+          functionName: 'safeTransferFrom',
+          args: [address, stakingAddress, BigInt(tokenId), '0x']
+        })
+        refetchUserStakes()
+        console.log(txId)
+        onClose()
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 

@@ -23,10 +23,7 @@ export default defineConfig([
     contracts: [
       {
         name: 'ERC721',
-        abi: erc721Abi,
-        address: {
-          [merlinTestnet.id]: '0x629026E41cc87e0c16819FFe8fB85d387A623336'
-        }
+        abi: erc721Abi
       }
     ],
     plugins: [react()]
