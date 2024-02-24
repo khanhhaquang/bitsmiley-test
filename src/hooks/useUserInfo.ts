@@ -1,10 +1,8 @@
-import { useSelector } from 'react-redux'
-import { getAccountInfo, getIsConnected } from '@/store/account/reducer'
-import { useMemo } from 'react'
+import { useAccount } from 'wagmi'
 
 export const useUserInfo = () => {
-  const isConnected = useSelector(getIsConnected)
-  const { address } = useSelector(getAccountInfo)
+  const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
+
   // const { data } = useQuery(
   //   [UserService.getHasActivatedInvitation.key, address],
   //   () => UserService.getHasActivatedInvitation.call(address),
@@ -12,13 +10,18 @@ export const useUserInfo = () => {
   // )
 
   // const isWhitelist = data?.data?.data
-  const isWhitelist = false
-  const isFetchedUserInfo = useMemo(() => {
-    if (address) {
-      return typeof isWhitelist === 'boolean'
-    }
-    return true
-  }, [address, isWhitelist])
+  // const isWhitelist = false
+  // const isFetchedUserInfo = useMemo(() => {
+  //   if (address) {
+  //     return typeof isWhitelist === 'boolean'
+  //   }
+  //   return true
+  // }, [address, isWhitelist])
 
-  return { address, isConnected, isWhitelist, isLoading: !isFetchedUserInfo }
+  return {
+    address: evmAddress || '',
+    isConnected: isEvmConnected,
+    isWhitelis: false,
+    isLoading: false
+  }
 }

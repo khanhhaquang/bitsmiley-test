@@ -1,7 +1,7 @@
 import { http, createConfig } from 'wagmi'
 import { type Chain } from 'viem'
 
-const merlinTestnet = {
+export const merlinTestnet = {
   id: 686868,
   name: 'Merlin testnet',
   nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },

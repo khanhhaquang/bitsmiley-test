@@ -21,28 +21,32 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
       </div>
       <div className="flex flex-col">
         <table>
-          <tr className="border-b border-dashed border-blue font-psm text-blue">
-            <th align="left" className="pb-3">
-              Inscription ID
-            </th>
-            <th align="left" className="pb-3">
-              Staking period
-            </th>
-            <th align="left" className="pb-3">
-              Rewards
-            </th>
-          </tr>
-          <tr className="font-psm">
-            <td className="pt-3">JSO...DJAO</td>
-            <td className="pt-3">04.02.2024 - 04.03.2024</td>
-            <td className="pt-3 text-cyan">50</td>
-          </tr>
+          <thead>
+            <tr className="border-b border-dashed border-blue font-psm text-blue">
+              <th align="left" className="pb-3">
+                Inscription ID
+              </th>
+              <th align="left" className="pb-3">
+                Staking period
+              </th>
+              <th align="left" className="pb-3">
+                Rewards
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="font-psm">
+              <td className="pt-3">JSO...DJAO</td>
+              <td className="pt-3">04.02.2024 - 04.03.2024</td>
+              <td className="pt-3 text-cyan">50</td>
+            </tr>
 
-          <tr className="font-psm">
-            <td className="pt-3">JSO...DJAO</td>
-            <td className="pt-3">04.02.2024 - 04.03.2024</td>
-            <td className="pt-3 text-cyan">50</td>
-          </tr>
+            <tr className="font-psm">
+              <td className="pt-3">JSO...DJAO</td>
+              <td className="pt-3">04.02.2024 - 04.03.2024</td>
+              <td className="pt-3 text-cyan">50</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
