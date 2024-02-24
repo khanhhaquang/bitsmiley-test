@@ -5,6 +5,10 @@ import { Modal } from '@/components/Modal'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useState } from 'react'
+import { useChainId } from 'wagmi'
+import { useWriteErc721SafeTransferFrom } from '@/contracts/ERC721'
+import { stakingContractAddress } from '@/contracts/Staking'
+import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const ConnectedNotStaked: React.FC = () => {
   const [isNoNftModalOpen, setIsNoNftModalOpen] = useState(false)
@@ -98,7 +102,21 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
   onClose
 }) => {
+  const chainId = useChainId()
+  const { address } = useUserInfo()
   const [selected, setSelected] = useState(0)
+  const erc721TransferFrom = useWriteErc721SafeTransferFrom()
+
+  const handleProceed = () => {
+    const stakingAddress = stakingContractAddress[chainId]
+    console.log('🚀 ~ handleProceed ~ stakingAddress:', stakingAddress)
+    console.log('🚀 ~ erc721TransferFrom:', erc721TransferFrom)
+
+    erc721TransferFrom.writeContractAsync({
+      account: address,
+      args: [address, stakingAddress, BigInt(0), '0x']
+    })
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -131,7 +149,10 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           <div className="my-8 font-psm text-sm">
             Each wallet can select one NFT to stake.
           </div>
-          <Button size="xs" className="w-[120px] font-psm text-sm">
+          <Button
+            size="xs"
+            className="w-[120px] font-psm text-sm"
+            onClick={() => handleProceed()}>
             Proceed
           </Button>
         </div>

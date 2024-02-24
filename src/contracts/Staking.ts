@@ -1,3 +1,4 @@
+import { Address } from 'viem'
 import {
   createUseReadContract,
   createUseWriteContract,
@@ -272,7 +273,7 @@ export const stakingContractAbi = [
  */
 export const stakingContractAddress = {
   686868: '0x1094187ec416ef2E6aE7fc70f10A9B6d4988F108'
-} as const
+} as Record<number, Address>
 
 /**
  *

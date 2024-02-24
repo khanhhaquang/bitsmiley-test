@@ -1,3 +1,4 @@
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
 export const useUserInfo = () => {
@@ -19,7 +20,7 @@ export const useUserInfo = () => {
   // }, [address, isWhitelist])
 
   return {
-    address: evmAddress || '',
+    address: evmAddress || ('' as Address),
     isConnected: isEvmConnected,
     isWhitelis: false,
     isLoading: false
