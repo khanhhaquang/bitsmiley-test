@@ -1,4 +1,4 @@
-import { UserService } from '@/services/user'
+import { INftsData, UserService } from '@/services/user'
 import { useQuery } from '@tanstack/react-query'
 import { useUserInfo } from './useUserInfo'
 import { useEffect, useMemo } from 'react'
@@ -6,6 +6,8 @@ import { useStoreActions } from './useStoreActions'
 // import { useProjectInfo } from './useProjectInfo'
 import { useSelector } from 'react-redux'
 import { getUserNfts } from '@/store/account/reducer'
+import { AxiosResponse } from 'axios'
+import { IResponse } from '@/types/common'
 
 export const useUserNfts = () => {
   const { address } = useUserInfo()
@@ -49,9 +51,9 @@ export const useUserNfts = () => {
 
   const mintedNft = useMemo(
     () =>
-      nftsDataRes?.data?.data?.nfts?.find(
-        (n) => !!n.inscription_id && !n.invalid_reason
-      ),
+      (
+        nftsDataRes as AxiosResponse<IResponse<INftsData>>
+      )?.data?.data?.nfts?.find((n) => !!n.inscription_id && !n.invalid_reason),
     [nftsDataRes]
   )
 

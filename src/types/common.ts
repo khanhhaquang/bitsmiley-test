@@ -9,7 +9,7 @@ export interface IAccountInfo {
   publicKey: string
 }
 
-export interface IReseponse<T> {
+export interface IResponse<T> {
   data: T
   code: number
   message: string

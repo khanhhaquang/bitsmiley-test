@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/config/axios'
-import { IReseponse } from '@/types/common'
+import { IResponse } from '@/types/common'
 
 export interface IProject {
   nftCount: string
@@ -28,7 +28,7 @@ export interface ICheckInscription {
 export const ProjectService = {
   getProjectInfo: {
     key: 'project.getProjectInfo',
-    call: () => axiosInstance.get<IReseponse<IProject>>('/bsInfo/projectInfo ')
+    call: () => axiosInstance.get<IResponse<IProject>>('/bsInfo/projectInfo ')
   },
   checkInscription: {
     key: 'project.checkInscription',

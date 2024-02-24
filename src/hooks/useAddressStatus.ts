@@ -3,15 +3,17 @@ import { AddressStauts } from '@/types/status'
 import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useStoreActions } from './useStoreActions'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useUserInfo } from './useUserInfo'
 import imgString from './imgString.json'
 import { useUserNfts } from './useUserNfts'
-import { UserService } from '@/services/user'
+import { INftsData, UserService } from '@/services/user'
 import { ITransactionInfo, MempoolService } from '@/services/mempool'
 import { useProjectInfo } from './useProjectInfo'
 import { getAddressStatus } from '@/store/addressStatus/reducer'
 import { InscriptionParserService } from 'ordpool-parser'
+import { AxiosResponse } from 'axios'
+import { IResponse } from '@/types/common'
 
 const FETCH_USER_NFTS_INTERVAL = 5000
 const FETCH_TRANSACTION_INFO_INTERVAL = 300000
@@ -169,6 +171,7 @@ const useAddressTransactions = () => {
 const usePollTxnInfo = () => {
   const txid = useSelector(getTxId)
   const { isConnected } = useUserInfo()
+  const queryClient = useQueryClient()
 
   const { setAddressStatus } = useStoreActions()
   const { hasNftMinted, isLoading: isLoadingHasNftMinted } = useUserNfts()
@@ -178,23 +181,23 @@ const usePollTxnInfo = () => {
     isLoading: isLoadingTxnInfo,
     isFetching: isFetchingTxnInfo,
     isRefetching: isRefetchingTxnInfo
-  } = useQuery(
-    [MempoolService.getTransactionInfo.key, txid, hasNftMinted],
-    async () =>
+  } = useQuery({
+    queryKey: [MempoolService.getTransactionInfo.key, txid, hasNftMinted],
+    queryFn: () =>
       MempoolService.getTransactionInfo
         .call(txid as string)
         .then((res) => res)
         .catch((e) => e),
-    {
-      enabled: !!txid && !hasNftMinted,
-      refetchInterval: (res) => {
-        if (res?.response?.status === 404) return FETCH_USER_NFTS_INTERVAL
-        return res?.data?.status?.confirmed
-          ? false
-          : FETCH_TRANSACTION_INFO_INTERVAL
-      }
+    enabled: !!txid && !hasNftMinted,
+    refetchInterval: ({ queryKey }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const res = queryClient.getQueryData(queryKey) as any
+      if (res?.response?.status === 404) return FETCH_USER_NFTS_INTERVAL
+      return res?.data?.status?.confirmed
+        ? false
+        : FETCH_TRANSACTION_INFO_INTERVAL
     }
-  )
+  })
 
   useEffect(() => {
     if (
@@ -228,6 +231,7 @@ const usePollTxnInfo = () => {
 const usePollNewNfts = () => {
   const { address, isConnected } = useUserInfo()
   const { refetch: refetchProjectInfo, isNotStarted } = useProjectInfo()
+  const queryClient = useQueryClient()
 
   const { setAddressStatus, setInscriptionId, setUserNfts } = useStoreActions()
 
@@ -245,24 +249,33 @@ const usePollNewNfts = () => {
     isFetching: isFetchingNfts,
     isLoading: isLoadingNfts,
     isRefetching: isRefetchingNfts
-  } = useQuery(
-    [UserService.getNFTs.key, txid, address, addressStatus, hasNftMinted],
-    () => UserService.getNFTs.call(address),
-    {
-      enabled:
-        !!txid &&
-        !!address &&
-        addressStatus === AddressStauts.InscriptionConfirmed &&
-        !hasNftMinted,
-      refetchInterval: (res) =>
-        res?.data?.data?.nfts?.length ? false : FETCH_USER_NFTS_INTERVAL
+  } = useQuery({
+    queryKey: [
+      UserService.getNFTs.key,
+      txid,
+      address,
+      addressStatus,
+      hasNftMinted
+    ],
+    queryFn: () => UserService.getNFTs.call(address),
+    enabled:
+      !!txid &&
+      !!address &&
+      addressStatus === AddressStauts.InscriptionConfirmed &&
+      !hasNftMinted,
+    refetchInterval: ({ queryKey }) => {
+      const res = queryClient.getQueryData(queryKey) as AxiosResponse<
+        IResponse<INftsData>
+      >
+      return res?.data?.data?.nfts?.length ? false : FETCH_USER_NFTS_INTERVAL
     }
-  )
+  })
 
   useEffect(() => {
     if (hasNftMinted || isLoadingHasNftMinted || !isConnected) return
 
-    const nfts = nftsData?.data?.data?.nfts
+    const nfts =
+      (nftsData as AxiosResponse<IResponse<INftsData>>)?.data?.data?.nfts || []
 
     if (!nfts?.length) return
 
@@ -304,7 +317,7 @@ const usePollNewNfts = () => {
     setInscriptionId,
     isLoadingHasNftMinted,
     refetchProjectInfo,
-    nftsData?.data?.data?.nfts
+    nftsData
   ])
 
   return {
