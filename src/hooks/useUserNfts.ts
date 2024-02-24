@@ -1,5 +1,5 @@
 import { UserService } from '@/services/user'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useUserInfo } from './useUserInfo'
 import { useEffect, useMemo } from 'react'
 import { useStoreActions } from './useStoreActions'
@@ -14,13 +14,11 @@ export const useUserNfts = () => {
   const userNfts = useSelector(getUserNfts)
   const { setUserNfts } = useStoreActions()
 
-  const { data: nftsDataRes, isLoading } = useQuery(
-    [UserService.getNFTs.key, address],
-    () => UserService.getNFTs.call(address),
-    {
-      enabled: !!address
-    }
-  )
+  const { data: nftsDataRes, isLoading } = useQuery({
+    queryKey: [UserService.getNFTs.key, address],
+    queryFn: () => UserService.getNFTs.call(address),
+    enabled: !!address
+  })
 
   const getDisbleMinting = () => {}
 

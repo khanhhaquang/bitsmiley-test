@@ -11,3 +11,10 @@ export enum AddressStauts {
   InscriptionSucceeded = 'InscriptionSucceeded',
   MintingEnded = 'MintingEnded'
 }
+
+export enum StakingStatus {
+  NotConnected = 'NotConnected',
+  ConnectedNotStaked = 'ConnectedNotStaked',
+  StakingOnGoing = 'StakingOnGoing',
+  StakingFinished = 'StakingFinished'
+}

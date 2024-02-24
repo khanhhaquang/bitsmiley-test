@@ -5,6 +5,7 @@ import CloseIcon from './close.svg'
 import HeaderIcon from './header.svg'
 import CopyrightIcon from './copyright.svg'
 import ArrowDownIcon from './arrow-down.svg'
+import ArrowLeftIcon from './arrow-left.svg'
 import LoadingLineIcon from './loading-line.svg'
 import AsteriskIcon from './asterisk.svg'
 import GoldCoinIcon from './gold-coin.svg'
@@ -18,12 +19,18 @@ import LineIcon from './line.svg'
 import BitDiscBlackIcon from './bitDiskBlack.svg'
 import HistoryIcon from './history.svg'
 import CloseSolidIcon from './close-solid.svg'
+import RightAngle from './right-angle.svg'
+import BitGold from './bit-gold.svg'
+import BitJade from './bit-jade.svg'
+import BitJadeBlack from './bit-jade-black.svg'
+import MetamaskIcon from './metamask.svg'
 
 export {
   DotIcon,
   CoinIcon,
   CloseIcon,
   HeaderIcon,
+  ArrowLeftIcon,
   ArrowDownIcon,
   CopyrightIcon,
   LoadingLineIcon,
@@ -39,5 +46,10 @@ export {
   LineIcon,
   BitDiscBlackIcon,
   HistoryIcon,
-  CloseSolidIcon
+  CloseSolidIcon,
+  RightAngle,
+  BitGold,
+  BitJade,
+  BitJadeBlack,
+  MetamaskIcon
 }

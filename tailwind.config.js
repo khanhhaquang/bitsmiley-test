@@ -16,7 +16,9 @@ const colors = {
   grey4: '#3C3C3C',
   grey5: '#ffffff4d',
   red: '#CE2D2D',
-  pink: '#FF64AE'
+  pink: '#FF64AE',
+  cyan: '#00FFD1',
+  warning: '#F00'
 }
 
 /** @type {import('tailwindcss').Config} */
@@ -55,7 +57,8 @@ export default {
         'take-bitdisc-button': '3px 3px 0px 0px #919191',
         'connectwallet-button-hover': '6px 6px 0px 0px #2648EF',
         'take-bitdisc-button-hover': '3px 3px 0px 0px #2648EF',
-        'whitepaper-button': '6px 6px 0px 0px #172B8F'
+        'whitepaper-button': '6px 6px 0px 0px #172B8F',
+        'stake-now-button': '4px 4px 0px 0px rgba(0, 0, 0, 0.30)'
       },
       backgroundImage: {
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
