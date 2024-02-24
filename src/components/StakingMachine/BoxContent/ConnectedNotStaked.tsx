@@ -108,10 +108,9 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const erc721TransferFrom = useWriteErc721SafeTransferFrom()
 
   const handleProceed = () => {
+    //TODO: Fetching NFTs list, and select one them
+    // Now is hardcode for testing
     const stakingAddress = stakingContractAddress[chainId]
-    console.log('🚀 ~ handleProceed ~ stakingAddress:', stakingAddress)
-    console.log('🚀 ~ erc721TransferFrom:', erc721TransferFrom)
-
     erc721TransferFrom.writeContractAsync({
       account: address,
       args: [address, stakingAddress, BigInt(0), '0x']
