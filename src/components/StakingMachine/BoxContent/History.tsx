@@ -1,24 +1,15 @@
 import { ArrowLeftIcon, BitJade } from '@/assets/icons'
 import { useReadStakingContractGetStakeRewards } from '@/contracts/Staking'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useBlockNumber, useChainId } from 'wagmi'
 
 type HistoryProps = {
   onBackClick: () => void
 }
 export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
   const { address } = useUserInfo()
-  const chainId = useChainId()
-  const { data: blockNumber } = useBlockNumber({ chainId: chainId })
-
   const { data: stakes } = useReadStakingContractGetStakeRewards({
     args: [address]
   })
-
-  const getStakingSince = (startBlock: number) => {
-    if (!blockNumber || !startBlock) return '-'
-    return `${Number(blockNumber) - startBlock} blocks`
-  }
 
   return (
     <div className="flex w-[612px] flex-col gap-y-11 pt-8">
@@ -54,9 +45,7 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
             {stakes?.map((stake) => (
               <tr className="font-psm" key={Number(stake.tokenId)}>
                 <td className="pt-3">{Number(stake.tokenId)}</td>
-                <td className="pt-3">
-                  {getStakingSince(Number(stake.stakedTime))}
-                </td>
+                <td className="pt-3">{Number(stake.stakedTime)}</td>
                 <td className="pt-3 text-cyan">{Number(stake.reward)}</td>
               </tr>
             ))}
