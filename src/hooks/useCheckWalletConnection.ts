@@ -1,10 +1,6 @@
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { LoginTypeEnum } from '@/types/common'
-import {
-  clearConfirmedMinted,
-  clearLoginType,
-  getLocalStorage
-} from '@/utils/storage'
+import { clearLoginType, getLocalStorage } from '@/utils/storage'
 import { useCallback, useEffect, useState } from 'react'
 import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
@@ -23,7 +19,6 @@ export const useCheckWalletConnection = () => {
   const clearConnectedInfo = useCallback(() => {
     resetStorage()
     clearLoginType()
-    clearConfirmedMinted()
   }, [resetStorage])
 
   const fetchAccountInfo = useCallback(async () => {

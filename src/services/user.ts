@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/config/axios'
-import { IReseponse } from '@/types/common'
+import { IResponse } from '@/types/common'
 
 export enum InvalidReasonEnum {
   NotStarted = 'minting not started yet',
@@ -23,18 +23,10 @@ export interface INft {
 }
 
 export const UserService = {
-  getHasActivatedInvitation: {
-    key: 'user.getHasActivatedInvitation',
-    call: (address: string) =>
-      axiosInstance.post<IReseponse<boolean>>(
-        `/user/hasActivatedInvitation?address=${address}`
-      )
-  },
-
   getNFTs: {
     key: 'user.getNFTs',
     call: (address: string) =>
-      axiosInstance.post<IReseponse<INftsData>>(
+      axiosInstance.post<IResponse<INftsData>>(
         `/user/getNFTs?address=${address}&pageNumber=0`
       )
   }

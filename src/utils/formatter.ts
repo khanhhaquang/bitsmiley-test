@@ -11,11 +11,3 @@ export const displayAddress = (
     lowerAddress.slice(0, startOffset) + '...' + lowerAddress.slice(-endOffset)
   )
 }
-
-export const getBtcScanUrl = (txid: string) => {
-  return `https://mempool.space/tx/${txid}`
-}
-
-export const getOrdScanUrl = (inscriptionId: string) => {
-  return `https://ordinals.com/inscription/${inscriptionId}`
-}

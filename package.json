@@ -5,11 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "convertImg:dev": "node scripts/convertImage.js development",
-    "convertImg:pro": "node scripts/convertImage.js production",
     "generateImgPaths": "node scripts/generateResourcesPaths.js",
-    "prebuild:dev": "npm run convertImg:dev && tsc && vite build --mode development",
-    "prebuild:pro": "npm run convertImg:pro && tsc && vite build --mode production",
+    "prebuild:dev": "tsc && vite build --mode development",
+    "prebuild:pro": "tsc && vite build --mode production",
     "build:dev": "npm run prebuild:dev && npm run generateImgPaths && npm run prebuild:dev",
     "build:pro": "npm run prebuild:pro && npm run generateImgPaths && npm run prebuild:pro",
     "preview": "vite preview",
