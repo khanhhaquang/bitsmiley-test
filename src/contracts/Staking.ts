@@ -1,4 +1,3 @@
-import { Address } from 'viem'
 import {
   createUseReadContract,
   createUseWriteContract,
@@ -132,6 +131,24 @@ export const stakingContractAbi = [
   {
     type: 'function',
     inputs: [{ name: '_addr', internalType: 'address', type: 'address' }],
+    name: 'getStakeRewards',
+    outputs: [
+      {
+        name: 'stakes',
+        internalType: 'struct StakingERC721EndWithdraw.StakeReward[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'tokenId', internalType: 'uint256', type: 'uint256' },
+          { name: 'stakedTime', internalType: 'uint256', type: 'uint256' },
+          { name: 'reward', internalType: 'uint256', type: 'uint256' }
+        ]
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_addr', internalType: 'address', type: 'address' }],
     name: 'getUserStakes',
     outputs: [{ name: 'stakes', internalType: 'uint256[]', type: 'uint256[]' }],
     stateMutability: 'view'
@@ -205,7 +222,7 @@ export const stakingContractAbi = [
     type: 'function',
     inputs: [],
     name: 'stakingEnded',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view'
   },
   {
@@ -272,8 +289,8 @@ export const stakingContractAbi = [
  *
  */
 export const stakingContractAddress = {
-  686868: '0x1094187ec416ef2E6aE7fc70f10A9B6d4988F108'
-} as Record<number, Address>
+  686868: '0xdD65F5D3a5AEE68769267a5663CCcD213b45ABaA'
+} as const
 
 /**
  *
@@ -296,6 +313,18 @@ export const useReadStakingContract = /*#__PURE__*/ createUseReadContract({
   abi: stakingContractAbi,
   address: stakingContractAddress
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"getStakeRewards"`
+ *
+ *
+ */
+export const useReadStakingContractGetStakeRewards =
+  /*#__PURE__*/ createUseReadContract({
+    abi: stakingContractAbi,
+    address: stakingContractAddress,
+    functionName: 'getStakeRewards'
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"getUserStakes"`

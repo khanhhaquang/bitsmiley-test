@@ -4,19 +4,19 @@ import { Image } from '@/components/Image'
 import { BitGold, RightAngle } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import stakingAbi from '@/abi/Staking.json'
-import { stakingContractAddress } from '@/contracts/Staking'
 import { useChainId, useWriteContract } from 'wagmi'
+import { merlinAddresses } from '@/config/wagmi'
 
 export const StakingFinished: React.FC = () => {
   const chainId = useChainId()
   const { writeContractAsync } = useWriteContract()
 
-  const handleRetrive = async () => {
+  const handleWithdraw = async () => {
     try {
       const txid = await writeContractAsync({
         abi: stakingAbi,
         functionName: 'withdraw',
-        address: stakingContractAddress[chainId]
+        address: merlinAddresses[chainId]
       })
       console.log(txid)
     } catch (error) {
@@ -41,7 +41,7 @@ export const StakingFinished: React.FC = () => {
           <Button
             size="xs"
             className="absolute left-1/2 top-1/2 z-10 w-[100px] -translate-x-1/2 -translate-y-1/2"
-            onClick={handleRetrive}>
+            onClick={handleWithdraw}>
             Retrieve
           </Button>
           <div className="absolute left-0 top-0 h-full w-full bg-black/50"></div>
