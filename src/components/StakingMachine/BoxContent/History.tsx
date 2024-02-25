@@ -11,6 +11,11 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
     args: [address]
   })
 
+  const total = stakes?.reduce(
+    (pre, cur) => (pre += Number(cur.reward || 0)),
+    0
+  )
+
   return (
     <div className="flex w-[612px] flex-col gap-y-11 pt-8">
       <div className="flex items-center justify-between font-smb">
@@ -22,8 +27,7 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
         </button>
         <h2 className="font-smb text-sm">Staking history</h2>
         <p className="flex gap-1 font-psm text-sm text-cyan">
-          <BitJade width={15} height={20} />
-          x245
+          <BitJade width={15} height={20} />x{total}
         </p>
       </div>
       <div className="flex flex-col">
