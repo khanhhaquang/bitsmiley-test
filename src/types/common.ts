@@ -1,5 +1,4 @@
 export enum LoginTypeEnum {
-  None = '',
   OKX = 'okx',
   UNISAT = 'unisat'
 }

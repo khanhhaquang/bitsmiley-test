@@ -29,10 +29,5 @@ export const ProjectService = {
   getProjectInfo: {
     key: 'project.getProjectInfo',
     call: () => axiosInstance.get<IResponse<IProject>>('/bsInfo/projectInfo ')
-  },
-  checkInscription: {
-    key: 'project.checkInscription',
-    call: (inscriptionId: string) =>
-      axiosInstance.get<ICheckInscription>(`/nft/check/${inscriptionId}`)
   }
 }

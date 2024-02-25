@@ -5,7 +5,7 @@ import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { useCallback, useEffect } from 'react'
 import { getLoginType } from '@/store/account/reducer'
 import { WALLETSITE } from '@/config/links'
-import { clearConfirmedMinted, clearLoginType } from '@/utils/storage.ts'
+import { clearLoginType } from '@/utils/storage.ts'
 import { openUrl } from '@/utils/getAssetsUrl'
 
 export const useBtcConnectWallet = () => {
@@ -14,11 +14,10 @@ export const useBtcConnectWallet = () => {
   const { setAccountInfo, setLoginType, resetStorage } = useStoreActions()
 
   const handleAccountChanged = useCallback(
-    (newAccountInfo: IAccountInfo | null, loginType: LoginTypeEnum) => {
+    (newAccountInfo: IAccountInfo | null, loginType?: LoginTypeEnum) => {
       if (!newAccountInfo) {
         resetStorage()
         clearLoginType()
-        clearConfirmedMinted()
         return
       }
 
@@ -73,7 +72,7 @@ export const useBtcConnectWallet = () => {
   }
 
   const disConnect = () => {
-    handleAccountChanged(null, LoginTypeEnum.None)
+    handleAccountChanged(null, undefined)
   }
 
   useEffect(() => {
