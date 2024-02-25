@@ -61,6 +61,7 @@ export default {
         'stake-now-button': '4px 4px 0px 0px rgba(0, 0, 0, 0.30)'
       },
       backgroundImage: {
+        onchainLoading: 'url("/src/assets/illustrations/onchain-loading.png")',
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
         mobile: 'url("/src/assets/illustrations/mobile-bg.png")',
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")',

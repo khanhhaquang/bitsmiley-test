@@ -9,6 +9,7 @@ import {
   useReadStakingContractGetUserStakes,
   useReadStakingContractStakingEnded
 } from '@/contracts/Staking'
+import { OnChainLoading } from './OnchainLoading'
 
 type BoxContentProps = {
   isHistoryPage: boolean
@@ -19,20 +20,25 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   onBackClick,
   isHistoryPage
 }) => {
-  const isStakingEnded = useReadStakingContractStakingEnded()
   const { address } = useUserInfo()
-  const userStakes = useReadStakingContractGetUserStakes({
-    args: [address]
-  })
+  const { data: isStakingEnded, isLoading: isFetchingIsStakingEnded } =
+    useReadStakingContractStakingEnded()
+  const { data: userStakes, isLoading: isFetchingUserStakes } =
+    useReadStakingContractGetUserStakes({
+      args: [address]
+    })
 
-  const staked = useMemo(() => userStakes?.data?.length, [userStakes])
+  const staked = useMemo(() => userStakes?.length, [userStakes])
 
   const renderContent = useMemo(() => {
     if (address) {
+      if (isFetchingUserStakes || isFetchingIsStakingEnded) {
+        return <OnChainLoading />
+      }
       if (isHistoryPage) {
         return <History onBackClick={onBackClick} />
       }
-      if (isStakingEnded.data) {
+      if (isStakingEnded) {
         return <StakingFinished />
       }
       if (staked) {
@@ -40,9 +46,16 @@ export const BoxContent: React.FC<BoxContentProps> = ({
       }
       return <ConnectedNotStaked />
     }
-
     return <NotConnected />
-  }, [address, isHistoryPage, isStakingEnded.data, onBackClick, staked])
+  }, [
+    address,
+    isHistoryPage,
+    isFetchingUserStakes,
+    isFetchingIsStakingEnded,
+    isStakingEnded,
+    staked,
+    onBackClick
+  ])
 
   return (
     <div className="absolute left-1/2 top-[300px] z-10 -translate-x-1/2">
