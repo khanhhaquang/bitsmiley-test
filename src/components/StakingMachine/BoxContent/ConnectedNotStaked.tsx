@@ -4,7 +4,6 @@ import { Modal } from '@/components/Modal'
 import { useMemo, useState } from 'react'
 import { useChainId } from 'wagmi'
 import {
-  stakingContractAddress,
   useReadStakingContractGetUserStakes,
   useReadStakingContractMaxParticipants,
   useReadStakingContractNftContractAddr,
@@ -13,6 +12,7 @@ import {
 import { useWriteContract } from 'wagmi'
 import { erc721Abi } from 'viem'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { merlinAddresses } from '@/config/wagmi'
 
 export const ConnectedNotStaked: React.FC = () => {
   const [isNoNftModalOpen, setIsNoNftModalOpen] = useState(false)
@@ -119,7 +119,7 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const [tokenId, setTokenId] = useState('')
 
   const { writeContractAsync } = useWriteContract()
-  const nftAddress = useReadStakingContractNftContractAddr()
+  const { data: erc721Address } = useReadStakingContractNftContractAddr()
   const { refetch: refetchUserStakes } = useReadStakingContractGetUserStakes({
     args: [address]
   })
@@ -127,8 +127,7 @@ const ChooseNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const handleProceed = async () => {
     //TODO: Fetching NFTs list, and select one them
     // Now is hardcode for testing
-    const stakingAddress = stakingContractAddress[chainId]
-    const erc721Address = nftAddress.data
+    const stakingAddress = merlinAddresses[chainId]
 
     if (erc721Address) {
       try {

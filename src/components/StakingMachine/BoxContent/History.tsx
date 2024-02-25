@@ -1,9 +1,25 @@
 import { ArrowLeftIcon, BitJade } from '@/assets/icons'
+import { useReadStakingContractGetStakeRewards } from '@/contracts/Staking'
+import { useUserInfo } from '@/hooks/useUserInfo'
+import { useBlockNumber, useChainId } from 'wagmi'
 
 type HistoryProps = {
   onBackClick: () => void
 }
 export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
+  const { address } = useUserInfo()
+  const chainId = useChainId()
+  const { data: blockNumber } = useBlockNumber({ chainId: chainId })
+
+  const { data: stakes } = useReadStakingContractGetStakeRewards({
+    args: [address]
+  })
+
+  const getStakingSince = (startBlock: number) => {
+    if (!blockNumber || !startBlock) return '-'
+    return `${Number(blockNumber) - startBlock} blocks`
+  }
+
   return (
     <div className="flex w-[612px] flex-col gap-y-11 pt-8">
       <div className="flex items-center justify-between font-smb">
@@ -24,10 +40,10 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
           <thead>
             <tr className="border-b border-dashed border-blue font-psm text-blue">
               <th align="left" className="pb-3">
-                Inscription ID
+                Token ID
               </th>
               <th align="left" className="pb-3">
-                Staking period
+                Staked Since
               </th>
               <th align="left" className="pb-3">
                 Rewards
@@ -35,17 +51,15 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
             </tr>
           </thead>
           <tbody>
-            <tr className="font-psm">
-              <td className="pt-3">JSO...DJAO</td>
-              <td className="pt-3">04.02.2024 - 04.03.2024</td>
-              <td className="pt-3 text-cyan">50</td>
-            </tr>
-
-            <tr className="font-psm">
-              <td className="pt-3">JSO...DJAO</td>
-              <td className="pt-3">04.02.2024 - 04.03.2024</td>
-              <td className="pt-3 text-cyan">50</td>
-            </tr>
+            {stakes?.map((stake) => (
+              <tr className="font-psm" key={Number(stake.tokenId)}>
+                <td className="pt-3">{Number(stake.tokenId)}</td>
+                <td className="pt-3">
+                  {getStakingSince(Number(stake.stakedTime))}
+                </td>
+                <td className="pt-3 text-cyan">{Number(stake.reward)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

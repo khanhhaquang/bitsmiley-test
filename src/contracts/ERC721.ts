@@ -9,9 +9,6 @@ import {
 // ERC721
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- *
- */
 export const erc721Abi = [
   {
     type: 'event',
@@ -172,285 +169,202 @@ export const erc721Abi = [
   }
 ] as const
 
-/**
- *
- */
-export const erc721Address = {
-  686868: '0x629026E41cc87e0c16819FFe8fB85d387A623336'
-} as const
-
-/**
- *
- */
-export const erc721Config = { address: erc721Address, abi: erc721Abi } as const
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__
- *
- *
  */
 export const useReadErc721 = /*#__PURE__*/ createUseReadContract({
-  abi: erc721Abi,
-  address: erc721Address
+  abi: erc721Abi
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"balanceOf"`
- *
- *
  */
 export const useReadErc721BalanceOf = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'balanceOf'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"getApproved"`
- *
- *
  */
 export const useReadErc721GetApproved = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'getApproved'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"isApprovedForAll"`
- *
- *
  */
 export const useReadErc721IsApprovedForAll =
   /*#__PURE__*/ createUseReadContract({
     abi: erc721Abi,
-    address: erc721Address,
     functionName: 'isApprovedForAll'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"name"`
- *
- *
  */
 export const useReadErc721Name = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'name'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"ownerOf"`
- *
- *
  */
 export const useReadErc721OwnerOf = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'ownerOf'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"symbol"`
- *
- *
  */
 export const useReadErc721Symbol = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'symbol'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"tokenByIndex"`
- *
- *
  */
 export const useReadErc721TokenByIndex = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'tokenByIndex'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"tokenURI"`
- *
- *
  */
 export const useReadErc721TokenUri = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'tokenURI'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"totalSupply"`
- *
- *
  */
 export const useReadErc721TotalSupply = /*#__PURE__*/ createUseReadContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'totalSupply'
 })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link erc721Abi}__
- *
- *
  */
 export const useWriteErc721 = /*#__PURE__*/ createUseWriteContract({
-  abi: erc721Abi,
-  address: erc721Address
+  abi: erc721Abi
 })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"approve"`
- *
- *
  */
 export const useWriteErc721Approve = /*#__PURE__*/ createUseWriteContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'approve'
 })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"safeTransferFrom"`
- *
- *
  */
 export const useWriteErc721SafeTransferFrom =
   /*#__PURE__*/ createUseWriteContract({
     abi: erc721Abi,
-    address: erc721Address,
     functionName: 'safeTransferFrom'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"setApprovalForAll"`
- *
- *
  */
 export const useWriteErc721SetApprovalForAll =
   /*#__PURE__*/ createUseWriteContract({
     abi: erc721Abi,
-    address: erc721Address,
     functionName: 'setApprovalForAll'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"transferFrom"`
- *
- *
  */
 export const useWriteErc721TransferFrom = /*#__PURE__*/ createUseWriteContract({
   abi: erc721Abi,
-  address: erc721Address,
   functionName: 'transferFrom'
 })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link erc721Abi}__
- *
- *
  */
 export const useSimulateErc721 = /*#__PURE__*/ createUseSimulateContract({
-  abi: erc721Abi,
-  address: erc721Address
+  abi: erc721Abi
 })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"approve"`
- *
- *
  */
 export const useSimulateErc721Approve = /*#__PURE__*/ createUseSimulateContract(
-  { abi: erc721Abi, address: erc721Address, functionName: 'approve' }
+  { abi: erc721Abi, functionName: 'approve' }
 )
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"safeTransferFrom"`
- *
- *
  */
 export const useSimulateErc721SafeTransferFrom =
   /*#__PURE__*/ createUseSimulateContract({
     abi: erc721Abi,
-    address: erc721Address,
     functionName: 'safeTransferFrom'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"setApprovalForAll"`
- *
- *
  */
 export const useSimulateErc721SetApprovalForAll =
   /*#__PURE__*/ createUseSimulateContract({
     abi: erc721Abi,
-    address: erc721Address,
     functionName: 'setApprovalForAll'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link erc721Abi}__ and `functionName` set to `"transferFrom"`
- *
- *
  */
 export const useSimulateErc721TransferFrom =
   /*#__PURE__*/ createUseSimulateContract({
     abi: erc721Abi,
-    address: erc721Address,
     functionName: 'transferFrom'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__
- *
- *
  */
 export const useWatchErc721Event = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: erc721Abi,
-  address: erc721Address
+  abi: erc721Abi
 })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__ and `eventName` set to `"Approval"`
- *
- *
  */
 export const useWatchErc721ApprovalEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: erc721Abi,
-    address: erc721Address,
     eventName: 'Approval'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__ and `eventName` set to `"ApprovalForAll"`
- *
- *
  */
 export const useWatchErc721ApprovalForAllEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: erc721Abi,
-    address: erc721Address,
     eventName: 'ApprovalForAll'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__ and `eventName` set to `"Transfer"`
- *
- *
  */
 export const useWatchErc721TransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: erc721Abi,
-    address: erc721Address,
     eventName: 'Transfer'
   })
