@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
+import { Address, Hash } from 'viem'
 
 export enum InvalidReasonEnum {
   NotStarted = 'minting not started yet',
@@ -8,26 +9,23 @@ export enum InvalidReasonEnum {
   PublicMaxCountReached = 'max number of inscriptions in public sale round already inscribed',
   NotWhitelisted = 'address not whitelisted for inscription'
 }
-
-export interface INftsData {
-  count?: number
-  nfts?: INft[]
-}
-
 export interface INft {
-  txid?: string
-  nft_id?: string
-  address?: string
-  inscription_id?: string
-  invalid_reason?: InvalidReasonEnum | null
+  blockNumber: number
+  id: number
+  mintOwner: Address
+  mintTime: Date
+  mintTxHash: Hash
+  nftStatus: number
+  owner: Address
+  tokenID: number
+  txHash: Hash
+  updateTime: Date
 }
 
 export const UserService = {
   getNFTs: {
     key: 'user.getNFTs',
-    call: (address: string) =>
-      axiosInstance.post<IResponse<INftsData>>(
-        `/user/getNFTs?address=${address}&pageNumber=0`
-      )
+    call: (address: Address): Promise<IResponse<INft[]>> =>
+      axiosInstance.get(`/l2nft/getNFT/${address}`).then((res) => res.data)
   }
 }

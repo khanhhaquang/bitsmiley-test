@@ -5,7 +5,6 @@ import { LoadingPage } from '@/pages/Main/LoadingPage'
 import { NetworkErrorPage } from '@/pages/Main/NetworkErrorPage'
 import { useCheckWalletConnection } from '@/hooks/useCheckWalletConnection'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
-import { useUserNfts } from '@/hooks/useUserNfts'
 import { useSelector } from 'react-redux'
 import { getNetworkError } from '@/store/common/reducer'
 import { MobilePage } from './MobilePage'
@@ -16,10 +15,8 @@ const Main: React.FC = () => {
 
   const { isLoading: isLoadingResources } = usePreloadResources()
   const { isLoading: isCheckingWallet } = useCheckWalletConnection()
-  const { isLoading: isLoadingUserNfts } = useUserNfts()
 
-  const isLoading =
-    (isCheckingWallet || isLoadingResources || isLoadingUserNfts) && !isEntered
+  const isLoading = (isCheckingWallet || isLoadingResources) && !isEntered
 
   if (isMobile(window.navigator).any) return <MobilePage />
 

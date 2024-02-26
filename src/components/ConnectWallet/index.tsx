@@ -1,8 +1,8 @@
 import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
+import { useAccount, useDisconnect } from 'wagmi'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import { Button } from '@/components/Button'
-import { useBtcConnectWallet } from '@/hooks/useBtcConnectWallet'
 import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -10,11 +10,10 @@ import { useClickOutside } from '@/hooks/useClickOutside'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { cn } from '@/utils/cn'
-import EvmConnector from './EvmConnector'
-import './index.scss'
-import { useAccount, useDisconnect } from 'wagmi'
 import useReconnectEvm from '@/hooks/useReconnectEvm'
+import EvmConnector from './EvmConnector'
 import WrongNetworkModal from '../WrongNetworkModal'
+import './index.scss'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -32,17 +31,27 @@ export const ConnectWallet: React.FC<{
   className?: string
   style?: CSSProperties
 }> = ({ className, style }) => {
+  const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
-  const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
-  const { disConnect: disconnectBtc } = useBtcConnectWallet()
   const { disconnect: disconnectEvm } = useDisconnect()
-  const { address: evmAddress, isConnected: isEvmConnected } = useAccount()
+  const {
+    address: evmAddress,
+    isConnected: isEvmConnected,
+    chain: evmChain
+  } = useAccount()
   const buttonRef = useRef<HTMLDivElement>(null)
   useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
 
   const { isError: isNetworkError, setIsError: setIsNetworkError } =
     useReconnectEvm()
+
+  useEffect(() => {
+    // WRONG NETWORK CHECKING
+    if (!evmChain && !!evmAddress) {
+      setIsNetworkError(true)
+    }
+  }, [evmAddress, evmChain, setIsNetworkError])
 
   return (
     <>
@@ -68,7 +77,6 @@ export const ConnectWallet: React.FC<{
         <div
           ref={buttonRef}
           onClick={() => {
-            disconnectBtc()
             disconnectEvm()
             setIsLogoutDropdownOpen(false)
           }}
@@ -97,15 +105,9 @@ const SelectWalletModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
-  const [isConfirmed, setIsConfirmed] = useState(false)
-  const { connectOkx, connectUnisat } = useBtcConnectWallet()
-
-  useEffect(() => {
-    const isConfirmedLocal = getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED)
-    if (isConfirmedLocal === 'true') {
-      setIsConfirmed(true)
-    }
-  }, [])
+  const [isConfirmed, setIsConfirmed] = useState(
+    getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED) === 'true'
+  )
 
   useEffect(() => {
     if (isConfirmed) {
@@ -128,7 +130,7 @@ const SelectWalletModal: React.FC<{
           </div>
           <div className="flex flex-col gap-y-6">
             <EvmConnector onClose={onClose} />
-            <WalletItem
+            {/* <WalletItem
               iconName="okx"
               name="OKX Wallet"
               connect={async () => {
@@ -143,7 +145,7 @@ const SelectWalletModal: React.FC<{
                 await connectUnisat()
                 onClose()
               }}
-            />
+            /> */}
           </div>
         </div>
       </>
