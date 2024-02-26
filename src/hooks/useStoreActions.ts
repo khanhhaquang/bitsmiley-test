@@ -32,12 +32,22 @@ export const useStoreActions = () => {
       dispatch(commonActions.SET_CURRENT_TYPEWRITTER_SEQ(payload)),
     [dispatch]
   )
+  const addTransaction = useCallback(
+    (payload: string) => dispatch(commonActions.ADD_TRANSACTION(payload)),
+    [dispatch]
+  )
+  const removeTransaction = useCallback(
+    (payload: string) => dispatch(commonActions.REMOVE_TRANSACTION(payload)),
+    [dispatch]
+  )
 
   return {
     setLoginType,
     resetStorage,
     setAccountInfo,
     setNetworkError,
-    setCurrentTypewritterSeq
+    setCurrentTypewritterSeq,
+    addTransaction,
+    removeTransaction
   }
 }

@@ -38,6 +38,9 @@ export default {
         popOut: {
           '0%': { scale: '30%' },
           '100%': { scale: '100%' }
+        },
+        slide: {
+          '0%': { transform: 'translateX(-100%)' }
         }
       }),
       animation: {

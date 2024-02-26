@@ -24,6 +24,7 @@ import BitGold from './bit-gold.svg'
 import BitJade from './bit-jade.svg'
 import BitJadeBlack from './bit-jade-black.svg'
 import MetamaskIcon from './metamask.svg'
+import SpinIcon from './spin.svg'
 
 export {
   DotIcon,
@@ -51,5 +52,6 @@ export {
   BitGold,
   BitJade,
   BitJadeBlack,
-  MetamaskIcon
+  MetamaskIcon,
+  SpinIcon
 }
