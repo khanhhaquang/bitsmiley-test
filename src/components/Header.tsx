@@ -6,7 +6,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
   const { width } = useWindowSize()
   return (
     <div
-      className="absolute left-0 top-[50px] z-50 flex w-screen origin-top items-start justify-between text-white"
+      className="absolute left-0 top-[50px] z-50 flex w-full origin-top items-start justify-between text-white"
       style={{
         padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
       }}>

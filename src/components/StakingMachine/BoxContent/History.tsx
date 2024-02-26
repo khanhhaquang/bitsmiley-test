@@ -30,10 +30,10 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
           <BitJade width={15} height={20} />x{total}
         </p>
       </div>
-      <div className="flex flex-col">
-        <table>
-          <thead>
-            <tr className="border-b border-dashed border-blue font-psm text-blue">
+      <div className="flex w-full flex-col">
+        <table className="w-full">
+          <thead className="table w-full table-fixed">
+            <tr className="table w-full table-fixed border-b border-dashed border-blue font-psm text-blue">
               <th align="left" className="pb-3">
                 Token ID
               </th>
@@ -45,9 +45,11 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="block h-[140px] w-full table-fixed overflow-y-auto">
             {stakes?.map((stake) => (
-              <tr className="font-psm" key={Number(stake.tokenId)}>
+              <tr
+                className="table w-full table-fixed font-psm"
+                key={Number(stake.tokenId)}>
                 <td className="pt-3">{Number(stake.tokenId)}</td>
                 <td className="pt-3">{Number(stake.stakedTime)}</td>
                 <td className="pt-3 text-cyan">{Number(stake.reward)}</td>

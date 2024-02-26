@@ -16,6 +16,7 @@ import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
 import { INft } from '@/services/user'
+import { useStoreActions } from '@/hooks/useStoreActions'
 
 type NftProps = {
   nft: INft
@@ -51,6 +52,7 @@ export const ChooseNftModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
+  const { addTransaction } = useStoreActions()
   const chainId = useChainId()
   const { address } = useUserInfo()
   const { nfts } = useUserNfts()
@@ -74,6 +76,7 @@ export const ChooseNftModal: React.FC<{
           functionName: 'safeTransferFrom',
           args: [address, stakingAddress, BigInt(selectedTokenId), '0x']
         })
+        addTransaction(txId)
         refetchUserStakes()
         onClose()
         console.log(txId)

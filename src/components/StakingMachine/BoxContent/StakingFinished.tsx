@@ -6,9 +6,11 @@ import { Button } from '@/components/Button'
 import stakingAbi from '@/abi/Staking.json'
 import { useChainId, useWriteContract } from 'wagmi'
 import { merlinAddresses } from '@/config/wagmi'
+import { useStoreActions } from '@/hooks/useStoreActions'
 
 export const StakingFinished: React.FC = () => {
   const chainId = useChainId()
+  const { addTransaction } = useStoreActions()
   const { writeContractAsync } = useWriteContract()
 
   const handleWithdraw = async () => {
@@ -18,6 +20,7 @@ export const StakingFinished: React.FC = () => {
         functionName: 'withdraw',
         address: merlinAddresses[chainId]
       })
+      addTransaction(txid)
       console.log(txid)
     } catch (error) {
       console.error(error)

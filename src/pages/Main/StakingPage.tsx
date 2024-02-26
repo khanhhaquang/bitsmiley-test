@@ -18,7 +18,7 @@ export const StakingPage: React.FC = () => {
   const { width } = useWindowSize()
   const isOnScreen = useOnScreen(whoIsBitSmileyRef)
   return (
-    <div className="max-h-screen w-screen">
+    <div className="relative overflow-x-hidden">
       <div
         className="relative flex origin-top flex-col items-center justify-center text-white"
         style={{
