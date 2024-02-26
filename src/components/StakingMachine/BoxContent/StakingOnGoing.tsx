@@ -4,9 +4,9 @@ import { Image } from '@/components/Image'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { BitJade, RightAngle } from '@/assets/icons'
 import { useReadStakingContractGetStakeRewards } from '@/contracts/Staking'
-import { Button } from '@/components/Button'
 import { ChooseNftModal } from './ChooseNftModal'
 import { useState } from 'react'
+import { StakeButton } from './StakeButton'
 
 export const StakingOnGoing: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
@@ -51,12 +51,9 @@ export const StakingOnGoing: React.FC = () => {
               <BitJade />
               <span>X{total || '???'}</span>
             </div>
-            <Button
-              size="xs"
-              onClick={() => setIsChooseModalOpen(true)}
-              className="w-[120px] bg-green2 shadow-stake-now-button">
-              Stake now
-            </Button>
+            <StakeButton onClick={() => setIsChooseModalOpen(true)}>
+              Stake more
+            </StakeButton>
 
             <RightAngle className="absolute left-0 top-0 text-green2" />
             <RightAngle className="absolute right-0 top-0 rotate-90 text-green2" />
