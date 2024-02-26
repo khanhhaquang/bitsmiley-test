@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import isMobile from 'ismobilejs'
 import { MintPage } from './MintPage'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
 import { NetworkErrorPage } from '@/pages/Main/NetworkErrorPage'
@@ -11,7 +10,6 @@ import { useUserNfts } from '@/hooks/useUserNfts'
 // import { useAddressStatus } from '@/hooks/useAddressStatus'
 import { useSelector } from 'react-redux'
 import { getNetworkError } from '@/store/common/reducer'
-import { MobilePage } from './MobilePage'
 
 const Main: React.FC = () => {
   const isNetworkError = useSelector(getNetworkError)
@@ -32,8 +30,6 @@ const Main: React.FC = () => {
     // isLoadingAddressStatus ||
     // isLoadingProjectInfo) &&
     !isEntered
-
-  if (isMobile(window.navigator).any) return <MobilePage />
 
   if (isNetworkError) return <NetworkErrorPage />
 
