@@ -6,6 +6,7 @@ import store from '@/store/rootReducer'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ModalsContainer } from '@/components/Modal'
+import { ToastsContainer } from '@/components/Toast'
 import { config } from '@/config/wagmi'
 
 const queryClient = new QueryClient({
@@ -27,6 +28,7 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
           <ReactQueryDevtools initialIsOpen={false} position="bottom" />
           <BrowserRouter>
             <ModalsContainer />
+            <ToastsContainer />
             {children}
           </BrowserRouter>
         </QueryClientProvider>
