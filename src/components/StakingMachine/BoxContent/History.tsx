@@ -1,5 +1,6 @@
 import { ArrowLeftIcon, BitJade } from '@/assets/icons'
 import { useReadStakingContractGetStakeRewards } from '@/contracts/Staking'
+import useContractAddresses from '@/hooks/useNetworkAddresses'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 type HistoryProps = {
@@ -7,7 +8,9 @@ type HistoryProps = {
 }
 export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
   const { address } = useUserInfo()
+  const contractAddresses = useContractAddresses()
   const { data: stakes } = useReadStakingContractGetStakeRewards({
+    address: contractAddresses?.staking,
     args: [address]
   })
 

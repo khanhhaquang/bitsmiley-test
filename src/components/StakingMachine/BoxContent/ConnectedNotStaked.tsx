@@ -1,26 +1,12 @@
 import { BitJade, RightAngle } from '@/assets/icons'
-
-import { useMemo, useState } from 'react'
-import {
-  useReadStakingContractMaxParticipants,
-  useReadStakingContractTotalParticipants
-} from '@/contracts/Staking'
+import { useState } from 'react'
 import { ChooseNftModal } from './ChooseNftModal'
 import { StakeButton } from './StakeButton'
+import { Image } from '@/components/Image'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 export const ConnectedNotStaked: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
-  const maxParticipants = useReadStakingContractMaxParticipants()
-  const totalParticipants = useReadStakingContractTotalParticipants()
-
-  const remainSlot = useMemo(() => {
-    const max = maxParticipants.data || 0
-    const current = totalParticipants.data || 0
-
-    if (!max) return '-'
-
-    return max - current
-  }, [maxParticipants, totalParticipants])
 
   return (
     <>
@@ -30,18 +16,16 @@ export const ConnectedNotStaked: React.FC = () => {
       />
       <div className="flex items-center justify-center gap-x-[83px] pt-16">
         <div className="flex h-full w-[288px] flex-col items-center gap-y-4 text-sm">
-          <div className="text-nowrap font-smb text-cyan">
-            Limited edition staking
-          </div>
-          <div>
+          <p className="text-nowrap font-smb text-cyan">bitjade staking</p>
+          <p>
             Stake until TGE, receive special rewards (limited seats available)
-          </div>
-          <div className="mt-3 flex items-center justify-center gap-x-2">
-            <span className="text-[28px] font-semibold text-warning">
-              {remainSlot}/{maxParticipants.data || '-'}
-            </span>
-            <span className="text-[15px]">left</span>
-          </div>
+          </p>
+          <Image
+            src={getIllustrationUrl('discjadecoins')}
+            alt="Disc jade"
+            width={117}
+            height={110}
+          />
         </div>
 
         <div className="relative flex h-[177px] w-[265px] flex-col items-center justify-between border-[3px] border-cyan bg-cyan/20 py-[25px] text-sm">

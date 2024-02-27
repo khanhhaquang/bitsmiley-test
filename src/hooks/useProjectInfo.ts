@@ -3,15 +3,16 @@ import { ProjectService } from '@/services/project'
 import { useMemo } from 'react'
 
 export const useProjectInfo = () => {
-  const { data, isLoading } = useQuery({
+  const { data, ...rest } = useQuery({
     queryKey: [ProjectService.getProjectInfo.key],
-    queryFn: ProjectService.getProjectInfo.call
+    queryFn: ProjectService.getProjectInfo.call,
+    select: (rest) => rest.data
   })
 
-  const projectInfo = useMemo(() => data?.data?.data, [data])
+  const projectInfo = useMemo(() => data, [data])
 
   return {
     projectInfo,
-    isLoading
+    ...rest
   }
 }

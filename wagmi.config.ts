@@ -1,7 +1,6 @@
 import { defineConfig } from '@wagmi/cli'
 import { react } from '@wagmi/cli/plugins'
 import erc721StakingAbi from './src/abi/Staking.json'
-import { merlinAddresses } from './src/config/wagmi'
 import { Abi, erc721Abi } from 'viem'
 
 export default defineConfig([
@@ -10,8 +9,7 @@ export default defineConfig([
     contracts: [
       {
         name: 'StakingContract',
-        abi: erc721StakingAbi as Abi,
-        address: merlinAddresses
+        abi: erc721StakingAbi as Abi
       }
     ],
     plugins: [react()]

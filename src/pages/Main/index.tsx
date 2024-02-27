@@ -8,15 +8,18 @@ import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useSelector } from 'react-redux'
 import { getNetworkError } from '@/store/common/reducer'
 import { MobilePage } from './MobilePage'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const Main: React.FC = () => {
   const isNetworkError = useSelector(getNetworkError)
   const [isEntered, setIsEntered] = useState(false)
-
+  const { isLoading: isLoadingProjectInfo } = useProjectInfo()
   const { isLoading: isLoadingResources } = usePreloadResources()
   const { isLoading: isCheckingWallet } = useCheckWalletConnection()
 
-  const isLoading = (isCheckingWallet || isLoadingResources) && !isEntered
+  const isLoading =
+    (isCheckingWallet || isLoadingResources || isLoadingProjectInfo) &&
+    !isEntered
 
   if (isMobile(window.navigator).any) return <MobilePage />
 
