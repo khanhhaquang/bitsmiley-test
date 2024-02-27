@@ -35,6 +35,10 @@ export const ConnectWallet: React.FC<{
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
   const { disconnect: disconnectEvm } = useDisconnect()
+
+  const { isError: isNetworkError, setIsError: setIsNetworkError } =
+    useReconnectEvm()
+
   const {
     address: evmAddress,
     isConnected: isEvmConnected,
@@ -42,9 +46,6 @@ export const ConnectWallet: React.FC<{
   } = useAccount()
   const buttonRef = useRef<HTMLDivElement>(null)
   useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
-
-  const { isError: isNetworkError, setIsError: setIsNetworkError } =
-    useReconnectEvm()
 
   useEffect(() => {
     // WRONG NETWORK CHECKING

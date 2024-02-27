@@ -6,7 +6,7 @@ import { getProjectInfo } from '@/store/common/reducer'
 
 export const useProjectInfo = () => {
   const { setProjectInfo } = useStoreActions()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
 
   const projectInfo = useSelector(getProjectInfo)

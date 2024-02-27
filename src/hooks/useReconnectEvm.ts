@@ -10,13 +10,14 @@ const useReconnectEvm = () => {
   useEffect(() => {
     reconnect(config, { connectors: [injected()] })
       .then((result) => {
-        console.log(result)
+        console.log('reconnect: ', result)
       })
       .catch((e) => {
         console.log(e)
         setIsError(true)
       })
-  }, [config])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return { isError, setIsError }
 }

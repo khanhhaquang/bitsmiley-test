@@ -14,7 +14,7 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
       iconName="metamask"
       name="Metamask wallet"
       connect={() => {
-        connect({ connector: injected() })
+        connect({ connector: injected() }, { onError: (v) => console.log(v) })
         onClose()
       }}
     />
