@@ -12,13 +12,14 @@ export const useProjectInfo = () => {
   const projectInfo = useSelector(getProjectInfo)
 
   useEffect(() => {
+    if (projectInfo) return
     setIsLoading(true)
     ProjectService.getProjectInfo
       .call()
       .then((v) => setProjectInfo(v.data))
       .catch(() => setIsError(true))
       .finally(() => setIsLoading(false))
-  }, [setProjectInfo])
+  }, [projectInfo, setProjectInfo])
 
   return {
     projectInfo,

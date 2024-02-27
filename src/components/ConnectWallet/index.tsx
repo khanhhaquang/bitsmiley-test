@@ -31,21 +31,20 @@ export const ConnectWallet: React.FC<{
   className?: string
   style?: CSSProperties
 }> = ({ className, style }) => {
+  const buttonRef = useRef<HTMLDivElement>(null)
+  useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
   const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
-  const { disconnect: disconnectEvm } = useDisconnect()
 
+  const { disconnect: disconnectEvm } = useDisconnect()
   const { isError: isNetworkError, setIsError: setIsNetworkError } =
     useReconnectEvm()
-
   const {
     address: evmAddress,
     isConnected: isEvmConnected,
     chain: evmChain
   } = useAccount()
-  const buttonRef = useRef<HTMLDivElement>(null)
-  useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
 
   useEffect(() => {
     // WRONG NETWORK CHECKING

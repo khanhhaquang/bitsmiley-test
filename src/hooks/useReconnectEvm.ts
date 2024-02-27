@@ -12,8 +12,8 @@ const useReconnectEvm = () => {
       .then((result) => {
         console.log('reconnect: ', result)
       })
-      .catch((e) => {
-        console.log(e)
+      .catch((e: unknown) => {
+        console.log('reconnect error: ', e)
         setIsError(true)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps

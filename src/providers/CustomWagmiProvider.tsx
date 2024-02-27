@@ -1,5 +1,5 @@
 import { customChains, merlinMainnet, merlinTestnet } from '@/config/wagmi'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
@@ -20,19 +20,31 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
     [supportedChainIds]
   )
 
+  const config = useMemo(() => {
+    if (supportedChains.length === 0) return undefined
+
+    const [initialChains, ...restChains] = supportedChains
+
+    return createConfig({
+      chains: [initialChains, ...restChains],
+      transports: {
+        [merlinTestnet.id]: http(),
+        [merlinMainnet.id]: http()
+      }
+    })
+  }, [supportedChains])
+
+  useEffect(() => {
+    console.log('config', config)
+  }, [config])
+
+  useEffect(() => {
+    console.log('config', config)
+  }, [config])
+
   if (isLoadingProject || isLoadingResources) return <LoadingPage isLoading />
 
-  if (isError || supportedChains.length === 0) return <NetworkErrorPage />
-
-  const [initialChains, ...restChains] = supportedChains
-
-  const config = createConfig({
-    chains: [initialChains, ...restChains],
-    transports: {
-      [merlinTestnet.id]: http(),
-      [merlinMainnet.id]: http()
-    }
-  })
+  if (isError || !config) return <NetworkErrorPage />
 
   return <WagmiProvider config={config}>{children}</WagmiProvider>
 }
