@@ -5,6 +5,7 @@ import accountActions from '@/store/account/actions'
 import commonActions from '@/store/common/actions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 import { IProject } from '@/services/project'
+import { Hash } from 'viem'
 
 export const useStoreActions = () => {
   const dispatch = useDispatch()
@@ -34,7 +35,11 @@ export const useStoreActions = () => {
     [dispatch]
   )
   const addTransaction = useCallback(
-    (payload: string) => dispatch(commonActions.ADD_TRANSACTION(payload)),
+    (payload: Hash) => dispatch(commonActions.ADD_TRANSACTION(payload)),
+    [dispatch]
+  )
+  const addTransactions = useCallback(
+    (payload: Hash[]) => dispatch(commonActions.ADD_TRANSACTIONS(payload)),
     [dispatch]
   )
   const removeTransaction = useCallback(
@@ -54,6 +59,7 @@ export const useStoreActions = () => {
     setNetworkError,
     setCurrentTypewritterSeq,
     addTransaction,
+    addTransactions,
     removeTransaction,
     setProjectInfo
   }

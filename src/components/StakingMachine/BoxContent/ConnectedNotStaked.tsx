@@ -17,9 +17,7 @@ export const ConnectedNotStaked: React.FC = () => {
       <div className="flex items-center justify-center gap-x-[83px] pt-16">
         <div className="flex h-full w-[288px] flex-col items-center gap-y-4 text-sm">
           <p className="text-nowrap font-smb text-cyan">bitjade staking</p>
-          <p>
-            Stake until TGE, receive special rewards (limited seats available)
-          </p>
+          <p>Stake until TGE, receive special rewards</p>
           <Image
             src={getIllustrationUrl('discjadecoins')}
             alt="Disc jade"

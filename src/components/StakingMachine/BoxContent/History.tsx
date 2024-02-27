@@ -11,7 +11,7 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
   const contractAddresses = useContractAddresses()
   const { data: stakes } = useReadStakingContractGetStakeRewards({
     address: contractAddresses?.staking,
-    args: [address]
+    args: address && [address]
   })
 
   const total = stakes?.reduce(
@@ -41,7 +41,7 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
                 Token ID
               </th>
               <th align="left" className="pb-3">
-                Staked Since
+                Staked at Block
               </th>
               <th align="left" className="pb-3">
                 Rewards

@@ -23,7 +23,7 @@ export const rootReducer = (state: any, action: { type: string }) => {
   return allReducers(state, action)
 }
 
-export type RootState = ReturnType<typeof rootReducer>
+export type RootState = ReturnType<typeof allReducers>
 
 const rootStore = configureStore({
   reducer: rootReducer,

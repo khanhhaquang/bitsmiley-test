@@ -25,6 +25,8 @@ import BitJade from './bit-jade.svg'
 import BitJadeBlack from './bit-jade-black.svg'
 import MetamaskIcon from './metamask.svg'
 import SpinIcon from './spin.svg'
+import SuccessIcon from './success.svg'
+import FailIcon from './fail.svg'
 
 export {
   DotIcon,
@@ -53,5 +55,7 @@ export {
   BitJade,
   BitJadeBlack,
   MetamaskIcon,
-  SpinIcon
+  SpinIcon,
+  SuccessIcon,
+  FailIcon
 }

@@ -7,13 +7,15 @@ import { useReadStakingContractGetStakeRewards } from '@/contracts/Staking'
 import { ChooseNftModal } from './ChooseNftModal'
 import { useState } from 'react'
 import { StakeButton } from './StakeButton'
+import useContractAddresses from '@/hooks/useNetworkAddresses'
 
 export const StakingOnGoing: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
-
+  const contractAddresses = useContractAddresses()
   const { address } = useUserInfo()
   const { data: stakes } = useReadStakingContractGetStakeRewards({
-    args: [address]
+    address: contractAddresses?.staking,
+    args: address && [address]
   })
 
   const total = stakes?.reduce(

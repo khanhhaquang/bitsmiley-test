@@ -1,5 +1,5 @@
 import { customChains, merlinMainnet, merlinTestnet } from '@/config/wagmi'
-import { ReactNode, useEffect, useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
@@ -33,14 +33,6 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
       }
     })
   }, [supportedChains])
-
-  useEffect(() => {
-    console.log('config', config)
-  }, [config])
-
-  useEffect(() => {
-    console.log('config', config)
-  }, [config])
 
   if (isLoadingProject || isLoadingResources) return <LoadingPage isLoading />
 

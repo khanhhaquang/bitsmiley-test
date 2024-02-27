@@ -1,4 +1,3 @@
-import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
 export const useUserInfo = () => {
@@ -9,7 +8,7 @@ export const useUserInfo = () => {
   } = useAccount()
 
   return {
-    address: evmAddress || ('' as Address),
+    address: evmAddress,
     isConnected: isEvmConnected,
     isLoading: isConnecting
   }

@@ -3,11 +3,12 @@ import { createReducer } from '@reduxjs/toolkit'
 import actions from './actions'
 import { RootState } from '@/store/rootReducer'
 import { IProject } from '@/services/project'
+import { Hash } from 'viem'
 
 const initState: {
   networkError: boolean
   currentTypewritterSeq: number
-  transactions: string[]
+  transactions: Hash[]
   project: IProject | null
 } = {
   networkError: false,
@@ -25,10 +26,12 @@ export default createReducer(initState, (builder) => {
       state.networkError = action.payload
     })
     .addCase(actions.ADD_TRANSACTION, (state, action) => {
-      const txid = action.payload.toLowerCase()
-      if (!state.transactions.includes(txid)) {
-        state.transactions = state.transactions.concat(txid)
+      if (!state.transactions.includes(action.payload)) {
+        state.transactions = state.transactions.concat(action.payload)
       }
+    })
+    .addCase(actions.ADD_TRANSACTIONS, (state, action) => {
+      state.transactions = state.transactions.concat(action.payload)
     })
     .addCase(actions.REMOVE_TRANSACTION, (state, action) => {
       const txid = action.payload.toLowerCase()

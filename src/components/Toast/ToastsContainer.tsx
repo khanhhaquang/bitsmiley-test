@@ -7,7 +7,7 @@ export const ToastsContainer: React.FC = () => {
   if (!isConnected) return null
 
   return (
-    <div className="fixed bottom-[109px] left-[136px] z-[1000] flex flex-col items-end gap-y-2">
+    <div className="fixed bottom-[109px] left-[136px] z-[1000] flex flex-col items-start gap-y-2">
       <TransactionToasts />
     </div>
   )
