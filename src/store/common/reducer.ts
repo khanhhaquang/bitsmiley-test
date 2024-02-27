@@ -2,15 +2,18 @@ import { createReducer } from '@reduxjs/toolkit'
 
 import actions from './actions'
 import { RootState } from '@/store/rootReducer'
+import { IProject } from '@/services/project'
 
 const initState: {
   networkError: boolean
   currentTypewritterSeq: number
   transactions: string[]
+  project: IProject | null
 } = {
   networkError: false,
   currentTypewritterSeq: 0,
-  transactions: []
+  transactions: [],
+  project: null
 }
 
 export default createReducer(initState, (builder) => {
@@ -31,6 +34,9 @@ export default createReducer(initState, (builder) => {
       const txid = action.payload.toLowerCase()
       state.transactions = state.transactions.filter((v) => v !== txid)
     })
+    .addCase(actions.SET_PROJECT_INFO, (state, action) => {
+      state.project = action.payload
+    })
 })
 
 export const getCurrentTypeWritterSeq = (state: RootState) =>
@@ -39,3 +45,4 @@ export const getCurrentTypeWritterSeq = (state: RootState) =>
 export const getNetworkError = (state: RootState) => state.common.networkError
 
 export const getTransactions = (state: RootState) => state.common.transactions
+export const getProjectInfo = (state: RootState) => state.common.project

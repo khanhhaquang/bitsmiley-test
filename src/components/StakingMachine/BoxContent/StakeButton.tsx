@@ -19,7 +19,10 @@ const NoNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           <div className="mb-8 whitespace-nowrap">No NFT found</div>
           <p className="my-8 font-psm text-sm">
             You don’t have any recognized NFT in this wallet address. Wanna
-            purchase one? Check out the market. [here]
+            purchase one? Check out the market.{' '}
+            <a href="" className="text-green hover:underline" target="_blank">
+              [here]
+            </a>
           </p>
           <Button
             size="xs"

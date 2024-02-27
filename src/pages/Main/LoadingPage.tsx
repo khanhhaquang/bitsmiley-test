@@ -15,7 +15,7 @@ const hasVisited =
   getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) !== 'undefined'
 
 export const LoadingPage: React.FC<{
-  onEnter: () => void
+  onEnter?: () => void
   isLoading: boolean
 }> = ({ isLoading: isLoadingResources, onEnter }) => {
   const [isLoadingProgress, setIsLoadingProgress] = useState(!hasVisited)
@@ -59,7 +59,7 @@ export const LoadingPage: React.FC<{
             )}
           </>
         ) : (
-          <Button onClick={() => onEnter()}>Enter bitSmiley</Button>
+          <Button onClick={() => onEnter?.()}>Enter bitSmiley</Button>
         )}
       </div>
     </div>

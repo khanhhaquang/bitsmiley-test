@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { reconnect } from 'wagmi/actions'
 import { injected } from 'wagmi/connectors'
-import { config } from '@/config/wagmi'
+import { useConfig } from 'wagmi'
 
 const useReconnectEvm = () => {
+  const config = useConfig()
   const [isError, setIsError] = useState(false)
 
   useEffect(() => {
@@ -15,7 +16,7 @@ const useReconnectEvm = () => {
         console.log(e)
         setIsError(true)
       })
-  }, [])
+  }, [config])
 
   return { isError, setIsError }
 }
