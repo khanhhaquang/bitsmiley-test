@@ -1,22 +1,18 @@
-import {
-  useReadStakingContractGetUserStakes,
-  useReadStakingContractNftContractAddr
-} from '@/contracts/Staking'
+import { useReadStakingContractGetUserStakes } from '@/contracts/Staking'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useWriteContract } from 'wagmi'
 import { CloseIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { useState } from 'react'
-import { useChainId } from 'wagmi'
 import { erc721Abi } from 'viem'
-import { merlinAddresses } from '@/config/wagmi'
 import { useUserNfts } from '@/hooks/useUserNfts'
 import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
 import { INft } from '@/services/user'
 import { useStoreActions } from '@/hooks/useStoreActions'
+import useContractAddresses from '@/hooks/useNetworkAddresses'
 
 type NftProps = {
   nft: INft
@@ -53,21 +49,22 @@ export const ChooseNftModal: React.FC<{
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
   const { addTransaction } = useStoreActions()
-  const chainId = useChainId()
   const { address } = useUserInfo()
+  const contractAddresses = useContractAddresses()
   const { nfts } = useUserNfts()
   const [selectedTokenId, setSelectedTokenId] = useState<number | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const { writeContractAsync } = useWriteContract()
-  const { data: erc721Address } = useReadStakingContractNftContractAddr()
+
   const { refetch: refetchUserStakes } = useReadStakingContractGetUserStakes({
     args: [address]
   })
 
   const handleProceed = async () => {
-    const stakingAddress = merlinAddresses[chainId]
+    const stakingAddress = contractAddresses?.staking
+    const erc721Address = contractAddresses?.l2nft
 
-    if (erc721Address && selectedTokenId) {
+    if (erc721Address && selectedTokenId && stakingAddress) {
       try {
         setIsProcessing(true)
         const txId = await writeContractAsync({

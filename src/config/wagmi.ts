@@ -1,27 +1,29 @@
-import { http, createConfig } from 'wagmi'
-import { Address, type Chain } from 'viem'
+import { type Chain } from 'viem'
 
 export const merlinTestnet = {
   id: 686868,
-  name: 'Merlin testnet',
+  name: 'Merlin Testnet',
   nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://testnet-rpc.merlinchain.io'] }
   },
   blockExplorers: {
-    default: { name: 'Etherscan', url: 'https://testnet-scan.merlinchain.io' }
+    default: { name: 'Merlinscan', url: 'https://testnet-scan.merlinchain.io' }
   },
-  testnet: true,
-  contracts: {}
+  testnet: true
 } as const satisfies Chain
 
-export const merlinAddresses = {
-  [merlinTestnet.id]: '0xdD65F5D3a5AEE68769267a5663CCcD213b45ABaA'
-} as Record<number, Address>
+export const merlinMainnet = {
+  id: 4200,
+  name: 'Merlin Mainnet',
+  nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://rpc.merlinchain.io'] }
+  },
+  blockExplorers: {
+    default: { name: 'Merlinscan', url: 'https://scan.merlinchain.io' }
+  },
+  testnet: true
+} as const satisfies Chain
 
-export const config = createConfig({
-  chains: [merlinTestnet],
-  transports: {
-    [merlinTestnet.id]: http()
-  }
-})
+export const customChains = [merlinTestnet, merlinMainnet] as Chain[]

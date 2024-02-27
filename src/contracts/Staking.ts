@@ -9,9 +9,6 @@ import {
 // StakingContract
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- *
- */
 export const stakingContractAbi = [
   { type: 'error', inputs: [], name: 'AlreadyStaked' },
   { type: 'error', inputs: [], name: 'AlreadyWithdrawn' },
@@ -285,470 +282,337 @@ export const stakingContractAbi = [
   }
 ] as const
 
-/**
- *
- */
-export const stakingContractAddress = {
-  686868: '0xdD65F5D3a5AEE68769267a5663CCcD213b45ABaA'
-} as const
-
-/**
- *
- */
-export const stakingContractConfig = {
-  address: stakingContractAddress,
-  abi: stakingContractAbi
-} as const
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__
- *
- *
  */
 export const useReadStakingContract = /*#__PURE__*/ createUseReadContract({
-  abi: stakingContractAbi,
-  address: stakingContractAddress
+  abi: stakingContractAbi
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"getStakeRewards"`
- *
- *
  */
 export const useReadStakingContractGetStakeRewards =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'getStakeRewards'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"getUserStakes"`
- *
- *
  */
 export const useReadStakingContractGetUserStakes =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'getUserStakes'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"maxParticipants"`
- *
- *
  */
 export const useReadStakingContractMaxParticipants =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'maxParticipants'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"nftContractAddr"`
- *
- *
  */
 export const useReadStakingContractNftContractAddr =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'nftContractAddr'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"owner"`
- *
- *
  */
 export const useReadStakingContractOwner = /*#__PURE__*/ createUseReadContract({
   abi: stakingContractAbi,
-  address: stakingContractAddress,
   functionName: 'owner'
 })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"perAddressLimit"`
- *
- *
  */
 export const useReadStakingContractPerAddressLimit =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'perAddressLimit'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"proxiableUUID"`
- *
- *
  */
 export const useReadStakingContractProxiableUuid =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'proxiableUUID'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"stakingEnded"`
- *
- *
  */
 export const useReadStakingContractStakingEnded =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'stakingEnded'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"tokenStake"`
- *
- *
  */
 export const useReadStakingContractTokenStake =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'tokenStake'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"totalParticipants"`
- *
- *
  */
 export const useReadStakingContractTotalParticipants =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'totalParticipants'
   })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"withdrawn"`
- *
- *
  */
 export const useReadStakingContractWithdrawn =
   /*#__PURE__*/ createUseReadContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'withdrawn'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__
- *
- *
  */
 export const useWriteStakingContract = /*#__PURE__*/ createUseWriteContract({
-  abi: stakingContractAbi,
-  address: stakingContractAddress
+  abi: stakingContractAbi
 })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"endStaking"`
- *
- *
  */
 export const useWriteStakingContractEndStaking =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'endStaking'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"initialize"`
- *
- *
  */
 export const useWriteStakingContractInitialize =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'initialize'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"onERC721Received"`
- *
- *
  */
 export const useWriteStakingContractOnErc721Received =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'onERC721Received'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"renounceOwnership"`
- *
- *
  */
 export const useWriteStakingContractRenounceOwnership =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'renounceOwnership'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"transferOwnership"`
- *
- *
  */
 export const useWriteStakingContractTransferOwnership =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'transferOwnership'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"upgradeTo"`
- *
- *
  */
 export const useWriteStakingContractUpgradeTo =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'upgradeTo'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"upgradeToAndCall"`
- *
- *
  */
 export const useWriteStakingContractUpgradeToAndCall =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'upgradeToAndCall'
   })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"withdraw"`
- *
- *
  */
 export const useWriteStakingContractWithdraw =
   /*#__PURE__*/ createUseWriteContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'withdraw'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__
- *
- *
  */
 export const useSimulateStakingContract =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: stakingContractAbi,
-    address: stakingContractAddress
-  })
+  /*#__PURE__*/ createUseSimulateContract({ abi: stakingContractAbi })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"endStaking"`
- *
- *
  */
 export const useSimulateStakingContractEndStaking =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'endStaking'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"initialize"`
- *
- *
  */
 export const useSimulateStakingContractInitialize =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'initialize'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"onERC721Received"`
- *
- *
  */
 export const useSimulateStakingContractOnErc721Received =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'onERC721Received'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"renounceOwnership"`
- *
- *
  */
 export const useSimulateStakingContractRenounceOwnership =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'renounceOwnership'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"transferOwnership"`
- *
- *
  */
 export const useSimulateStakingContractTransferOwnership =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'transferOwnership'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"upgradeTo"`
- *
- *
  */
 export const useSimulateStakingContractUpgradeTo =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'upgradeTo'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"upgradeToAndCall"`
- *
- *
  */
 export const useSimulateStakingContractUpgradeToAndCall =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'upgradeToAndCall'
   })
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link stakingContractAbi}__ and `functionName` set to `"withdraw"`
- *
- *
  */
 export const useSimulateStakingContractWithdraw =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     functionName: 'withdraw'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__
- *
- *
  */
 export const useWatchStakingContractEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    address: stakingContractAddress
-  })
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: stakingContractAbi })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"AdminChanged"`
- *
- *
  */
 export const useWatchStakingContractAdminChangedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     eventName: 'AdminChanged'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"BeaconUpgraded"`
- *
- *
  */
 export const useWatchStakingContractBeaconUpgradedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     eventName: 'BeaconUpgraded'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Initialized"`
- *
- *
  */
 export const useWatchStakingContractInitializedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     eventName: 'Initialized'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"OwnershipTransferred"`
- *
- *
  */
 export const useWatchStakingContractOwnershipTransferredEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     eventName: 'OwnershipTransferred'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Staked"`
- *
- *
  */
 export const useWatchStakingContractStakedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     eventName: 'Staked'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Upgraded"`
- *
- *
  */
 export const useWatchStakingContractUpgradedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     eventName: 'Upgraded'
   })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Withdrawn"`
- *
- *
  */
 export const useWatchStakingContractWithdrawnEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: stakingContractAbi,
-    address: stakingContractAddress,
     eventName: 'Withdrawn'
   })

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import accountActions from '@/store/account/actions'
 import commonActions from '@/store/common/actions'
 import { IAccountInfo, LoginTypeEnum } from '@/types/common'
+import { IProject } from '@/services/project'
 
 export const useStoreActions = () => {
   const dispatch = useDispatch()
@@ -41,6 +42,11 @@ export const useStoreActions = () => {
     [dispatch]
   )
 
+  const setProjectInfo = useCallback(
+    (payload: IProject) => dispatch(commonActions.SET_PROJECT_INFO(payload)),
+    [dispatch]
+  )
+
   return {
     setLoginType,
     resetStorage,
@@ -48,6 +54,7 @@ export const useStoreActions = () => {
     setNetworkError,
     setCurrentTypewritterSeq,
     addTransaction,
-    removeTransaction
+    removeTransaction,
+    setProjectInfo
   }
 }

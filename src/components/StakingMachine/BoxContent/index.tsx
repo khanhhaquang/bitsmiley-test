@@ -10,6 +10,7 @@ import {
   useReadStakingContractStakingEnded
 } from '@/contracts/Staking'
 import { OnChainLoading } from './OnchainLoading'
+import useContractAddresses from '@/hooks/useNetworkAddresses'
 
 type BoxContentProps = {
   isHistoryPage: boolean
@@ -20,11 +21,13 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   onBackClick,
   isHistoryPage
 }) => {
+  const contractAddresses = useContractAddresses()
   const { address } = useUserInfo()
   const { data: isStakingEnded, isLoading: isFetchingIsStakingEnded } =
     useReadStakingContractStakingEnded()
   const { data: userStakes, isLoading: isFetchingUserStakes } =
     useReadStakingContractGetUserStakes({
+      address: contractAddresses?.staking,
       args: [address]
     })
 
