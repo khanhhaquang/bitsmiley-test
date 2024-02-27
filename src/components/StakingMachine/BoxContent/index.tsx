@@ -28,7 +28,7 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   const { data: userStakes, isLoading: isFetchingUserStakes } =
     useReadStakingContractGetUserStakes({
       address: contractAddresses?.staking,
-      args: [address]
+      args: address && [address]
     })
 
   const staked = useMemo(() => userStakes?.length, [userStakes])
