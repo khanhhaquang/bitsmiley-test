@@ -40,7 +40,7 @@ export const CopyRightAndLinks: React.FC<{
     <>
       <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
       <div
-        className="fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between px-[136px] text-white mix-blend-difference"
+        className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between px-[136px] text-white mix-blend-difference"
         style={{
           padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
         }}>
@@ -54,7 +54,7 @@ export const CopyRightAndLinks: React.FC<{
         </div>
 
         <div
-          className="flex origin-bottom-right flex-col items-end gap-y-1.5"
+          className="pointer-events-auto flex origin-bottom-right flex-col items-end gap-y-1.5"
           style={{
             scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
           }}>
