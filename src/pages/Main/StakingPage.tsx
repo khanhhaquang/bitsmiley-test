@@ -21,7 +21,7 @@ export const StakingPage: React.FC = () => {
   return (
     <div className="relative flex flex-col items-center overflow-x-hidden">
       <div
-        className="relative flex max-w-[1400px] origin-top flex-col items-center justify-center text-white"
+        className="relative flex origin-top flex-col items-center justify-center text-white"
         style={{
           padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
         }}>
@@ -228,14 +228,9 @@ const GlobalBg: React.FC<{
 }
 
 const SpaceBg: React.FC = () => {
-  const { width } = useWindowSize()
   return (
-    <Image
-      src={getIllustrationUrl('bit-space')}
-      style={{
-        scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
-      }}
-      className="absolute inset-x-0 top-0 z-[-1] w-screen origin-top"
-    />
+    <div className="absolute inset-x-0 top-0 z-[-1] aspect-[1976/1344] w-full">
+      <Image src={getIllustrationUrl('bit-space')} width="100%" height="100%" />
+    </div>
   )
 }
