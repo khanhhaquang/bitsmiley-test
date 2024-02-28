@@ -6,14 +6,27 @@ import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { HistoryButton } from './HistoryButton'
 import { BoxContent } from './BoxContent'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useWindowSize } from '@/hooks/useWindowSize'
 
 export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
   const [isHistoryPage, setIsHistoryPage] = useState(false)
+  const { width } = useWindowSize()
+
+  const responsiveScaling = useMemo(() => {
+    if (width <= 1200) return 0.7
+    if (width <= 1600) return 0.85
+    return 0.89
+  }, [width])
+
   return (
-    <div className="relative z-10 mt-20 flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
+    <div
+      className="relative z-10 flex h-[995px] w-[1423px] shrink-0 origin-center items-center justify-center"
+      style={{
+        transform: `scale(${responsiveScaling})`
+      }}>
       <BoxContent
         isHistoryPage={isHistoryPage}
         onBackClick={() => setIsHistoryPage(false)}

@@ -19,11 +19,11 @@ export const StakingPage: React.FC = () => {
   const { width } = useWindowSize()
 
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative flex flex-col items-center overflow-x-hidden">
       <div
         className="relative flex origin-top flex-col items-center justify-center text-white"
         style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+          padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
         }}>
         <SpaceBg />
         <StakingMachine hideScrollDown={isOnScreen} />
@@ -150,18 +150,14 @@ const Divider: React.FC<{
   const { width } = useWindowSize()
   return (
     <div
-      style={{
-        scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`,
-        padding: `0 ${width / 8}px`
-      }}
       className={cn('my-[200px] flex items-center justify-center', className)}>
-      <div
+      <span
         className="text-4xl font-bold"
         style={{
           fontSize: `${(width / 1920) * 36}px`
         }}>
         +
-      </div>
+      </span>
       <div
         className="flex flex-1 items-center overflow-hidden text-4xl"
         style={{
@@ -170,19 +166,19 @@ const Divider: React.FC<{
         {Array(30)
           .fill(1)
           .map((_, idx) => (
-            <div className="font-bold" key={idx}>
+            <span className="font-bold" key={idx}>
               -
-            </div>
+            </span>
           ))}
       </div>
-      <div
+      <h2
         ref={titleRef}
         className="px-6 py-2.5 text-4xl"
         style={{
           fontSize: `${(width / 1920) * 36}px`
         }}>
         {title}
-      </div>
+      </h2>
       <div
         className="flex flex-1 items-center overflow-hidden text-4xl"
         style={{
@@ -191,18 +187,18 @@ const Divider: React.FC<{
         {Array(30)
           .fill(1)
           .map((_, idx) => (
-            <div className="font-bold" key={idx}>
+            <span className="font-bold" key={idx}>
               -
-            </div>
+            </span>
           ))}
       </div>
-      <div
+      <span
         className="text-4xl font-bold"
         style={{
           fontSize: `${(width / 1920) * 36}px`
         }}>
         +
-      </div>
+      </span>
     </div>
   )
 }
@@ -232,14 +228,9 @@ const GlobalBg: React.FC<{
 }
 
 const SpaceBg: React.FC = () => {
-  const { width } = useWindowSize()
   return (
-    <Image
-      src={getIllustrationUrl('bit-space')}
-      style={{
-        scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
-      }}
-      className="absolute inset-x-0 top-0 z-[-1] w-screen origin-top"
-    />
+    <div className="absolute inset-x-0 top-0 z-[-1] aspect-[1976/1344] w-full">
+      <Image src={getIllustrationUrl('bit-space')} width="100%" height="100%" />
+    </div>
   )
 }
