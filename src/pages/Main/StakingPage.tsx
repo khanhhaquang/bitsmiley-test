@@ -151,13 +151,13 @@ const Divider: React.FC<{
   return (
     <div
       className={cn('my-[200px] flex items-center justify-center', className)}>
-      <div
+      <span
         className="text-4xl font-bold"
         style={{
           fontSize: `${(width / 1920) * 36}px`
         }}>
         +
-      </div>
+      </span>
       <div
         className="flex flex-1 items-center overflow-hidden text-4xl"
         style={{
@@ -166,19 +166,19 @@ const Divider: React.FC<{
         {Array(30)
           .fill(1)
           .map((_, idx) => (
-            <div className="font-bold" key={idx}>
+            <span className="font-bold" key={idx}>
               -
-            </div>
+            </span>
           ))}
       </div>
-      <div
+      <h2
         ref={titleRef}
         className="px-6 py-2.5 text-4xl"
         style={{
           fontSize: `${(width / 1920) * 36}px`
         }}>
         {title}
-      </div>
+      </h2>
       <div
         className="flex flex-1 items-center overflow-hidden text-4xl"
         style={{
@@ -187,18 +187,18 @@ const Divider: React.FC<{
         {Array(30)
           .fill(1)
           .map((_, idx) => (
-            <div className="font-bold" key={idx}>
+            <span className="font-bold" key={idx}>
               -
-            </div>
+            </span>
           ))}
       </div>
-      <div
+      <span
         className="text-4xl font-bold"
         style={{
           fontSize: `${(width / 1920) * 36}px`
         }}>
         +
-      </div>
+      </span>
     </div>
   )
 }
