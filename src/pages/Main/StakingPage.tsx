@@ -21,7 +21,7 @@ export const StakingPage: React.FC = () => {
   return (
     <div className="relative flex flex-col items-center overflow-x-hidden">
       <div
-        className="relative flex origin-top flex-col items-center justify-center text-white"
+        className="relative flex w-full origin-top flex-col items-center justify-center text-white"
         style={{
           padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
         }}>
@@ -54,8 +54,8 @@ export const StakingPage: React.FC = () => {
 
 const Inventor: React.FC = () => {
   return (
-    <div className="flex cursor-default items-center justify-center gap-x-28">
-      <div className="h-[230px] w-[215px] shrink-0">
+    <div className="flex cursor-default flex-wrap items-center justify-center gap-x-28 gap-y-10">
+      <div className="shrink-0">
         <CanvasFrames
           fps={8}
           width={215}
@@ -97,9 +97,9 @@ const Inventor: React.FC = () => {
 }
 const BackedBy: React.FC = () => {
   return (
-    <div>
-      <div className="mb-12 flex items-center justify-center gap-x-40">
-        <div className="h-[153px] w-[288px] shrink-0 mix-blend-lighten">
+    <div className="flex flex-col flex-wrap items-center gap-5">
+      <div className="mb-12 flex flex-wrap items-center justify-center gap-x-40 gap-y-10">
+        <div className="h-[153px] shrink-0 mix-blend-lighten">
           <Image src={getIllustrationUrl('okx-logo')} />
         </div>
         <div className="h-[153px] w-[445px] shrink-0">
@@ -107,13 +107,13 @@ const BackedBy: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex w-[1067px] items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-6">
         <Image src={getIllustrationUrl('cms-logo')} />
         <Image src={getIllustrationUrl('arkstream-logo')} />
         <Image src={getIllustrationUrl('7updao-logo')} />
       </div>
 
-      <div className="flex w-[1067px] items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-6">
         <Image src={getIllustrationUrl('mtcapital-logo')} />
         <Image src={getIllustrationUrl('candaq-logo')} />
         <Image src={getIllustrationUrl('foresight-logo')} />
@@ -124,7 +124,7 @@ const BackedBy: React.FC = () => {
 const Articles: React.FC = () => {
   const { items } = useFetchArticles()
   return (
-    <div className="flex items-center justify-center gap-x-10">
+    <div className="flex flex-wrap items-center justify-center gap-10">
       {items?.slice(0, 3).map((i, idx) => (
         <div
           key={idx}
