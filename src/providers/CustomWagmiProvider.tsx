@@ -1,5 +1,5 @@
 import { customChains, merlinMainnet, merlinTestnet } from '@/config/wagmi'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { LoadingPage } from '@/pages/Main/LoadingPage'
@@ -7,6 +7,7 @@ import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { NetworkErrorPage } from '@/pages/Main/NetworkErrorPage'
 
 const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
+  const [isEntered, setIsEntered] = useState(false)
   const { projectInfo, isLoading: isLoadingProject, isError } = useProjectInfo()
   const { isLoading: isLoadingResources } = usePreloadResources()
 
@@ -34,7 +35,13 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
     })
   }, [supportedChains])
 
-  if (isLoadingProject || isLoadingResources) return <LoadingPage isLoading />
+  if (isLoadingProject || isLoadingResources || !isEntered)
+    return (
+      <LoadingPage
+        onEnter={() => setIsEntered(true)}
+        isLoading={isLoadingProject || isLoadingResources}
+      />
+    )
 
   if (isError || !config) return <NetworkErrorPage />
 

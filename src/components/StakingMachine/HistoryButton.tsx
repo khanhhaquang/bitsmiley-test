@@ -28,7 +28,7 @@ export const HistoryButton: React.FC<HistoryButtonProps> = ({ onClick }) => {
       onMouseDown={() => setIsPressed(true)}
       onMouseLeave={() => setIsPressed(false)}
       className={cn(
-        'absolute left-[740px] top-[626px] z-50 h-[76px]',
+        'absolute left-[740px] top-[626px] z-50 h-[76px] cursor-pointer',
         'flex flex-col justify-end',
         isDisabled && 'cursor-not-allowed'
       )}>

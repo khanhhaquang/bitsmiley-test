@@ -211,11 +211,11 @@ export const WalletItem: React.FC<{
 }> = ({ connect, name, iconName }) => {
   return (
     <div
-      className="relative flex cursor-pointer items-center gap-x-3 border-y-2 border-white bg-black py-2.5 pl-5"
+      className="relative flex h-[58px] cursor-pointer items-center gap-x-3 border-y-2 border-white bg-black py-2.5 pl-5"
       onClick={connect}>
       <Image
         src={getIllustrationUrl(iconName)}
-        className="aspect-square h-[38px] w-[38px]"
+        className="aspect-square h-7 w-7"
       />
       <svg
         className="absolute -left-2"
@@ -233,7 +233,7 @@ export const WalletItem: React.FC<{
         fill="none">
         <path d="M10 53V5H5.00037V0H0V58H5.00037V53H10Z" fill="currentColor" />
       </svg>
-      <span className="font-psm">{name}</span>
+      <span className="font-psm text-2xl">{name}</span>
     </div>
   )
 }

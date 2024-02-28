@@ -1,4 +1,3 @@
-import { useReadStakingContractGetUserStakes } from '@/contracts/Staking'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useWriteContract } from 'wagmi'
 import { CloseIcon } from '@/assets/icons'
@@ -56,10 +55,6 @@ export const ChooseNftModal: React.FC<{
   const [isProcessing, setIsProcessing] = useState(false)
   const { writeContractAsync } = useWriteContract()
 
-  const { refetch: refetchUserStakes } = useReadStakingContractGetUserStakes({
-    args: address && [address]
-  })
-
   const handleProceed = async () => {
     const stakingAddress = contractAddresses?.staking
     const erc721Address = contractAddresses?.l2nft
@@ -77,7 +72,6 @@ export const ChooseNftModal: React.FC<{
         addTransaction(txId)
         removeLocalNft(selectedTokenId)
         onClose()
-        refetchUserStakes()
       } catch (e) {
         console.error(e)
       } finally {
@@ -95,7 +89,7 @@ export const ChooseNftModal: React.FC<{
         />
         <div className="flex flex-col items-center p-11">
           <div className="mb-8 whitespace-nowrap">Choose one NFT to stake</div>
-          <div className="grid max-h-[345px] max-w-[700px] grid-cols-3 gap-[19px] overflow-y-scroll border border-dashed border-white/50 p-6">
+          <div className="grid max-h-[345px] max-w-[700px] grid-cols-3 gap-[19px] overflow-y-scroll border border-dashed border-white/50 bg-black/75 p-6">
             {nfts?.map((nft) => (
               <Nft
                 key={nft.tokenID}
@@ -105,9 +99,9 @@ export const ChooseNftModal: React.FC<{
               />
             ))}
           </div>
-          <div className="my-8 font-psm text-sm">
+          <p className="mb-8 mt-4 w-full text-left font-psm text-sm">
             Each wallet can select one NFT to stake.
-          </div>
+          </p>
           <Button
             disabled={isProcessing || !selectedTokenId}
             size="xs"

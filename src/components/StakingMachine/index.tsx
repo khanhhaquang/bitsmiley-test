@@ -13,7 +13,7 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
 }) => {
   const [isHistoryPage, setIsHistoryPage] = useState(false)
   return (
-    <div className="relative z-10 mt-[19px] flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
+    <div className="relative z-10 mt-20 flex h-[995px] w-[1423px] shrink-0 items-center justify-center">
       <BoxContent
         isHistoryPage={isHistoryPage}
         onBackClick={() => setIsHistoryPage(false)}
@@ -32,7 +32,7 @@ const MarqueeText: React.FC = () => {
   const label = 'NFT STAKING IS HERE'
 
   return (
-    <div className="absolute bottom-[146px] left-[205px] h-[104px] w-[660px]">
+    <div className="absolute bottom-[146px] left-[205px] h-[104px] w-[660px] bg-black">
       <Marquee speed={75} className="font-sdm text-[80px] text-yellow2">
         <span className="mr-6">{label}</span>
       </Marquee>

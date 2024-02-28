@@ -15,8 +15,9 @@ import { Button } from '@/components/Button'
 
 export const StakingPage: React.FC = () => {
   const whoIsBitSmileyRef = useRef<HTMLDivElement>(null)
-  const { width } = useWindowSize()
   const isOnScreen = useOnScreen(whoIsBitSmileyRef)
+  const { width } = useWindowSize()
+
   return (
     <div className="relative overflow-x-hidden">
       <div

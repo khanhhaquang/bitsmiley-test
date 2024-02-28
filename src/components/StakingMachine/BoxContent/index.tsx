@@ -1,16 +1,12 @@
+import { useMemo } from 'react'
 import { NotConnected } from './NotConnected'
 import { StakingOnGoing } from './StakingOnGoing'
 import { StakingFinished } from './StakingFinished'
 import { ConnectedNotStaked } from './ConnectedNotStaked'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useMemo } from 'react'
 import { History } from './History'
-import {
-  useReadStakingContractGetUserStakes,
-  useReadStakingContractStakingEnded
-} from '@/contracts/Staking'
 import { OnChainLoading } from './OnchainLoading'
-import useContractAddresses from '@/hooks/useNetworkAddresses'
+import useUserStakes from '@/hooks/useUserStakes'
 
 type BoxContentProps = {
   isHistoryPage: boolean
@@ -21,19 +17,17 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   onBackClick,
   isHistoryPage
 }) => {
-  const contractAddresses = useContractAddresses()
-  const { address } = useUserInfo()
-  const { data: isStakingEnded, isLoading: isFetchingIsStakingEnded } =
-    useReadStakingContractStakingEnded()
-  const { data: userStakes, isLoading: isFetchingUserStakes } =
-    useReadStakingContractGetUserStakes({
-      address: contractAddresses?.staking,
-      args: address && [address]
-    })
-
-  const staked = useMemo(() => userStakes?.length, [userStakes])
+  const { address, isLoading: isConnecting } = useUserInfo()
+  const {
+    userStakes,
+    isFetchingIsStakingEnded,
+    isFetchingUserStakes,
+    isStakingEnded
+  } = useUserStakes()
 
   const renderContent = useMemo(() => {
+    if (isConnecting) return <OnChainLoading />
+
     if (address) {
       if (isFetchingUserStakes || isFetchingIsStakingEnded) {
         return <OnChainLoading />
@@ -44,19 +38,21 @@ export const BoxContent: React.FC<BoxContentProps> = ({
       if (isStakingEnded) {
         return <StakingFinished />
       }
-      if (staked) {
+      if (userStakes?.length) {
         return <StakingOnGoing />
       }
       return <ConnectedNotStaked />
     }
+
     return <NotConnected />
   }, [
     address,
-    isHistoryPage,
+    isConnecting,
     isFetchingUserStakes,
     isFetchingIsStakingEnded,
+    isHistoryPage,
     isStakingEnded,
-    staked,
+    userStakes?.length,
     onBackClick
   ])
 

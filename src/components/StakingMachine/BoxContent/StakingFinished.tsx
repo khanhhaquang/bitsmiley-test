@@ -1,17 +1,19 @@
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { PlayerInfo } from '../Common'
 import { Image } from '@/components/Image'
-import { BitGold, RightAngle } from '@/assets/icons'
+import { BitJade, RightAngle } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import stakingAbi from '@/abi/Staking.json'
 import { useWriteContract } from 'wagmi'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import useContractAddresses from '@/hooks/useNetworkAddresses'
+import useUserStakes from '@/hooks/useUserStakes'
 
 export const StakingFinished: React.FC = () => {
   const { addTransaction } = useStoreActions()
   const contractAddresses = useContractAddresses()
   const { writeContractAsync } = useWriteContract()
+  const { jadeBalance } = useUserStakes()
 
   const handleWithdraw = async () => {
     if (contractAddresses?.staking) {
@@ -52,14 +54,14 @@ export const StakingFinished: React.FC = () => {
           <div className="absolute left-0 top-0 h-full w-full bg-black/50"></div>
         </div>
 
-        <div className="relative flex h-[163px] w-[311px] flex-col items-center justify-between bg-yellow2 px-6 pb-6 pt-4 text-sm">
+        <div className="relative flex h-[163px] w-[311px] flex-col items-center justify-between bg-cyan px-6 pb-6 pt-4 text-sm">
           <div className="flex items-center gap-x-3 font-smb text-base text-black">
-            <BitGold />
-            bitgold X54
+            <BitJade />
+            bitjade X{jadeBalance}
           </div>
 
           <div className="text-center text-[15px] text-black">
-            All the bitGold is awarded to your record. Retrieve your NFT before
+            All the bitJade is awarded to your record. Retrieve your NFT before
             you can join future staking.
           </div>
 

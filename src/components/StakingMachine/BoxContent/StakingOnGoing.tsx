@@ -1,27 +1,16 @@
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { PlayerInfo } from '../Common'
 import { Image } from '@/components/Image'
-import { useUserInfo } from '@/hooks/useUserInfo'
 import { BitJade, RightAngle } from '@/assets/icons'
-import { useReadStakingContractGetStakeRewards } from '@/contracts/Staking'
 import { ChooseNftModal } from './ChooseNftModal'
 import { useState } from 'react'
 import { StakeButton } from './StakeButton'
-import useContractAddresses from '@/hooks/useNetworkAddresses'
+
+import useUserStakes from '@/hooks/useUserStakes'
 
 export const StakingOnGoing: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
-  const contractAddresses = useContractAddresses()
-  const { address } = useUserInfo()
-  const { data: stakes } = useReadStakingContractGetStakeRewards({
-    address: contractAddresses?.staking,
-    args: address && [address]
-  })
-
-  const total = stakes?.reduce(
-    (pre, cur) => (pre += Number(cur.reward || 0)),
-    0
-  )
+  const { userStakes, jadeBalance } = useUserStakes()
 
   return (
     <>
@@ -41,7 +30,7 @@ export const StakingOnGoing: React.FC = () => {
             <div className="relative h-[125px] w-[129px] border-[3px] border-cyan">
               <Image src={getIllustrationUrl('bit-mint', 'webp')} />
               <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-black/50 text-[32px] text-cyan">
-                x{stakes?.length || 0}
+                x{userStakes?.length || 0}
               </div>
             </div>
             <div className="text-base text-cyan">M-bitDisc-Black</div>
@@ -51,7 +40,7 @@ export const StakingOnGoing: React.FC = () => {
             <div className="flex items-center justify-center gap-x-2 font-smb text-xs text-cyan">
               <span>BITJADE</span>
               <BitJade />
-              <span>X{total || '???'}</span>
+              <span>X{jadeBalance || '???'}</span>
             </div>
             <StakeButton onClick={() => setIsChooseModalOpen(true)}>
               Stake more
