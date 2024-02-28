@@ -19,11 +19,11 @@ export const StakingPage: React.FC = () => {
   const { width } = useWindowSize()
 
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative flex flex-col items-center overflow-x-hidden">
       <div
-        className="relative flex origin-top flex-col items-center justify-center text-white"
+        className="relative flex max-w-[1400px] origin-top flex-col items-center justify-center text-white"
         style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
+          padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
         }}>
         <SpaceBg />
         <StakingMachine hideScrollDown={isOnScreen} />
@@ -150,10 +150,6 @@ const Divider: React.FC<{
   const { width } = useWindowSize()
   return (
     <div
-      style={{
-        scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`,
-        padding: `0 ${width / 8}px`
-      }}
       className={cn('my-[200px] flex items-center justify-center', className)}>
       <div
         className="text-4xl font-bold"

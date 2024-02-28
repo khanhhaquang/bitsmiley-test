@@ -40,7 +40,7 @@ export const CopyRightAndLinks: React.FC<{
     <>
       <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
       <div
-        className="fixed bottom-[50px] left-0 z-50 px-[136px] text-white mix-blend-difference"
+        className="fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between px-[136px] text-white mix-blend-difference"
         style={{
           padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
         }}>
@@ -52,13 +52,7 @@ export const CopyRightAndLinks: React.FC<{
           <CopyrightIcon />
           <span className="cursor-default">bitSmiley team 2024</span>
         </div>
-      </div>
 
-      <div
-        className="fixed bottom-[50px] right-0 z-50 origin-bottom px-[136px] text-white mix-blend-difference"
-        style={{
-          padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-        }}>
         <div
           className="flex origin-bottom-right flex-col items-end gap-y-1.5"
           style={{
