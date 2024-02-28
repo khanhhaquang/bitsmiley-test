@@ -7,7 +7,8 @@ export const MEDIA = {
 
 export const WALLETSITE = {
   okx: 'https://www.okx.com/help/use-the-okx-wallet-web-extension-to-easily-play-stader',
-  unisat: 'https://unisat.io/'
+  unisat: 'https://unisat.io/',
+  metamask: 'https://metamask.io/download/'
 }
 
 export const INSCRIPTION_CHECKER_LINK = {
