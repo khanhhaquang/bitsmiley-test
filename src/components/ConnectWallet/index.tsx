@@ -197,7 +197,7 @@ const SelectWalletModal: React.FC<{
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={!!isConfirmed}>
-      <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+      <div className="relative border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         {isConfirmed ? renderWallets() : renderDisclaimer()}
       </div>
     </Modal>
