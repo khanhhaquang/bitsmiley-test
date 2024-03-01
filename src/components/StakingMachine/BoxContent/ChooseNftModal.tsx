@@ -62,14 +62,14 @@ export const ChooseNftModal: React.FC<{
     if (erc721Address && selectedTokenId && stakingAddress && address) {
       try {
         setIsProcessing(true)
-        const txId = await writeContractAsync({
+        const txid = await writeContractAsync({
           abi: erc721Abi,
           address: erc721Address,
           functionName: 'safeTransferFrom',
           args: [address, stakingAddress, BigInt(selectedTokenId), '0x']
         })
         setSelectedTokenId(null)
-        addTransaction(txId)
+        addTransaction({ address, txid })
         removeLocalNft(selectedTokenId)
         onClose()
       } catch (e) {
