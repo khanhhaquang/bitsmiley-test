@@ -6,7 +6,7 @@ const MainNet = lazy(() => import('@/pages/MainNet'))
 const OpenVault = lazy(() => import('@/pages/OpenVault'))
 const MyVault = lazy(() => import('@/pages/MyVault'))
 
-const Routes = () => { 
+const Routes = () => {
   return useRoutes([
     {
       path: '/',
