@@ -3,14 +3,17 @@ import { PlayerInfo } from '../Common'
 import { Image } from '@/components/Image'
 import { BitJade, RightAngle } from '@/assets/icons'
 import { ChooseNftModal } from './ChooseNftModal'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { StakeButton } from './StakeButton'
 
 import useUserStakes from '@/hooks/useUserStakes'
+import { cn } from '@/utils/cn'
 
 export const StakingOnGoing: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
   const { userStakes, jadeBalance } = useUserStakes()
+
+  const userStakesNum = userStakes?.length || 0
 
   return (
     <>
@@ -27,11 +30,20 @@ export const StakingOnGoing: React.FC = () => {
 
         <div className="flex items-center justify-center gap-x-[68px]">
           <div className="flex flex-col items-center gap-y-2.5">
-            <div className="relative h-[125px] w-[129px] border-[3px] border-cyan">
-              <Image src={getIllustrationUrl('bit-mint', 'webp')} />
-              <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-black/50 text-[32px] text-cyan">
-                x{userStakes?.length || 0}
-              </div>
+            <div className="relative">
+              <MBitdiscBlack num={userStakesNum} />
+              {userStakesNum > 1 && (
+                <MBitdiscBlack
+                  num={userStakesNum}
+                  className="absolute bottom-[9px] left-[9px] z-0 opacity-50"
+                />
+              )}
+              {userStakesNum > 2 && (
+                <MBitdiscBlack
+                  num={userStakesNum}
+                  className="absolute bottom-[18px] left-[18px] z-0 opacity-20"
+                />
+              )}
             </div>
             <div className="text-base text-cyan">M-bitDisc-Black</div>
           </div>
@@ -54,5 +66,27 @@ export const StakingOnGoing: React.FC = () => {
         </div>
       </div>
     </>
+  )
+}
+
+const MBitdiscBlack: React.FC<{ num: number; className?: string }> = ({
+  num,
+  className
+}) => {
+  return (
+    <div
+      className={cn(
+        'relative h-[125px] w-[129px] border-[3px] border-cyan z-10',
+        className
+      )}>
+      <Image src={getIllustrationUrl('bit-mint', 'webp')} />
+      <div className="absolute left-[-3px] top-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
+      <div className="absolute right-[-3px] top-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
+      <div className="absolute bottom-[-3px] left-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
+      <div className="absolute bottom-[-3px] right-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
+      <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-grey3/80 text-[32px] text-cyan">
+        x{num}
+      </div>
+    </div>
   )
 }

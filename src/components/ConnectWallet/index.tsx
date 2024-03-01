@@ -7,7 +7,7 @@ import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useClickOutside } from '@/hooks/useClickOutside'
-import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import { clearStorage, getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { cn } from '@/utils/cn'
 import useReconnectEvm from '@/hooks/useReconnectEvm'
@@ -77,7 +77,7 @@ export const ConnectWallet: React.FC<{
         <div
           ref={buttonRef}
           onClick={() => {
-            disconnectEvm()
+            disconnectEvm({}, { onSuccess: clearStorage })
             setIsLogoutDropdownOpen(false)
           }}
           className={cn(
@@ -106,12 +106,12 @@ const SelectWalletModal: React.FC<{
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
   const [isConfirmed, setIsConfirmed] = useState(
-    getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED) === 'true'
+    getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
 
   useEffect(() => {
     if (isConfirmed) {
-      setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED, 'true')
+      setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER, 'true')
     }
   }, [isConfirmed])
 
@@ -130,22 +130,6 @@ const SelectWalletModal: React.FC<{
           </div>
           <div className="flex flex-col gap-y-6">
             <EvmConnector onClose={onClose} />
-            {/* <WalletItem
-              iconName="okx"
-              name="OKX Wallet"
-              connect={async () => {
-                await connectOkx()
-                onClose()
-              }}
-            />
-            <WalletItem
-              iconName="unisat"
-              name="Unisat Wallet"
-              connect={async () => {
-                await connectUnisat()
-                onClose()
-              }}
-            /> */}
           </div>
         </div>
       </>

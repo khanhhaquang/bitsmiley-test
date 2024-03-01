@@ -59,7 +59,7 @@ export const StakeButton: React.FC<StakeButtonProps> = ({
       <Button
         disabled={isFetchingNfts}
         size="xs"
-        className="w-[120px] bg-green2 shadow-stake-now-button hover:bg-green3 hover:shadow-stake-now-button active:bg-green4"
+        className="w-[120px] shadow-stake-now-button hover:bg-green3 hover:shadow-stake-now-button active:bg-green2"
         onClick={(e) => handleClick(e)}>
         {children || 'Stake now'}
       </Button>
