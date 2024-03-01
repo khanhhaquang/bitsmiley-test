@@ -31,6 +31,33 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'ppnb';
+  src: url('./assets/fonts/ppnb/PPNeueBit-Bold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ppnr';
+  src: url('./assets/fonts/ppnr/PPNeueBit-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ibmr';
+  src: url('./assets/fonts/ibmr/IBMPlexMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'ibmb';
+  src: url('./assets/fonts/ibmb/IBMPlexMono-Bold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 body {
   box-sizing: border-box;
   overflow: overlay;

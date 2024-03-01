@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ModalsContainer } from '@/components/Modal'
 import { ToastsContainer } from '@/components/Toast'
 import CustomWagmiProvider from '@/providers/CustomWagmiProvider'
+import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,17 +23,19 @@ const queryClient = new QueryClient({
 const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <ReduxProvider store={store}>
-      <CustomWagmiProvider>
-        <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false} position="bottom" />
-          <BrowserRouter>
-            <ModalsContainer />
-            <ToastsContainer />
-            {children}
-          </BrowserRouter>
-        </QueryClientProvider>
-      </CustomWagmiProvider>
+      <BrowserRouter>
+        <CustomWagmiProvider>
+          <QueryClientProvider client={queryClient}>
+            <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+              <ModalsContainer />
+              <ToastsContainer />
+              {children}
+              <CopyRightAndLinks/>
+          </QueryClientProvider>
+        </CustomWagmiProvider>
+      </BrowserRouter>
     </ReduxProvider>
+
   )
 }
 

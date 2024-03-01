@@ -1,0 +1,72 @@
+.table_title_color{
+  li{
+    color: rgba(255,255,255,.7);
+  }
+}
+// .table_border_bottom{
+//   border-top: 1px dashed rgba(255,255,255,.5);
+//   border-top-width: 2px;
+// }
+// .table_border_bottom+.table_border_bottom{
+//   border-bottom: 1px dashed rgba(255,255,255,.5);
+//   border-bottom-width: 2px;
+// }
+.line_bottom{
+  height: 1px;
+  background: url('../../assets/net/line.png') no-repeat center bottom/100%;
+}
+.grid_bg{
+  background: url('../../assets/net/grid_bg.png') no-repeat center 22px/100% 100%;
+}
+.grid_bg_blue{
+  background: url('../../assets/net/grid_bg_blue.png') no-repeat center 22px/100% 100%;
+
+}
+.union01{
+  background: url('../../assets/net/Union.png') no-repeat center top/100%;
+
+}
+.button_white{
+  background: url('../../assets/net/frame.png') no-repeat center top/100% 100%;
+}
+.input_style{
+  background: none;
+  color: #FFFFFF;
+}
+.input_style:focus-visible{
+  outline:0
+}
+.input_style[type=number]::-webkit-inner-spin-button,
+.input_style[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.input_style[type=number] {
+    -moz-appearance:textfield;
+}
+.button_bg{
+  width: 6px;
+  height: 77px;
+  background: url('../../assets/net/Frame01.png') no-repeat center center/100%;
+}
+.button_bg2{
+  width: 6px;
+  height: 77px;
+  background: url('../../assets/net/Frame02.png') no-repeat center center/100%;
+}
+.button_bg3{
+  width: 6px;
+  height: 77px;
+  background: url('../../assets/net/Frame03.png') no-repeat center center/100%;
+}
+.blendMode{
+  // width: 100%;
+  background: #4E4E4E;
+  mix-blend-mode: hard-light;
+}
+.blendMode_blue{
+  width: 100%;
+  height: 100%;
+  background: #001992;
+  mix-blend-mode: hard-light;
+}

@@ -52,7 +52,11 @@ export default {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
         pss: ['pss', ...defaultTheme.fontFamily.sans],
         smb: ['smb', ...defaultTheme.fontFamily.sans],
-        sdm: ['sdm', ...defaultTheme.fontFamily.sans]
+        sdm: ['sdm', ...defaultTheme.fontFamily.sans],
+        ppnb: ['ppnb', ...defaultTheme.fontFamily.sans],
+        ppnr: ['ppnr', ...defaultTheme.fontFamily.sans],
+        ibmr: ['ibmr', ...defaultTheme.fontFamily.sans],
+        ibmb: ['ibmb', ...defaultTheme.fontFamily.sans]
       },
       cursor: {
         default: 'url("/src/assets/icons/cursor-default.svg") 8 0, default',

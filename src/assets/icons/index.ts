@@ -19,6 +19,7 @@ import LineIcon from './line.svg'
 import BitDiscBlackIcon from './bitDiskBlack.svg'
 import HistoryIcon from './history.svg'
 import CloseSolidIcon from './close-solid.svg'
+import AkarIconslinkOutIcon from './akarIconslinkOut.svg'
 import RightAngle from './right-angle.svg'
 import BitGold from './bit-gold.svg'
 import BitJade from './bit-jade.svg'
@@ -50,6 +51,7 @@ export {
   BitDiscBlackIcon,
   HistoryIcon,
   CloseSolidIcon,
+  AkarIconslinkOutIcon,
   RightAngle,
   BitGold,
   BitJade,

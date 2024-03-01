@@ -24,7 +24,7 @@ export const LoadingPage: React.FC<{
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-black bg-loading bg-cover bg-center bg-no-repeat">
       <Header />
-      <CopyRightAndLinks musicControl={false} />
+      {/* <CopyRightAndLinks musicControl={false} /> */}
       <div className="flex flex-col items-center text-white">
         <div className="mb-12">
           <CanvasFrames

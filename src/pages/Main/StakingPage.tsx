@@ -47,7 +47,7 @@ export const StakingPage: React.FC = () => {
         </div>
       </div>
       <Header wallet />
-      <CopyRightAndLinks />
+      {/* <CopyRightAndLinks /> */}
     </div>
   )
 }
