@@ -1,27 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 interface LoadingAnimationProps {
-  text?: string;
+  text?: string
 }
 
-const LoadingAnimation: React.FC<LoadingAnimationProps> = ({ text = 'Processing' }) => {
-  const [loadingText, setLoadingText] = useState<string>(text);
+const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
+  text = 'Processing'
+}) => {
+  const [loadingText, setLoadingText] = useState<string>(text)
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setLoadingText((prevText) => (prevText === `${text}...` ? text : `${prevText}.`));
-    }, 500);
+      setLoadingText((prevText) =>
+        prevText === `${text}...` ? text : `${prevText}.`
+      )
+    }, 500)
 
     return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
+      clearInterval(intervalId)
+    }
+  }, [])
 
   return (
     <div className="loading-container">
       <span>{loadingText}</span>
     </div>
-  );
-};
+  )
+}
 
-export default LoadingAnimation;
+export default LoadingAnimation

@@ -1,149 +1,152 @@
-import { ethers } from 'ethers';
-import { ChainCfg } from './config/chain';
-let provider;
+import { ethers } from 'ethers'
+import { ChainCfg } from './config/chain'
+let provider
 let signer
-var ethereum;
+let ethereum
 ethereum = window.ethereum
 // import { useStoreActions } from '@/hooks/useStoreActions'
 // const { setAccountInfo, setLoginType, resetStorage } = useStoreActions()
 if (typeof ethereum !== 'undefined') {
-  provider = new ethers.providers.Web3Provider(ethereum);
+  provider = new ethers.providers.Web3Provider(ethereum)
   signer = provider.getSigner()
-  console.log(ethers,'------>',provider)
+  console.log(ethers, '------>', provider)
 
   ethereum.on('accountsChanged', (accounts) => {
-    console.log('accountsChanged-->',accounts)
+    console.log('accountsChanged-->', accounts)
     if (accounts.length > 0) {
-      const newAccount = accounts[0];
-      console.log('MetaMask Account Changed:', newAccount);
-      window.location.reload();
+      const newAccount = accounts[0]
+      console.log('MetaMask Account Changed:', newAccount)
+      window.location.reload()
     } else {
-      console.log('MetaMask Account Disconnected');
+      console.log('MetaMask Account Disconnected')
     }
-  });
+  })
   window.ethereum.on('networkChanged', (networkId) => {
-    console.log('MetaMask Network Changed:', networkId);
-    window.location.reload();
-  });
+    console.log('MetaMask Network Changed:', networkId)
+    window.location.reload()
+  })
   // const chainId = await ethereum.request({ method: 'eth_chainId' });
   // ethereum.on('chainChanged', handleChainChanged);
 
   // function handleChainChanged(chainId) {
   //   window.location.reload();
   // }
-
 } else {
-  console.error('window.ethereum undefind');
+  console.error('window.ethereum undefind')
 }
 export const getChainId = async () => {
-  const network = await provider.getNetwork();
-  console.log('Current MetaMask Network:', network.chainId);
-  return network;
+  const network = await provider.getNetwork()
+  console.log('Current MetaMask Network:', network.chainId)
+  return network
 }
 export const connectWallet = async () => {
   try {
-        if (window.ethereum) {
-          const accounts= await window.ethereum.request({ method: 'eth_requestAccounts' }).catch((err) => {
-            console.error(err);
-            if (err.code === 4001) {
-                console.log('Please connect to MetaMask.');
-            } else {
-                console.error(err);
-            }
-          });
-          console.log(accounts)
+    if (window.ethereum) {
+      const accounts = await window.ethereum
+        .request({ method: 'eth_requestAccounts' })
+        .catch((err) => {
+          console.error(err)
+          if (err.code === 4001) {
+            console.log('Please connect to MetaMask.')
+          } else {
+            console.error(err)
+          }
+        })
+      console.log(accounts)
 
-          const network = await provider.getNetwork();
-          console.log('Network ID:', network.chainId);
-          console.log('Network Name:', network.name);
-          const gasPrice = await provider.getGasPrice();
-          console.log('Current Gas Price:', gasPrice.toString());
-          return accounts;
-        } else {
-          console.error('Ethereum not found. Please install MetaMask or another Web3 wallet.');
-        }
+      const network = await provider.getNetwork()
+      console.log('Network ID:', network.chainId)
+      console.log('Network Name:', network.name)
+      const gasPrice = await provider.getGasPrice()
+      console.log('Current Gas Price:', gasPrice.toString())
+      return accounts
+    } else {
+      console.error(
+        'Ethereum not found. Please install MetaMask or another Web3 wallet.'
+      )
+    }
   } catch (error) {
-    console.error('Failed to connect wallet:', error);
+    console.error('Failed to connect wallet:', error)
   }
-};
+}
 
-export const getWalletAddress = async ()=> {
-  const accounts = await provider.listAccounts();
-  console.log('Current MetaMask Account:', accounts);
+export const getWalletAddress = async () => {
+  const accounts = await provider.listAccounts()
+  console.log('Current MetaMask Account:', accounts)
   if (accounts.length > 0) {
-    const currentAccount = accounts[0];
-    console.log('Current MetaMask Account:', currentAccount);
+    const currentAccount = accounts[0]
+    console.log('Current MetaMask Account:', currentAccount)
   } else {
-    console.log('No MetaMask Account Connected');
+    console.log('No MetaMask Account Connected')
   }
   return accounts
 }
 
 export const getBalance = async (address: string) => {
   try {
-    const balance = await provider.getBalance(address);
+    const balance = await provider.getBalance(address)
     return ethers.utils.formatEther(balance)
   } catch (error) {
-    console.error('Failed to get balance:', error);
+    console.error('Failed to get balance:', error)
   }
-};
-
-export const creatContract = async (address,abi) => {
-  const contract =await new ethers.Contract(address,abi,signer)
-  return contract;
 }
 
-export const utilsFormatEther = (balance: string)=>{
+export const creatContract = async (address, abi) => {
+  const contract = await new ethers.Contract(address, abi, signer)
+  return contract
+}
+
+export const utilsFormatEther = (balance: string) => {
   return ethers.utils.formatEther(balance)
 }
 
-export const utilsParseEther = (balance: string)=>{
+export const utilsParseEther = (balance: string) => {
   return ethers.utils.parseEther(balance)
 }
 
-export const getGasPrice = async()=>{
-  const gasPrice = await provider.getGasPrice();
-  console.log('Current Gas Price:', gasPrice.toString());
+export const getGasPrice = async () => {
+  const gasPrice = await provider.getGasPrice()
+  console.log('Current Gas Price:', gasPrice.toString())
   return gasPrice
 }
 
-const networkAdd = (addParams)=>{
- 
-  console.log("ethereum",ethereum)
-  
-  ethereum.request({
-    method: "wallet_addEthereumChain",
-    params: [addParams],
-  })
-  .then(() => {})
-  .catch((e) => {
-      console.log(e)
-  });
-}
+const networkAdd = (addParams) => {
+  console.log('ethereum', ethereum)
 
-export const networkChange = (chainId)=>{
-  console.log("networkChange=====ethereum",ethereum,chainId)
-  ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [ { chainId: chainId }],
+  ethereum
+    .request({
+      method: 'wallet_addEthereumChain',
+      params: [addParams]
     })
-    .then(() => {
-    })
+    .then(() => {})
     .catch((e) => {
-      const err = e;
-      console.log(err,err.code);
-      if(err.code === 4902){
-          try{
-              networkAdd(ChainCfg[chainId])
-          }catch (err){
-              console.log(`ERROR:${err.message}`)
-          } 
-      }
-    });
+      console.log(e)
+    })
 }
 
-export const utilsGetNetwork = async(chainId:number)=>{
-  const network = await ethers.utils.hexValue(chainId);
-  console.log('Network:', network);
-  return network;
+export const networkChange = (chainId) => {
+  console.log('networkChange=====ethereum', ethereum, chainId)
+  ethereum
+    .request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: chainId }]
+    })
+    .then(() => {})
+    .catch((e) => {
+      const err = e
+      console.log(err, err.code)
+      if (err.code === 4902) {
+        try {
+          networkAdd(ChainCfg[chainId])
+        } catch (err) {
+          console.log(`ERROR:${err.message}`)
+        }
+      }
+    })
+}
+
+export const utilsGetNetwork = async (chainId: number) => {
+  const network = await ethers.utils.hexValue(chainId)
+  console.log('Network:', network)
+  return network
 }
