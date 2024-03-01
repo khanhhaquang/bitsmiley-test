@@ -4,6 +4,8 @@ import actions from './actions'
 import { RootState } from '@/store/rootReducer'
 import { IProject } from '@/services/project'
 import { Hash } from 'viem'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 
 const initState: {
   networkError: boolean
@@ -13,7 +15,8 @@ const initState: {
 } = {
   networkError: false,
   currentTypewritterSeq: 0,
-  transactions: [],
+  transactions: (getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS)?.split(',') ||
+    []) as Hash[],
   project: null
 }
 
@@ -27,15 +30,24 @@ export default createReducer(initState, (builder) => {
     })
     .addCase(actions.ADD_TRANSACTION, (state, action) => {
       if (!state.transactions.includes(action.payload)) {
-        state.transactions = state.transactions.concat(action.payload)
+        const newTxns = state.transactions.concat(action.payload)
+        state.transactions = newTxns
+        setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
       }
     })
     .addCase(actions.ADD_TRANSACTIONS, (state, action) => {
-      state.transactions = state.transactions.concat(action.payload)
+      const filteredTxns = action.payload.filter(
+        (v) => !state.transactions.includes(v)
+      )
+      const newTxns = state.transactions.concat(filteredTxns)
+      state.transactions = newTxns
+      setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
     })
     .addCase(actions.REMOVE_TRANSACTION, (state, action) => {
       const txid = action.payload.toLowerCase()
-      state.transactions = state.transactions.filter((v) => v !== txid)
+      const newTxns = state.transactions.filter((v) => v !== txid)
+      state.transactions = newTxns
+      setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
     })
     .addCase(actions.SET_PROJECT_INFO, (state, action) => {
       state.project = action.payload
