@@ -8,24 +8,22 @@ import { useWriteContract } from 'wagmi'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import useContractAddresses from '@/hooks/useNetworkAddresses'
 import useUserStakes from '@/hooks/useUserStakes'
-import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const StakingFinished: React.FC = () => {
-  const { address } = useUserInfo()
   const { addTransaction } = useStoreActions()
   const contractAddresses = useContractAddresses()
   const { writeContractAsync } = useWriteContract()
   const { jadeBalance } = useUserStakes()
 
   const handleWithdraw = async () => {
-    if (contractAddresses?.staking && address) {
+    if (contractAddresses?.staking) {
       try {
         const txid = await writeContractAsync({
           abi: stakingAbi,
           functionName: 'withdraw',
           address: contractAddresses?.staking
         })
-        addTransaction({ address, txid })
+        addTransaction(txid)
         console.log(txid)
       } catch (error) {
         console.error(error)

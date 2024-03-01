@@ -10,12 +10,13 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 const initState: {
   networkError: boolean
   currentTypewritterSeq: number
-  transactions: { [key: string]: Hash[] }
+  transactions: Hash[]
   project: IProject | null
 } = {
   networkError: false,
   currentTypewritterSeq: 0,
-  transactions: JSON.parse(getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS) || ''),
+  transactions: (getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS)?.split(',') ||
+    []) as Hash[],
   project: null
 }
 
@@ -28,29 +29,25 @@ export default createReducer(initState, (builder) => {
       state.networkError = action.payload
     })
     .addCase(actions.ADD_TRANSACTION, (state, action) => {
-      const targetTxns = (state.transactions[action.payload.address] ||
-        []) as Hash[]
-      if (!targetTxns.includes(action.payload.txid)) {
-        state.transactions[action.payload.address] = targetTxns.concat(
-          action.payload.txid
-        )
-
-        setLocalStorage(
-          LOCAL_STORAGE_KEYS.TXIDS,
-          JSON.stringify(state.transactions)
-        )
+      if (!state.transactions.includes(action.payload)) {
+        const newTxns = state.transactions.concat(action.payload)
+        state.transactions = newTxns
+        setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
       }
     })
+    .addCase(actions.ADD_TRANSACTIONS, (state, action) => {
+      const filteredTxns = action.payload.filter(
+        (v) => !state.transactions.includes(v)
+      )
+      const newTxns = state.transactions.concat(filteredTxns)
+      state.transactions = newTxns
+      setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
+    })
     .addCase(actions.REMOVE_TRANSACTION, (state, action) => {
-      const targetTxns = state.transactions[action.payload.address] || []
-      const newTxns = targetTxns.filter((v) => v !== action.payload.txid)
-      if (newTxns.length) {
-        state.transactions[action.payload.address] = newTxns
-        setLocalStorage(
-          LOCAL_STORAGE_KEYS.TXIDS,
-          JSON.stringify(state.transactions)
-        )
-      }
+      const txid = action.payload.toLowerCase()
+      const newTxns = state.transactions.filter((v) => v !== txid)
+      state.transactions = newTxns
+      setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
     })
     .addCase(actions.SET_PROJECT_INFO, (state, action) => {
       state.project = action.payload

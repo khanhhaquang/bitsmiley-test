@@ -7,7 +7,6 @@ import { openUrl } from '@/utils/getAssetsUrl'
 import { Hash } from 'viem'
 import { CloseIcon, SuccessIcon } from '@/assets/icons'
 import { useWaitForTransactionReceipt } from 'wagmi'
-import { useUserInfo } from '@/hooks/useUserInfo'
 
 type TransactionToastProps = {
   txnId: Hash
@@ -17,23 +16,19 @@ const TransactionToast: React.FC<TransactionToastProps> = ({
   txnId,
   explorerUrl
 }) => {
-  const { address } = useUserInfo()
   const { removeTransaction } = useStoreActions()
   const { status } = useWaitForTransactionReceipt({ hash: txnId })
 
   useEffect(() => {
     let closeTimeout: NodeJS.Timeout
     if (status !== 'pending') {
-      closeTimeout = setTimeout(
-        () => address && removeTransaction({ address, txid: txnId }),
-        5000
-      )
+      closeTimeout = setTimeout(() => removeTransaction(txnId), 5000)
     }
 
     ;() => {
       clearTimeout(closeTimeout)
     }
-  }, [address, removeTransaction, status, txnId])
+  }, [removeTransaction, status, txnId])
 
   return (
     <div
@@ -60,29 +55,20 @@ const TransactionToast: React.FC<TransactionToastProps> = ({
       </span>
       <CloseIcon
         className="h-[14px] w-[14px] cursor-pointer"
-        onClick={() => {
-          if (address) {
-            removeTransaction({ address, txid: txnId })
-          }
-        }}
+        onClick={() => removeTransaction(txnId)}
       />
     </div>
   )
 }
 
 export const TransactionToasts: React.FC = () => {
-  const { address } = useUserInfo()
-  const addressTransactions = useSelector(getTransactions)
+  const transactions = useSelector(getTransactions)
   const chains = useChains()
   const chainId = useChainId()
   const chain = useMemo(
     () => chains.find((c) => c.id === chainId),
     [chainId, chains]
   )
-  const transactions = useMemo(() => {
-    if (!address) return []
-    return addressTransactions[address] || []
-  }, [address, addressTransactions])
 
   if (!chain?.blockExplorers?.default?.url) return null
 

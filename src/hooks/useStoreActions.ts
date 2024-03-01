@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 
 import commonActions from '@/store/common/actions'
 import { IProject } from '@/services/project'
-import { ITransactionInfo } from '@/types/common'
+import { Hash } from 'viem'
 
 export const useStoreActions = () => {
   const dispatch = useDispatch()
@@ -23,13 +23,15 @@ export const useStoreActions = () => {
     [dispatch]
   )
   const addTransaction = useCallback(
-    (payload: ITransactionInfo) =>
-      dispatch(commonActions.ADD_TRANSACTION(payload)),
+    (payload: Hash) => dispatch(commonActions.ADD_TRANSACTION(payload)),
+    [dispatch]
+  )
+  const addTransactions = useCallback(
+    (payload: Hash[]) => dispatch(commonActions.ADD_TRANSACTIONS(payload)),
     [dispatch]
   )
   const removeTransaction = useCallback(
-    (payload: ITransactionInfo) =>
-      dispatch(commonActions.REMOVE_TRANSACTION(payload)),
+    (payload: string) => dispatch(commonActions.REMOVE_TRANSACTION(payload)),
     [dispatch]
   )
 
@@ -43,6 +45,7 @@ export const useStoreActions = () => {
     setNetworkError,
     setCurrentTypewritterSeq,
     addTransaction,
+    addTransactions,
     removeTransaction,
     setProjectInfo
   }
