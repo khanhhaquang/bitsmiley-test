@@ -27,15 +27,14 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
         <CustomWagmiProvider>
           <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} position="bottom" />
-              <ModalsContainer />
-              <ToastsContainer />
-              {children}
-              <CopyRightAndLinks/>
+            <ModalsContainer />
+            <ToastsContainer />
+            {children}
+            <CopyRightAndLinks />
           </QueryClientProvider>
         </CustomWagmiProvider>
       </BrowserRouter>
     </ReduxProvider>
-
   )
 }
 

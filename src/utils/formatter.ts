@@ -12,60 +12,60 @@ export const displayAddress = (
   )
 }
 
-export const formatMoney=(num=0)=>{
+export const formatMoney = (num = 0) => {
   num = num.toString()
-  let index = num.indexOf('.')
-  var l = num.split(".")[0].split("").reverse();
-  var r='';
+  const index = num.indexOf('.')
+  const l = num.split('.')[0].split('').reverse()
+  let r = ''
   if (index !== -1) {
-      r = num.split(".")[1]
+    r = num.split('.')[1]
   }
-  var t = "";
-  var D = null;
-  for (var i = 0; i < l.length; i++) {
-      t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");
+  let t = ''
+  let D = null
+  for (let i = 0; i < l.length; i++) {
+    t += l[i] + ((i + 1) % 3 == 0 && i + 1 != l.length ? ',' : '')
   }
-  D = t.split("").reverse().join("")
-  if(index !== -1){
-      D = D + "." + r
+  D = t.split('').reverse().join('')
+  if (index !== -1) {
+    D = D + '.' + r
   }
-  return D;
+  return D
 }
 export const formatDecimal = (num, decimal = 2) => {
   num = num.toString()
-  let index = num.indexOf('.')
+  const index = num.indexOf('.')
   if (index !== -1) {
-      num = num.substring(0, decimal + index + 1)
+    num = num.substring(0, decimal + index + 1)
   } else {
-      num = num.substring(0)
+    num = num.substring(0)
   }
-  var endData = parseFloat(num).toFixed(decimal)
-  let newstr = endData;
-  let leng = endData.length - endData.indexOf('.') - 1;
+  const endData = parseFloat(num).toFixed(decimal)
+  let newstr = endData
+  const leng = endData.length - endData.indexOf('.') - 1
   if (endData.indexOf('.') > -1) {
     for (let i = leng; i > 0; i--) {
-        if (
+      if (
         newstr.lastIndexOf('0') > -1 &&
         newstr.substr(newstr.length - 1, 1) == 0
-        ) {
-        let k = newstr.lastIndexOf('0');
+      ) {
+        const k = newstr.lastIndexOf('0')
         if (newstr.charAt(k - 1) == '.') {
-            return newstr.substring(0, k - 1);
+          return newstr.substring(0, k - 1)
         } else {
-            newstr = newstr.substring(0, k);
+          newstr = newstr.substring(0, k)
         }
-        } else {
-            return newstr;
-        }
+      } else {
+        return newstr
+      }
     }
   }
-  return endData;
+  return endData
 }
 
 export const getBtcScanUrl = (txid: string) => {
   return `https://mempool.space/tx/${txid}`
 }
- 
+
 export const getOrdScanUrl = (inscriptionId: string) => {
   return `https://ordinals.com/inscription/${inscriptionId}`
 }
