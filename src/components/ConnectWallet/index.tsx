@@ -7,7 +7,7 @@ import { displayAddress } from '@/utils/formatter'
 import { CloseIcon } from '@/assets/icons'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useClickOutside } from '@/hooks/useClickOutside'
-import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import { clearStorage, getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { cn } from '@/utils/cn'
 import useReconnectEvm from '@/hooks/useReconnectEvm'
@@ -77,7 +77,7 @@ export const ConnectWallet: React.FC<{
         <div
           ref={buttonRef}
           onClick={() => {
-            disconnectEvm()
+            disconnectEvm({}, { onSuccess: clearStorage })
             setIsLogoutDropdownOpen(false)
           }}
           className={cn(
