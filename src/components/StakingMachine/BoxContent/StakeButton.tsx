@@ -10,14 +10,14 @@ const NoNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="relative w-[400px] border-2 border-black bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+      <div className="relative w-[384px] border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat px-9 pb-6  pt-12 font-smb">
         <CloseIcon
           onClick={onClose}
-          className="absolute right-6 top-6 cursor-pointer"
+          className="absolute right-4 top-4 cursor-pointer"
         />
-        <div className="flex flex-col items-center p-11">
-          <div className="mb-8 whitespace-nowrap">No NFT found</div>
-          <p className="my-8 font-psm text-sm">
+        <div className="flex flex-col items-center gap-8">
+          <h2 className="whitespace-nowrap text-2xl">No NFT found</h2>
+          <p className="font-psm text-sm">
             You don’t have any recognized NFT in this wallet address.
           </p>
           <Button
@@ -59,7 +59,7 @@ export const StakeButton: React.FC<StakeButtonProps> = ({
       <Button
         disabled={isFetchingNfts}
         size="xs"
-        className="w-[120px] bg-green2 shadow-stake-now-button"
+        className="w-[120px] bg-green2 shadow-stake-now-button hover:bg-green3 hover:shadow-stake-now-button active:bg-green4"
         onClick={(e) => handleClick(e)}>
         {children || 'Stake now'}
       </Button>

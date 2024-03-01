@@ -23,15 +23,15 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
       </div>
       <div className="flex w-full flex-col">
         <table className="w-full">
-          <thead className="table w-full table-fixed">
-            <tr className="table w-full table-fixed border-b border-dashed border-blue font-psm text-blue">
-              <th align="left" className="pb-3">
+          <thead className="table w-full table-fixed pr-1">
+            <tr className="mb-3 table w-[calc(100%_-_5px)] table-fixed border-b border-dashed border-blue font-psm text-blue">
+              <th align="left" style={{ width: '33%' }} className="pb-3">
                 Token ID
               </th>
-              <th align="left" className="pb-3">
+              <th align="left" style={{ width: '50%' }} className="pb-3">
                 Staked at Block
               </th>
-              <th align="left" className="pb-3">
+              <th align="left" style={{ width: '17%' }} className="pb-3 pr-1">
                 Rewards
               </th>
             </tr>
@@ -41,9 +41,18 @@ export const History: React.FC<HistoryProps> = ({ onBackClick }) => {
               <tr
                 className="table w-full table-fixed font-psm"
                 key={Number(stake.tokenId)}>
-                <td className="pt-3">{Number(stake.tokenId)}</td>
-                <td className="pt-3">{Number(stake.stakedTime)}</td>
-                <td className="pt-3 text-cyan">{Number(stake.reward)}</td>
+                <td className="pb-3" align="left" style={{ width: '33%' }}>
+                  {Number(stake.tokenId)}
+                </td>
+                <td className="pb-3" align="left" style={{ width: '50%' }}>
+                  {Number(stake.stakedTime)}
+                </td>
+                <td
+                  className="pb-3 text-cyan"
+                  align="left"
+                  style={{ width: '17%' }}>
+                  {Number(stake.reward)}
+                </td>
               </tr>
             ))}
           </tbody>

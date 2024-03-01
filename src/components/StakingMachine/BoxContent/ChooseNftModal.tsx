@@ -82,7 +82,7 @@ export const ChooseNftModal: React.FC<{
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="relative border-2 border-black bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+      <div className="relative border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         <CloseIcon
           onClick={onClose}
           className="absolute right-6 top-6 cursor-pointer"
