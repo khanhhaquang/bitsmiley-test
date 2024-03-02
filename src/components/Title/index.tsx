@@ -1,9 +1,8 @@
-import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
 import './index.scss'
 
 export const TitleBox: React.FC<{
   message: string
-  isWhite: boolean
+  isWhite?: boolean | undefined
 }> = ({ message, isWhite = false }) => {
   return (
     <>

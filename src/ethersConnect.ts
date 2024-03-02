@@ -1,17 +1,16 @@
 import { ethers } from 'ethers'
 import { ChainCfg } from './config/chain'
-let provider
-let signer
-let ethereum
-ethereum = window.ethereum
+// let provider: object = {}
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+const signer = provider.getSigner()
 // import { useStoreActions } from '@/hooks/useStoreActions'
 // const { setAccountInfo, setLoginType, resetStorage } = useStoreActions()
-if (typeof ethereum !== 'undefined') {
-  provider = new ethers.providers.Web3Provider(ethereum)
-  signer = provider.getSigner()
-  console.log(ethers, '------>', provider)
-
-  ethereum.on('accountsChanged', (accounts) => {
+if (typeof window.ethereum !== 'undefined') {
+  // provider = new ethers.providers.Web3Provider(window.ethereum)
+  // signer = provider.getSigner()
+  // signer = (provider as object).getSigner()
+  console.log(ethers, '------>', provider, signer)
+  window.ethereum.on('accountsChanged', (accounts: Array<string>) => {
     console.log('accountsChanged-->', accounts)
     if (accounts.length > 0) {
       const newAccount = accounts[0]
@@ -21,7 +20,7 @@ if (typeof ethereum !== 'undefined') {
       console.log('MetaMask Account Disconnected')
     }
   })
-  window.ethereum.on('networkChanged', (networkId) => {
+  window.ethereum.on('networkChanged', (networkId: number) => {
     console.log('MetaMask Network Changed:', networkId)
     window.location.reload()
   })
@@ -44,7 +43,7 @@ export const connectWallet = async () => {
     if (window.ethereum) {
       const accounts = await window.ethereum
         .request({ method: 'eth_requestAccounts' })
-        .catch((err) => {
+        .catch((err: { code: number }) => {
           console.error(err)
           if (err.code === 4001) {
             console.log('Please connect to MetaMask.')
@@ -91,10 +90,12 @@ export const getBalance = async (address: string) => {
   }
 }
 
-export const creatContract = async (address, abi) => {
+/* eslint-disable */
+export const creatContract = async (address:string, abi:any) => {
   const contract = await new ethers.Contract(address, abi, signer)
   return contract
 }
+/* eslint-enable */
 
 export const utilsFormatEther = (balance: string) => {
   return ethers.utils.formatEther(balance)
@@ -110,36 +111,31 @@ export const getGasPrice = async () => {
   return gasPrice
 }
 
-const networkAdd = (addParams) => {
-  console.log('ethereum', ethereum)
+const networkAdd = (addParams: object) => {
+  console.log('ethereum', window.ethereum)
 
-  ethereum
+  window.ethereum
     .request({
       method: 'wallet_addEthereumChain',
       params: [addParams]
     })
     .then(() => {})
-    .catch((e) => {
-      console.log(e)
-    })
 }
 
-export const networkChange = (chainId) => {
-  console.log('networkChange=====ethereum', ethereum, chainId)
-  ethereum
+export const networkChange = (chainId: number) => {
+  console.log('networkChange=====ethereum', window.ethereum, chainId)
+  window.ethereum
     .request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: chainId }]
     })
     .then(() => {})
-    .catch((e) => {
-      const err = e
-      console.log(err, err.code)
-      if (err.code === 4902) {
+    .catch((e: { code: number }) => {
+      if (e.code === 4902) {
         try {
           networkAdd(ChainCfg[chainId])
-        } catch (err) {
-          console.log(`ERROR:${err.message}`)
+        } catch (err: unknown) {
+          console.log(err)
         }
       }
     })

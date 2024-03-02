@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, ReactNode } from 'react'
 
 interface TooltipProps {
   text: string
@@ -12,7 +12,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
     y: 0
   })
 
-  const handleMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     setPosition({ x: e.clientX, y: e.clientY })
     setShowTooltip(true)
   }

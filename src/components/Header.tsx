@@ -2,7 +2,7 @@ import { HeaderIcon } from '@/assets/icons'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { ConnectWallet } from './ConnectWallet'
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
   const navigate = useNavigate()

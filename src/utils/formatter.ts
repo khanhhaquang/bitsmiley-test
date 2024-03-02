@@ -12,8 +12,8 @@ export const displayAddress = (
   )
 }
 
-export const formatMoney = (num = 0) => {
-  num = num.toString()
+export const formatMoney = (number: number | string | undefined = 0) => {
+  const num: string = number.toString()
   const index = num.indexOf('.')
   const l = num.split('.')[0].split('').reverse()
   let r = ''
@@ -31,22 +31,28 @@ export const formatMoney = (num = 0) => {
   }
   return D
 }
-export const formatDecimal = (num, decimal = 2) => {
+export const formatDecimal = (
+  num: number | string | undefined,
+  decimal: number = 2
+) => {
+  if (num == undefined) {
+    return 0
+  }
   num = num.toString()
-  const index = num.indexOf('.')
+  const index: number = num.indexOf('.')
   if (index !== -1) {
     num = num.substring(0, decimal + index + 1)
   } else {
     num = num.substring(0)
   }
   const endData = parseFloat(num).toFixed(decimal)
-  let newstr = endData
+  let newstr: string = endData
   const leng = endData.length - endData.indexOf('.') - 1
   if (endData.indexOf('.') > -1) {
     for (let i = leng; i > 0; i--) {
       if (
         newstr.lastIndexOf('0') > -1 &&
-        newstr.substr(newstr.length - 1, 1) == 0
+        newstr.substr(newstr.length - 1, 1) === '0'
       ) {
         const k = newstr.lastIndexOf('0')
         if (newstr.charAt(k - 1) == '.') {

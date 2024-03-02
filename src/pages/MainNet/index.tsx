@@ -1,13 +1,11 @@
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import isMobile from 'ismobilejs'
 // import { NetworkErrorPage } from '@/pages/Main/NetworkErrorPage'
-import { useSelector } from 'react-redux'
-import { getNetworkError } from '@/store/common/reducer'
+// import { useSelector } from 'react-redux'
 import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
-import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { TitleBox } from '@/components/Title'
-import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import { setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { AkarIconslinkOutIcon } from '@/assets/icons'
 import './index.scss'
@@ -18,41 +16,41 @@ import {
   networkChange,
   getChainId,
   connectWallet,
-  getWalletAddress,
-  getBalance,
-  creatContract
+  getWalletAddress
 } from '@/ethersConnect'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 // import Wallet from './getAddress'
 
-import { useStoreActions } from '@/hooks/useStoreActions'
-// import { clearConfirmedMinted, clearLoginType } from '@/utils/storage.ts'
-import { clearLoginType } from '@/utils/storage.ts'
+// import { useStoreActions } from '@/hooks/useStoreActions'
 // import { useQueryClient } from 'react-query'
-import { IAccountInfo, LoginTypeEnum } from '@/types/common'
 
-import { ProjectService } from '@/services/project'
 import { vaultsInfoService } from '@/services/vaultsInfo'
-import { bitSmileyABI } from '@/abi/abi'
 import Tooltip from '@/components/Tooltip'
 // import { useCheckInsctiption } from '@/hooks/useCheckInscription'
+
+interface itemType {
+  isOpenVault: boolean
+  network: string
+  maxLTV: number
+  borrowRate: number
+  minSize: number
+  liquidity: number
+  chainId: number
+  collateralRatio: number
+  collateralLocked: number
+  totalDebt: number
+}
 
 const MainNet: React.FC = () => {
   const { address, isConnected } = useUserInfo()
   console.log(address, isConnected)
   const navigate = useNavigate()
-  const isNetworkError = useSelector(getNetworkError)
-  const [isEntered, setIsEntered] = useState(false)
-  const [isMyVaults, setIsMyVaults] = useState(true)
 
-  const [bitSmileyAddrees, setBitSmileyAddrees] = useState('')
-
-  const [mintingPairsInfo, setMintingPairsInfo] = useState([])
-  const [myVaultsList, setmyVaultsList] = useState([])
+  const [mintingPairsInfo, setMintingPairsInfo] = useState<Array<itemType>>([])
+  const [myVaultsList, setmyVaultsList] = useState<Array<itemType>>([])
   setLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC, 'false')
 
   // const queryClient = useQueryClient()
-  const { setAccountInfo, setLoginType, resetStorage } = useStoreActions()
   // const handleAccountChanged = useCallback(
   //   (newAccountInfo: IAccountInfo | null, loginType: LoginTypeEnum) => {
   //     if (!newAccountInfo) {
@@ -80,9 +78,9 @@ const MainNet: React.FC = () => {
       }
       const { data } = await vaultsInfoService.getMintingPairsInfo.call(a[0])
       console.log(data.data)
-      const array1 = [],
-        array2 = []
-      data.data.forEach((v) => {
+      const array1: Array<itemType> = [],
+        array2: Array<itemType> = []
+      data.data.forEach((v: itemType) => {
         v.isOpenVault ? array1.push(v) : array2.push(v)
       })
       setmyVaultsList(array1)
@@ -92,32 +90,30 @@ const MainNet: React.FC = () => {
     }
   }
 
-  const [walletInfo, setWalletInfo] = useState([])
-
   useEffect(() => {
     projectFun()
   }, [])
 
-  const navigateowernPage = async (item) => {
+  const navigateowernPage = async (item: itemType) => {
     console.log(item)
     setLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO, JSON.stringify(item))
     const network = await getChainId()
     if (item.chainId != network.chainId) {
       const id = await utilsGetNetwork(item.chainId)
-      networkChange(id)
+      networkChange(parseInt(id))
     } else {
       navigate('/myVault')
     }
   }
-  const navigatePage = async (item) => {
+  const navigatePage = async (item: itemType) => {
     console.log(item)
     setLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO, JSON.stringify(item))
     const network = await getChainId()
     console.log(network.chainId)
-    if (item.chainId != network.chainId) {
-      const id = await utilsGetNetwork(item.chainId)
+    if (item?.chainId != network?.chainId) {
+      const id = await utilsGetNetwork(item?.chainId)
       console.log(id)
-      networkChange(id)
+      networkChange(Number(id))
     } else {
       navigate('/OpenVault')
     }
@@ -134,7 +130,7 @@ const MainNet: React.FC = () => {
             </div>
             <MyVaults
               list={myVaultsList}
-              handleClick={(item) => navigateowernPage(item)}
+              handleClick={(item: itemType) => navigateowernPage(item)}
             />
           </>
         ) : (
@@ -147,7 +143,7 @@ const MainNet: React.FC = () => {
             </div>
             <AvailableMintingPairs
               list={mintingPairsInfo}
-              handleClick={(item) => navigatePage(item)}
+              handleClick={(item: itemType) => navigatePage(item)}
             />
           </>
         ) : (
@@ -157,17 +153,15 @@ const MainNet: React.FC = () => {
           More assets coming soon...
         </p>
       </div>
-      {/* <CopyRightAndLinks/> */}
     </div>
   )
 }
 
 const AvailableMintingPairs: React.FC<{
-  list: Array
-  isOpacity: boolean
-  handleClick: (i) => void
-}> = ({ isOpacity, list, handleClick }) => {
-  const renderedItems = list.map((item, index) =>
+  list: Array<itemType>
+  handleClick: (item: itemType) => void
+}> = ({ list, handleClick }) => {
+  const renderedItems = list.map((item: itemType, index: number) =>
     !item.isOpenVault ? (
       <dd className="table_border_bottom" key={index}>
         <ul className=" flex items-center px-[12px] py-[24px] font-ibmr text-white">
@@ -242,11 +236,10 @@ const AvailableMintingPairs: React.FC<{
 }
 
 const MyVaults: React.FC<{
-  isOpacity: boolean
-  list: Array
-  handleClick: (i) => void
-}> = ({ isOpacity, list, handleClick }) => {
-  const renderedItems = list.map((item, index) =>
+  list: Array<itemType>
+  handleClick: (item: itemType) => void
+}> = ({ list, handleClick }) => {
+  const renderedItems = list.map((item: itemType, index: number) =>
     // item.isOpenVault?isShowLenght+=1:isShowLenght;
     item.isOpenVault ? (
       <dd className="table_border_bottom" key={index}>

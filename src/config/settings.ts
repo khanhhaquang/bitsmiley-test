@@ -7,7 +7,8 @@ export const DOMAIN_URL: {
 export const LOCAL_STORAGE_KEYS = {
   PLAY_MUSIC: 'play_music',
   CONFIRMED_DISCLAIMER: 'confirmed_disclaimer',
-  TXIDS: 'txids'
+  TXIDS: 'txids',
+  NETWORKINFO: 'NETWORKINFO'
 }
 
 export const commonParam = {
