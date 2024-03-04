@@ -1,45 +1,33 @@
 import React, { useState, useEffect, SetStateAction } from 'react'
 import isMobile from 'ismobilejs'
 import { Image } from '@/components/Image'
-// import { NetworkErrorPage } from '@/pages/Main/NetworkErrorPage'
-// import { useSelector } from 'react-redux'
-// import { getNetworkError } from '@/store/common/reducer'
 import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
-// import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { TitleBox } from '@/components/Title'
 import { getLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS, commonParam } from '@/config/settings'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import './index.scss'
 import { getOpenUrl, openUrl } from '@/utils/getAssetsUrl'
 import { useNavigate } from 'react-router-dom'
-import { ProjectService } from '@/services/project'
-import { bitSmileyABI, bitUSDABI, oraclesABI, vaultManagerABI } from '@/abi/abi'
-import {
-  utilsGetNetwork,
-  utilsParseEther,
-  getChainId,
-  getGasPrice,
-  utilsFormatEther,
-  connectWallet,
-  getWalletAddress,
-  creatContract,
-  networkChange
-} from '@/ethersConnect'
-// import { useUserInfo } from '@/hooks/useUserInfo'
+import { bitSmileyABI, bitUSDABI } from '@/abi/abi'
+import { utilsParseEther, utilsFormatEther } from '@/ethersConnect'
 import { SCANTXHASH } from '@/config/links'
 import { formatDecimal, formatMoney } from '@/utils/formatter'
 import LoadingAnimation from '@/components/LoadingAnimation'
 import { displayAddress } from '@/utils/formatter'
 
 import useContractAddresses from '@/hooks/useNetworkAddresses'
-import { useWriteContract, useReadContract } from 'wagmi'
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useUserInfo } from '@/hooks/useUserInfo'
-// import {useReadVaultManagerGetVaultChange} from '../../contracts/vaultManager'
-
 import useUserVultManager from '@/hooks/useUserVultManager'
+import useGetOraclePrice from '@/hooks/useGetOraclePrice'
+import useWBTCContract from '@/hooks/useWBTCContract'
+import { useStoreActions } from '@/hooks/useStoreActions'
+import useGetUservault from '@/hooks/useGetUservault'
+
+import { Hash } from 'viem'
 interface overviewBoxObject {
-  availableToMint?: number
+  availableToMint?:number
   debtBitUSD?: number
   collateralRate?: number
   lockedCollateral?: number
@@ -47,25 +35,18 @@ interface overviewBoxObject {
   availableToWithdraw?: number
 }
 
-// interface OracleContract {
-//   getPrice: (param: string) => Promise<number>;
-// }
-
 const OpenVault: React.FC = () => {
   const navigate = useNavigate()
   const [inputValue, setInputValue] = useState(0)
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Start ; 2=>mint bitUSD; 3=>mint bitUSD ing;4=> Minting Completed;5=>Changes Failed
-  const [isState, setIsStateValue] = useState(3)
-  const [bitSmileyAddrees, setBitSmileyAddrees] = useState('')
-  const [walletInfo, setWalletInfo] = useState<Array<string>>([])
+  const [isState, setIsStateValue] = useState(1)
+  //1-approve 2-deposit BTC 3-Minting Completed
+  const [isApproveStatus, setIsApproveStatus] = useState(1)
 
-  const [contractToken, setContractToken] = useState('')
-  const [TokenContract, setTokenContract] = useState<Record<string, object>>({})
   const [balanceWBTC, setBalanceWBTC] = useState('')
   const [isApprove, setIsApprove] = useState(false)
-  const [gasPrice, setGasPrice] = useState<string>('')
-  const [transactionHash, setTransactionHash] = useState('')
+  // const [transactionHash, setTransactionHash] = useState('')
   const [listInfo, setListInfo] = useState({
     borrowRate: 0,
     liquidity: 0,
@@ -73,22 +54,9 @@ const OpenVault: React.FC = () => {
     maxLTV: 0,
     chainId: 0
   })
-  // const [oracle, setOracle] = useState('')
-  const [oracleContract, setOracleContract] = useState<Record<string, object>>(
-    {}
-  )
   // const [priceUSD, setPriceOracle] = useState(0)
   const [oraclePrice, setOraclePriceOracle] = useState(0)
-  // const [vaultManagerAddress, setVaultManagerAddress] = useState('')
-  const [vaultManagerContract, setVaultManagerContract] = useState<
-    Record<string, object>
-  >({})
-  const [bitSmileyContract, setBitSmileyContract] = useState<
-    Record<string, object>
-  >({})
-  const [vault1, setVault1] = useState('')
   const [AvailableBitUSD, setAvailableBitUSD] = useState(0)
-  const [currentNetwork, setCurrentNetwork] = useState({ chainId: 0 })
 
   const [overviewDataInit, setOverviewDataInit] = useState({
     liquidationPrice: 0,
@@ -112,19 +80,28 @@ const OpenVault: React.FC = () => {
   const { address } = useUserInfo()
 
   const { vaultManagerData } = useUserVultManager(inputValue)
-  const { vaultManagerDataInit } = useUserVultManager(0)
-  console.log(vaultManagerDataInit)
+  const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
+    useUserVultManager(0)
+  const [txnId, setTxnId] = useState<string>()
+  const { status } = useWaitForTransactionReceipt({ hash: txnId })
+
+  const { oraclePrice1, refetchOraclePrice1 } = useGetOraclePrice()
+  console.log(oraclePrice1)
+  const { isAllowance, gitBalanceWBTC, refetchBalanceWBTC } = useWBTCContract()
+  const { removeTransaction, addTransaction } = useStoreActions()
+  const { vault1, refetchVault1 } = useGetUservault()
 
   const isGlobalStatus = async () => {
     let flag = true
-    if (walletInfo.length == 0) {
+    if (!address) {
       flag = false
-      connectWallet()
-    } else if (currentNetwork.chainId != listInfo.chainId) {
-      flag = false
-      const id = await utilsGetNetwork(listInfo.chainId)
-      networkChange(Number(id))
+      // connectWallet()
     }
+    // else if (currentNetwork.chainId != listInfo.chainId) {
+    //   flag = false
+    //   const id = await utilsGetNetwork(listInfo.chainId)
+    //   networkChange(Number(id))
+    // }
     return flag
   }
 
@@ -135,91 +112,13 @@ const OpenVault: React.FC = () => {
       )
       console.log(info)
       setListInfo(info)
-
-      if (contractAddresses) {
-        const contractNetworkNew = contractAddresses
-        setContractToken(contractNetworkNew.WBTC)
-        setBitSmileyAddrees(contractNetworkNew.BitSmiley)
-
-        const gas = await getGasPrice()
-        setGasPrice(gas.toString())
-        const a = await getWalletAddress()
-        setWalletInfo(a)
-        if (a.length == 0) {
-          connectWallet()
-        }
-
-        const network = await getChainId()
-        setCurrentNetwork(network)
-        console.log(info.chainId)
-        if (info.chainId != network.chainId) {
-          const id = await utilsGetNetwork(info.chainId)
-          networkChange(Number(id))
-        }
-
-        const vaultManager = await creatContract(
-          contractNetworkNew.VaultManager,
-          vaultManagerABI
-        )
-        console.log(vaultManager)
-        setVaultManagerContract(vaultManager)
-
-        const oracleCon = await creatContract(
-          contractNetworkNew.oracle,
-          oraclesABI
-        )
-        const price = await oracleCon.getPrice(commonParam.BTC)
-        console.log(price, Number(utilsFormatEther(price)))
-        setOracleContract(oracleCon)
-        setOraclePriceOracle(Number(utilsFormatEther(price)))
-
-        const contract = await creatContract(contractNetworkNew.WBTC, bitUSDABI)
-        setTokenContract(contract)
-        console.log(contract, walletInfo[0])
-
-        const smileyContract = await creatContract(
-          contractNetworkNew.BitSmiley,
-          bitSmileyABI
-        )
-        setBitSmileyContract(smileyContract)
-        const vault = await smileyContract.owners(a[0])
-        console.log('vault==>', vault)
-        setVault1(vault)
-
-        const balance = await contract.balanceOf(a[0])
-        const b = utilsFormatEther(balance)
-        setBalanceWBTC(b)
-        console.log(
-          '--balance',
-          balance,
-          b,
-          balance.toString(),
-          'bitSmileyAddrees==',
-          contractNetworkNew.BitSmiley
-        )
-
-        const isAllowance = await contract.allowance(
-          a[0],
-          contractNetworkNew.BitSmiley
-        )
-        console.log(
-          '--Allowance number--',
-          isAllowance,
-          Number(utilsFormatEther(isAllowance))
-        )
-        const allowanceNum = Number(utilsFormatEther(isAllowance))
-        if (allowanceNum >= inputValue) {
-          setIsApprove(true)
-        } else {
-          setIsApprove(false)
-        }
-      }
     } catch (err) {
       console.log(err)
     }
   }
+
   const initData = async () => {
-    const overviewInit: object = await overviewData(0)
+    const overviewInit = await overviewData()
     console.log('====>---', overviewInit)
     setOverviewDataInit(
       overviewInit as SetStateAction<{
@@ -234,20 +133,18 @@ const OpenVault: React.FC = () => {
   }
 
   const getRealTimeOracle = async () => {
-    const price: string = await (
-      oracleContract as { getPrice: (asset: string) => Promise<string> }
-    )?.getPrice(commonParam.BTC)
-
-    setOraclePriceOracle(Number(utilsFormatEther(price)))
+    refetchOraclePrice1()
+    if(oraclePrice1!=undefined)
+    {setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))}
   }
 
   useEffect(() => {
-    if (!oracleContract) return
+    if (!oraclePrice1) return
     const timer = setInterval(() => [getRealTimeOracle()], 3000)
     return () => {
       clearInterval(timer)
     }
-  }, [oracleContract])
+  }, [oraclePrice1])
 
   useEffect(() => {
     console.log('vault1-------', vault1)
@@ -258,52 +155,67 @@ const OpenVault: React.FC = () => {
       }
     }
   }, [vault1])
+
   useEffect(() => {
-    console.log('vaultManagerContract', vaultManagerContract)
-    if (vaultManagerDataInit) {
-      console.log('vaultManagerContract==1', vaultManagerContract)
+    if (vaultManagerDataInit && vault1) {
       initData()
     }
-  }, [vaultManagerDataInit])
+  }, [vaultManagerDataInit, vault1])
+
+  useEffect(() => {
+    if (oraclePrice1 && isAllowance && gitBalanceWBTC) {
+      if (gitBalanceWBTC !== undefined) {
+        setBalanceWBTC(utilsFormatEther(gitBalanceWBTC.toString()));
+      }
+      if (isAllowance !== undefined) {
+        const allowanceNum = Number(utilsFormatEther(isAllowance.toString()))
+        if (allowanceNum >= inputValue) {
+          setIsApprove(true)
+        } else {
+          setIsApprove(false)
+        }
+      }
+      if (oraclePrice1 !== undefined) {
+        setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))
+      }
+      
+    }
+  }, [oraclePrice1, isAllowance, gitBalanceWBTC])
 
   useEffect(() => {
     projectFun()
   }, [])
   useEffect(() => {
-    if (vaultManagerContract) {
+    if (collateralTypes && oraclePrice) {
       getAvailableBitUSD()
     }
-  }, [vaultManagerContract, oraclePrice])
+  }, [collateralTypes, oraclePrice])
 
   const getAvailableBitUSD = async () => {
-    console.log(vaultManagerContract)
-    // const bitUSDAmount = utilsParseEther(inputValue.toString());
-    // const price = utilsParseEther(oraclePrice.toString());
-    console.log('commonParam.BTC=', commonParam.BTC)
-    // const collateral = await vaultManagerContract?.collateralTypes(
-    //   commonParam.BTC
-    // )
-    /* eslint-disable */
-    const collateral = await (
-      vaultManagerContract as { collateralTypes: (arg1: any) => Promise<any> }
-    )?.collateralTypes(commonParam.BTC)
-    /* eslint-enable */
-    const safetyFactor = collateral.safetyFactor / 10 ** 9
-    const rate = collateral.rate / 10 ** 27
+    const collateral = collateralTypes
+    console.log(collateral)
+    if(collateral){
+      const safetyFactor = Number(collateral[1]) / 10 ** 9
+      const rate = Number(collateral[2]) / 10 ** 27
 
-    const collateralEvaluation =
-      (inputValue * oraclePrice * safetyFactor) / rate
-    console.log(collateralEvaluation)
-    setAvailableBitUSD(collateralEvaluation)
-
-    // const collateralEvaluation2 = await vaultManagerContract.evaluateCollateral(commonParam.BTC, bitUSDAmount);
-    // let avail = utilsFormatEther(collateralEvaluation2)
-    // console.log(avail)
-    // setAvailableBitUSD(avail)
+      const collateralEvaluation =
+        (inputValue * oraclePrice * safetyFactor) / rate
+      console.log(collateralEvaluation)
+      setAvailableBitUSD(collateralEvaluation)
+    }
+    
   }
 
   const blurSetupVault = async () => {
-    getAvailableBitUSD()
+    if(isAllowance!=undefined)
+    {const allowanceNum = Number(utilsFormatEther(isAllowance.toString()))
+    if (allowanceNum >= inputValue) {
+      setIsApprove(true)
+    } else {
+      setIsApprove(false)
+    }
+
+    getAvailableBitUSD()}
   }
 
   const handApproveFun = async () => {
@@ -311,123 +223,132 @@ const OpenVault: React.FC = () => {
     if (!flag) {
       return
     }
-    console.log('approve start--->', inputValue, TokenContract)
-
-    /* eslint-disable */
-    const isAllowance = await (
-      TokenContract as { approve: (arg1: any, arg2: any) => Promise<any> }
-    )?.approve(bitSmileyAddrees, utilsParseEther(inputValue.toString()))
-    /* eslint-enable */
-    console.log(isAllowance)
-    if (isAllowance.hash) {
-      setTransactionHash(isAllowance.hash)
-      setIsLodingValue(true)
-    }
-    const receipt = await isAllowance.wait()
-    console.log('Transaction confirmed:', receipt.transactionHash)
-    console.log('Gas used:', receipt.gasUsed.toString())
-    if (receipt) {
+    if (inputValue <= 0) return
+    setIsApproveStatus(1)
+    console.log('approve start--->', inputValue)
+    if(contractAddresses?.WBTC !=undefined)
+    {const txnId = await writeContractAsync({
+      abi: bitUSDABI,
+      address: contractAddresses?.WBTC,
+      functionName: 'approve',
+      args: [
+        contractAddresses?.BitSmiley,
+        utilsParseEther(inputValue.toString())
+      ]
+    })
+    console.log(txnId)
+    setTxnId(txnId)
+    addTransaction(txnId)
+    if (status !== 'pending') {
       setIsLodingValue(false)
       setIsStateValue(1)
       setIsApprove(true)
-    }
+    } else {
+      setIsLodingValue(true)
+    }}
   }
+  useEffect(() => {
+    let closeTimeout: NodeJS.Timeout
+    if (status !== 'pending') {
+      setIsLodingValue(false)
+      if (isApproveStatus == 1) {
+        setIsStateValue(1)
+      } else if (isApproveStatus == 2) {
+        refetchBalanceWBTC()
+        setIsStateValue(2)
+        refetchVault1()
+        refetchVaultManagerData()
+      } else if (isApproveStatus == 3) {
+        refetchVault1()
+        refetchVaultManagerData()
+        setIsStateValue(4)
+      } else {
+        refetchVault1()
+        refetchVaultManagerData()
+        setIsStateValue(3)
+      }
+      // if (vault1 != '0x0000000000000000000000000000000000000000') {
+      //   refetchVaultManagerData()
+      //   setIsStateValue(3)
+      // } else {
+      //   refetchBalanceWBTC()
+      //   setIsStateValue(2)
+      // }
+
+      setIsApprove(true)
+      closeTimeout = setTimeout(() => {
+        localStorage.removeItem('txids')
+      }, 5000)
+    }
+    ;() => {
+      clearTimeout(closeTimeout)
+    }
+  }, [removeTransaction, status, txnId, vault1])
+
   const StartFun = async () => {
     const flag = await isGlobalStatus()
     if (!flag) {
       return
     }
-    console.log('contractToken--', contractToken)
-    console.log('setVlu-->', inputValue, gasPrice)
-    console.log(walletInfo, bitSmileyAddrees)
+    setIsApproveStatus(2)
     try {
       const collateral = utilsParseEther(inputValue.toString())
-      const contract = await creatContract(bitSmileyAddrees, bitSmileyABI)
-      console.log(contract, collateral.toString())
-
-      // const txId = await writeContractAsync({
-      //   abi: erc721Abi,
-      //   address: erc721Address,
-      //   functionName: 'safeTransferFrom',
-      //   args: [address, stakingAddress, BigInt(selectedTokenId), '0x']
-      // })
-
-      const gasLimit = await contract.estimateGas.openVaultAndMintFromBTC(
-        0,
-        collateral,
-        {
-          gasPrice: gasPrice
+      if(contractAddresses?.BitSmiley != undefined){
+        const txnId = await writeContractAsync({
+          abi: bitSmileyABI,
+          address: contractAddresses?.BitSmiley,
+          functionName: 'openVaultAndMintFromBTC',
+          args: [0, collateral]
+        })
+        if(txnId){
+          setTxnId(txnId)
+          addTransaction(txnId)
+          if (status !== 'pending') {
+            setIsLodingValue(false)
+            setIsApprove(true)
+            // setVault1(vault)
+            setIsStateValue(2)
+          } else {
+            setIsLodingValue(true)
+          }
         }
-      )
-      console.log('Estimated Gas Limit:', gasLimit)
-      const transactionResponse = await contract.openVaultAndMintFromBTC(
-        0,
-        collateral,
-        {
-          gasPrice: gasPrice,
-          gasLimit: gasLimit
-        }
-      )
-      console.log(transactionResponse)
-      if (transactionResponse) {
-        setTransactionHash(transactionResponse.hash)
-        setIsLodingValue(true)
       }
-      const receipt = await transactionResponse.wait()
-      console.log('Transaction confirmed:', receipt.transactionHash)
-      console.log('Gas used:', receipt.gasUsed.toString())
-      if (receipt) {
-        /* eslint-disable */
-        const vault = await (
-          bitSmileyContract as { owners: (arg1: any) => Promise<any> }
-        )?.owners(walletInfo[0])
-        /* eslint-enable */
-        console.log('vault==>', vault)
-        setVault1(vault)
-        setIsLodingValue(false)
-        setIsStateValue(2)
-        setIsApprove(true)
-      }
+      
     } catch (err) {
       setIsStateValue(5)
       console.log(err)
     }
   }
 
-  const overviewData = async (val: number) => {
-    // bitSmileyContract
-    // console.log(vaultManagerContract)
-    // const safeRate = commonParam.safeRate // 50%
-    // const bitUSDAmount = utilsParseEther(val.toString())
-    // /* eslint-disable */
-    // const result = await (
-    //   vaultManagerContract as {
-    //     getVaultChange: (...arg1: any[]) => Promise<any>
-    //   }
-    // )?.getVaultChange(...param)
-    // /* eslint-enable */
-    // console.log(result)
-    // console.log(result.liquidationPrice)
+  const overviewData = async () => {
     const result = vaultManagerDataInit
-    const arr = {
-      liquidationPrice: Number(
-        utilsFormatEther(result.liquidationPrice.toString())
-      ),
-      // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
-      collateralRate: (Number(result.collateralRate) / 1000) * 100,
-      debtBitUSD: Number(utilsFormatEther(result.debtBitUSD)),
-      lockedCollateral: Number(
-        utilsFormatEther(result.lockedCollateral.toString())
-      ),
-      availableToWithdraw: Number(
-        utilsFormatEther(result.availableToWithdraw.toString())
-      ),
-      availableToMint: Number(
-        utilsFormatEther(result.availableToMint.toString())
-      )
-    }
-    console.log(arr)
-    return arr
+    if(result?.liquidationPrice !== undefined && 
+      result?.collateralRate !== undefined&& 
+      result?.debtBitUSD !== undefined&& 
+      result?.lockedCollateral !== undefined&& 
+      result?.availableToWithdraw !== undefined&& 
+      result?.availableToMint !== undefined
+      ){
+        const arr = {
+          liquidationPrice: Number(
+            utilsFormatEther(result?.liquidationPrice.toString())
+          ),
+          // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
+          collateralRate: (Number(result?.collateralRate) / 1000) * 100,
+          debtBitUSD: Number(utilsFormatEther(result?.debtBitUSD.toString())),
+          lockedCollateral: Number(
+            utilsFormatEther(result?.lockedCollateral.toString())
+          ),
+          availableToWithdraw: Number(
+            utilsFormatEther(result?.availableToWithdraw.toString())
+          ),
+          availableToMint: Number(
+            utilsFormatEther(result?.availableToMint.toString())
+          )
+        }
+        console.log(arr)
+        return arr
+      }
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -446,26 +367,35 @@ const OpenVault: React.FC = () => {
     }
 
     const result = vaultManagerData
-    const arr = {
-      liquidationPrice: Number(
-        utilsFormatEther(result.liquidationPrice.toString())
-      ),
-      // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
-      collateralRate: (Number(result.collateralRate) / 1000) * 100,
-      debtBitUSD: Number(utilsFormatEther(result.debtBitUSD)),
-      lockedCollateral: Number(
-        utilsFormatEther(result.lockedCollateral.toString())
-      ),
-      availableToWithdraw: Number(
-        utilsFormatEther(result.availableToWithdraw.toString())
-      ),
-      availableToMint: Number(
-        utilsFormatEther(result.availableToMint.toString())
-      )
+    if(result?.liquidationPrice != undefined && 
+      result?.collateralRate != undefined&& 
+      result?.debtBitUSD != undefined&& 
+      result?.lockedCollateral != undefined&& 
+      result?.availableToWithdraw != undefined&& 
+      result?.availableToMint != undefined
+      ){
+      const arr = {
+        liquidationPrice: Number(
+          utilsFormatEther(result?.liquidationPrice.toString())
+        ),
+        // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
+        collateralRate: (Number(result?.collateralRate) / 1000) * 100,
+        debtBitUSD: Number(utilsFormatEther(result?.debtBitUSD.toString())),
+        lockedCollateral: Number(
+          utilsFormatEther(result?.lockedCollateral.toString())
+        ),
+        availableToWithdraw: Number(
+          utilsFormatEther(result?.availableToWithdraw.toString())
+        ),
+        availableToMint: Number(
+          utilsFormatEther(result?.availableToMint.toString())
+        )
+      }
+      // const overviewInit = await overviewData(inputValue)
+      // console.log('====>---', overviewInit)
+      setOverviewAfterDataInit(arr)
     }
-    // const overviewInit = await overviewData(inputValue)
-    // console.log('====>---', overviewInit)
-    setOverviewAfterDataInit(arr)
+    
   }
 
   const onClickMintBitUsd = async () => {
@@ -473,7 +403,8 @@ const OpenVault: React.FC = () => {
     if (!flag) {
       return
     }
-    console.log(inputValue, bitSmileyContract)
+    console.log(inputValue)
+    setIsApproveStatus(3)
     if (inputValue <= 0) return
     try {
       const USDAmount = utilsParseEther(inputValue.toString())
@@ -481,40 +412,32 @@ const OpenVault: React.FC = () => {
       const parameter = [
         vault1,
         USDAmount,
-        0, //btc
-        { value: 0, gasPrice: gasPrice }
+        0
+        // , //btc
+        // { value: 0, gasPrice: gasPrice }
       ]
-      /* eslint-disable */
-      const gasLimit = await (
-        bitSmileyContract as {
-          estimateGas: { mintFromBTC: (...args: any[]) => Promise<any> }
+      // contractNetworkNew.BitSmiley,
+      //     bitSmileyABI
+      if (contractAddresses !== undefined) {
+        const txnId = await writeContractAsync({
+          abi: bitSmileyABI,
+          address: contractAddresses?.BitSmiley,
+          functionName: 'mintFromBTC',
+          args: parameter
+        })
+        if(txnId){
+          setTxnId(txnId)
+          addTransaction(txnId)
+          if (status !== 'pending') {
+            setIsLodingValue(false)
+            setIsStateValue(4)
+          } else {
+            setIsLodingValue(true)
+          }
         }
-      )?.estimateGas.mintFromBTC(...parameter)
-
-      const result = await (
-        bitSmileyContract as { mintFromBTC: (...args: any[]) => Promise<any> }
-      )?.mintFromBTC(
-        vault1,
-        USDAmount,
-        0, //btc
-        {
-          gasPrice: gasPrice,
-          gasLimit: gasLimit
-        }
-      )
-      /* eslint-enable */
-      if (result) {
-        setTransactionHash(result.hash)
-        setIsLodingValue(true)
-        // setIsStateValue(2)
       }
-      const receipt = await result.wait()
-      console.log('Transaction confirmed:', receipt.transactionHash)
-      console.log('Gas used:', receipt.gasUsed.toString())
-      if (receipt) {
-        setIsLodingValue(false)
-        setIsStateValue(4)
-      }
+      
+      
     } catch (err) {
       console.log(err)
     }
@@ -601,9 +524,7 @@ const OpenVault: React.FC = () => {
                 <div>
                   {isLoding ? (
                     <LoadingBox
-                      openUrlClick={() =>
-                        openUrl(`${SCANTXHASH.test}${transactionHash}`)
-                      }
+                      openUrlClick={() => openUrl(`${SCANTXHASH.test}${txnId}`)}
                     />
                   ) : isState == 1 ? (
                     <SetupVault

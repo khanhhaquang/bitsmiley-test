@@ -1,22 +1,21 @@
-import { useEffect, useMemo } from 'react'
-import { useSelector } from 'react-redux'
-// import { getTransactions } from '@/store/common/reducer'
 import { commonParam } from '@/config/settings'
 
-import { useReadVaultManagerGetVaultChange } from '@/contracts/vaultManager'
+import {
+  useReadVaultManagerGetVaultChange,
+  useReadVaultManagerCollateralTypes
+} from '@/contracts/vaultManager'
 
 import useContractAddresses from './useNetworkAddresses'
-import { useUserInfo } from './useUserInfo'
+// import { useUserInfo } from './useUserInfo'
 import { utilsParseEther } from '@/ethersConnect'
-import { getUservault } from './getUservault'
+import useGetUservault from './useGetUservault'
 
 const useUserVultManager = (amount) => {
-  console.log('--->', amount)
   const contractAddresses = useContractAddresses()
-  const { address } = useUserInfo()
+  // const { address } = useUserInfo()
   // const { vault1 } = '1'
-  const { vault1 } = getUservault()
-  // console.log('vault1--->',vault1)
+  const { vault1 } = useGetUservault()
+  console.log('vault1--->', vault1)
   const bitUSDAmount = utilsParseEther(amount.toString())
   const { data: vaultManagerData } = useReadVaultManagerGetVaultChange({
     address: contractAddresses?.VaultManager,
@@ -29,14 +28,23 @@ const useUserVultManager = (amount) => {
     ]
   })
 
-  const { data: vaultManagerDataInit } = useReadVaultManagerGetVaultChange({
+  const { data: vaultManagerDataInit, refetch: refetchVaultManagerData } =
+    useReadVaultManagerGetVaultChange({
+      address: contractAddresses?.VaultManager,
+      args: [commonParam.BTC, vault1, 0, 0, commonParam.safeRate * 10000000]
+    })
+
+  const { data: collateralTypes } = useReadVaultManagerCollateralTypes({
     address: contractAddresses?.VaultManager,
-    args: [commonParam.BTC, vault1, 0, 0, commonParam.safeRate * 10000000]
+    args: [commonParam.BTC]
   })
 
+  console.log(vaultManagerDataInit)
   return {
     vaultManagerData,
-    vaultManagerDataInit
+    vaultManagerDataInit,
+    collateralTypes,
+    refetchVaultManagerData
   }
 }
 
