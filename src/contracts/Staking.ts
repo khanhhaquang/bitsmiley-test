@@ -10,6 +10,7 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const stakingContractAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
   { type: 'error', inputs: [], name: 'AlreadyStaked' },
   { type: 'error', inputs: [], name: 'AlreadyWithdrawn' },
   { type: 'error', inputs: [], name: 'MaxParticipantsReached' },

@@ -4,6 +4,7 @@ import { getTransactions } from '@/store/common/reducer'
 import {
   useReadStakingContractGetStakeRewards,
   useReadStakingContractGetUserStakes,
+  useReadStakingContractPerAddressLimit,
   useReadStakingContractStakingEnded
 } from '@/contracts/Staking'
 import useContractAddresses from './useNetworkAddresses'
@@ -31,6 +32,11 @@ const useUserStakes = () => {
     address: contractAddresses?.staking
   })
 
+  const { data: perAddressLimit, isLoading: isFetchingPerAddressLimit } =
+    useReadStakingContractPerAddressLimit({
+      address: contractAddresses?.staking
+    })
+
   const { data: stakeRewards, refetch: refetchStakesReward } =
     useReadStakingContractGetStakeRewards({
       address: contractAddresses?.staking,
@@ -43,6 +49,14 @@ const useUserStakes = () => {
     [stakeRewards]
   )
 
+  const isFetchingAll = useMemo(
+    () =>
+      isFetchingUserStakes ||
+      isFetchingIsStakingEnded ||
+      isFetchingPerAddressLimit,
+    [isFetchingIsStakingEnded, isFetchingUserStakes, isFetchingPerAddressLimit]
+  )
+
   useEffect(() => {
     refetchStakingState()
     refetchUserStakes()
@@ -52,11 +66,13 @@ const useUserStakes = () => {
 
   return {
     userStakes,
+    isFetchingAll,
     isFetchingUserStakes,
     isFetchingIsStakingEnded,
     isStakingEnded,
     refetchStakingState,
     refetchUserStakes,
+    perAddressLimit,
     jadeBalance,
     stakeRewards
   }

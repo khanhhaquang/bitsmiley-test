@@ -6,7 +6,6 @@ import { MEDIA } from '@/config/links'
 import { cn } from '@/utils/cn'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
-import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { useOnScreen } from '@/hooks/useOnScreen'
 import { CoinIcon } from '@/assets/icons'
 import { StakingMachine } from '@/components/StakingMachine'
@@ -47,7 +46,6 @@ export const StakingPage: React.FC = () => {
         </div>
       </div>
       <Header wallet />
-      {/* <CopyRightAndLinks /> */}
     </div>
   )
 }
