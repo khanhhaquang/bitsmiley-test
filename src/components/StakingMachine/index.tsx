@@ -23,7 +23,7 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
 
   return (
     <div
-      className="relative z-10 flex h-[995px] w-[1423px] shrink-0 origin-center items-center justify-center"
+      className="relative z-10 flex h-[995px] w-[1423px] shrink-0 items-center justify-center"
       style={{
         transform: `scale(${responsiveScaling})`
       }}>
