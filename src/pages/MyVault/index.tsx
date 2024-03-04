@@ -34,6 +34,10 @@ import {
   bitUsdL2ABI
 } from '@/abi/abi'
 import LoadingAnimation from '@/components/LoadingAnimation'
+import useContractAddresses from '@/hooks/useNetworkAddresses'
+import { useWriteContract } from 'wagmi'
+import { useUserInfo } from '@/hooks/useUserInfo'
+
 // interface titleListObject {
 //   borrowRate?: any
 //   liquidity?: any
@@ -67,8 +71,6 @@ interface networkInfo {
 // }
 
 const MyVault: React.FC = () => {
-  // const isNetworkError = useSelector(getNetworkError)
-  // const [isEntered, setIsEntered] = useState(false)
   const [inputValue, setInputValue] = useState(0)
   const [withdrawValue, setWithdrawValue] = useState(0)
   const [isLoding, setIsLodingValue] = useState(false)
@@ -80,7 +82,7 @@ const MyVault: React.FC = () => {
   //0=>wBTC 1=>bitUSD
   const [coinType, setCoinType] = useState(0)
   const [bitSmileyAddrees, setBitSmileyAddrees] = useState('')
-  const [walletInfo, setWalletInfo] = useState<Array<string>>([])
+  // const [walletInfo, setWalletInfo] = useState<Array<string>>([])
   const [listInfo, setListInfo] = useState({
     borrowRate: 0,
     liquidity: 0,
@@ -135,9 +137,15 @@ const MyVault: React.FC = () => {
     availableToMint: 0
   })
 
+  const contractAddresses = useContractAddresses()
+  const { writeContractAsync } = useWriteContract()
+  const { address } = useUserInfo()
+
+  console.log(address)
+
   const isGlobalStatus = async () => {
     let flag = true
-    if (walletInfo.length == 0) {
+    if (!address) {
       flag = false
       connectWallet()
     } else if (Number(currentNetwork.chainId) != listInfo.chainId) {
@@ -153,11 +161,11 @@ const MyVault: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    console.log(Object.keys(contractNetworkNew).length, walletInfo.length)
-    if (Object.keys(contractNetworkNew).length > 0 || walletInfo.length > 0) {
-      contractInfo(contractNetworkNew, walletInfo)
+    console.log(Object.keys(contractNetworkNew).length, address)
+    if (Object.keys(contractNetworkNew).length > 0 || address) {
+      contractInfo(contractNetworkNew, address)
     }
-  }, [contractNetworkNew, walletInfo])
+  }, [contractNetworkNew, address])
 
   const contractInfo = async (
     item: {
@@ -230,12 +238,12 @@ const MyVault: React.FC = () => {
     const gas = await getGasPrice()
     console.log(gas.toString(), typeof gas)
     setGasPrice(gas.toString())
-    const a = await getWalletAddress()
-    setWalletInfo(a)
-    console.log('----a', a)
-    if (a.length == 0) {
-      connectWallet()
-    }
+    // const a = await getWalletAddress()
+    // setWalletInfo(a)
+    // console.log('----a', a)
+    // if (a.length == 0) {
+    //   connectWallet()
+    // }
 
     const network = await getChainId()
     console.log(network)
@@ -392,12 +400,6 @@ const MyVault: React.FC = () => {
         USDAmount.toString(),
         BTCAmount.toString()
       )
-      // const gasLimit = await bitSmileyContract?.estimateGas.mintFromBTC(
-      //   vault1,
-      //   USDAmount,
-      //   BTCAmount, //btc
-      //   { value: 0, gasPrice: gasPrice }
-      // )
       const parameter = [
         vault1,
         USDAmount,
@@ -445,7 +447,7 @@ const MyVault: React.FC = () => {
       if (receipt) {
         const overviewInit = await overviewData(0, coinType)
         console.log('====>---', overviewInit)
-        contractInfo(contractNetworkNew, walletInfo)
+        contractInfo(contractNetworkNew, address)
         setInputValue(0)
         setWithdrawValue(0)
         setOverviewDataInit(overviewInit)
@@ -527,7 +529,7 @@ const MyVault: React.FC = () => {
       console.log('Transaction confirmed:', receipt.transactionHash)
       console.log('Gas used:', receipt.gasUsed.toString())
       if (receipt) {
-        contractInfo(contractNetworkNew, walletInfo)
+        contractInfo(contractNetworkNew, address)
         const overviewInit = await overviewData(0, coinType)
         console.log('====>---', overviewInit)
         setInputValue(0)
@@ -543,10 +545,10 @@ const MyVault: React.FC = () => {
     }
   }
   /* eslint-disable */
-  const checkAllowance = async (contract: object, address: string) => {
+  const checkAllowance = async (contract: object, address1: string) => {
     const isAllowance = await (
       contract as { allowance: (arg1: string, arg2: string) => Promise<any> }
-    )?.allowance(walletInfo[0], address)
+    )?.allowance(address, address1)
 
     console.log(
       '--Allowance number--',
@@ -657,10 +659,13 @@ const MyVault: React.FC = () => {
 
   const approveFun = async (contract: object, addrees: string) => {
     console.log('approve start--->', inputValue, contract)
-    // const isAllowance = await contract?.approve(
-    //   addrees,
-    //   utilsParseEther(inputValue.toString())
-    // )
+    // const txId = await writeContractAsync({
+    //   abi: erc721Abi,
+    //   address: erc721Address,
+    //   functionName: 'safeTransferFrom',
+    //   args: [address, stakingAddress, BigInt(selectedTokenId), '0x']
+    // })
+
     /* eslint-disable */
     const isAllowance = await (
       contract as { approve: (arg1: any, arg2: any) => Promise<any> }
