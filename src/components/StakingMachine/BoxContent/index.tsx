@@ -18,18 +18,13 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   isHistoryPage
 }) => {
   const { address, isLoading: isConnecting } = useUserInfo()
-  const {
-    userStakes,
-    isFetchingIsStakingEnded,
-    isFetchingUserStakes,
-    isStakingEnded
-  } = useUserStakes()
+  const { userStakes, isFetchingAll, isStakingEnded } = useUserStakes()
 
   const renderContent = useMemo(() => {
     if (isConnecting) return <OnChainLoading />
 
     if (address) {
-      if (isFetchingUserStakes || isFetchingIsStakingEnded) {
+      if (isFetchingAll) {
         return <OnChainLoading />
       }
       if (isHistoryPage) {
@@ -46,10 +41,9 @@ export const BoxContent: React.FC<BoxContentProps> = ({
 
     return <NotConnected />
   }, [
-    address,
     isConnecting,
-    isFetchingUserStakes,
-    isFetchingIsStakingEnded,
+    address,
+    isFetchingAll,
     isHistoryPage,
     isStakingEnded,
     userStakes?.length,
