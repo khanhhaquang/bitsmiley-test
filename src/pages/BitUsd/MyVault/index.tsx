@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import isMobile from 'ismobilejs'
 import { Image } from '@/components/Image'
-import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import './index.scss'
@@ -511,7 +509,7 @@ const MyVault: React.FC = () => {
     setInputNum(0)
     setIsStateValue(1)
   }
-  if (isMobile(window.navigator).any) return <MobilePage />
+
   if (isLoading) return <div>loading...</div>
   if (!mintingPair) return null
 

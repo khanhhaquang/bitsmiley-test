@@ -1,7 +1,5 @@
 import React, { useState, useEffect, SetStateAction } from 'react'
-import isMobile from 'ismobilejs'
 import { Image } from '@/components/Image'
-import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import './index.scss'
@@ -403,7 +401,6 @@ const OpenVault: React.FC = () => {
   const okClick = () => {
     navigate('/mainNet')
   }
-  if (isMobile(window.navigator).any) return <MobilePage />
 
   // if (isNetworkError) return <NetworkErrorPage />
   if (isLoading) return <div>loading...</div>

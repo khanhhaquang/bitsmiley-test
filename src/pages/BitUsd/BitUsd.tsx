@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import isMobile from 'ismobilejs'
-import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import { LinkOutIcon } from '@/assets/icons'
@@ -63,7 +61,7 @@ const BitUsd: React.FC = () => {
       navigate(`./vault/${chainId}`)
     }
   }
-  if (isMobile(window.navigator).any) return <MobilePage />
+
   return (
     <div>
       <Header wallet />
