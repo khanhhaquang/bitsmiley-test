@@ -25,9 +25,8 @@ import useWBTCContract from '@/hooks/useWBTCContract'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import useGetUservault from '@/hooks/useGetUservault'
 
-import { Hash } from 'viem'
 interface overviewBoxObject {
-  availableToMint?:number
+  availableToMint?: number
   debtBitUSD?: number
   collateralRate?: number
   lockedCollateral?: number
@@ -134,8 +133,9 @@ const OpenVault: React.FC = () => {
 
   const getRealTimeOracle = async () => {
     refetchOraclePrice1()
-    if(oraclePrice1!=undefined)
-    {setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))}
+    if (oraclePrice1 != undefined) {
+      setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))
+    }
   }
 
   useEffect(() => {
@@ -165,7 +165,7 @@ const OpenVault: React.FC = () => {
   useEffect(() => {
     if (oraclePrice1 && isAllowance && gitBalanceWBTC) {
       if (gitBalanceWBTC !== undefined) {
-        setBalanceWBTC(utilsFormatEther(gitBalanceWBTC.toString()));
+        setBalanceWBTC(utilsFormatEther(gitBalanceWBTC.toString()))
       }
       if (isAllowance !== undefined) {
         const allowanceNum = Number(utilsFormatEther(isAllowance.toString()))
@@ -178,7 +178,6 @@ const OpenVault: React.FC = () => {
       if (oraclePrice1 !== undefined) {
         setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))
       }
-      
     }
   }, [oraclePrice1, isAllowance, gitBalanceWBTC])
 
@@ -194,7 +193,7 @@ const OpenVault: React.FC = () => {
   const getAvailableBitUSD = async () => {
     const collateral = collateralTypes
     console.log(collateral)
-    if(collateral){
+    if (collateral) {
       const safetyFactor = Number(collateral[1]) / 10 ** 9
       const rate = Number(collateral[2]) / 10 ** 27
 
@@ -203,19 +202,19 @@ const OpenVault: React.FC = () => {
       console.log(collateralEvaluation)
       setAvailableBitUSD(collateralEvaluation)
     }
-    
   }
 
   const blurSetupVault = async () => {
-    if(isAllowance!=undefined)
-    {const allowanceNum = Number(utilsFormatEther(isAllowance.toString()))
-    if (allowanceNum >= inputValue) {
-      setIsApprove(true)
-    } else {
-      setIsApprove(false)
-    }
+    if (isAllowance != undefined) {
+      const allowanceNum = Number(utilsFormatEther(isAllowance.toString()))
+      if (allowanceNum >= inputValue) {
+        setIsApprove(true)
+      } else {
+        setIsApprove(false)
+      }
 
-    getAvailableBitUSD()}
+      getAvailableBitUSD()
+    }
   }
 
   const handApproveFun = async () => {
@@ -226,26 +225,27 @@ const OpenVault: React.FC = () => {
     if (inputValue <= 0) return
     setIsApproveStatus(1)
     console.log('approve start--->', inputValue)
-    if(contractAddresses?.WBTC !=undefined)
-    {const txnId = await writeContractAsync({
-      abi: bitUSDABI,
-      address: contractAddresses?.WBTC,
-      functionName: 'approve',
-      args: [
-        contractAddresses?.BitSmiley,
-        utilsParseEther(inputValue.toString())
-      ]
-    })
-    console.log(txnId)
-    setTxnId(txnId)
-    addTransaction(txnId)
-    if (status !== 'pending') {
-      setIsLodingValue(false)
-      setIsStateValue(1)
-      setIsApprove(true)
-    } else {
-      setIsLodingValue(true)
-    }}
+    if (contractAddresses?.WBTC != undefined) {
+      const txnId = await writeContractAsync({
+        abi: bitUSDABI,
+        address: contractAddresses?.WBTC,
+        functionName: 'approve',
+        args: [
+          contractAddresses?.BitSmiley,
+          utilsParseEther(inputValue.toString())
+        ]
+      })
+      console.log(txnId)
+      setTxnId(txnId)
+      addTransaction(txnId)
+      if (status !== 'pending') {
+        setIsLodingValue(false)
+        setIsStateValue(1)
+        setIsApprove(true)
+      } else {
+        setIsLodingValue(true)
+      }
+    }
   }
   useEffect(() => {
     let closeTimeout: NodeJS.Timeout
@@ -293,14 +293,14 @@ const OpenVault: React.FC = () => {
     setIsApproveStatus(2)
     try {
       const collateral = utilsParseEther(inputValue.toString())
-      if(contractAddresses?.BitSmiley != undefined){
+      if (contractAddresses?.BitSmiley != undefined) {
         const txnId = await writeContractAsync({
           abi: bitSmileyABI,
           address: contractAddresses?.BitSmiley,
           functionName: 'openVaultAndMintFromBTC',
           args: [0, collateral]
         })
-        if(txnId){
+        if (txnId) {
           setTxnId(txnId)
           addTransaction(txnId)
           if (status !== 'pending') {
@@ -313,7 +313,6 @@ const OpenVault: React.FC = () => {
           }
         }
       }
-      
     } catch (err) {
       setIsStateValue(5)
       console.log(err)
@@ -322,33 +321,34 @@ const OpenVault: React.FC = () => {
 
   const overviewData = async () => {
     const result = vaultManagerDataInit
-    if(result?.liquidationPrice !== undefined && 
-      result?.collateralRate !== undefined&& 
-      result?.debtBitUSD !== undefined&& 
-      result?.lockedCollateral !== undefined&& 
-      result?.availableToWithdraw !== undefined&& 
+    if (
+      result?.liquidationPrice !== undefined &&
+      result?.collateralRate !== undefined &&
+      result?.debtBitUSD !== undefined &&
+      result?.lockedCollateral !== undefined &&
+      result?.availableToWithdraw !== undefined &&
       result?.availableToMint !== undefined
-      ){
-        const arr = {
-          liquidationPrice: Number(
-            utilsFormatEther(result?.liquidationPrice.toString())
-          ),
-          // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
-          collateralRate: (Number(result?.collateralRate) / 1000) * 100,
-          debtBitUSD: Number(utilsFormatEther(result?.debtBitUSD.toString())),
-          lockedCollateral: Number(
-            utilsFormatEther(result?.lockedCollateral.toString())
-          ),
-          availableToWithdraw: Number(
-            utilsFormatEther(result?.availableToWithdraw.toString())
-          ),
-          availableToMint: Number(
-            utilsFormatEther(result?.availableToMint.toString())
-          )
-        }
-        console.log(arr)
-        return arr
+    ) {
+      const arr = {
+        liquidationPrice: Number(
+          utilsFormatEther(result?.liquidationPrice.toString())
+        ),
+        // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
+        collateralRate: (Number(result?.collateralRate) / 1000) * 100,
+        debtBitUSD: Number(utilsFormatEther(result?.debtBitUSD.toString())),
+        lockedCollateral: Number(
+          utilsFormatEther(result?.lockedCollateral.toString())
+        ),
+        availableToWithdraw: Number(
+          utilsFormatEther(result?.availableToWithdraw.toString())
+        ),
+        availableToMint: Number(
+          utilsFormatEther(result?.availableToMint.toString())
+        )
       }
+      console.log(arr)
+      return arr
+    }
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -367,13 +367,14 @@ const OpenVault: React.FC = () => {
     }
 
     const result = vaultManagerData
-    if(result?.liquidationPrice != undefined && 
-      result?.collateralRate != undefined&& 
-      result?.debtBitUSD != undefined&& 
-      result?.lockedCollateral != undefined&& 
-      result?.availableToWithdraw != undefined&& 
+    if (
+      result?.liquidationPrice != undefined &&
+      result?.collateralRate != undefined &&
+      result?.debtBitUSD != undefined &&
+      result?.lockedCollateral != undefined &&
+      result?.availableToWithdraw != undefined &&
       result?.availableToMint != undefined
-      ){
+    ) {
       const arr = {
         liquidationPrice: Number(
           utilsFormatEther(result?.liquidationPrice.toString())
@@ -395,7 +396,6 @@ const OpenVault: React.FC = () => {
       // console.log('====>---', overviewInit)
       setOverviewAfterDataInit(arr)
     }
-    
   }
 
   const onClickMintBitUsd = async () => {
@@ -425,7 +425,7 @@ const OpenVault: React.FC = () => {
           functionName: 'mintFromBTC',
           args: parameter
         })
-        if(txnId){
+        if (txnId) {
           setTxnId(txnId)
           addTransaction(txnId)
           if (status !== 'pending') {
@@ -436,8 +436,6 @@ const OpenVault: React.FC = () => {
           }
         }
       }
-      
-      
     } catch (err) {
       console.log(err)
     }
