@@ -6,7 +6,7 @@ import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import { setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { AkarIconslinkOutIcon } from '@/assets/icons'
+import { LinkOutIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { vaultsInfoService } from '@/services/vaultsInfo'
 import Tooltip from '@/components/Tooltip'
@@ -78,7 +78,7 @@ const BitUsd: React.FC = () => {
       <div>
         {myVaults.length > 0 && (
           <>
-            <div className=" mx-auto mt-[164px] max-w-[1434px]">
+            <div className="mx-auto mt-[164px] max-w-[1434px]">
               <TitleBox message="My Vaults" isWhite={true} />
             </div>
             <MyVaults
@@ -98,7 +98,7 @@ const BitUsd: React.FC = () => {
             />
           </>
         )}
-        <p className="mb-[177px] mt-[194px] flex justify-center text-[rgba(255,255,255,.5)]">
+        <p className="mb-[177px] mt-[194px] flex justify-center text-white/5">
           More assets coming soon...
         </p>
       </div>
@@ -107,7 +107,7 @@ const BitUsd: React.FC = () => {
 }
 
 const AvailableMintingPairs: React.FC<{
-  list: Array<Vault>
+  list: Vault[]
   handleClick: (item: Vault) => void
 }> = ({ list, handleClick }) => {
   const renderedItems = list.map(
@@ -122,8 +122,8 @@ const AvailableMintingPairs: React.FC<{
                   ? 'wBTC2 - bitUSD'
                   : `wBTC${index + 1} - bitUSD`}
             </li>
-            <li className="flex flex-1 items-center justify-end text-right">
-              {item.network} <AkarIconslinkOutIcon />
+            <li className="flex flex-1 items-center justify-end gap-x-1.5 text-right">
+              {item.network} <LinkOutIcon />
             </li>
             <li className="flex-1 text-right">{item.maxLTV * 100}%</li>
             <li className="flex-1 text-right">{item.borrowRate * 100}%</li>
@@ -184,7 +184,7 @@ const MyVaults: React.FC<{
                   : `wBTC${index + 1} - bitUSD`}
             </li>
             <li className="flex flex-1 items-center justify-center text-center">
-              {item.network} <AkarIconslinkOutIcon />
+              {item.network} <LinkOutIcon />
             </li>
             <li className="mr-[10px] flex-1 text-right">
               {item.collateralRatio * 100}%
