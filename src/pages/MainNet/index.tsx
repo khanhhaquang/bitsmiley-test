@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import isMobile from 'ismobilejs'
-// import { NetworkErrorPage } from '@/pages/Main/NetworkErrorPage'
-// import { useSelector } from 'react-redux'
 import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import { setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { AkarIconslinkOutIcon } from '@/assets/icons'
-import './index.scss'
 import { useUserInfo } from '@/hooks/useUserInfo'
-// import { ethers } from 'ethers'
 import {
   utilsGetNetwork,
   networkChange,
@@ -18,17 +15,11 @@ import {
   connectWallet,
   getWalletAddress
 } from '@/ethersConnect'
-import { useNavigate } from 'react-router-dom'
-// import Wallet from './getAddress'
-
-// import { useStoreActions } from '@/hooks/useStoreActions'
-// import { useQueryClient } from 'react-query'
-
 import { vaultsInfoService } from '@/services/vaultsInfo'
 import Tooltip from '@/components/Tooltip'
-// import { useCheckInsctiption } from '@/hooks/useCheckInscription'
+import './index.scss'
 
-interface itemType {
+interface Vault {
   isOpenVault: boolean
   network: string
   maxLTV: number
@@ -46,8 +37,8 @@ const MainNet: React.FC = () => {
   console.log(address, isConnected)
   const navigate = useNavigate()
 
-  const [mintingPairsInfo, setMintingPairsInfo] = useState<Array<itemType>>([])
-  const [myVaultsList, setmyVaultsList] = useState<Array<itemType>>([])
+  const [mintingPairsInfo, setMintingPairsInfo] = useState<Array<Vault>>([])
+  const [myVaultsList, setmyVaultsList] = useState<Array<Vault>>([])
   setLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC, 'false')
 
   // const queryClient = useQueryClient()
@@ -78,9 +69,9 @@ const MainNet: React.FC = () => {
       }
       const { data } = await vaultsInfoService.getMintingPairsInfo.call(a[0])
       console.log(data.data)
-      const array1: Array<itemType> = [],
-        array2: Array<itemType> = []
-      data.data.forEach((v: itemType) => {
+      const array1: Array<Vault> = [],
+        array2: Array<Vault> = []
+      data.data.forEach((v: Vault) => {
         v.isOpenVault ? array1.push(v) : array2.push(v)
       })
       setmyVaultsList(array1)
@@ -94,7 +85,7 @@ const MainNet: React.FC = () => {
     projectFun()
   }, [])
 
-  const navigateowernPage = async (item: itemType) => {
+  const navigateowernPage = async (item: Vault) => {
     console.log(item)
     setLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO, JSON.stringify(item))
     const network = await getChainId()
@@ -102,10 +93,10 @@ const MainNet: React.FC = () => {
       const id = await utilsGetNetwork(item.chainId)
       networkChange(parseInt(id))
     } else {
-      navigate('/myVault')
+      navigate('/my-vault')
     }
   }
-  const navigatePage = async (item: itemType) => {
+  const navigatePage = async (item: Vault) => {
     console.log(item)
     setLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO, JSON.stringify(item))
     const network = await getChainId()
@@ -123,31 +114,27 @@ const MainNet: React.FC = () => {
     <div>
       <Header wallet />
       <div>
-        {myVaultsList.length > 0 ? (
+        {myVaultsList.length > 0 && (
           <>
             <div className=" mx-auto mt-[164px] max-w-[1434px]">
               <TitleBox message="My Vaults" isWhite={true} />
             </div>
             <MyVaults
               list={myVaultsList}
-              handleClick={(item: itemType) => navigateowernPage(item)}
+              handleClick={(item: Vault) => navigateowernPage(item)}
             />
           </>
-        ) : (
-          <></>
         )}
-        {mintingPairsInfo.length > 0 ? (
+        {mintingPairsInfo.length > 0 && (
           <>
             <div className=" mx-auto mt-[164px] max-w-[1434px]">
               <TitleBox message="Available Minting Pairs" />
             </div>
             <AvailableMintingPairs
               list={mintingPairsInfo}
-              handleClick={(item: itemType) => navigatePage(item)}
+              handleClick={(item: Vault) => navigatePage(item)}
             />
           </>
-        ) : (
-          <></>
         )}
         <p className="mb-[177px] mt-[194px] flex justify-center text-[rgba(255,255,255,.5)]">
           More assets coming soon...
@@ -158,12 +145,12 @@ const MainNet: React.FC = () => {
 }
 
 const AvailableMintingPairs: React.FC<{
-  list: Array<itemType>
-  handleClick: (item: itemType) => void
+  list: Array<Vault>
+  handleClick: (item: Vault) => void
 }> = ({ list, handleClick }) => {
-  const renderedItems = list.map((item: itemType, index: number) =>
+  const renderedItems = list.map((item: Vault, index: number) =>
     !item.isOpenVault ? (
-      <dd className="table_border_bottom" key={index}>
+      <dd className="border-b-2 border-dashed border-white/50" key={index}>
         <ul className=" flex items-center px-[12px] py-[24px] font-ibmr text-white">
           <li className=" w-[140px] whitespace-nowrap">
             {item.network == 'Merlin'
@@ -197,12 +184,12 @@ const AvailableMintingPairs: React.FC<{
     <>
       <div className="">
         <dl className="mx-auto mt-[50px] max-w-[1220px]">
-          <dt className="table_border_bottom pb-[24px]">
+          <dt className="border-b-2 border-dashed border-white/50 pb-[24px]">
             <ul className="table_title_color flex justify-between font-ibmb">
               <li className="w-[140px]"></li>
               <li className="flex-1 text-right">Network</li>
               <li className="flex-1 text-right">
-                <Tooltip text="">
+                <Tooltip text="MAX LTV">
                   <span>Max LTV ⓘ</span>
                 </Tooltip>
               </li>
@@ -213,22 +200,6 @@ const AvailableMintingPairs: React.FC<{
             </ul>
           </dt>
           {renderedItems}
-
-          {/* <dd className="table_border_bottom">
-            <ul className=" flex items-center text-white py-[24px] px-[12px]  font-ibmr">
-              <li className="flex-1 w-64">wBTC1 - bitUSD</li>
-              <li className="flex-1 w-64 text-center flex justify-center items-center">Merlin <AkarIconslinkOutIcon /></li>
-              <li className="flex-none w-[93px] text-right mr-[50px]">50.998899%</li>
-              <li className="flex-none w-[132px] text-right mr-[50px]">50%</li>
-              <li className="flex-none w-[160px] text-right mr-[50px]">0 .50</li>
-              <li className="flex-none w-[141px] text-right">1.2 mil</li>
-              <li className="flex-1 w-64 text-right">
-                <button className=" font-ibmb w-[133px] h-[34px] bg-white text-gray-950">
-                  mint bitUSD
-                  </button>
-                </li>
-            </ul>
-          </dd> */}
         </dl>
       </div>
     </>
@@ -236,13 +207,12 @@ const AvailableMintingPairs: React.FC<{
 }
 
 const MyVaults: React.FC<{
-  list: Array<itemType>
-  handleClick: (item: itemType) => void
+  list: Array<Vault>
+  handleClick: (item: Vault) => void
 }> = ({ list, handleClick }) => {
-  const renderedItems = list.map((item: itemType, index: number) =>
-    // item.isOpenVault?isShowLenght+=1:isShowLenght;
+  const renderedItems = list.map((item: Vault, index: number) =>
     item.isOpenVault ? (
-      <dd className="table_border_bottom" key={index}>
+      <dd className="border-b-2 border-dashed border-white/50" key={index}>
         <ul className=" flex items-center px-[12px] py-[24px] font-ibmr text-white">
           <li className="flex-1">
             {item.network == 'Merlin'
@@ -279,7 +249,7 @@ const MyVaults: React.FC<{
     <>
       <div className="">
         <dl className="mx-auto mt-[50px] max-w-[1220px] ">
-          <dt className="table_border_bottom pb-[24px]">
+          <dt className="border-b-2 border-dashed border-white/50 pb-[24px]">
             <ul className="table_title_color flex justify-between font-ibmb">
               <li className="flex-1"></li>
               <li className="flex-1 text-center">Network</li>
@@ -290,20 +260,6 @@ const MyVaults: React.FC<{
             </ul>
           </dt>
           {renderedItems}
-          {/* <dd className="table_border_bottom">
-            <ul className=" flex items-center text-white py-[24px] px-[12px] font-ibmr">
-              <li className="flex-1 w-64">wBTC1 - bitUSD</li> 
-              <li className="flex-1 w-64 text-center flex justify-center items-center">Merlin <AkarIconslinkOutIcon /></li>
-              <li className="flex-none w-[183px] text-right mr-[80px]">50%</li>
-              <li className="flex-none w-[164px] text-right">4.4 BTC</li>
-              <li className="flex-1 text-right mr-[50px]">5,600 $ </li>
-              <li className="flex-1 w-64 text-right">
-                <button className="w-[133px] h-[34px] bg-white text-gray-950 font-ibmb"
-                onClick={handleClick}
-                >Enter Vault</button>
-                </li>
-            </ul>
-          </dd> */}
         </dl>
       </div>
     </>

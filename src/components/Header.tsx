@@ -21,7 +21,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
           {!isHome && (
             <>
               <LinkItem name="Home" pathname="/" />
-              <LinkItem name="AlphaNet" pathname="/mainNet" />
+              <LinkItem name="AlphaNet" pathname="/bit-usd" />
             </>
           )}
           <div className="relative">
@@ -40,7 +40,7 @@ const EnterAppButton: React.FC = () => {
 
   const featuresEnabled = useSelector(getFeaturesEnabled)
 
-  const isEntered = location.pathname === '/mainNet'
+  const isEntered = location.pathname.startsWith('/bit-usd')
   const isAlphaNetEnabled = featuresEnabled?.AlphaNet === FeatureEnabled.ENABLED
 
   if (isEntered || !isAlphaNetEnabled) return null
@@ -48,7 +48,7 @@ const EnterAppButton: React.FC = () => {
   return (
     <div
       className="group absolute top-[calc(100%+27px)] h-full w-full cursor-pointer"
-      onClick={() => navigate('/mainNet')}>
+      onClick={() => navigate('/bit-usd')}>
       <div className="relative flex h-full w-full items-center justify-center whitespace-nowrap bg-green/10 uppercase text-green group-hover:bg-green/30 group-hover:font-bold group-hover:text-opacity-70 group-active:bg-green/10">
         <span>Enter APP</span>
         <RightAngleThin className="absolute left-0 top-0" />
