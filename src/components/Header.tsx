@@ -1,20 +1,20 @@
 import { cn } from '@/utils/cn'
 import { HeaderIcon, RightAngleThin } from '@/assets/icons'
 import { ConnectWallet } from './ConnectWallet'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { getFeaturesEnabled } from '@/store/common/reducer'
 import { FeatureEnabled } from '@/services/project'
 
 export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
   const location = useLocation()
-  const navigate = useNavigate()
-
   const isHome = location.pathname === '/'
 
   return (
     <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-[120px] text-white">
-      <HeaderIcon onClick={() => navigate('/')} className="cursor-pointer" />
+      <Link to="/">
+        <HeaderIcon />
+      </Link>
 
       {!!wallet && (
         <div className="flex items-center gap-x-9">
@@ -64,16 +64,13 @@ const LinkItem: React.FC<{ name: string; pathname: string }> = ({
   name,
   pathname
 }) => {
-  const navigate = useNavigate()
   const location = useLocation()
-
-  const isActive = location.pathname === pathname
+  const isToHome = pathname === '/'
+  const isActive = !isToHome && location.pathname.startsWith(pathname)
 
   return (
-    <div
-      className={cn('text-sm cursor-pointer', isActive && 'text-blue')}
-      onClick={() => navigate(pathname)}>
+    <Link className={cn('text-sm', isActive && 'text-blue')} to={pathname}>
       {name}
-    </div>
+    </Link>
   )
 }
