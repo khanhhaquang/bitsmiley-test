@@ -136,10 +136,8 @@ const OpenVault: React.FC = () => {
   }, [vaultManagerDataInit, vault1])
 
   useEffect(() => {
-    if (oraclePrice1 && isAllowance && gitBalanceWBTC) {
-      if (gitBalanceWBTC !== undefined) {
-        setBalanceWBTC(formatEther(BigInt(gitBalanceWBTC)))
-      }
+    if (oraclePrice1 || isAllowance) {
+      setBalanceWBTC(formatEther(BigInt(gitBalanceWBTC || '')))
       if (isAllowance !== undefined) {
         const allowanceNum = Number(formatEther(BigInt(isAllowance)))
         if (allowanceNum >= inputValue) {
@@ -152,8 +150,7 @@ const OpenVault: React.FC = () => {
         setOraclePriceOracle(Number(formatEther(BigInt(oraclePrice1))))
       }
     }
-  }, [oraclePrice1, isAllowance, gitBalanceWBTC])
-
+  }, [oraclePrice1, isAllowance])
   useEffect(() => {
     if (collateralTypes && oraclePrice) {
       getAvailableBitUSD()
@@ -195,12 +192,13 @@ const OpenVault: React.FC = () => {
     if (inputValue <= 0) return
     setIsApproveStatus(1)
     console.log('approve start--->', inputValue)
+    console.log(parseEther(inputValue.toString()))
     if (contractAddresses?.WBTC != undefined) {
       const txnId = await writeContractAsync({
         abi: bitUSDABI,
         address: contractAddresses?.WBTC,
         functionName: 'approve',
-        args: [contractAddresses?.BitSmiley, formatEther(BigInt(inputValue))]
+        args: [contractAddresses?.BitSmiley, parseEther(inputValue.toString())]
       })
       console.log(txnId)
       setTxnId(txnId)
@@ -244,7 +242,7 @@ const OpenVault: React.FC = () => {
 
       setIsApprove(true)
       closeTimeout = setTimeout(() => {
-        localStorage.removeItem('txids')
+        removeTransaction(txnId?.toString() || '')
       }, 5000)
     }
     ;() => {
@@ -259,7 +257,7 @@ const OpenVault: React.FC = () => {
     }
     setIsApproveStatus(2)
     try {
-      const collateral = formatEther(BigInt(inputValue))
+      const collateral = parseEther(inputValue.toString())
       if (contractAddresses?.BitSmiley != undefined) {
         const txnId = await writeContractAsync({
           abi: bitSmileyABI,
@@ -399,7 +397,7 @@ const OpenVault: React.FC = () => {
     setIsStateValue(1)
   }
   const okClick = () => {
-    navigate('/mainNet')
+    navigate('/bit-usd')
   }
 
   // if (isNetworkError) return <NetworkErrorPage />
@@ -514,7 +512,7 @@ const OpenVault: React.FC = () => {
                     <MintBitUSDBox
                       isOk={true}
                       handleClick={() => {}}
-                      toastMsg="Your vault change is completed. You can find the changes in the Vault History below."
+                      toastMsg="Your vault change is completed. "
                       handleOkClick={okClick}
                     />
                   ) : isState == 5 ? (
@@ -931,12 +929,15 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Liquidation Price</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData.liquidationPrice || 0, 4))}
+              $
+              {listData.liquidationPrice == '0'
+                ? ' -'
+                : formatMoney(formatDecimal(listData.liquidationPrice || 0, 2))}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
               ${' '}
               {formatMoney(
-                formatDecimal(afterDataInit.liquidationPrice || 0, 4)
+                formatDecimal(afterDataInit.liquidationPrice || 0, 2)
               )}{' '}
               after ⓘ{/* $ {afterDataInit.liquidationPrice} after ⓘ  */}
             </div>

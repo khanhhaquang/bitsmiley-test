@@ -24,8 +24,8 @@ const useUserVaultManager = (val: number, isDeposit: boolean, type: number) => {
     parameter = vault1 && [
       commonParam.BTC,
       vault1,
-      BigInt(amount),
       BigInt(0),
+      BigInt(amount),
       BigInt(safeRate * 10000000)
     ]
   } else {
@@ -54,13 +54,11 @@ const useUserVaultManager = (val: number, isDeposit: boolean, type: number) => {
         BigInt(commonParam.safeRate * 10000000)
       ]
     })
-
   const { data: vaultManagerAfterData, refetch: refetchVaultManagerAfterData } =
     useReadVaultManagerGetVaultChange({
       address: contractAddresses?.VaultManager,
       args: parameter
     })
-
   return {
     vaultManagerData,
     refetchVaultManagerData,

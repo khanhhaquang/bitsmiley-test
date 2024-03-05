@@ -148,7 +148,7 @@ const MyVault: React.FC = () => {
       setIsLodingValue(false)
       setTxnId(undefined)
       closeTimeout = setTimeout(() => {
-        localStorage.removeItem('txids')
+        removeTransaction(txnId?.toString() || '')
       }, 5000)
     }
     ;() => {
@@ -203,16 +203,18 @@ const MyVault: React.FC = () => {
     const overviewInit = await overviewData(1)
     setOverviewDataInit(overviewInit)
   }
-
+  console.log(vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC)
   useEffect(() => {
-    if (vaultManagerData && gitBalanceBitUSD && gitBalanceWBTC) {
+    console.log(vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC)
+    console.log(vaultManagerData && gitBalanceBitUSD && gitBalanceWBTC)
+    if (vaultManagerData) {
       console.log('vaultManagerData', vaultManagerData)
       setBitUsdBalance(formatEther(gitBalanceBitUSD.toString()))
       setBalanceWBTC(formatEther(gitBalanceWBTC.toString()))
       initData()
     }
-  }, [vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC, initData])
-
+    //  eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC])
   const overviewData = async (type: number) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any = {}
@@ -221,33 +223,26 @@ const MyVault: React.FC = () => {
     } else {
       result = vaultManagerAfterData
     }
-    console.log(vaultManagerData)
+    console.log(vaultManagerData, vaultManagerAfterData)
     // const result = vaultManagerData
-    if (
-      result.liquidationPrice !== undefined &&
-      result.collateralRate !== undefined &&
-      result.debtBitUSD !== undefined &&
-      result.lockedCollateral !== undefined &&
-      result.availableToWithdraw !== undefined &&
-      result.availableToMint !== undefined
-    ) {
-      const arr = {
-        liquidationPrice: Number(
-          formatEther(result.liquidationPrice.toString())
-        ),
-        collateralRate: (Number(result.collateralRate) / 1000) * 100,
-        debtBitUSD: Number(formatEther(result.debtBitUSD)),
-        lockedCollateral: Number(
-          formatEther(result.lockedCollateral.toString())
-        ),
-        availableToWithdraw: Number(
-          formatEther(result.availableToWithdraw.toString())
-        ),
-        availableToMint: Number(formatEther(result.availableToMint.toString()))
-      }
-      console.log(arr)
-      return arr
+    const arr = {
+      liquidationPrice: Number(
+        formatEther(result.liquidationPrice.toString() || '')
+      ),
+      collateralRate: (Number(result.collateralRate) / 1000) * 100,
+      debtBitUSD: Number(formatEther(result.debtBitUSD || '')),
+      lockedCollateral: Number(
+        formatEther(result.lockedCollateral.toString() || '')
+      ),
+      availableToWithdraw: Number(
+        formatEther(result.availableToWithdraw.toString())
+      ),
+      availableToMint: Number(
+        formatEther(result.availableToMint.toString() || '')
+      )
     }
+    console.log(arr)
+    return arr
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -621,7 +616,7 @@ const MyVault: React.FC = () => {
                       isOk={true}
                       handleClick={() => {}}
                       handClickOk={handClickOk}
-                      toastMsg="Your vault change is completed. You can find the changes in the Vault History below."
+                      toastMsg="Your vault change is completed."
                     />
                   ) : (
                     <MintBitUSDBox
@@ -745,9 +740,9 @@ const SetupVault: React.FC<{
         </div>
       ) : type == 1 ? (
         <div className="mb-[14px] mt-[25px] flex items-center justify-between font-ibmr text-[14px] text-white">
-          <span>Return bitUSD</span>
+          <span>Repay bitUSD</span>
           <span>
-            Total Debt: {formatMoney(formatDecimal(Number(bitUsdBalance)))}
+            Total Debt: {formatMoney(formatDecimal(Number(bitUsdBalance), 4))}
           </span>
         </div>
       ) : (
@@ -756,7 +751,6 @@ const SetupVault: React.FC<{
       <div className="mb-[15px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          min="1"
           className={`input_style flex h-[47px] w-auto items-center font-ibmb
         text-[36px] leading-[47px] hover:border-none ${
           !isDeposit ? 'text-white/[.5] opacity-50' : ''
@@ -890,10 +884,10 @@ const ConfirmBox: React.FC<{
       id: 3,
       name: 'Liquidation price',
       num1:
-        '$ ' + formatMoney(formatDecimal(listData.liquidationPrice || 0, 4)),
+        '$ ' + formatMoney(formatDecimal(listData.liquidationPrice || 0, 2)),
       num2:
         '$ ' +
-        formatMoney(formatDecimal(afterDataInit.liquidationPrice || 0, 4))
+        formatMoney(formatDecimal(afterDataInit.liquidationPrice || 0, 2))
     },
     {
       id: 4,
@@ -923,18 +917,18 @@ const ConfirmBox: React.FC<{
     {
       id: 2,
       name: 'Health factor',
-      num1: formatMoney(formatDecimal(listData.collateralRate || 0, 2)) + '%',
+      num1: formatMoney(formatDecimal(listData.collateralRate || 0, 2)) + ' %',
       num2:
-        formatMoney(formatDecimal(afterDataInit.collateralRate || 0, 2)) + '%'
+        formatMoney(formatDecimal(afterDataInit.collateralRate || 0, 2)) + ' %'
     },
     {
       id: 3,
       name: 'Liquidation Price',
       num1:
-        '$ ' + formatMoney(formatDecimal(listData.liquidationPrice || 0, 4)),
+        '$ ' + formatMoney(formatDecimal(listData.liquidationPrice || 0, 2)),
       num2:
         '$ ' +
-        formatMoney(formatDecimal(afterDataInit.liquidationPrice || 0, 4))
+        formatMoney(formatDecimal(afterDataInit.liquidationPrice || 0, 2))
     },
     {
       id: 4,
@@ -1098,12 +1092,12 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Liquidation Price</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData?.liquidationPrice || 0, 4))}
+              ${formatMoney(formatDecimal(listData?.liquidationPrice || 0, 2))}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
               ${' '}
               {formatMoney(
-                formatDecimal(afterDataInit.liquidationPrice || 0, 4)
+                formatDecimal(afterDataInit.liquidationPrice || 0, 2)
               )}{' '}
               after ⓘ{/* $ {afterDataInit.liquidationPrice} after ⓘ  */}
             </div>
@@ -1111,10 +1105,10 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%] pl-[10px]">
             <p className="font-ibmr text-base">Health factor</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              {formatDecimal(listData?.collateralRate || 0, 2)}%
+              {formatDecimal(listData?.collateralRate || 0, 2)} %
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              %{formatDecimal(afterDataInit.collateralRate || 0, 2)} after ⓘ
+              {formatDecimal(afterDataInit.collateralRate || 0, 2)}% after ⓘ
             </div>
           </div>
           <div className="mt-[24px] w-[50%]">

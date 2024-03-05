@@ -32,7 +32,6 @@ const useWBTCContract = () => {
       address: contractAddresses?.WBTC,
       args: address && [address]
     })
-
   return {
     isAllowanceVaultManager,
     refetchisAllowanceVaultManager,
