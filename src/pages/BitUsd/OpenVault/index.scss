@@ -6,21 +6,21 @@
 }
 .line_bottom{
   height: 1px;
-  background: url('../../assets/net/line.png') no-repeat center bottom/100%;
+  background: url('@/assets/net/line.png') no-repeat center bottom/100%;
 }
 .grid_bg{
-  background: url('../../assets/net/grid_bg.png') no-repeat center 22px/100% 100%;
+  background: url('@/assets/net/grid_bg.png') no-repeat center 22px/100% 100%;
 }
 .grid_bg_blue{
-  background: url('../../assets/net/grid_bg_blue.png') no-repeat center 22px/100% 100%;
+  background: url('@/assets/net/grid_bg_blue.png') no-repeat center 22px/100% 100%;
 
 }
 .union01{
-  background: url('../../assets/net/Union.png') no-repeat center top/100%;
+  background: url('@/assets/net/Union.png') no-repeat center top/100%;
 
 }
 .button_white{
-  background: url('../../assets/net/frame.png') no-repeat center top/100% 100%;
+  background: url('@/assets/net/frame.png') no-repeat center top/100% 100%;
 }
 .input_style{
   background: none;
@@ -40,12 +40,12 @@
 .button_bg{
   width: 6px;
   height: 77px;
-  background: url('../../assets/net/Frame01.png') no-repeat center center/100%;
+  background: url('@/assets/net/Frame01.png') no-repeat center center/100%;
 }
 .button_bg2{
   width: 6px;
   height: 77px;
-  background: url('../../assets/net/Frame02.png') no-repeat center center/100%;
+  background: url('@/assets/net/Frame02.png') no-repeat center center/100%;
 }
 .blendMode{
   // width: 100%;
