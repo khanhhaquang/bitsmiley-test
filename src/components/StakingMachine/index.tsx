@@ -45,7 +45,7 @@ const MarqueeText: React.FC = () => {
   const label = 'NFT STAKING IS HERE'
 
   return (
-    <div className="absolute bottom-[146px] left-[205px] h-[104px] w-[660px] bg-black">
+    <div className="absolute bottom-[132px] left-[205px] z-[-1] h-fit w-[660px] bg-black">
       <Marquee speed={75} className="font-sdm text-[80px] text-yellow2">
         <span className="mr-6">{label}</span>
       </Marquee>

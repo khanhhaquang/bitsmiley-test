@@ -27,17 +27,17 @@ const Routes = () => {
 
   const alphaNetRoutes = [
     {
-      path: '/mainNet',
-      id: 'mainNet',
+      path: '/bit-usd',
+      id: 'bitUsd',
       element: <MainNet />
     },
     {
-      path: '/openVault',
+      path: '/open-vault',
       id: 'openVault',
       element: <OpenVault />
     },
     {
-      path: '/myVault',
+      path: '/my-vault',
       id: 'myVault',
       element: <MyVault />
     }
