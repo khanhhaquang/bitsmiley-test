@@ -209,8 +209,8 @@ const MyVault: React.FC = () => {
     console.log(vaultManagerData && gitBalanceBitUSD && gitBalanceWBTC)
     if (vaultManagerData) {
       console.log('vaultManagerData', vaultManagerData)
-      setBitUsdBalance(formatEther(gitBalanceBitUSD.toString()))
-      setBalanceWBTC(formatEther(gitBalanceWBTC.toString()))
+      setBitUsdBalance(formatEther(gitBalanceBitUSD?.toString()))
+      setBalanceWBTC(formatEther(gitBalanceWBTC?.toString()))
       initData()
     }
     //  eslint-disable-next-line react-hooks/exhaustive-deps

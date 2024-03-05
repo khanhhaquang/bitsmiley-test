@@ -930,7 +930,7 @@ const MintBitUsdOverviewBox: React.FC<{
             <p className="font-ibmr text-base">Liquidation Price</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
               $
-              {listData.liquidationPrice == '0'
+              {listData?.liquidationPrice == 0
                 ? ' -'
                 : formatMoney(formatDecimal(listData.liquidationPrice || 0, 2))}
             </h1>
