@@ -15,7 +15,7 @@ import { displayAddress } from '@/utils/formatter'
 import useContractAddresses from '@/hooks/useNetworkAddresses'
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import useUserVultManager from '@/hooks/useUserVultManager'
+import useUserVaultManager from '@/hooks/useUserVaultManager'
 import useGetOraclePrice from '@/hooks/useGetOraclePrice'
 import useWBTCContract from '@/hooks/useWBTCContract'
 import { useStoreActions } from '@/hooks/useStoreActions'
@@ -70,9 +70,9 @@ const OpenVault: React.FC = () => {
   const { writeContractAsync } = useWriteContract()
   const { address } = useUserInfo()
 
-  const { vaultManagerData } = useUserVultManager(inputValue)
+  const { vaultManagerData } = useUserVaultManager(inputValue)
   const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
-    useUserVultManager(0)
+    useUserVaultManager(0)
   const [txnId, setTxnId] = useState<Hash>()
   const { status } = useWaitForTransactionReceipt({ hash: txnId })
 

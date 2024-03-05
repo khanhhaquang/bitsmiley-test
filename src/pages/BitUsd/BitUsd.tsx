@@ -53,7 +53,7 @@ const BitUsd: React.FC = () => {
 
   const goToMyVaults = async (item: Vault) => {
     if (item.chainId === chainId) {
-      navigate(`./vault/${chainId}`)
+      navigate(`./my-vault/${chainId}`)
     }
   }
   const goToOpenVault = async (item: Vault) => {

@@ -6,11 +6,7 @@ import useContractAddresses from './useNetworkAddresses'
 import useGetUservault from './useGetUservault'
 import { parseEther } from 'viem'
 
-const useUserVultManagerChange = (
-  val: number,
-  isDeposit: boolean,
-  type: number
-) => {
+const useUserVaultManager = (val: number, isDeposit: boolean, type: number) => {
   const contractAddresses = useContractAddresses()
   const { vault1 } = useGetUservault()
   const Ctype = type === 0 ? 0 : type === 1 ? 1 : type
@@ -73,4 +69,4 @@ const useUserVultManagerChange = (
   }
 }
 
-export default useUserVultManagerChange
+export default useUserVaultManager

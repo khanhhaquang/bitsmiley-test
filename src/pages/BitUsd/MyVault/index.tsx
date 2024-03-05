@@ -14,7 +14,7 @@ import useContractAddresses from '@/hooks/useNetworkAddresses'
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
-import useUserVultManagerChange from '@/hooks/useUserVultManagerChange'
+import useUserVaultManagerChange from '@/hooks/useUserVaultManagerChange'
 import useGetOraclePrice from '@/hooks/useGetOraclePrice'
 import useWBTCContract from '@/hooks/useWBTCContract'
 import { useStoreActions } from '@/hooks/useStoreActions'
@@ -94,7 +94,7 @@ const MyVault: React.FC = () => {
     refetchVaultManagerData,
     vaultManagerAfterData,
     refetchVaultManagerAfterData
-  } = useUserVultManagerChange(inputNum, isDeposit, coinType)
+  } = useUserVaultManagerChange(inputNum, isDeposit, coinType)
   console.log(vaultManagerData)
 
   const [txnId, setTxnId] = useState<Hash>()

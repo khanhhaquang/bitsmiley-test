@@ -9,7 +9,7 @@ import useContractAddresses from './useNetworkAddresses'
 import useGetUservault from './useGetUservault'
 import { parseEther } from 'viem'
 
-const useUserVultManager = (amount: number) => {
+const useUserVaultManager = (amount: number) => {
   const contractAddresses = useContractAddresses()
   const { vault1 } = useGetUservault()
   console.log('vault1--->', vault1)
@@ -51,4 +51,4 @@ const useUserVultManager = (amount: number) => {
   }
 }
 
-export default useUserVultManager
+export default useUserVaultManager
