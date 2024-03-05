@@ -1,4 +1,17 @@
-export const ChainCfg = {
+interface ChainConfig {
+  [key: number]: {
+    chainId: string
+    chainName: string
+    nativeCurrency: {
+      name: string
+      symbol: string
+      decimals: number
+    }
+    rpcUrls: string[]
+    blockExplorerUrls: string[]
+  }
+}
+export const ChainCfg: ChainConfig = {
   1: {
     chainId: '0x1',
     chainName: 'Ethereum Mainnet',

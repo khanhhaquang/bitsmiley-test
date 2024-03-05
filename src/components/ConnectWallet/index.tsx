@@ -14,6 +14,7 @@ import useReconnectEvm from '@/hooks/useReconnectEvm'
 import EvmConnector from './EvmConnector'
 import WrongNetworkModal from '../WrongNetworkModal'
 import './index.scss'
+import { useNavigate } from 'react-router-dom'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -31,6 +32,7 @@ export const ConnectWallet: React.FC<{
   className?: string
   style?: CSSProperties
 }> = ({ className, style }) => {
+  const navigate = useNavigate()
   const buttonRef = useRef<HTMLDivElement>(null)
   useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
   const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
@@ -77,7 +79,15 @@ export const ConnectWallet: React.FC<{
         <div
           ref={buttonRef}
           onClick={() => {
-            disconnectEvm({}, { onSuccess: clearStorage })
+            disconnectEvm(
+              {},
+              {
+                onSuccess: () => {
+                  clearStorage()
+                  navigate('/')
+                }
+              }
+            )
             setIsLogoutDropdownOpen(false)
           }}
           className={cn(

@@ -22,10 +22,28 @@ export interface INft {
   updateTime: Date
 }
 
+export interface IMintingPair {
+  borrowRate: string
+  chainId: number
+  isOpenVault: boolean
+  liquidity: string
+  maxLTV: string
+  minSize: string
+  network: string
+  totalDebt: string
+}
+
 export const UserService = {
   getNFTs: {
     key: 'user.getNFTs',
     call: (address: Address): Promise<IResponse<INft[]>> =>
       axiosInstance.get(`/l2nft/getNFT/${address}`).then((res) => res.data)
+  },
+  getMintingPairs: {
+    key: 'user.getMintingPairs',
+    call: (address: Address): Promise<IResponse<IMintingPair[]>> =>
+      axiosInstance
+        .get(`user/getMintingPairsInfo/${address}`)
+        .then((res) => res.data)
   }
 }

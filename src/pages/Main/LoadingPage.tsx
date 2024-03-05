@@ -1,4 +1,4 @@
-import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
+// import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { getFrameUrl } from '@/utils/getAssetsUrl'
 import Typewriter from '@/components/Typewriter'

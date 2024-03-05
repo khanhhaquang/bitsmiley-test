@@ -1,9 +1,12 @@
 import { axiosInstance } from '@/config/axios'
+import { Address } from 'viem'
 
 export const vaultsInfoService = {
-  getMintingPairsInfo: {
-    key: 'project.getMintingPairsInfo',
-    call: (address: string) =>
-      axiosInstance.get(`user/getMintingPairsInfo/${address}`)
+  getMintingPairsRequest: {
+    key: 'project.getMintingPairs',
+    call: (address: Address) =>
+      axiosInstance
+        .get(`user/getMintingPairsInfo/${address}`)
+        .then((res) => res.data)
   }
 }

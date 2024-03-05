@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, ReactNode } from 'react'
 
 interface TooltipProps {
   text: string
@@ -12,7 +12,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
     y: 0
   })
 
-  const handleMouseEnter = (e: MouseEvent<HTMLDivElement>) => {
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     setPosition({ x: e.clientX, y: e.clientY })
     setShowTooltip(true)
   }
@@ -23,14 +23,14 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children }) => {
 
   return (
     <div
-      className=" relative inline-block"
+      className="relative inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       {children}
 
       {showTooltip && (
         <div
-          className="z-9999 fixed rounded-md bg-black p-2 text-white"
+          className="fixed z-[9999] rounded-md bg-black p-2 text-white"
           style={{ top: position.y, left: position.x }}>
           {text}
         </div>

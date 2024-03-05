@@ -25,7 +25,7 @@ const TransactionToast: React.FC<TransactionToastProps> = ({
       closeTimeout = setTimeout(() => removeTransaction(txnId), 5000)
     }
 
-    ;() => {
+    return () => {
       clearTimeout(closeTimeout)
     }
   }, [removeTransaction, status, txnId])
