@@ -38,11 +38,11 @@ const Routes = () => {
           element: <BitUsd />
         },
         {
-          path: 'open-vault',
+          path: 'vault/:chainId',
           element: <OpenVault />
         },
         {
-          path: 'my-vault',
+          path: 'my-vault/:chainId',
           element: <MyVault />
         }
       ]

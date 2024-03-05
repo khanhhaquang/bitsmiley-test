@@ -8,7 +8,7 @@ const useGetUservault = () => {
   const { address } = useUserInfo()
   const { data: vault1, refetch: refetchVault1 } = useReadSmileyContractOwners({
     address: contractAddresses?.BitSmiley,
-    args: [address]
+    args: address && [address]
   })
   return {
     vault1,

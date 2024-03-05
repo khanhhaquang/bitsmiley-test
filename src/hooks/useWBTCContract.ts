@@ -13,23 +13,24 @@ const useWBTCContract = () => {
   const { data: isAllowance, refetch: refetchisAllowance } =
     useReadWbtcContractAllowance({
       address: contractAddresses?.WBTC,
-      args: [address, contractAddresses?.BitSmiley]
+      args: address &&
+        contractAddresses?.BitSmiley && [address, contractAddresses?.BitSmiley]
     })
-  console.log(isAllowance, address, contractAddresses?.BitSmiley)
 
   const {
     data: isAllowanceVaultManager,
     refetch: refetchisAllowanceVaultManager
   } = useReadWbtcContractAllowance({
     address: contractAddresses?.WBTC,
-    args: [address, contractAddresses?.BitSmiley]
+    args: address &&
+      contractAddresses?.BitSmiley && [address, contractAddresses?.BitSmiley]
   })
   console.log(isAllowanceVaultManager)
 
   const { data: gitBalanceWBTC, refetch: refetchBalanceWBTC } =
     useReadWbtcContractBalanceOf({
       address: contractAddresses?.WBTC,
-      args: [address]
+      args: address && [address]
     })
 
   return {

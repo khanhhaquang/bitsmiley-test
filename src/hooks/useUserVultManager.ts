@@ -6,32 +6,35 @@ import {
 } from '@/contracts/vaultManager'
 
 import useContractAddresses from './useNetworkAddresses'
-// import { useUserInfo } from './useUserInfo'
-import { utilsParseEther } from '@/ethersConnect'
 import useGetUservault from './useGetUservault'
+import { parseEther } from 'viem'
 
-const useUserVultManager = (amount) => {
+const useUserVultManager = (amount: number) => {
   const contractAddresses = useContractAddresses()
-  // const { address } = useUserInfo()
-  // const { vault1 } = '1'
   const { vault1 } = useGetUservault()
   console.log('vault1--->', vault1)
-  const bitUSDAmount = utilsParseEther(amount.toString())
+  const bitUSDAmount = parseEther(amount.toString())
   const { data: vaultManagerData } = useReadVaultManagerGetVaultChange({
     address: contractAddresses?.VaultManager,
-    args: [
+    args: vault1 && [
       commonParam.BTC,
       vault1,
-      0,
+      BigInt(0),
       bitUSDAmount,
-      commonParam.safeRate * 10000000
+      BigInt(commonParam.safeRate * 10000000)
     ]
   })
 
   const { data: vaultManagerDataInit, refetch: refetchVaultManagerData } =
     useReadVaultManagerGetVaultChange({
       address: contractAddresses?.VaultManager,
-      args: [commonParam.BTC, vault1, 0, 0, commonParam.safeRate * 10000000]
+      args: vault1 && [
+        commonParam.BTC,
+        vault1,
+        BigInt(0),
+        BigInt(0),
+        BigInt(commonParam.safeRate * 10000000)
+      ]
     })
 
   const { data: collateralTypes } = useReadVaultManagerCollateralTypes({

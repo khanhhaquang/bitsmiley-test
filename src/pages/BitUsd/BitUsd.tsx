@@ -4,8 +4,6 @@ import isMobile from 'ismobilejs'
 import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
-import { setLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { LinkOutIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { vaultsInfoService } from '@/services/vaultsInfo'
@@ -56,19 +54,13 @@ const BitUsd: React.FC = () => {
   }, [])
 
   const goToMyVaults = async (item: Vault) => {
-    console.log(item)
-    setLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO, JSON.stringify(item))
-
     if (item.chainId === chainId) {
-      navigate('./my-vault')
+      navigate(`./vault/${chainId}`)
     }
   }
   const goToOpenVault = async (item: Vault) => {
-    console.log(item)
-    setLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO, JSON.stringify(item))
-
     if (item.chainId === chainId) {
-      navigate('./open-vault')
+      navigate(`./vault/${chainId}`)
     }
   }
   if (isMobile(window.navigator).any) return <MobilePage />

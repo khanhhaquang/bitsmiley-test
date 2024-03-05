@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import isMobile from 'ismobilejs'
 import { Image } from '@/components/Image'
 import { MobilePage } from '@/pages/Main/MobilePage'
@@ -6,7 +6,7 @@ import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import './index.scss'
 import { getOpenUrl, openUrl } from '@/utils/getAssetsUrl'
-import { utilsParseEther, utilsFormatEther } from '@/ethersConnect'
+import { parseEther, formatEther as viemFormatEther } from 'viem'
 import { SCANTXHASH } from '@/config/links'
 import { formatDecimal, formatMoney } from '@/utils/formatter'
 import { bitSmileyABI, bitUSDABI } from '@/abi/abi'
@@ -22,8 +22,9 @@ import useWBTCContract from '@/hooks/useWBTCContract'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import useGetUservault from '@/hooks/useGetUservault'
 import useBitUSDContract from '@/hooks/useBitUSDContract'
-import { getLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { useMintingPairs } from '@/hooks/useMintingPairs'
+import { useParams } from 'react-router-dom'
+import { Hash } from 'viem'
 interface overviewBoxObject {
   availableToMint?: number
   debtBitUSD?: number
@@ -41,7 +42,13 @@ interface overviewBoxObject {
 //   WBTC: string
 // }
 
+const formatEther = (v?: bigint | boolean | number | string) =>
+  viemFormatEther(BigInt(v || ''))
+
 const MyVault: React.FC = () => {
+  const params = useParams()
+  const pairChainId = Number(params.chainId)
+  const { mintingPair, isLoading } = useMintingPairs(pairChainId)
   const [inputNum, setInputNum] = useState(0)
   const [inputValue, setInputValue] = useState(0)
   const [withdrawValue, setWithdrawValue] = useState(0)
@@ -55,20 +62,15 @@ const MyVault: React.FC = () => {
   //0=>wBTC 1=>bitUSD
   const [coinType, setCoinType] = useState(0)
   // const [walletInfo, setWalletInfo] = useState<Array<string>>([])
-  const [listInfo, setListInfo] = useState({
-    borrowRate: 0,
-    liquidity: 0,
-    minSize: 0,
-    maxLTV: 0,
-    chainId: 0
-  })
   const [balanceWBTC, setBalanceWBTC] = useState('')
   const [isApprove, setIsApprove] = useState(false)
   const [oraclePrice, setOraclePriceOracle] = useState<string>('0')
 
   // const [AvailableBitUSD, setAvailableBitUSD] = useState(0)
   const [bitUsdBalance, setBitUsdBalance] = useState('')
-  const [overviewDataInit, setOverviewDataInit] = useState<overviewBoxObject>({
+  const [overviewDataInit, setOverviewDataInit] = useState<
+    overviewBoxObject | undefined
+  >({
     liquidationPrice: 0,
     collateralRate: 0,
     debtBitUSD: 0,
@@ -97,7 +99,7 @@ const MyVault: React.FC = () => {
   } = useUserVultManagerChange(inputNum, isDeposit, coinType)
   console.log(vaultManagerData)
 
-  const [txnId, setTxnId] = useState()
+  const [txnId, setTxnId] = useState<Hash>()
   const { status } = useWaitForTransactionReceipt({ hash: txnId })
 
   const { oraclePrice1, refetchOraclePrice1 } = useGetOraclePrice()
@@ -126,18 +128,6 @@ const MyVault: React.FC = () => {
     return flag
   }
 
-  const projectFun = async () => {
-    try {
-      const info = JSON.parse(
-        getLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO) || '0'
-      )
-      console.log(info)
-      setListInfo(info)
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
   useEffect(() => {
     let closeTimeout: NodeJS.Timeout
     if (status !== 'pending') {
@@ -158,7 +148,7 @@ const MyVault: React.FC = () => {
       }
 
       setIsLodingValue(false)
-      setTxnId('')
+      setTxnId(undefined)
       closeTimeout = setTimeout(() => {
         localStorage.removeItem('txids')
       }, 5000)
@@ -166,18 +156,30 @@ const MyVault: React.FC = () => {
     ;() => {
       clearTimeout(closeTimeout)
     }
-  }, [removeTransaction, status, txnId, vault1])
+  }, [
+    isTxStatus,
+    refetchBalanceBitUSD,
+    refetchBalanceWBTC,
+    refetchVaultManagerAfterData,
+    refetchVaultManagerData,
+    refetchisAllowanceVaultManager,
+    refetchisBitUSDAllowance,
+    removeTransaction,
+    status,
+    txnId,
+    vault1
+  ])
 
   useEffect(() => {
     if (oraclePrice1) {
-      setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))
+      setOraclePriceOracle(formatEther(oraclePrice1.toString()))
     }
   }, [oraclePrice1])
 
-  const getRealTimeOracle = async () => {
+  const getRealTimeOracle = useCallback(async () => {
     refetchOraclePrice1()
-    setOraclePriceOracle(utilsFormatEther(oraclePrice1.toString()))
-  }
+    setOraclePriceOracle(formatEther(oraclePrice1?.toString() || ''))
+  }, [oraclePrice1, refetchOraclePrice1])
 
   useEffect(() => {
     if (!oraclePrice1) return
@@ -185,10 +187,9 @@ const MyVault: React.FC = () => {
     return () => {
       clearInterval(timer)
     }
-  }, [oraclePrice1])
+  }, [getRealTimeOracle, oraclePrice1])
 
   const initData = async () => {
-    projectFun()
     const overviewInit = await overviewData(1)
     console.log(overviewInit)
     setOverviewDataInit(overviewInit)
@@ -208,14 +209,15 @@ const MyVault: React.FC = () => {
   useEffect(() => {
     if (vaultManagerData && gitBalanceBitUSD && gitBalanceWBTC) {
       console.log('vaultManagerData', vaultManagerData)
-      setBitUsdBalance(utilsFormatEther(gitBalanceBitUSD.toString()))
-      setBalanceWBTC(utilsFormatEther(gitBalanceWBTC.toString()))
+      setBitUsdBalance(formatEther(gitBalanceBitUSD.toString()))
+      setBalanceWBTC(formatEther(gitBalanceWBTC.toString()))
       initData()
     }
-  }, [vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC])
+  }, [vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC, initData])
 
   const overviewData = async (type: number) => {
-    let result = {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result: any = {}
     if (type == 1) {
       result = vaultManagerData
     } else {
@@ -223,31 +225,31 @@ const MyVault: React.FC = () => {
     }
     console.log(vaultManagerData)
     // const result = vaultManagerData
-    if(result.liquidationPrice !== undefined && 
-      result.collateralRate !== undefined&& 
-      result.debtBitUSD !== undefined&& 
-      result.lockedCollateral !== undefined&& 
-      result.availableToWithdraw !== undefined&& 
+    if (
+      result.liquidationPrice !== undefined &&
+      result.collateralRate !== undefined &&
+      result.debtBitUSD !== undefined &&
+      result.lockedCollateral !== undefined &&
+      result.availableToWithdraw !== undefined &&
       result.availableToMint !== undefined
-      )
-   { const arr = {
-      liquidationPrice: Number(
-        utilsFormatEther(result.liquidationPrice.toString())
-      ),
-      collateralRate: (Number(result.collateralRate) / 1000) * 100,
-      debtBitUSD: Number(utilsFormatEther(result.debtBitUSD)),
-      lockedCollateral: Number(
-        utilsFormatEther(result.lockedCollateral.toString())
-      ),
-      availableToWithdraw: Number(
-        utilsFormatEther(result.availableToWithdraw.toString())
-      ),
-      availableToMint: Number(
-        utilsFormatEther(result.availableToMint.toString())
-      )
+    ) {
+      const arr = {
+        liquidationPrice: Number(
+          formatEther(result.liquidationPrice.toString())
+        ),
+        collateralRate: (Number(result.collateralRate) / 1000) * 100,
+        debtBitUSD: Number(formatEther(result.debtBitUSD)),
+        lockedCollateral: Number(
+          formatEther(result.lockedCollateral.toString())
+        ),
+        availableToWithdraw: Number(
+          formatEther(result.availableToWithdraw.toString())
+        ),
+        availableToMint: Number(formatEther(result.availableToMint.toString()))
+      }
+      console.log(arr)
+      return arr
     }
-    console.log(arr)
-    return arr}
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -283,8 +285,8 @@ const MyVault: React.FC = () => {
       if (btcNum <= 0) return
     }
     try {
-      const USDAmount = utilsParseEther(val.toString())
-      const BTCAmount = utilsParseEther(btcNum.toString())
+      const USDAmount = parseEther(val.toString())
+      const BTCAmount = parseEther(btcNum.toString())
       console.log(
         'vault1===',
         vault1,
@@ -293,28 +295,26 @@ const MyVault: React.FC = () => {
         BTCAmount.toString()
       )
       const parameter = [vault1, USDAmount, BTCAmount]
-        if(contractAddresses?.BitSmiley !=undefined){
-          const txnId = await writeContractAsync({
-            abi: bitSmileyABI,
-            address: contractAddresses?.BitSmiley,
-            functionName: 'mintFromBTC',
-            args: parameter
-          })
-          if(txnId){
-            setIsLodingValue(true)
-            setTxnId(txnId)
-            addTransaction(txnId)
-            if (status !== 'pending') {
-              setInputValue(0)
-              setWithdrawValue(0)
-              setInputNum(0)
-              setIsLodingValue(false)
-              setIsStateValue(3)
-            }
+      if (contractAddresses?.BitSmiley != undefined) {
+        const txnId = await writeContractAsync({
+          abi: bitSmileyABI,
+          address: contractAddresses?.BitSmiley,
+          functionName: 'mintFromBTC',
+          args: parameter
+        })
+        if (txnId) {
+          setIsLodingValue(true)
+          setTxnId(txnId)
+          addTransaction(txnId)
+          if (status !== 'pending') {
+            setInputValue(0)
+            setWithdrawValue(0)
+            setInputNum(0)
+            setIsLodingValue(false)
+            setIsStateValue(3)
           }
         }
-     
-      
+      }
     } catch (err) {
       console.log(err)
       setIsStateValue(1)
@@ -329,8 +329,8 @@ const MyVault: React.FC = () => {
     }
 
     try {
-      const USDAmount = utilsParseEther(val.toString())
-      const BTCAmount = utilsParseEther(btcNum.toString())
+      const USDAmount = parseEther(val.toString())
+      const BTCAmount = parseEther(btcNum.toString())
       console.log(
         'vault1===',
         vault1,
@@ -340,26 +340,24 @@ const MyVault: React.FC = () => {
         BTCAmount.toString()
       )
       const parameter = [vault1, USDAmount, BTCAmount]
-      if(contractAddresses?.BitSmiley !=undefined){
-
-      
-      const txnId = await writeContractAsync({
-        abi: bitSmileyABI,
-        address: contractAddresses?.BitSmiley,
-        functionName: 'repayToBTC',
-        args: parameter
-      })
-      setIsLodingValue(true)
-      setTxnId(txnId)
-      addTransaction(txnId)
-      if (status !== 'pending') {
-        setInputValue(0)
-        setWithdrawValue(0)
-        setInputNum(0)
-        setIsLodingValue(false)
-        setIsStateValue(3)
+      if (contractAddresses?.BitSmiley != undefined) {
+        const txnId = await writeContractAsync({
+          abi: bitSmileyABI,
+          address: contractAddresses?.BitSmiley,
+          functionName: 'repayToBTC',
+          args: parameter
+        })
+        setIsLodingValue(true)
+        setTxnId(txnId)
+        addTransaction(txnId)
+        if (status !== 'pending') {
+          setInputValue(0)
+          setWithdrawValue(0)
+          setInputNum(0)
+          setIsLodingValue(false)
+          setIsStateValue(3)
+        }
       }
-    }
     } catch (err) {
       console.log(err)
       setIsStateValue(1)
@@ -380,7 +378,8 @@ const MyVault: React.FC = () => {
     }
     const overviewInit = await overviewData(0)
     console.log('====>---', overviewInit)
-    setOverviewAfterDataInit(overviewInit)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setOverviewAfterDataInit(overviewInit as any)
   }
 
   const handleInputBlurMint = async () => {
@@ -402,7 +401,8 @@ const MyVault: React.FC = () => {
     refetchVaultManagerAfterData()
     const overviewInit = await overviewData(0)
     console.log('====>---', overviewInit)
-    setOverviewAfterDataInit(overviewInit)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setOverviewAfterDataInit(overviewInit as any)
   }
   /*
    * coinType=1=>bitusd;coinType=0=>wBTC
@@ -420,12 +420,11 @@ const MyVault: React.FC = () => {
       } else {
         //repay bitusd
         console.log('repay bitusd')
-        if(isBitUSDAllowance!=undefined)
-        {const allowanceNum = Number(
-          utilsFormatEther(isBitUSDAllowance.toString())
-        )
-        console.log(allowanceNum)
-        allowanceNum >= inputValue ? setIsApprove(true) : setIsApprove(false)}
+        if (isBitUSDAllowance != undefined) {
+          const allowanceNum = Number(formatEther(isBitUSDAllowance.toString()))
+          console.log(allowanceNum)
+          allowanceNum >= inputValue ? setIsApprove(true) : setIsApprove(false)
+        }
       }
     } else {
       if (!isDeposit) {
@@ -435,7 +434,7 @@ const MyVault: React.FC = () => {
         //deposit wBTC
         console.log('deposit wBTC')
         const allowanceNum = Number(
-          utilsFormatEther(isAllowanceVaultManager.toString())
+          formatEther(isAllowanceVaultManager?.toString() || '')
         )
         console.log(allowanceNum)
         allowanceNum >= inputValue ? setIsApprove(true) : setIsApprove(false)
@@ -471,21 +470,22 @@ const MyVault: React.FC = () => {
     if (coinType == 0) {
       contractApprove = contractAddresses?.WBTC
     }
-    if(contractApprove!=undefined)
-   { const txnId = await writeContractAsync({
-      abi: bitUSDABI,
-      address: contractApprove,
-      functionName: 'approve',
-      args: [addressApprove, utilsParseEther(inputValue.toString())]
-    })
-    console.log(txnId)
-    setIsLodingValue(true)
-    setTxnId(txnId)
-    addTransaction(txnId)
-    if (status !== 'pending') {
-      setIsLodingValue(false)
-      setIsApprove(true)
-    }}
+    if (contractApprove != undefined) {
+      const txnId = await writeContractAsync({
+        abi: bitUSDABI,
+        address: contractApprove,
+        functionName: 'approve',
+        args: [addressApprove, parseEther(inputValue.toString())]
+      })
+      console.log(txnId)
+      setIsLodingValue(true)
+      setTxnId(txnId)
+      addTransaction(txnId)
+      if (status !== 'pending') {
+        setIsLodingValue(false)
+        setIsApprove(true)
+      }
+    }
   }
 
   const handClickBack = () => {
@@ -512,6 +512,8 @@ const MyVault: React.FC = () => {
     setIsStateValue(1)
   }
   if (isMobile(window.navigator).any) return <MobilePage />
+  if (isLoading) return <div>loading...</div>
+  if (!mintingPair) return null
 
   // if (isNetworkError) return <NetworkErrorPage />
 
@@ -531,14 +533,14 @@ const MyVault: React.FC = () => {
                 <li className="text-center mr-[50px]">Min Size: 0.5 BTC ⓘ</li>
                 <li className="text-center mr-[50px]">Max LTV: 50% ⓘ</li> */}
                 <li className="mr-[50px] text-center">
-                  Stability fee: {listInfo.borrowRate * 100}% ⓘ{' '}
+                  Stability fee: {Number(mintingPair.borrowRate) * 100}% ⓘ{' '}
                 </li>
                 <li className="mr-[50px] text-center">Liquidity fee: 50% ⓘ </li>
                 <li className="mr-[50px] text-center">
-                  Min Size: {listInfo.minSize} $ ⓘ
+                  Min Size: {mintingPair.minSize} $ ⓘ
                 </li>
                 <li className="mr-[50px] text-center">
-                  Max LTV: {listInfo.maxLTV * 100}% ⓘ
+                  Max LTV: {Number(mintingPair.maxLTV) * 100}% ⓘ
                 </li>
               </ul>
             </dt>
@@ -710,7 +712,7 @@ const SetupVault: React.FC<{
   inputValue: number
   withdrawValue: number
   type: number
-  listData: overviewBoxObject
+  listData?: overviewBoxObject
   bitUsdBalance: string | number
   price: string | number
   handOnFocusChange1: () => void
@@ -736,6 +738,7 @@ const SetupVault: React.FC<{
   listData,
   handleInputChange
 }) => {
+  if (!listData) return null
   return (
     <>
       {type == 0 ? (
@@ -851,7 +854,7 @@ const SetupVault: React.FC<{
 
 const ConfirmBox: React.FC<{
   isApprove: boolean
-  listData: overviewBoxObject
+  listData?: overviewBoxObject
   afterDataInit: overviewBoxObject
   type: number
   handApproveFun: () => void
@@ -866,6 +869,7 @@ const ConfirmBox: React.FC<{
   handClickBack,
   handApproveFun
 }) => {
+  if (!listData) return null
   const items = [
     {
       id: 1,
@@ -1085,7 +1089,7 @@ const MintBitUSDBox: React.FC<{
 }
 
 const MintBitUsdOverviewBox: React.FC<{
-  listData: overviewBoxObject
+  listData?: overviewBoxObject
   afterDataInit: overviewBoxObject
 }> = ({ listData, afterDataInit }) => {
   return (
@@ -1096,7 +1100,7 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Liquidation Price</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData.liquidationPrice || 0, 4))}
+              ${formatMoney(formatDecimal(listData?.liquidationPrice || 0, 4))}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
               ${' '}
@@ -1109,7 +1113,7 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%] pl-[10px]">
             <p className="font-ibmr text-base">Health factor</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              {formatDecimal(listData.collateralRate || 0, 2)}%
+              {formatDecimal(listData?.collateralRate || 0, 2)}%
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
               %{formatDecimal(afterDataInit.collateralRate || 0, 2)} after ⓘ
@@ -1118,7 +1122,7 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Vault Debt</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData.debtBitUSD || 0, 4))}
+              ${formatMoney(formatDecimal(listData?.debtBitUSD || 0, 4))}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
               $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 4))}{' '}
@@ -1136,7 +1140,7 @@ const MintBitUsdOverviewBox: React.FC<{
             <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
               {' '}
               {formatMoney(
-                formatDecimal(listData.lockedCollateral || 0, 4)
+                formatDecimal(listData?.lockedCollateral || 0, 4)
               )}{' '}
               BTC
             </h1>
@@ -1154,7 +1158,7 @@ const MintBitUsdOverviewBox: React.FC<{
             <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
               {' '}
               {formatMoney(
-                formatDecimal(listData.availableToWithdraw || 0, 4)
+                formatDecimal(listData?.availableToWithdraw || 0, 4)
               )}{' '}
               BTC
             </h1>
@@ -1172,7 +1176,7 @@ const MintBitUsdOverviewBox: React.FC<{
             <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
               {' '}
               {formatMoney(
-                formatDecimal(listData.availableToMint || 0, 4)
+                formatDecimal(listData?.availableToMint || 0, 4)
               )}{' '}
               bitUSD
             </h1>

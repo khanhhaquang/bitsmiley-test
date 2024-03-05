@@ -4,13 +4,11 @@ import { Image } from '@/components/Image'
 import { MobilePage } from '@/pages/Main/MobilePage'
 import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
-import { getLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import './index.scss'
+import { formatEther, parseEther } from 'viem'
 import { getOpenUrl, openUrl } from '@/utils/getAssetsUrl'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { bitSmileyABI, bitUSDABI } from '@/abi/abi'
-import { utilsParseEther, utilsFormatEther } from '@/ethersConnect'
 import { SCANTXHASH } from '@/config/links'
 import { formatDecimal, formatMoney } from '@/utils/formatter'
 import LoadingAnimation from '@/components/LoadingAnimation'
@@ -24,6 +22,8 @@ import useGetOraclePrice from '@/hooks/useGetOraclePrice'
 import useWBTCContract from '@/hooks/useWBTCContract'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import useGetUservault from '@/hooks/useGetUservault'
+import { Hash } from 'viem'
+import { useMintingPairs } from '@/hooks/useMintingPairs'
 
 interface overviewBoxObject {
   availableToMint?: number
@@ -36,24 +36,18 @@ interface overviewBoxObject {
 
 const OpenVault: React.FC = () => {
   const navigate = useNavigate()
+  const params = useParams()
+  const pairChainId = Number(params.chainId)
+  const { mintingPair, isLoading } = useMintingPairs(pairChainId)
+
   const [inputValue, setInputValue] = useState(0)
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Start ; 2=>mint bitUSD; 3=>mint bitUSD ing;4=> Minting Completed;5=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
-  //1-approve 2-deposit BTC 3-Minting Completed
   const [isApproveStatus, setIsApproveStatus] = useState(1)
 
   const [balanceWBTC, setBalanceWBTC] = useState('')
   const [isApprove, setIsApprove] = useState(false)
-  // const [transactionHash, setTransactionHash] = useState('')
-  const [listInfo, setListInfo] = useState({
-    borrowRate: 0,
-    liquidity: 0,
-    minSize: 0,
-    maxLTV: 0,
-    chainId: 0
-  })
-  // const [priceUSD, setPriceOracle] = useState(0)
   const [oraclePrice, setOraclePriceOracle] = useState(0)
   const [AvailableBitUSD, setAvailableBitUSD] = useState(0)
 
@@ -81,11 +75,10 @@ const OpenVault: React.FC = () => {
   const { vaultManagerData } = useUserVultManager(inputValue)
   const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
     useUserVultManager(0)
-  const [txnId, setTxnId] = useState<string>()
+  const [txnId, setTxnId] = useState<Hash>()
   const { status } = useWaitForTransactionReceipt({ hash: txnId })
 
   const { oraclePrice1, refetchOraclePrice1 } = useGetOraclePrice()
-  console.log(oraclePrice1)
   const { isAllowance, gitBalanceWBTC, refetchBalanceWBTC } = useWBTCContract()
   const { removeTransaction, addTransaction } = useStoreActions()
   const { vault1, refetchVault1 } = useGetUservault()
@@ -94,26 +87,8 @@ const OpenVault: React.FC = () => {
     let flag = true
     if (!address) {
       flag = false
-      // connectWallet()
     }
-    // else if (currentNetwork.chainId != listInfo.chainId) {
-    //   flag = false
-    //   const id = await utilsGetNetwork(listInfo.chainId)
-    //   networkChange(Number(id))
-    // }
     return flag
-  }
-
-  const projectFun = async () => {
-    try {
-      const info = JSON.parse(
-        getLocalStorage(LOCAL_STORAGE_KEYS.NETWORKINFO) || '0'
-      )
-      console.log(info)
-      setListInfo(info)
-    } catch (err) {
-      console.log(err)
-    }
   }
 
   const initData = async () => {
@@ -134,7 +109,7 @@ const OpenVault: React.FC = () => {
   const getRealTimeOracle = async () => {
     refetchOraclePrice1()
     if (oraclePrice1 != undefined) {
-      setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))
+      setOraclePriceOracle(Number(formatEther(BigInt(oraclePrice1))))
     }
   }
 
@@ -165,10 +140,10 @@ const OpenVault: React.FC = () => {
   useEffect(() => {
     if (oraclePrice1 && isAllowance && gitBalanceWBTC) {
       if (gitBalanceWBTC !== undefined) {
-        setBalanceWBTC(utilsFormatEther(gitBalanceWBTC.toString()))
+        setBalanceWBTC(formatEther(BigInt(gitBalanceWBTC)))
       }
       if (isAllowance !== undefined) {
-        const allowanceNum = Number(utilsFormatEther(isAllowance.toString()))
+        const allowanceNum = Number(formatEther(BigInt(isAllowance)))
         if (allowanceNum >= inputValue) {
           setIsApprove(true)
         } else {
@@ -176,14 +151,11 @@ const OpenVault: React.FC = () => {
         }
       }
       if (oraclePrice1 !== undefined) {
-        setOraclePriceOracle(Number(utilsFormatEther(oraclePrice1.toString())))
+        setOraclePriceOracle(Number(formatEther(BigInt(oraclePrice1))))
       }
     }
   }, [oraclePrice1, isAllowance, gitBalanceWBTC])
 
-  useEffect(() => {
-    projectFun()
-  }, [])
   useEffect(() => {
     if (collateralTypes && oraclePrice) {
       getAvailableBitUSD()
@@ -206,7 +178,7 @@ const OpenVault: React.FC = () => {
 
   const blurSetupVault = async () => {
     if (isAllowance != undefined) {
-      const allowanceNum = Number(utilsFormatEther(isAllowance.toString()))
+      const allowanceNum = Number(formatEther(BigInt(isAllowance)))
       if (allowanceNum >= inputValue) {
         setIsApprove(true)
       } else {
@@ -230,10 +202,7 @@ const OpenVault: React.FC = () => {
         abi: bitUSDABI,
         address: contractAddresses?.WBTC,
         functionName: 'approve',
-        args: [
-          contractAddresses?.BitSmiley,
-          utilsParseEther(inputValue.toString())
-        ]
+        args: [contractAddresses?.BitSmiley, formatEther(BigInt(inputValue))]
       })
       console.log(txnId)
       setTxnId(txnId)
@@ -292,7 +261,7 @@ const OpenVault: React.FC = () => {
     }
     setIsApproveStatus(2)
     try {
-      const collateral = utilsParseEther(inputValue.toString())
+      const collateral = formatEther(BigInt(inputValue))
       if (contractAddresses?.BitSmiley != undefined) {
         const txnId = await writeContractAsync({
           abi: bitSmileyABI,
@@ -330,21 +299,15 @@ const OpenVault: React.FC = () => {
       result?.availableToMint !== undefined
     ) {
       const arr = {
-        liquidationPrice: Number(
-          utilsFormatEther(result?.liquidationPrice.toString())
-        ),
-        // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
+        liquidationPrice: Number(formatEther(BigInt(result?.liquidationPrice))),
+        // collateralRate: Number(formatEther(result.collateralRate.toString())),
         collateralRate: (Number(result?.collateralRate) / 1000) * 100,
-        debtBitUSD: Number(utilsFormatEther(result?.debtBitUSD.toString())),
-        lockedCollateral: Number(
-          utilsFormatEther(result?.lockedCollateral.toString())
-        ),
+        debtBitUSD: Number(formatEther(BigInt(result?.debtBitUSD))),
+        lockedCollateral: Number(formatEther(BigInt(result?.lockedCollateral))),
         availableToWithdraw: Number(
-          utilsFormatEther(result?.availableToWithdraw.toString())
+          formatEther(BigInt(result?.availableToWithdraw))
         ),
-        availableToMint: Number(
-          utilsFormatEther(result?.availableToMint.toString())
-        )
+        availableToMint: Number(formatEther(BigInt(result?.availableToMint)))
       }
       console.log(arr)
       return arr
@@ -376,21 +339,15 @@ const OpenVault: React.FC = () => {
       result?.availableToMint != undefined
     ) {
       const arr = {
-        liquidationPrice: Number(
-          utilsFormatEther(result?.liquidationPrice.toString())
-        ),
-        // collateralRate: Number(utilsFormatEther(result.collateralRate.toString())),
+        liquidationPrice: Number(formatEther(BigInt(result?.liquidationPrice))),
+        // collateralRate: Number(formatEther(result.collateralRate.toString())),
         collateralRate: (Number(result?.collateralRate) / 1000) * 100,
-        debtBitUSD: Number(utilsFormatEther(result?.debtBitUSD.toString())),
-        lockedCollateral: Number(
-          utilsFormatEther(result?.lockedCollateral.toString())
-        ),
+        debtBitUSD: Number(formatEther(BigInt(result?.debtBitUSD))),
+        lockedCollateral: Number(formatEther(BigInt(result?.lockedCollateral))),
         availableToWithdraw: Number(
-          utilsFormatEther(result?.availableToWithdraw.toString())
+          formatEther(BigInt(result?.availableToWithdraw))
         ),
-        availableToMint: Number(
-          utilsFormatEther(result?.availableToMint.toString())
-        )
+        availableToMint: Number(formatEther(BigInt(result?.availableToMint)))
       }
       // const overviewInit = await overviewData(inputValue)
       // console.log('====>---', overviewInit)
@@ -407,7 +364,7 @@ const OpenVault: React.FC = () => {
     setIsApproveStatus(3)
     if (inputValue <= 0) return
     try {
-      const USDAmount = utilsParseEther(inputValue.toString())
+      const USDAmount = parseEther(inputValue.toString())
       console.log('vault1===', vault1, 'bitUSDAmount', USDAmount.toString())
       const parameter = [
         vault1,
@@ -449,6 +406,8 @@ const OpenVault: React.FC = () => {
   if (isMobile(window.navigator).any) return <MobilePage />
 
   // if (isNetworkError) return <NetworkErrorPage />
+  if (isLoading) return <div>loading...</div>
+  if (!mintingPair) return null
 
   return (
     <div>
@@ -471,14 +430,14 @@ const OpenVault: React.FC = () => {
             <dt className="mb-[16px]">
               <ul className="table_title_color flex justify-center font-ibmb">
                 <li className="mr-[50px] text-center">
-                  Borrow rate : {listInfo.borrowRate * 100}% ⓘ{' '}
+                  Borrow rate : {Number(mintingPair.borrowRate) * 100}% ⓘ{' '}
                 </li>
                 <li className="mr-[50px] text-center">Liquidity fee: 50% ⓘ </li>
                 <li className="mr-[50px] text-center">
-                  Min Size: {listInfo.minSize} $ ⓘ
+                  Min Size: {mintingPair.minSize} $ ⓘ
                 </li>
                 <li className="mr-[50px] text-center">
-                  Max LTV: {listInfo.maxLTV * 100}% ⓘ
+                  Max LTV: {Number(mintingPair.maxLTV) * 100}% ⓘ
                 </li>
               </ul>
               {/* <networkInfo list={listInfo}/> */}
