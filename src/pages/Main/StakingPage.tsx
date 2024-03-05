@@ -1,12 +1,10 @@
 import { Image } from '@/components/Image'
 import { RefObject, useRef } from 'react'
 import { getFrameUrl, getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { MEDIA } from '@/config/links'
 import { cn } from '@/utils/cn'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
-// import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { useOnScreen } from '@/hooks/useOnScreen'
 import { CoinIcon } from '@/assets/icons'
 import { StakingMachine } from '@/components/StakingMachine'
@@ -16,15 +14,10 @@ import { Button } from '@/components/Button'
 export const StakingPage: React.FC = () => {
   const whoIsBitSmileyRef = useRef<HTMLDivElement>(null)
   const isOnScreen = useOnScreen(whoIsBitSmileyRef)
-  const { width } = useWindowSize()
 
   return (
     <div className="relative flex flex-col items-center overflow-x-hidden">
-      <div
-        className="relative flex w-full origin-top flex-col items-center justify-center text-white"
-        style={{
-          padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-        }}>
+      <div className="relative flex w-full flex-col items-center justify-center text-white">
         <SpaceBg />
         <StakingMachine hideScrollDown={isOnScreen} />
         <div className="relative" id="whoIsBitSmiley">
@@ -33,7 +26,7 @@ export const StakingPage: React.FC = () => {
             className="mb-[200px] mt-[136px]"
             titleRef={whoIsBitSmileyRef}
           />
-          <GlobalBg wrapperClassName="top-[280px] origin-top" />
+          <GlobalBg wrapperClassName="top-[280px]" />
         </div>
         <Inventor />
         <Divider title="Backed By" className="mb-[240px] mt-[400px]" />
@@ -47,7 +40,6 @@ export const StakingPage: React.FC = () => {
         </div>
       </div>
       <Header wallet />
-      {/* <CopyRightAndLinks /> */}
     </div>
   )
 }
@@ -147,22 +139,11 @@ const Divider: React.FC<{
   title: string
   className?: string
 }> = ({ title, className, titleRef }) => {
-  const { width } = useWindowSize()
   return (
     <div
       className={cn('my-[200px] flex items-center justify-center', className)}>
-      <span
-        className="text-4xl font-bold"
-        style={{
-          fontSize: `${(width / 1920) * 36}px`
-        }}>
-        +
-      </span>
-      <div
-        className="flex flex-1 items-center overflow-hidden text-4xl"
-        style={{
-          fontSize: `${(width / 1920) * 36}px`
-        }}>
+      <span className="text-4xl font-bold">+</span>
+      <div className="flex flex-1 items-center overflow-hidden text-4xl">
         {Array(30)
           .fill(1)
           .map((_, idx) => (
@@ -171,19 +152,10 @@ const Divider: React.FC<{
             </span>
           ))}
       </div>
-      <h2
-        ref={titleRef}
-        className="px-6 py-2.5 text-4xl"
-        style={{
-          fontSize: `${(width / 1920) * 36}px`
-        }}>
+      <h2 ref={titleRef} className="px-6 py-2.5 text-4xl">
         {title}
       </h2>
-      <div
-        className="flex flex-1 items-center overflow-hidden text-4xl"
-        style={{
-          fontSize: `${(width / 1920) * 36}px`
-        }}>
+      <div className="flex flex-1 items-center overflow-hidden text-4xl">
         {Array(30)
           .fill(1)
           .map((_, idx) => (
@@ -192,13 +164,7 @@ const Divider: React.FC<{
             </span>
           ))}
       </div>
-      <span
-        className="text-4xl font-bold"
-        style={{
-          fontSize: `${(width / 1920) * 36}px`
-        }}>
-        +
-      </span>
+      <span className="text-4xl font-bold">+</span>
     </div>
   )
 }
@@ -207,16 +173,12 @@ const GlobalBg: React.FC<{
   wrapperClassName?: string
   imgClassName?: string
 }> = ({ wrapperClassName, imgClassName }) => {
-  const { width } = useWindowSize()
   return (
     <div
       className={cn(
-        'absolute left-0 right-0 top-0 z-[-1] origin-top mix-blend-lighten',
+        'absolute left-0 right-0 top-0 z-[-1] mix-blend-lighten',
         wrapperClassName
-      )}
-      style={{
-        scale: `${width >= 1920 ? 100 : (1920 * 100) / width}%`
-      }}>
+      )}>
       <div className="relative">
         <Image
           src={getIllustrationUrl('bit-global')}

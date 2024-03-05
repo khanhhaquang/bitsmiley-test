@@ -2,7 +2,7 @@ import { createReducer } from '@reduxjs/toolkit'
 
 import actions from './actions'
 import { RootState } from '@/store/rootReducer'
-import { IProject } from '@/services/project'
+import { IFeaturesEnabled, IProject } from '@/services/project'
 import { Hash } from 'viem'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
@@ -12,12 +12,14 @@ const initState: {
   currentTypewritterSeq: number
   transactions: Hash[]
   project: IProject | null
+  featuresEnabled: IFeaturesEnabled | null
 } = {
   networkError: false,
   currentTypewritterSeq: 0,
   transactions: (getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS)?.split(',') ||
     []) as Hash[],
-  project: null
+  project: null,
+  featuresEnabled: null
 }
 
 export default createReducer(initState, (builder) => {
@@ -52,6 +54,9 @@ export default createReducer(initState, (builder) => {
     .addCase(actions.SET_PROJECT_INFO, (state, action) => {
       state.project = action.payload
     })
+    .addCase(actions.SET_FEATURESENABLED_INFO, (state, action) => {
+      state.featuresEnabled = action.payload
+    })
 })
 
 export const getCurrentTypeWritterSeq = (state: RootState) =>
@@ -61,3 +66,5 @@ export const getNetworkError = (state: RootState) => state.common.networkError
 
 export const getTransactions = (state: RootState) => state.common.transactions
 export const getProjectInfo = (state: RootState) => state.common.project
+export const getFeaturesEnabled = (state: RootState) =>
+  state.common.featuresEnabled

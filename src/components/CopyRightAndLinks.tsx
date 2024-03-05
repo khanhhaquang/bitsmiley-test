@@ -1,6 +1,5 @@
 import { CopyrightIcon, PlayIcon } from '@/assets/icons'
 import { MEDIA } from '@/config/links'
-import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'
 import { useEffect, useRef, useState } from 'react'
 import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
@@ -11,7 +10,6 @@ import { openUrl } from '@/utils/getAssetsUrl'
 export const CopyRightAndLinks: React.FC<{
   musicControl?: boolean
 }> = ({ musicControl = true }) => {
-  const { width } = useWindowSize()
   const musicPlayerRef = useRef<MusicPlayerRef>(null)
   const [isPlayingMusic, setIsPlayingMusic] = useState(false)
 
@@ -39,25 +37,13 @@ export const CopyRightAndLinks: React.FC<{
   return (
     <>
       <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
-      <div
-        className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between px-[136px] text-white mix-blend-difference"
-        style={{
-          padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-        }}>
-        <div
-          className="flex origin-bottom-left items-start gap-x-1.5"
-          style={{
-            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-          }}>
+      <div className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between px-[120px] text-white mix-blend-difference">
+        <div className="flex items-start gap-x-1.5">
           <CopyrightIcon />
           <span className="cursor-default">bitSmiley team 2024</span>
         </div>
 
-        <div
-          className="pointer-events-auto flex origin-bottom-right flex-col items-end gap-y-1.5"
-          style={{
-            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-          }}>
+        <div className="pointer-events-auto flex flex-col items-end gap-y-1.5">
           {musicControl && (
             <span
               className={cn(

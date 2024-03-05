@@ -10,9 +10,9 @@ export const NotConnected: React.FC = () => {
         <Image src={getIllustrationUrl('disccoins')} />
         <div className="w-[384px] text-sm">
           <p>
-            Now, you can stake your bitDisc to mine bitGem. The bitGem earned be
-            converted to respective whitelist token amount available to purchase
-            at TGE.
+            Now, you can stake your bitDisc to mine bitJade. BitJade will be
+            converted to the corresponding token quotas that can be purchased
+            during TGE.
           </p>
           <br />
           <p>Connect wallet to find more...</p>

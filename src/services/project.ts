@@ -22,18 +22,13 @@ export interface IProject {
   web3Info: INetworkInfo[]
 }
 
-export enum InscriptionType {
-  VALID = 1,
-  VALID_INVALID = 2,
-  INVALID = 3
+export enum FeatureEnabled {
+  ENABLED = 'enable',
+  DISABLED = 'disabled'
 }
-
-export interface ICheckInscription {
-  code?: number
-  message?: {
-    reason?: string
-    valid_type?: InscriptionType
-  }
+export interface IFeaturesEnabled {
+  Staking: FeatureEnabled
+  AlphaNet: FeatureEnabled
 }
 
 export const ProjectService = {
@@ -43,5 +38,12 @@ export const ProjectService = {
       axiosInstance
         .get<IResponse<IProject>>('/bsInfo/projectInfo ')
         .then((res) => res.data)
+  },
+  getEnabledModules: {
+    key: 'project.getEnabledModules',
+    call: () =>
+      axiosInstance.get<IResponse<IFeaturesEnabled>>(
+        '/bsInfo/getFunctionalModuleInfo'
+      )
   }
 }
