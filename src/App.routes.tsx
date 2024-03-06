@@ -5,8 +5,10 @@ import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const Main = lazy(() => import('@/pages/Main'))
 const MainBitUsd = lazy(() => import('@/pages/BitUsd'))
+const MainBitPoint = lazy(() => import('@/pages/BitPoint'))
 
 const BitUsd = lazy(() => import('@/pages/BitUsd/BitUsd'))
+const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
 const OpenVault = lazy(() => import('@/pages/BitUsd/OpenVault'))
 const MyVault = lazy(() => import('@/pages/BitUsd/MyVault'))
 
@@ -27,29 +29,45 @@ const Routes = () => {
     }
   ]
 
-  const alphaNetRoutes: RouteObject[] = [
+  const alphaNetRoutes: RouteObject[] = !isAlphaNetEnabled
+    ? []
+    : [
+        {
+          path: 'bit-usd',
+          id: 'bitUsd',
+          element: <MainBitUsd />,
+          children: [
+            {
+              index: true,
+              element: <BitUsd />
+            },
+            {
+              path: 'vault/:chainId',
+              element: <OpenVault />
+            },
+            {
+              path: 'my-vault/:chainId',
+              element: <MyVault />
+            }
+          ]
+        }
+      ]
+
+  const bitPointRoutes: RouteObject[] = [
     {
-      path: 'bit-usd',
-      id: 'bitUsd',
-      element: <MainBitUsd />,
+      path: 'bit-point',
+      id: 'bitPoint',
+      element: <MainBitPoint />,
       children: [
         {
           index: true,
-          element: <BitUsd />
-        },
-        {
-          path: 'vault/:chainId',
-          element: <OpenVault />
-        },
-        {
-          path: 'my-vault/:chainId',
-          element: <MyVault />
+          element: <BitPoint />
         }
       ]
     }
   ]
 
-  return useRoutes(basicRoutes.concat(isAlphaNetEnabled ? alphaNetRoutes : []))
+  return useRoutes([...basicRoutes, ...alphaNetRoutes, ...bitPointRoutes])
 }
 
 export default Routes
