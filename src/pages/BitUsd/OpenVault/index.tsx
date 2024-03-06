@@ -232,14 +232,6 @@ const OpenVault: React.FC = () => {
         refetchVaultManagerData()
         setIsStateValue(3)
       }
-      // if (vault1 != '0x0000000000000000000000000000000000000000') {
-      //   refetchVaultManagerData()
-      //   setIsStateValue(3)
-      // } else {
-      //   refetchBalanceWBTC()
-      //   setIsStateValue(2)
-      // }
-
       setIsApprove(true)
       closeTimeout = setTimeout(() => {
         removeTransaction(txnId?.toString() || '')
@@ -586,10 +578,22 @@ const TitleBlock: React.FC<{
 const CornerPin: React.FC = () => {
   return (
     <>
-      <div className="union01 absolute left-0 top-[22px] h-[24px] w-[24px]"></div>
-      <div className="union01 absolute right-0 top-[22px] h-[24px] w-[24px] rotate-90"></div>
-      <div className="union01 absolute bottom-0 left-0 h-[24px] w-[24px] -rotate-90"></div>
-      <div className="union01 absolute bottom-0 right-0 h-[24px] w-[24px] -rotate-180"></div>
+      <div
+        className={cn(
+          'union01 absolute left-0 top-[22px] h-[24px] w-[24px]'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute right-0 top-[22px] h-[24px] w-[24px] rotate-90'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute bottom-0 left-0 h-[24px] w-[24px] -rotate-90'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute bottom-0 right-0 h-[24px] w-[24px] -rotate-180'
+        )}></div>
     </>
   )
 }
@@ -624,7 +628,7 @@ const SetupVault: React.FC<{
       <div className="mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          min="1"
+          placeholder="0"
           className="input_style flex h-[47px] w-auto items-center font-ibmb
         text-[36px] leading-[47px] hover:border-none"
           onBlur={handleBlur}
