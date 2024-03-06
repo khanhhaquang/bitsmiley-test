@@ -2,7 +2,10 @@ import { useConnect } from 'wagmi'
 import { WalletItem } from '.'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { WALLETSITE } from '@/config/links'
-import { connectors } from '@/config/wagmi'
+import { useEvmConnectors } from '@/hooks/useEvmConnectors'
+import { setLocalStorage } from '@/utils/storage'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { LoginType } from '@/types/common'
 
 type EvmConnectorProps = {
   onClose: () => void
@@ -10,6 +13,7 @@ type EvmConnectorProps = {
 
 const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
   const { connect } = useConnect()
+  const connectors = useEvmConnectors()
 
   return (
     <>
@@ -26,6 +30,7 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
             { connector: connectors.okx },
             { onError: (v) => console.log('connect error: ', v) }
           )
+          setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.OKX)
           onClose()
         }}
       />
@@ -45,6 +50,7 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
             { connector: connectors.metamask },
             { onError: (v) => console.log('connect error: ', v) }
           )
+          setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.METAMASK)
           onClose()
         }}
       />
