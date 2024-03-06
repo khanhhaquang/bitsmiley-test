@@ -12,6 +12,9 @@ const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
 const OpenVault = lazy(() => import('@/pages/BitUsd/OpenVault'))
 const MyVault = lazy(() => import('@/pages/BitUsd/MyVault'))
 
+const BitPointCaptain = lazy(() => import('@/pages/BitPoint/Captain'))
+const BitPointMember = lazy(() => import('@/pages/BitPoint/Member'))
+
 const Routes = () => {
   const { featuresEnabled } = useProjectInfo()
   const isAlphaNetEnabled = featuresEnabled?.AlphaNet === FeatureEnabled.ENABLED
@@ -62,6 +65,14 @@ const Routes = () => {
         {
           index: true,
           element: <BitPoint />
+        },
+        {
+          path: 'captain',
+          element: <BitPointCaptain />
+        },
+        {
+          path: 'member',
+          element: <BitPointMember />
         }
       ]
     }

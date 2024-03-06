@@ -8,7 +8,6 @@ import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { useOnScreen } from '@/hooks/useOnScreen'
 import { CoinIcon } from '@/assets/icons'
 import { StakingMachine } from '@/components/StakingMachine'
-import { Header } from '@/components/Header'
 import { Button } from '@/components/Button'
 
 export const StakingPage: React.FC = () => {
@@ -39,7 +38,6 @@ export const StakingPage: React.FC = () => {
           <Articles />
         </div>
       </div>
-      <Header wallet />
     </div>
   )
 }

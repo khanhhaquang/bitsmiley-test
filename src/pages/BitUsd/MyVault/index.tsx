@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Image } from '@/components/Image'
-import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import './index.scss'
 import { getOpenUrl, openUrl } from '@/utils/getAssetsUrl'
@@ -512,7 +511,6 @@ const MyVault: React.FC = () => {
 
   return (
     <div>
-      <Header wallet />
       <div>
         <div className=" mx-auto mt-[164px] max-w-[1434px]">
           <TitleBox message="My Vaults" isWhite={true} />

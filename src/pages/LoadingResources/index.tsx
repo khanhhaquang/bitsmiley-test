@@ -14,7 +14,7 @@ const hasVisited =
   !!getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) &&
   getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) !== 'undefined'
 
-export const LoadingPage: React.FC<{
+const LoadingResources: React.FC<{
   onEnter?: () => void
   isLoading: boolean
 }> = ({ isLoading: isLoadingResources, onEnter }) => {
@@ -92,3 +92,5 @@ const ProgressLine: React.FC<{ onStop: () => void }> = ({ onStop }) => {
     </div>
   )
 }
+
+export default LoadingResources
