@@ -8,6 +8,7 @@ import { ModalsContainer } from '@/components/Modal'
 import { ToastsContainer } from '@/components/Toast'
 import CustomWagmiProvider from '@/providers/CustomWagmiProvider'
 import { PageLayout } from './components/PageLayout'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,7 +30,9 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
             <ReactQueryDevtools initialIsOpen={false} position="bottom" />
             <ModalsContainer />
             <ToastsContainer />
-            <PageLayout>{children}</PageLayout>
+            <TooltipProvider>
+              <PageLayout>{children}</PageLayout>
+            </TooltipProvider>
           </QueryClientProvider>
         </CustomWagmiProvider>
       </BrowserRouter>
