@@ -5,10 +5,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ModalsContainer } from '@/components/Modal'
-import { ToastsContainer } from '@/components/Toast'
 import CustomWagmiProvider from '@/providers/CustomWagmiProvider'
 import { PageLayout } from './components/PageLayout'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { Toaster } from '@/components/ui/toaster'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,7 +29,7 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
           <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} position="bottom" />
             <ModalsContainer />
-            <ToastsContainer />
+            <Toaster />
             <TooltipProvider>
               <PageLayout>{children}</PageLayout>
             </TooltipProvider>
