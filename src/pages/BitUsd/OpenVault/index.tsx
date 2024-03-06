@@ -38,7 +38,8 @@ const OpenVault: React.FC = () => {
   const pairChainId = Number(params.chainId)
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
 
-  const [inputValue, setInputValue] = useState(0)
+  const [userInputValue, setUserInputValue] = useState(0)
+  const [inputValue, setInputValue] = useState()
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Start ; 2=>mint bitUSD; 3=>mint bitUSD ing;4=> Minting Completed;5=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
@@ -70,7 +71,7 @@ const OpenVault: React.FC = () => {
   const { writeContractAsync } = useWriteContract()
   const { address } = useUserInfo()
 
-  const { vaultManagerData } = useUserVaultManager(inputValue)
+  const { vaultManagerData } = useUserVaultManager(userInputValue)
   const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
     useUserVaultManager(0)
   const [txnId, setTxnId] = useState<Hash>()
@@ -307,6 +308,7 @@ const OpenVault: React.FC = () => {
     const newValue = event.target.value
     if (regex.test(newValue)) {
       setInputValue(Number(newValue))
+      setUserInputValue(Number(newValue))
     }
   }
 
@@ -315,6 +317,9 @@ const OpenVault: React.FC = () => {
     if (inputValue < 0) return
     if (inputValue > overviewDataInit.availableToMint) {
       setInputValue(Number(formatDecimal(overviewDataInit.availableToMint, 4)))
+      setUserInputValue(
+        Number(formatDecimal(overviewDataInit.availableToMint, 4))
+      )
     }
 
     const result = vaultManagerData
@@ -639,7 +644,7 @@ const SetupVault: React.FC<{
           ~
           {formatMoney(
             formatDecimal((price as number) * (inputValue as number), 4)
-          )}{' '}
+          )}
           USD
         </p>
       </div>
@@ -733,10 +738,9 @@ const MintBitUSDIng: React.FC<{
       <div className="relative mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          min="1"
           className="input_style flex h-[47px] w-auto items-center font-ibmb
         text-[36px] leading-[47px] hover:border-none"
-          placeholder="1"
+          placeholder="0"
           onBlur={handleBlur}
           value={inputValue}
           onChange={handleInputChange}
@@ -750,28 +754,28 @@ const MintBitUSDIng: React.FC<{
         <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
           <span className="whitespace-nowrap">Vault Debt</span>
           <p className="flex items-center justify-between font-ibmb">
-            <span>{formatMoney(formatDecimal(listData.debtBitUSD, 4))} $ </span>
+            <span>{formatMoney(formatDecimal(listData.debtBitUSD, 2))} $ </span>
             <Image
               src={getOpenUrl('return')}
               className="ml-2 mr-[9px] w-[5px]"
             />
             <span className="text-green">
               {' '}
-              {formatMoney(formatDecimal(afterDataInit.debtBitUSD, 4))} $
+              {formatMoney(formatDecimal(afterDataInit.debtBitUSD, 2))} $
             </span>
           </p>
         </li>
         <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
           <span className="whitespace-nowrap">Health factor</span>
           <p className="flex items-center justify-between font-ibmb">
-            <span>{formatDecimal(listData.collateralRate, 2)} % </span>
+            <span>{formatDecimal(listData.collateralRate, 1)} % </span>
             <Image
               src={getOpenUrl('return')}
               className="ml-2 mr-[9px] w-[5px]"
             />
             <span className="text-green">
               {' '}
-              {formatDecimal(afterDataInit.collateralRate, 2)} %
+              {formatDecimal(afterDataInit.collateralRate, 1)} %
             </span>
           </p>
         </li>
@@ -779,7 +783,7 @@ const MintBitUSDIng: React.FC<{
           <span className="whitespace-nowrap">Available to mint bitUSD</span>
           <p className="flex items-center justify-between whitespace-nowrap font-ibmb">
             <span>
-              {formatMoney(formatDecimal(listData.availableToMint, 4))} ${' '}
+              {formatMoney(formatDecimal(listData.availableToMint, 2))} ${' '}
             </span>
             <Image
               src={getOpenUrl('return')}
@@ -787,7 +791,7 @@ const MintBitUSDIng: React.FC<{
             />
             <span className="text-green">
               {' '}
-              {formatMoney(formatDecimal(afterDataInit.availableToMint, 4))} $
+              {formatMoney(formatDecimal(afterDataInit.availableToMint, 2))} $
             </span>
           </p>
         </li>
@@ -795,7 +799,7 @@ const MintBitUSDIng: React.FC<{
           <span className="whitespace-nowrap">Liquidation Price</span>
           <p className="flex items-center justify-between font-ibmb">
             <span>
-              {formatMoney(formatDecimal(listData.liquidationPrice, 4))} ${' '}
+              {formatMoney(formatDecimal(listData.liquidationPrice, 2))} ${' '}
             </span>
             <Image
               src={getOpenUrl('return')}
@@ -803,7 +807,7 @@ const MintBitUSDIng: React.FC<{
             />
             <span className="text-green">
               {' '}
-              {formatMoney(formatDecimal(afterDataInit.liquidationPrice, 4))} $
+              {formatMoney(formatDecimal(afterDataInit.liquidationPrice, 2))} $
             </span>
           </p>
         </li>
@@ -961,19 +965,19 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%] pl-[10px]">
             <p className="font-ibmr text-base">Health factor</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              {formatDecimal(listData.collateralRate || 0, 2)}%
+              {formatDecimal(listData.collateralRate || 0, 1)}%
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              % {formatDecimal(afterDataInit.collateralRate || 0, 2)} after ⓘ
+              % {formatDecimal(afterDataInit.collateralRate || 0, 1)} after ⓘ
             </div>
           </div>
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Vault Debt</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData.debtBitUSD || 0, 4))}
+              ${formatMoney(formatDecimal(listData.debtBitUSD || 0, 2))}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 4))}{' '}
+              $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 2))}{' '}
               after ⓘ
             </div>
           </div>
