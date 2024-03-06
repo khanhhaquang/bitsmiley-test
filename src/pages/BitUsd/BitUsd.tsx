@@ -4,8 +4,12 @@ import { TitleBox } from '@/components/Title'
 import { LinkOutIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { vaultsInfoService } from '@/services/vaultsInfo'
-import Tooltip from '@/components/Tooltip'
 import { useChainId } from 'wagmi'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface Vault {
   isOpenVault: boolean
@@ -138,13 +142,36 @@ const AvailableMintingPairs: React.FC<{
               <li className="w-[140px]"></li>
               <li className="flex-1 text-right">Network</li>
               <li className="flex-1 text-right">
-                <Tooltip text="MAX LTV">
-                  <span>Max LTV ⓘ</span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Max LTV ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>Max Loan to Value Ratio</TooltipContent>
                 </Tooltip>
               </li>
-              <li className="flex-1 text-right">Borrow rate ⓘ</li>
-              <li className="flex-1 text-right">Min Size ⓘ </li>
-              <li className="flex-1 text-right">Liquidity ⓘ </li>
+              <li className="flex-1 text-right">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Borrow rate ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    The annual borrow rate for vaults, calculated based on your
+                    outstanding vault debt.
+                  </TooltipContent>
+                </Tooltip>
+              </li>
+              <li className="flex-1 text-right">Min Size ⓘ</li>
+              <li className="flex-1 text-right">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Liquidity ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Amount of bitUSD available to be generated from BTC
+                    according the global protocol debt ceiling
+                  </TooltipContent>
+                </Tooltip>
+              </li>
               <li className="ml-[50] flex-1 text-center"></li>
             </ul>
           </dt>

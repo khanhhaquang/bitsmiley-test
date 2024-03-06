@@ -2,7 +2,13 @@ import { defineConfig } from '@wagmi/cli'
 import { react } from '@wagmi/cli/plugins'
 import erc721StakingAbi from './src/abi/Staking.json'
 import { Abi, erc721Abi } from 'viem'
-import {vaultManagerABI,bitSmileyABI,oraclesABI,bitUSDABI,bitUsdL2ABI}  from './src/abi/abi'
+import {
+  vaultManagerABI,
+  bitSmileyABI,
+  oraclesABI,
+  bitUSDABI,
+  bitUsdL2ABI
+} from './src/abi/abi'
 
 export default defineConfig([
   {
@@ -75,5 +81,4 @@ export default defineConfig([
     ],
     plugins: [react()]
   }
-
 ])
