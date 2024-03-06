@@ -3,7 +3,7 @@ import { CanvasFrames } from '@/components/CanvasFrames'
 import { getFrameUrl } from '@/utils/getAssetsUrl'
 import { Header } from '@/components/Header'
 
-export const NetworkErrorPage: React.FC = () => {
+const NetworkError: React.FC = () => {
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-black bg-loading bg-cover bg-center bg-no-repeat">
       <Header />
@@ -30,3 +30,5 @@ export const NetworkErrorPage: React.FC = () => {
     </div>
   )
 }
+
+export default NetworkError

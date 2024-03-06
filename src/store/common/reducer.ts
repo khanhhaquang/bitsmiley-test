@@ -16,8 +16,9 @@ const initState: {
 } = {
   networkError: false,
   currentTypewritterSeq: 0,
-  transactions: (getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS)?.split(',') ||
-    []) as Hash[],
+  transactions: (
+    getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS)?.split(',') || []
+  ).filter((v) => !!v) as Hash[],
   project: null,
   featuresEnabled: null
 }
@@ -31,21 +32,24 @@ export default createReducer(initState, (builder) => {
       state.networkError = action.payload
     })
     .addCase(actions.ADD_TRANSACTION, (state, action) => {
-      if (!state.transactions.includes(action.payload)) {
-        const newTxns = state.transactions.concat(action.payload)
+      if (!action.payload) return
+      const txid = action.payload.toLowerCase() as Hash
+      if (!state.transactions.includes(txid)) {
+        const newTxns = state.transactions.concat(txid)
         state.transactions = newTxns
         setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
       }
     })
     .addCase(actions.ADD_TRANSACTIONS, (state, action) => {
-      const filteredTxns = action.payload.filter(
-        (v) => !state.transactions.includes(v)
-      )
+      const filteredTxns = action.payload
+        .filter((v) => !!v && !state.transactions.includes(v))
+        .map((v) => v.toLowerCase() as Hash)
       const newTxns = state.transactions.concat(filteredTxns)
       state.transactions = newTxns
       setLocalStorage(LOCAL_STORAGE_KEYS.TXIDS, newTxns.join(','))
     })
     .addCase(actions.REMOVE_TRANSACTION, (state, action) => {
+      if (!action.payload) return
       const txid = action.payload.toLowerCase()
       const newTxns = state.transactions.filter((v) => v !== txid)
       state.transactions = newTxns

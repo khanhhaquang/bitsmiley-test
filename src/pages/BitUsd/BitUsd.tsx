@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import { LinkOutIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -64,7 +63,6 @@ const BitUsd: React.FC = () => {
 
   return (
     <div>
-      <Header wallet />
       <div>
         {myVaults.length > 0 && (
           <>

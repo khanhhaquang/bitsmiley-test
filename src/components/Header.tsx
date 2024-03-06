@@ -21,6 +21,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
           {!isHome && (
             <>
               <LinkItem name="Home" pathname="/" />
+              {/* <LinkItem name="bitPoint" pathname="/bit-point" /> */}
               <LinkItem name="AlphaNet" pathname="/bit-usd" />
             </>
           )}

@@ -5,10 +5,15 @@ import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const Main = lazy(() => import('@/pages/Main'))
 const MainBitUsd = lazy(() => import('@/pages/BitUsd'))
+const MainBitPoint = lazy(() => import('@/pages/BitPoint'))
 
 const BitUsd = lazy(() => import('@/pages/BitUsd/BitUsd'))
+const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
 const OpenVault = lazy(() => import('@/pages/BitUsd/OpenVault'))
 const MyVault = lazy(() => import('@/pages/BitUsd/MyVault'))
+
+const BitPointCaptain = lazy(() => import('@/pages/BitPoint/Captain'))
+const BitPointMember = lazy(() => import('@/pages/BitPoint/Member'))
 
 const Routes = () => {
   const { featuresEnabled } = useProjectInfo()
@@ -27,29 +32,53 @@ const Routes = () => {
     }
   ]
 
-  const alphaNetRoutes: RouteObject[] = [
+  const alphaNetRoutes: RouteObject[] = !isAlphaNetEnabled
+    ? []
+    : [
+        {
+          path: 'bit-usd',
+          id: 'bitUsd',
+          element: <MainBitUsd />,
+          children: [
+            {
+              index: true,
+              element: <BitUsd />
+            },
+            {
+              path: 'vault/:chainId',
+              element: <OpenVault />
+            },
+            {
+              path: 'my-vault/:chainId',
+              element: <MyVault />
+            }
+          ]
+        }
+      ]
+
+  const bitPointRoutes: RouteObject[] = [
     {
-      path: 'bit-usd',
-      id: 'bitUsd',
-      element: <MainBitUsd />,
+      path: 'bit-point',
+      id: 'bitPoint',
+      element: <MainBitPoint />,
       children: [
         {
           index: true,
-          element: <BitUsd />
+          element: <BitPoint />
         },
         {
-          path: 'vault/:chainId',
-          element: <OpenVault />
+          path: 'captain',
+          element: <BitPointCaptain />
         },
         {
-          path: 'my-vault/:chainId',
-          element: <MyVault />
+          path: 'member',
+          element: <BitPointMember />
         }
       ]
     }
   ]
 
-  return useRoutes(basicRoutes.concat(isAlphaNetEnabled ? alphaNetRoutes : []))
+  return useRoutes([...basicRoutes, ...alphaNetRoutes, ...bitPointRoutes])
 }
 
 export default Routes

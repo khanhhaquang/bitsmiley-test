@@ -1,6 +1,5 @@
 import React, { useState, useEffect, SetStateAction } from 'react'
 import { Image } from '@/components/Image'
-import { Header } from '@/components/Header'
 import { TitleBox } from '@/components/Title'
 import './index.scss'
 import { formatEther, parseEther } from 'viem'
@@ -408,7 +407,6 @@ const OpenVault: React.FC = () => {
   console.log(mintingPair)
   return (
     <div>
-      <Header wallet />
       <div>
         <div className=" mx-auto mt-[164px] max-w-[1434px]">
           <TitleBox
