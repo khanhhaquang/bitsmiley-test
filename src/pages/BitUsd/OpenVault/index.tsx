@@ -21,6 +21,7 @@ import { useStoreActions } from '@/hooks/useStoreActions'
 import useGetUservault from '@/hooks/useGetUservault'
 import { Hash } from 'viem'
 import { useMintingPairs } from '@/hooks/useMintingPairs'
+import { cn } from '@/utils/cn'
 
 interface overviewBoxObject {
   availableToMint?: number
@@ -37,7 +38,8 @@ const OpenVault: React.FC = () => {
   const pairChainId = Number(params.chainId)
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
 
-  const [inputValue, setInputValue] = useState(0)
+  const [userInputValue, setUserInputValue] = useState(0)
+  const [inputValue, setInputValue] = useState()
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Start ; 2=>mint bitUSD; 3=>mint bitUSD ing;4=> Minting Completed;5=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
@@ -69,7 +71,7 @@ const OpenVault: React.FC = () => {
   const { writeContractAsync } = useWriteContract()
   const { address } = useUserInfo()
 
-  const { vaultManagerData } = useUserVaultManager(inputValue)
+  const { vaultManagerData } = useUserVaultManager(userInputValue)
   const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
     useUserVaultManager(0)
   const [txnId, setTxnId] = useState<Hash>()
@@ -231,14 +233,6 @@ const OpenVault: React.FC = () => {
         refetchVaultManagerData()
         setIsStateValue(3)
       }
-      // if (vault1 != '0x0000000000000000000000000000000000000000') {
-      //   refetchVaultManagerData()
-      //   setIsStateValue(3)
-      // } else {
-      //   refetchBalanceWBTC()
-      //   setIsStateValue(2)
-      // }
-
       setIsApprove(true)
       closeTimeout = setTimeout(() => {
         removeTransaction(txnId?.toString() || '')
@@ -314,6 +308,7 @@ const OpenVault: React.FC = () => {
     const newValue = event.target.value
     if (regex.test(newValue)) {
       setInputValue(Number(newValue))
+      setUserInputValue(Number(newValue))
     }
   }
 
@@ -322,6 +317,9 @@ const OpenVault: React.FC = () => {
     if (inputValue < 0) return
     if (inputValue > overviewDataInit.availableToMint) {
       setInputValue(Number(formatDecimal(overviewDataInit.availableToMint, 4)))
+      setUserInputValue(
+        Number(formatDecimal(overviewDataInit.availableToMint, 4))
+      )
     }
 
     const result = vaultManagerData
@@ -403,6 +401,7 @@ const OpenVault: React.FC = () => {
   if (isLoading) return <div>loading...</div>
   if (!mintingPair) return null
 
+  console.log(mintingPair)
   return (
     <div>
       <div>
@@ -419,28 +418,19 @@ const OpenVault: React.FC = () => {
           />
         </div>
         <div className=" container mx-auto">
-          <dl className="mx-auto mt-[9px] max-w-[1220px] ">
+          <dl className="mx-auto mt-[9px] max-w-[1530px] ">
             <dt className="mb-[16px]">
-              <ul className="table_title_color flex justify-center font-ibmb">
-                <li className="mr-[50px] text-center">
-                  Borrow rate : {Number(mintingPair.borrowRate) * 100}% ⓘ{' '}
-                </li>
-                <li className="mr-[50px] text-center">Liquidity fee: 50% ⓘ </li>
-                <li className="mr-[50px] text-center">
-                  Min Size: {mintingPair.minSize} $ ⓘ
-                </li>
-                <li className="mr-[50px] text-center">
-                  Max LTV: {Number(mintingPair.maxLTV) * 100}% ⓘ
-                </li>
-              </ul>
-              {/* <networkInfo list={listInfo}/> */}
+              <NetworkInfo list={mintingPair} />
             </dt>
           </dl>
-          <div className="line_bottom mb-[31px]"></div>
+          <div className={cn('line_bottom mb-[31px]')}></div>
 
           <div className="flex justify-center pb-[250px]">
-            <div className="grid_bg relative mr-[99px] h-[528px] w-[629px] flex-none">
-              <div className="blendMode t-0 l-0 absolute"></div>
+            <div
+              className={cn(
+                'grid_bg relative mr-[99px] h-[528px] w-[629px] flex-none'
+              )}>
+              <div className={cn('blendMode t-0 l-0 absolute')}></div>
               <div className="relative h-[528px]">
                 <CornerPin></CornerPin>
                 <TitleBlock titleValue="Overview"></TitleBlock>
@@ -454,8 +444,8 @@ const OpenVault: React.FC = () => {
                 )}
               </div>
             </div>
-            <div className="grid_bg relative flex-none">
-              <div className="blendMode_blue t-0 l-0 absolute"></div>
+            <div className={cn('grid_bg relative flex-none')}>
+              <div className={cn('blendMode_blue t-0 l-0 absolute')}></div>
               <div className="relative h-[528px] w-[629px] px-[53px] ">
                 <CornerPin></CornerPin>
                 {isState == 5 ? (
@@ -534,28 +524,49 @@ const OpenVault: React.FC = () => {
   )
 }
 
-// const networkInfo: React.FC<{
-//   list: titleListObject
-// }> = ({ list }) => {
-//   return (
-//     <>
-//       <ul className="table_title_color flex justify-center font-ibmb">
-//         <li className="mr-[50px] text-center">
-//           Borrow rate : {list.borrowRate * 100}% ⓘ{' '}
-//         </li>
-//         <li className="mr-[50px] text-center">
-//           Liquidity fee: {list.liquidity * 100}% ⓘ{' '}
-//         </li>
-//         <li className="mr-[50px] text-center">
-//           Min Size: {list.minSize} BTC ⓘ
-//         </li>
-//         <li className="mr-[50px] text-center">
-//           Max LTV: {list.maxLTV * 100}% ⓘ
-//         </li>
-//       </ul>
-//     </>
-//   )
-// }
+const NetworkInfo: React.FC<{
+  list: object
+}> = ({ list }) => {
+  console.log(list)
+  const items = [
+    {
+      name: 'Borrow rate',
+      value: `${list.borrowRate * 100} %`
+    },
+    {
+      name: 'Liquidation Penalty',
+      value: `${list.liquidity * 100} %`
+    },
+    {
+      name: 'Vault Floor',
+      value: `6k bitUSD `
+    },
+    {
+      name: 'Vault Ceiling',
+      value: `300k bitUSD`
+    },
+    // {
+    //   name: 'Min Size',
+    //   value: `${list.minSize * 100} BTC`
+    // },
+    {
+      name: 'Max LTV',
+      value: `${list.maxLTV * 100} %`
+    }
+  ]
+  const renderedItems = items.map((item, index) => (
+    <li key={index} className="mr-[40px] text-center">
+      {item.name}: {item.value} ⓘ
+    </li>
+  ))
+  return (
+    <>
+      <ul className="flex justify-center font-ibmr text-white">
+        {renderedItems}
+      </ul>
+    </>
+  )
+}
 
 const TitleBlock: React.FC<{
   titleValue: string
@@ -572,10 +583,22 @@ const TitleBlock: React.FC<{
 const CornerPin: React.FC = () => {
   return (
     <>
-      <div className="union01 absolute left-0 top-[22px] h-[24px] w-[24px]"></div>
-      <div className="union01 absolute right-0 top-[22px] h-[24px] w-[24px] rotate-90"></div>
-      <div className="union01 absolute bottom-0 left-0 h-[24px] w-[24px] -rotate-90"></div>
-      <div className="union01 absolute bottom-0 right-0 h-[24px] w-[24px] -rotate-180"></div>
+      <div
+        className={cn(
+          'union01 absolute left-0 top-[22px] h-[24px] w-[24px]'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute right-0 top-[22px] h-[24px] w-[24px] rotate-90'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute bottom-0 left-0 h-[24px] w-[24px] -rotate-90'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute bottom-0 right-0 h-[24px] w-[24px] -rotate-180'
+        )}></div>
     </>
   )
 }
@@ -610,7 +633,7 @@ const SetupVault: React.FC<{
       <div className="mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          min="1"
+          placeholder="0"
           className="input_style flex h-[47px] w-auto items-center font-ibmb
         text-[36px] leading-[47px] hover:border-none"
           onBlur={handleBlur}
@@ -621,7 +644,7 @@ const SetupVault: React.FC<{
           ~
           {formatMoney(
             formatDecimal((price as number) * (inputValue as number), 4)
-          )}{' '}
+          )}
           USD
         </p>
       </div>
@@ -715,10 +738,9 @@ const MintBitUSDIng: React.FC<{
       <div className="relative mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          min="1"
           className="input_style flex h-[47px] w-auto items-center font-ibmb
         text-[36px] leading-[47px] hover:border-none"
-          placeholder="1"
+          placeholder="0"
           onBlur={handleBlur}
           value={inputValue}
           onChange={handleInputChange}
@@ -732,28 +754,28 @@ const MintBitUSDIng: React.FC<{
         <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
           <span className="whitespace-nowrap">Vault Debt</span>
           <p className="flex items-center justify-between font-ibmb">
-            <span>{formatMoney(formatDecimal(listData.debtBitUSD, 4))} $ </span>
+            <span>{formatMoney(formatDecimal(listData.debtBitUSD, 2))} $ </span>
             <Image
               src={getOpenUrl('return')}
               className="ml-2 mr-[9px] w-[5px]"
             />
             <span className="text-green">
               {' '}
-              {formatMoney(formatDecimal(afterDataInit.debtBitUSD, 4))} $
+              {formatMoney(formatDecimal(afterDataInit.debtBitUSD, 2))} $
             </span>
           </p>
         </li>
         <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
           <span className="whitespace-nowrap">Health factor</span>
           <p className="flex items-center justify-between font-ibmb">
-            <span>{formatDecimal(listData.collateralRate, 2)} % </span>
+            <span>{formatDecimal(listData.collateralRate, 1)} % </span>
             <Image
               src={getOpenUrl('return')}
               className="ml-2 mr-[9px] w-[5px]"
             />
             <span className="text-green">
               {' '}
-              {formatDecimal(afterDataInit.collateralRate, 2)} %
+              {formatDecimal(afterDataInit.collateralRate, 1)} %
             </span>
           </p>
         </li>
@@ -761,7 +783,7 @@ const MintBitUSDIng: React.FC<{
           <span className="whitespace-nowrap">Available to mint bitUSD</span>
           <p className="flex items-center justify-between whitespace-nowrap font-ibmb">
             <span>
-              {formatMoney(formatDecimal(listData.availableToMint, 4))} ${' '}
+              {formatMoney(formatDecimal(listData.availableToMint, 2))} ${' '}
             </span>
             <Image
               src={getOpenUrl('return')}
@@ -769,7 +791,7 @@ const MintBitUSDIng: React.FC<{
             />
             <span className="text-green">
               {' '}
-              {formatMoney(formatDecimal(afterDataInit.availableToMint, 4))} $
+              {formatMoney(formatDecimal(afterDataInit.availableToMint, 2))} $
             </span>
           </p>
         </li>
@@ -777,7 +799,7 @@ const MintBitUSDIng: React.FC<{
           <span className="whitespace-nowrap">Liquidation Price</span>
           <p className="flex items-center justify-between font-ibmb">
             <span>
-              {formatMoney(formatDecimal(listData.liquidationPrice, 4))} ${' '}
+              {formatMoney(formatDecimal(listData.liquidationPrice, 2))} ${' '}
             </span>
             <Image
               src={getOpenUrl('return')}
@@ -785,7 +807,7 @@ const MintBitUSDIng: React.FC<{
             />
             <span className="text-green">
               {' '}
-              {formatMoney(formatDecimal(afterDataInit.liquidationPrice, 4))} $
+              {formatMoney(formatDecimal(afterDataInit.liquidationPrice, 2))} $
             </span>
           </p>
         </li>
@@ -943,19 +965,19 @@ const MintBitUsdOverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%] pl-[10px]">
             <p className="font-ibmr text-base">Health factor</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              {formatDecimal(listData.collateralRate || 0, 2)}%
+              {formatDecimal(listData.collateralRate || 0, 1)}%
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              % {formatDecimal(afterDataInit.collateralRate || 0, 2)} after ⓘ
+              % {formatDecimal(afterDataInit.collateralRate || 0, 1)} after ⓘ
             </div>
           </div>
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Vault Debt</p>
             <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData.debtBitUSD || 0, 4))}
+              ${formatMoney(formatDecimal(listData.debtBitUSD || 0, 2))}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 4))}{' '}
+              $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 2))}{' '}
               after ⓘ
             </div>
           </div>

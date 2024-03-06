@@ -22,6 +22,8 @@ import useBitUSDContract from '@/hooks/useBitUSDContract'
 import { useMintingPairs } from '@/hooks/useMintingPairs'
 import { useParams } from 'react-router-dom'
 import { Hash } from 'viem'
+import { OverviewBox } from '@/components/OverviewBox'
+
 interface overviewBoxObject {
   availableToMint?: number
   debtBitUSD?: number
@@ -47,8 +49,8 @@ const MyVault: React.FC = () => {
   const pairChainId = Number(params.chainId)
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
   const [inputNum, setInputNum] = useState(0)
-  const [inputValue, setInputValue] = useState(0)
-  const [withdrawValue, setWithdrawValue] = useState(0)
+  const [inputValue, setInputValue] = useState()
+  const [withdrawValue, setWithdrawValue] = useState()
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Make Changes-next  ; 2=>Vault Changes-Vault Changes ; 3=>Changes Completed=>ok ;4=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
@@ -194,9 +196,9 @@ const MyVault: React.FC = () => {
 
   const typeChangeFun = async (i: number) => {
     console.log(i)
-    setInputValue(0)
-    setWithdrawValue(0)
-    setInputNum(0)
+    setInputValue()
+    setWithdrawValue()
+    setInputNum()
     setCoinType(i)
     refetchVaultManagerData()
     const overviewInit = await overviewData(1)
@@ -223,7 +225,6 @@ const MyVault: React.FC = () => {
       result = vaultManagerAfterData
     }
     console.log(vaultManagerData, vaultManagerAfterData)
-    // const result = vaultManagerData
     const arr = {
       liquidationPrice: Number(
         formatEther(result.liquidationPrice.toString() || '')
@@ -299,9 +300,9 @@ const MyVault: React.FC = () => {
           setTxnId(txnId)
           addTransaction(txnId)
           if (status !== 'pending') {
-            setInputValue(0)
-            setWithdrawValue(0)
-            setInputNum(0)
+            setInputValue()
+            setWithdrawValue()
+            setInputNum()
             setIsLodingValue(false)
             setIsStateValue(3)
           }
@@ -343,9 +344,9 @@ const MyVault: React.FC = () => {
         setTxnId(txnId)
         addTransaction(txnId)
         if (status !== 'pending') {
-          setInputValue(0)
-          setWithdrawValue(0)
-          setInputNum(0)
+          setInputValue()
+          setWithdrawValue()
+          setInputNum()
           setIsLodingValue(false)
           setIsStateValue(3)
         }
@@ -498,9 +499,9 @@ const MyVault: React.FC = () => {
   }
 
   const handClickOk = () => {
-    setInputValue(0)
-    setWithdrawValue(0)
-    setInputNum(0)
+    setInputValue()
+    setWithdrawValue()
+    setInputNum()
     setIsStateValue(1)
   }
 
@@ -519,10 +520,6 @@ const MyVault: React.FC = () => {
           <dl className="mx-auto mt-[9px] max-w-[1220px] ">
             <dt className="mb-[16px]">
               <ul className="table_title_color flex justify-center font-ibmb">
-                {/* <li className="text-center mr-[50px]">Stability fee : 5.25% ⓘ</li>
-                <li className="text-center mr-[50px]">Liquidity fee: 13% ⓘ</li>
-                <li className="text-center mr-[50px]">Min Size: 0.5 BTC ⓘ</li>
-                <li className="text-center mr-[50px]">Max LTV: 50% ⓘ</li> */}
                 <li className="mr-[50px] text-center">
                   Stability fee: {Number(mintingPair.borrowRate) * 100}% ⓘ{' '}
                 </li>
@@ -544,7 +541,7 @@ const MyVault: React.FC = () => {
               <div className="relative h-[528px]">
                 <CornerPin></CornerPin>
                 <TitleBlock titleValue="Overview"></TitleBlock>
-                <MintBitUsdOverviewBox
+                <OverviewBox
                   listData={overviewDataInit}
                   afterDataInit={overviewAfterDataInit}
                 />
@@ -753,6 +750,7 @@ const SetupVault: React.FC<{
         text-[36px] leading-[47px] hover:border-none ${
           !isDeposit ? 'text-white/[.5] opacity-50' : ''
         }`}
+          placeholder="0"
           readOnly={!isDeposit}
           onFocus={handOnFocusChange1}
           onBlur={handleBlur1}
@@ -796,7 +794,7 @@ const SetupVault: React.FC<{
       <div className="mb-[15px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          min="1"
+          placeholder="0"
           className={`input_style  flex h-[47px] w-auto items-center font-ibmb
         text-[36px] leading-[47px] hover:border-none ${
           isDeposit ? 'text-white/[.5] opacity-50' : ''
@@ -1072,111 +1070,6 @@ const MintBitUSDBox: React.FC<{
               />
             </button>
           )}
-        </div>
-      </div>
-    </>
-  )
-}
-
-const MintBitUsdOverviewBox: React.FC<{
-  listData?: overviewBoxObject
-  afterDataInit: overviewBoxObject
-}> = ({ listData, afterDataInit }) => {
-  return (
-    <>
-      <div className="mt-[10px]  px-[30px]">
-        <div
-          className={`flex flex-wrap items-center justify-between px-[30px] text-white`}>
-          <div className="mt-[24px] w-[50%]">
-            <p className="font-ibmr text-base">Liquidation Price</p>
-            <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData?.liquidationPrice || 0, 2))}
-            </h1>
-            <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              ${' '}
-              {formatMoney(
-                formatDecimal(afterDataInit.liquidationPrice || 0, 2)
-              )}{' '}
-              after ⓘ{/* $ {afterDataInit.liquidationPrice} after ⓘ  */}
-            </div>
-          </div>
-          <div className="mt-[24px] w-[50%] pl-[10px]">
-            <p className="font-ibmr text-base">Health factor</p>
-            <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              {formatDecimal(listData?.collateralRate || 0, 2)} %
-            </h1>
-            <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              {formatDecimal(afterDataInit.collateralRate || 0, 2)}% after ⓘ
-            </div>
-          </div>
-          <div className="mt-[24px] w-[50%]">
-            <p className="font-ibmr text-base">Vault Debt</p>
-            <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData?.debtBitUSD || 0, 4))}
-            </h1>
-            <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 4))}{' '}
-              after ⓘ
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`mt-[20px] flex items-start justify-center text-white/[.7]`}>
-          <div className="mt-[24px]">
-            <p className="whitespace-nowrap font-ibmr text-[14px]">
-              Collateral locked
-            </p>
-            <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData?.lockedCollateral || 0, 4)
-              )}{' '}
-              BTC
-            </h1>
-            <div className="relative flex h-[31px] min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.lockedCollateral || 0, 4)
-              )}{' '}
-              after
-            </div>
-          </div>
-          <div className="mt-[24px] pl-[18px] pr-[18px]">
-            <p className="whitespace-nowrap font-ibmr text-[14px]">
-              Available to withdraw
-            </p>
-            <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData?.availableToWithdraw || 0, 4)
-              )}{' '}
-              BTC
-            </h1>
-            <div className="relative flex h-[31px] w-auto min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.availableToWithdraw || 0, 4)
-              )}{' '}
-              after
-            </div>
-          </div>
-          <div className="mt-[24px]">
-            <p className="whitespace-nowrap font-ibmr text-[14px]">
-              Available to mint
-            </p>
-            <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData?.availableToMint || 0, 4)
-              )}{' '}
-              bitUSD
-            </h1>
-            <div className="relative flex h-[31px] min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.availableToMint || 0, 4)
-              )}{' '}
-              after
-            </div>
-          </div>
         </div>
       </div>
     </>

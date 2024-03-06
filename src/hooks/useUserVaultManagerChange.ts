@@ -59,6 +59,7 @@ const useUserVaultManager = (val: number, isDeposit: boolean, type: number) => {
       address: contractAddresses?.VaultManager,
       args: parameter
     })
+
   return {
     vaultManagerData,
     refetchVaultManagerData,
