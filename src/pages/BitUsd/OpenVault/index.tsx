@@ -22,6 +22,7 @@ import { useStoreActions } from '@/hooks/useStoreActions'
 import useGetUservault from '@/hooks/useGetUservault'
 import { Hash } from 'viem'
 import { useMintingPairs } from '@/hooks/useMintingPairs'
+import { cn } from '@/utils/cn'
 
 interface overviewBoxObject {
   availableToMint?: number
@@ -404,6 +405,7 @@ const OpenVault: React.FC = () => {
   if (isLoading) return <div>loading...</div>
   if (!mintingPair) return null
 
+  console.log(mintingPair)
   return (
     <div>
       <Header wallet />
@@ -421,28 +423,19 @@ const OpenVault: React.FC = () => {
           />
         </div>
         <div className=" container mx-auto">
-          <dl className="mx-auto mt-[9px] max-w-[1220px] ">
+          <dl className="mx-auto mt-[9px] max-w-[1530px] ">
             <dt className="mb-[16px]">
-              <ul className="table_title_color flex justify-center font-ibmb">
-                <li className="mr-[50px] text-center">
-                  Borrow rate : {Number(mintingPair.borrowRate) * 100}% ⓘ{' '}
-                </li>
-                <li className="mr-[50px] text-center">Liquidity fee: 50% ⓘ </li>
-                <li className="mr-[50px] text-center">
-                  Min Size: {mintingPair.minSize} $ ⓘ
-                </li>
-                <li className="mr-[50px] text-center">
-                  Max LTV: {Number(mintingPair.maxLTV) * 100}% ⓘ
-                </li>
-              </ul>
-              {/* <networkInfo list={listInfo}/> */}
+              <NetworkInfo list={mintingPair} />
             </dt>
           </dl>
-          <div className="line_bottom mb-[31px]"></div>
+          <div className={cn('line_bottom mb-[31px]')}></div>
 
           <div className="flex justify-center pb-[250px]">
-            <div className="grid_bg relative mr-[99px] h-[528px] w-[629px] flex-none">
-              <div className="blendMode t-0 l-0 absolute"></div>
+            <div
+              className={cn(
+                'grid_bg relative mr-[99px] h-[528px] w-[629px] flex-none'
+              )}>
+              <div className={cn('blendMode t-0 l-0 absolute')}></div>
               <div className="relative h-[528px]">
                 <CornerPin></CornerPin>
                 <TitleBlock titleValue="Overview"></TitleBlock>
@@ -456,8 +449,8 @@ const OpenVault: React.FC = () => {
                 )}
               </div>
             </div>
-            <div className="grid_bg relative flex-none">
-              <div className="blendMode_blue t-0 l-0 absolute"></div>
+            <div className={cn('grid_bg relative flex-none')}>
+              <div className={cn('blendMode_blue t-0 l-0 absolute')}></div>
               <div className="relative h-[528px] w-[629px] px-[53px] ">
                 <CornerPin></CornerPin>
                 {isState == 5 ? (
@@ -536,28 +529,49 @@ const OpenVault: React.FC = () => {
   )
 }
 
-// const networkInfo: React.FC<{
-//   list: titleListObject
-// }> = ({ list }) => {
-//   return (
-//     <>
-//       <ul className="table_title_color flex justify-center font-ibmb">
-//         <li className="mr-[50px] text-center">
-//           Borrow rate : {list.borrowRate * 100}% ⓘ{' '}
-//         </li>
-//         <li className="mr-[50px] text-center">
-//           Liquidity fee: {list.liquidity * 100}% ⓘ{' '}
-//         </li>
-//         <li className="mr-[50px] text-center">
-//           Min Size: {list.minSize} BTC ⓘ
-//         </li>
-//         <li className="mr-[50px] text-center">
-//           Max LTV: {list.maxLTV * 100}% ⓘ
-//         </li>
-//       </ul>
-//     </>
-//   )
-// }
+const NetworkInfo: React.FC<{
+  list: object
+}> = ({ list }) => {
+  console.log(list)
+  const items = [
+    {
+      name: 'Borrow rate',
+      value: `${list.borrowRate * 100} %`
+    },
+    {
+      name: 'Liquidation Penalty',
+      value: `${list.liquidity * 100} %`
+    },
+    {
+      name: 'Vault Floor',
+      value: `6k bitUSD `
+    },
+    {
+      name: 'Vault Ceiling',
+      value: `300k bitUSD`
+    },
+    // {
+    //   name: 'Min Size',
+    //   value: `${list.minSize * 100} BTC`
+    // },
+    {
+      name: 'Max LTV',
+      value: `${list.maxLTV * 100} %`
+    }
+  ]
+  const renderedItems = items.map((item, index) => (
+    <li key={index} className="mr-[40px] text-center">
+      {item.name}: {item.value} ⓘ
+    </li>
+  ))
+  return (
+    <>
+      <ul className="flex justify-center font-ibmr text-white">
+        {renderedItems}
+      </ul>
+    </>
+  )
+}
 
 const TitleBlock: React.FC<{
   titleValue: string
