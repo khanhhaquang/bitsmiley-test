@@ -29,6 +29,7 @@ import MetamaskIcon from './metamask.svg'
 import SpinIcon from './spin.svg'
 import SuccessIcon from './success.svg'
 import FailIcon from './fail.svg'
+import WarningOutline from './warning-outline.svg'
 
 export {
   DotIcon,
@@ -61,5 +62,6 @@ export {
   MetamaskIcon,
   SpinIcon,
   SuccessIcon,
-  FailIcon
+  FailIcon,
+  WarningOutline
 }

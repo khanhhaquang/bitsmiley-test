@@ -29,6 +29,12 @@ import { useParams } from 'react-router-dom'
 import { Hash } from 'viem'
 import { OverviewBox } from '@/components/OverviewBox'
 import { cn } from '@/utils/cn'
+import { VaultTitleBar } from '@/components/VaultTitleBar'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface overviewBoxObject {
   availableToMint?: number
@@ -53,6 +59,7 @@ const formatEther = (v?: bigint | boolean | number | string) =>
 const MyVault: React.FC = () => {
   const params = useParams()
   const pairChainId = Number(params.chainId)
+  const liquidationValues: number = 100
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
   const [disableButton, setDisableButton] = useState(false)
   const [inputNum, setInputNum] = useState('0')
@@ -327,12 +334,12 @@ const MyVault: React.FC = () => {
 
   const handOnFocusChange = () => {
     setIsDeposit(false)
-    setInputNum('0')
+    setInputNum(withdrawValue)
   }
 
   const handOnFocusChange1 = () => {
     setIsDeposit(true)
-    setInputNum('0')
+    setInputNum(inputValue)
   }
 
   const mintFromBTCFun = async (val: string, btcNum: string) => {
@@ -546,9 +553,10 @@ const MyVault: React.FC = () => {
           <TitleBox message="My Vaults" isWhite={true} />
         </div>
         <div className=" container mx-auto">
-          <dl className="mx-auto mt-[9px] max-w-[1220px] ">
+          <dl className="mx-auto mt-[9px] max-w-[1530px] ">
             <dt className="mb-[16px]">
-              <ul
+              <VaultTitleBar list={mintingPair} />
+              {/* <ul
                 className={cn(
                   'table_title_color flex justify-center font-ibmb'
                 )}>
@@ -562,7 +570,7 @@ const MyVault: React.FC = () => {
                 <li className="mr-[50px] text-center">
                   Max LTV: {Number(mintingPair.maxLTV) * 100}% ⓘ
                 </li>
-              </ul>
+              </ul> */}
             </dt>
           </dl>
           <div className={cn('line_bottom mb-[31px]')}></div>
@@ -577,13 +585,15 @@ const MyVault: React.FC = () => {
                 <CornerPin></CornerPin>
                 <TitleBlock titleValue="Overview"></TitleBlock>
                 <OverviewBox
+                  liquidationValues={liquidationValues}
                   listData={overviewDataInit}
                   afterDataInit={overviewAfterDataInit}
                 />
               </div>
             </div>
             <div className={cn('grid_bg relative flex-none')}>
-              <div className={cn('blendMode_blue t-0 l-0 absolute')}></div>
+              <div
+                className={cn('blendMode_blue top-[20px] l-0 absolute')}></div>
               <div className="relative h-[528px] w-[629px] px-[53px] ">
                 <CornerPin></CornerPin>
                 {isState == 4 ? (
@@ -615,6 +625,7 @@ const MyVault: React.FC = () => {
                     />
                   ) : isState == 1 ? (
                     <SetupVault
+                      liquidationValues={liquidationValues}
                       type={coinType}
                       listData={overviewDataInit}
                       isDeposit={isDeposit}
@@ -712,7 +723,7 @@ const TitleBlock: React.FC<{
 const FailedTitleBlock: React.FC = () => {
   return (
     <>
-      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-[#FF0000]">
+      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-red1">
         <span className=" bg-black px-[24px]">Changes Failed</span>
       </h3>
     </>
@@ -743,6 +754,7 @@ const CornerPin: React.FC = () => {
 }
 
 const SetupVault: React.FC<{
+  liquidationValues: number
   isDeposit: boolean
   inputValue: string
   withdrawValue: string
@@ -758,6 +770,7 @@ const SetupVault: React.FC<{
   handleBlur1: () => void
   handleBlur: () => void
 }> = ({
+  liquidationValues,
   price,
   handleBlur1,
   handleBlur,
@@ -773,6 +786,15 @@ const SetupVault: React.FC<{
   listData,
   handleInputChange
 }) => {
+  let isLiquidation: boolean = false
+  if (
+    listData != undefined &&
+    listData.healthFactor != undefined &&
+    listData.healthFactor <= liquidationValues &&
+    listData.healthFactor > 0
+  ) {
+    isLiquidation = true
+  }
   if (!listData) return null
   return (
     <>
@@ -794,7 +816,7 @@ const SetupVault: React.FC<{
         <input
           type="number"
           className={cn(
-            'input_style flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none',
+            'input_style flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none ordinal slashed-zero tabular-nums',
             !isDeposit && 'text-white/[.5] opacity-50'
           )}
           placeholder="0"
@@ -841,22 +863,31 @@ const SetupVault: React.FC<{
       )}
 
       {/* readOnly text-white/[.5] opacity-50*/}
-      <div className="mb-[15px] bg-black/[.35] px-[20px] py-[10px]">
+      <div
+        className={cn(
+          'mb-[15px] bg-black/[.35] px-[20px] py-[10px]',
+          isLiquidation && 'bg-white/[.2] rounded-[12px]'
+        )}>
         <input
           type="number"
           placeholder="0"
-          className={cn(`input_style  flex h-[47px] w-auto items-center font-ibmb
-          text-[36px] leading-[47px] hover:border-none ${
-            isDeposit ? 'text-white/[.5] opacity-50' : ''
-          }`)}
-          readOnly={isDeposit}
+          className={cn(
+            'input_style  flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none',
+            isLiquidation || (isDeposit && 'text-white/[.5] opacity-50'),
+            isLiquidation && 'cursor-not-allowed'
+          )}
+          readOnly={isLiquidation || isDeposit}
           onFocus={handOnFocusChange}
           onBlur={handleBlur}
           value={withdrawValue}
           onChange={handleInputChange}
         />
         {type == 0 ? (
-          <p className="mt-3 font-ibmr text-[16px] text-white/[.8]">
+          <p
+            className={cn(
+              'mt-3 font-ibmr text-[16px] text-white/[.8]',
+              isLiquidation && 'text-white/[.2]'
+            )}>
             ~
             {formatMoney(
               formatDecimal((price as number) * Number(withdrawValue), 4)
@@ -1048,10 +1079,18 @@ const ConfirmBox: React.FC<{
             <span className="ml-[21px] font-ppnb text-[48px] text-white">
               Approve
             </span>
-            <Image
-              src={getOpenUrl('Union02')}
-              className="ml-2 mr-[21px] w-[22px]"
-            />
+            <Tooltip>
+              <TooltipTrigger>
+                <Image
+                  src={getOpenUrl('Union02')}
+                  className="ml-2 mr-[21px] w-[22px]"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                To continue, you need to allow bitSmiley smart contracts to use
+                your wBTC. This has to be done only once for each token.
+              </TooltipContent>
+            </Tooltip>
           </button>
         ) : (
           <button

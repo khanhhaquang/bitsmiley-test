@@ -11,7 +11,6 @@ const useUserVaultManager = (val: string, isDeposit: boolean, type: number) => {
   const contractAddresses = useContractAddresses()
   const { vault1 } = useGetUservault()
   const Ctype = type === 0 ? 0 : type === 1 ? 1 : type
-
   let amount: string = parseEther(val).toString()
   const safeRate = commonParam.safeRate // 50%
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

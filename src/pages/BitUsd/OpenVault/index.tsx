@@ -27,8 +27,13 @@ import useGetUservault from '@/hooks/useGetUservault'
 import { Hash } from 'viem'
 import { useMintingPairs } from '@/hooks/useMintingPairs'
 import { cn } from '@/utils/cn'
-import Tooltip from '@/components/Tooltip'
 import { OverviewBox } from '@/components/OverviewBox'
+import { VaultTitleBar } from '@/components/VaultTitleBar'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface overviewBoxObject {
   availableToMint?: number
@@ -172,7 +177,7 @@ const OpenVault: React.FC = () => {
         setOraclePriceOracle(Number(formatEther(BigInt(oraclePrice1))))
       }
     }
-  }, [oraclePrice1, isAllowance])
+  }, [oraclePrice1, isAllowance, gitBalanceWBTC])
   useEffect(() => {
     if (collateralTypes && oraclePrice) {
       getAvailableBitUSD()
@@ -282,6 +287,7 @@ const OpenVault: React.FC = () => {
     if (!flag) {
       return
     }
+    if (Number(inputValue) <= 0) return
     setDisableButton(true)
     setIsApproveStatus(2)
     try {
@@ -296,6 +302,7 @@ const OpenVault: React.FC = () => {
         if (txnId) {
           setTxnId(txnId)
           addTransaction(txnId)
+          setIsLodingValue(true)
           // if (status !== 'pending') {
           //   setIsLodingValue(false)
           //   setIsApprove(true)
@@ -308,6 +315,8 @@ const OpenVault: React.FC = () => {
       }
     } catch (err) {
       setIsStateValue(5)
+      setIsLodingValue(false)
+      setDisableButton(false)
       console.log(err)
     }
   }
@@ -340,13 +349,21 @@ const OpenVault: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const formatNum = processInput(event.target.value)
+    console.log(event.target.value, formatNum)
     setInputValue(formatNum)
     setUserInputValue(formatNum)
-    if (Number(event.target.value) > overviewDataInit.availableToMint) {
-      setInputValue(formatDecimal(overviewDataInit.availableToMint, 4) || '0')
-      setUserInputValue(
-        formatDecimal(overviewDataInit.availableToMint, 4) || '0'
-      )
+    if (isState == 1) {
+      if (Number(event.target.value) > Number(balanceWBTC)) {
+        setInputValue(formatDecimal(balanceWBTC, 4) || '0')
+        setUserInputValue(formatDecimal(balanceWBTC, 4) || '0')
+      }
+    } else {
+      if (Number(event.target.value) > overviewDataInit.availableToMint) {
+        setInputValue(formatDecimal(overviewDataInit.availableToMint, 4) || '0')
+        setUserInputValue(
+          formatDecimal(overviewDataInit.availableToMint, 4) || '0'
+        )
+      }
     }
   }
   const getAfterData = async () => {
@@ -388,10 +405,6 @@ const OpenVault: React.FC = () => {
       getAfterData()
     }
   }, [vaultManagerData])
-  const handleInputBlurMint = async () => {
-    console.log(inputValue)
-    if (Number(inputValue) < 0) return
-  }
 
   const onClickMintBitUsd = async () => {
     const flag = await isGlobalStatus()
@@ -427,11 +440,21 @@ const OpenVault: React.FC = () => {
       }
     } catch (err) {
       console.log(err)
+      setIsLodingValue(false)
       setDisableButton(false)
+      setIsStateValue(5)
     }
   }
   const handClickFild = () => {
-    setIsStateValue(1)
+    if (isApproveStatus == 1) {
+      setIsStateValue(1)
+    } else if (isApproveStatus == 2) {
+      setIsStateValue(1)
+    } else if (isApproveStatus == 3) {
+      setIsStateValue(3)
+    } else {
+      setIsStateValue(3)
+    }
   }
   const okClick = () => {
     navigate('/bit-usd')
@@ -460,7 +483,7 @@ const OpenVault: React.FC = () => {
         <div className=" container mx-auto">
           <dl className="mx-auto mt-[9px] max-w-[1530px] ">
             <dt className="mb-[16px]">
-              <NetworkInfo list={mintingPair} />
+              <VaultTitleBar list={mintingPair} />
             </dt>
           </dl>
           <div className={cn('line_bottom mb-[31px]')}></div>
@@ -537,7 +560,7 @@ const OpenVault: React.FC = () => {
                       handOnClickMint={() =>
                         !disableButton && onClickMintBitUsd()
                       }
-                      handleBlur={handleInputBlurMint}
+                      handleBlur={() => {}}
                       handleInputChange={handleInputChange}
                     />
                   ) : isState == 4 ? (
@@ -565,52 +588,6 @@ const OpenVault: React.FC = () => {
       </div>
       {/* <CopyRightAndLinks /> */}
     </div>
-  )
-}
-
-const NetworkInfo: React.FC<{
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  list: any
-}> = ({ list }) => {
-  console.log(list)
-  if (!list) return null
-  const items = [
-    {
-      name: 'Borrow rate',
-      value: `${(list?.borrowRate as number) * 100} %`
-    },
-    {
-      name: 'Liquidation Penalty',
-      value: `${(list?.liquidity as number) * 100} %`
-    },
-    {
-      name: 'Vault Floor',
-      value: `6k bitUSD `
-    },
-    {
-      name: 'Vault Ceiling',
-      value: `300k bitUSD`
-    },
-    // {
-    //   name: 'Min Size',
-    //   value: `${list.minSize * 100} BTC`
-    // },
-    {
-      name: 'Max LTV',
-      value: `${(list?.maxLTV as number) * 100} %`
-    }
-  ]
-  const renderedItems = items.map((item, index) => (
-    <li key={index} className="mr-[40px] text-center">
-      {item.name}: {item.value} ⓘ
-    </li>
-  ))
-  return (
-    <>
-      <ul className="flex justify-center font-ibmr text-white">
-        {renderedItems}
-      </ul>
-    </>
   )
 }
 
@@ -675,7 +652,7 @@ const SetupVault: React.FC<{
   return (
     <>
       <div className="mb-[27px] mt-[84px] flex items-center justify-between font-ibmr text-[16px] text-white">
-        <span>Deposit BTC</span>
+        <span>Deposit wBTC</span>
         <span>{Number(balance)} available</span>
       </div>
       <div className="mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
@@ -750,17 +727,20 @@ const SetupVault: React.FC<{
               )}>
               Give permission to use BTC
             </span>
-            <Tooltip
-              text={
-                'To continue, you need to allow bitSmiley smart contracts to use your wBTC. This has to be done only once for each token.'
-              }>
-              <Image
-                src={getOpenUrl('Union02')}
-                className={cn(
-                  'ml-2 mr-[21px] w-[22px]',
-                  disableButton && ' opacity-50'
-                )}
-              />
+            <Tooltip>
+              <TooltipTrigger>
+                <Image
+                  src={getOpenUrl('Union02')}
+                  className={cn(
+                    'ml-2 mr-[21px] w-[22px]',
+                    disableButton && ' opacity-50'
+                  )}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                To continue, you need to allow bitSmiley smart contracts to use
+                your wBTC. This has to be done only once for each token.
+              </TooltipContent>
             </Tooltip>
           </button>
         ) : (
@@ -1067,7 +1047,7 @@ const OverviewBoxImg: React.FC = () => {
 const FailedTitleBlock: React.FC = () => {
   return (
     <>
-      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-[#FF0000]">
+      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-red1">
         <span className=" bg-black px-[24px]">Changes Failed</span>
       </h3>
     </>
