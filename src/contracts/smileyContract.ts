@@ -10,10 +10,12 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const smileyContractAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
   { type: 'error', inputs: [], name: 'AlreadyOpenedVault' },
+  { type: 'error', inputs: [], name: 'CannotBeLiquidated' },
   { type: 'error', inputs: [], name: 'InvalidAmount' },
-  { type: 'error', inputs: [], name: 'MsgValueNotEnough' },
-  { type: 'error', inputs: [], name: 'NotEnoughToPayFee' },
+  { type: 'error', inputs: [], name: 'InvalidPenalty' },
+  { type: 'error', inputs: [], name: 'MsgValueIncorrect' },
   { type: 'error', inputs: [], name: 'NotOwner' },
   { type: 'error', inputs: [], name: 'VaultNotRegistered' },
   {
@@ -61,6 +63,80 @@ export const smileyContractAbi = [
     anonymous: false,
     inputs: [
       {
+        name: 'vault',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
+        name: 'collateral',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false
+      },
+      {
+        name: 'bitUSD',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false
+      },
+      {
+        name: 'liquidator',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
+        name: 'penalty',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false
+      },
+      {
+        name: 'recipient',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      }
+    ],
+    name: 'Liquidated'
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'user',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
+        name: 'vault',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
+        name: 'collateral',
+        internalType: 'int256',
+        type: 'int256',
+        indexed: false
+      },
+      {
+        name: 'bitUSD',
+        internalType: 'int256',
+        type: 'int256',
+        indexed: false
+      }
+    ],
+    name: 'Mint'
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
         name: 'previousOwner',
         internalType: 'address',
         type: 'address',
@@ -74,6 +150,26 @@ export const smileyContractAbi = [
       }
     ],
     name: 'OwnershipTransferred'
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'what', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'previous',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false
+      },
+      {
+        name: 'current',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false
+      }
+    ],
+    name: 'ParameterUpdated'
   },
   {
     type: 'event',
@@ -93,28 +189,27 @@ export const smileyContractAbi = [
     anonymous: false,
     inputs: [
       {
+        name: 'user',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
         name: 'vault',
         internalType: 'address',
         type: 'address',
         indexed: false
       },
       {
-        name: 'collateralRelease',
+        name: 'collateral',
         internalType: 'int256',
         type: 'int256',
         indexed: false
       },
       {
-        name: 'bitUSDBurnt',
+        name: 'bitUSD',
         internalType: 'int256',
         type: 'int256',
-        indexed: false
-      },
-      { name: 'fee', internalType: 'uint256', type: 'uint256', indexed: false },
-      {
-        name: 'feeRecipient',
-        internalType: 'address',
-        type: 'address',
         indexed: false
       }
     ],
@@ -147,10 +242,36 @@ export const smileyContractAbi = [
     name: 'Upgraded'
   },
   {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'user',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
+        name: 'vault',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      }
+    ],
+    name: 'VaultOpened'
+  },
+  {
     type: 'function',
     inputs: [],
     name: 'BTC_COLLATERAL_ID',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'PENALTY_BASE',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view'
   },
   {
@@ -162,22 +283,28 @@ export const smileyContractAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'feeRecipient',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view'
-  },
-  {
-    type: 'function',
     inputs: [
       { name: '_vaultManager', internalType: 'address', type: 'address' },
-      { name: '_stabilityFee', internalType: 'address', type: 'address' },
-      { name: '_bitUSD', internalType: 'address', type: 'address' },
-      { name: '_feeRecipient', internalType: 'address', type: 'address' }
+      { name: '_liquidationPenalty', internalType: 'uint256', type: 'uint256' },
+      { name: '_penaltyRecipient', internalType: 'address', type: 'address' }
     ],
     name: 'initialize',
     outputs: [],
     stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_vault', internalType: 'address', type: 'address' }],
+    name: 'liquidateVaultBTC',
+    outputs: [],
+    stateMutability: 'payable'
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'liquidationPenalty',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view'
   },
   {
     type: 'function',
@@ -189,13 +316,6 @@ export const smileyContractAbi = [
     name: 'mintFromBTC',
     outputs: [],
     stateMutability: 'payable'
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'nextVaultId',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view'
   },
   {
     type: 'function',
@@ -238,6 +358,13 @@ export const smileyContractAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'penaltyRecipient',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'proxiableUUID',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view'
@@ -262,12 +389,17 @@ export const smileyContractAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'stabilityFee',
-    outputs: [
-      { name: '', internalType: 'contract IStabilityFee', type: 'address' }
-    ],
-    stateMutability: 'view'
+    inputs: [{ name: '_penalty', internalType: 'uint256', type: 'uint256' }],
+    name: 'setPenalty',
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_recipient', internalType: 'address', type: 'address' }],
+    name: 'setPenaltyRecipient',
+    outputs: [],
+    stateMutability: 'nonpayable'
   },
   {
     type: 'function',
@@ -334,6 +466,15 @@ export const useReadSmileyContractBtcCollateralId =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"PENALTY_BASE"`
+ */
+export const useReadSmileyContractPenaltyBase =
+  /*#__PURE__*/ createUseReadContract({
+    abi: smileyContractAbi,
+    functionName: 'PENALTY_BASE'
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"bitUSD"`
  */
 export const useReadSmileyContractBitUsd = /*#__PURE__*/ createUseReadContract({
@@ -342,21 +483,12 @@ export const useReadSmileyContractBitUsd = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"feeRecipient"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"liquidationPenalty"`
  */
-export const useReadSmileyContractFeeRecipient =
+export const useReadSmileyContractLiquidationPenalty =
   /*#__PURE__*/ createUseReadContract({
     abi: smileyContractAbi,
-    functionName: 'feeRecipient'
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"nextVaultId"`
- */
-export const useReadSmileyContractNextVaultId =
-  /*#__PURE__*/ createUseReadContract({
-    abi: smileyContractAbi,
-    functionName: 'nextVaultId'
+    functionName: 'liquidationPenalty'
   })
 
 /**
@@ -384,21 +516,21 @@ export const useReadSmileyContractPaused = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"penaltyRecipient"`
+ */
+export const useReadSmileyContractPenaltyRecipient =
+  /*#__PURE__*/ createUseReadContract({
+    abi: smileyContractAbi,
+    functionName: 'penaltyRecipient'
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"proxiableUUID"`
  */
 export const useReadSmileyContractProxiableUuid =
   /*#__PURE__*/ createUseReadContract({
     abi: smileyContractAbi,
     functionName: 'proxiableUUID'
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"stabilityFee"`
- */
-export const useReadSmileyContractStabilityFee =
-  /*#__PURE__*/ createUseReadContract({
-    abi: smileyContractAbi,
-    functionName: 'stabilityFee'
   })
 
 /**
@@ -432,6 +564,15 @@ export const useWriteSmileyContractInitialize =
   /*#__PURE__*/ createUseWriteContract({
     abi: smileyContractAbi,
     functionName: 'initialize'
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"liquidateVaultBTC"`
+ */
+export const useWriteSmileyContractLiquidateVaultBtc =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: smileyContractAbi,
+    functionName: 'liquidateVaultBTC'
   })
 
 /**
@@ -480,6 +621,24 @@ export const useWriteSmileyContractRepayToBtc =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"setPenalty"`
+ */
+export const useWriteSmileyContractSetPenalty =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: smileyContractAbi,
+    functionName: 'setPenalty'
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"setPenaltyRecipient"`
+ */
+export const useWriteSmileyContractSetPenaltyRecipient =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: smileyContractAbi,
+    functionName: 'setPenaltyRecipient'
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"transferOwnership"`
  */
 export const useWriteSmileyContractTransferOwnership =
@@ -519,6 +678,15 @@ export const useSimulateSmileyContractInitialize =
   /*#__PURE__*/ createUseSimulateContract({
     abi: smileyContractAbi,
     functionName: 'initialize'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"liquidateVaultBTC"`
+ */
+export const useSimulateSmileyContractLiquidateVaultBtc =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: smileyContractAbi,
+    functionName: 'liquidateVaultBTC'
   })
 
 /**
@@ -564,6 +732,24 @@ export const useSimulateSmileyContractRepayToBtc =
   /*#__PURE__*/ createUseSimulateContract({
     abi: smileyContractAbi,
     functionName: 'repayToBTC'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"setPenalty"`
+ */
+export const useSimulateSmileyContractSetPenalty =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: smileyContractAbi,
+    functionName: 'setPenalty'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link smileyContractAbi}__ and `functionName` set to `"setPenaltyRecipient"`
+ */
+export const useSimulateSmileyContractSetPenaltyRecipient =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: smileyContractAbi,
+    functionName: 'setPenaltyRecipient'
   })
 
 /**
@@ -627,12 +813,39 @@ export const useWatchSmileyContractInitializedEvent =
   })
 
 /**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Liquidated"`
+ */
+export const useWatchSmileyContractLiquidatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: smileyContractAbi,
+    eventName: 'Liquidated'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Mint"`
+ */
+export const useWatchSmileyContractMintEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: smileyContractAbi,
+    eventName: 'Mint'
+  })
+
+/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"OwnershipTransferred"`
  */
 export const useWatchSmileyContractOwnershipTransferredEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: smileyContractAbi,
     eventName: 'OwnershipTransferred'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"ParameterUpdated"`
+ */
+export const useWatchSmileyContractParameterUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: smileyContractAbi,
+    eventName: 'ParameterUpdated'
   })
 
 /**
@@ -669,4 +882,13 @@ export const useWatchSmileyContractUpgradedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: smileyContractAbi,
     eventName: 'Upgraded'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"VaultOpened"`
+ */
+export const useWatchSmileyContractVaultOpenedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: smileyContractAbi,
+    eventName: 'VaultOpened'
   })

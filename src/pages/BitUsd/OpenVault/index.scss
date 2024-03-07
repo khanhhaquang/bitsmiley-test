@@ -39,12 +39,35 @@
 .button_bg{
   width: 6px;
   height: 77px;
-  background: url('@/assets/net/Frame01.png') no-repeat center center/100%;
+  background: url('@/assets/net/Frame01.png') no-repeat center center/100% 100%;
 }
 .button_bg2{
   width: 6px;
   height: 77px;
-  background: url('@/assets/net/Frame02.png') no-repeat center center/100%;
+  background: url('@/assets/net/Frame02.png') no-repeat center center/100% 100%;
+}
+.button_bg_disable{
+  width: 6px;
+  height: 77px;
+  background: url('@/assets/net/disable.png') no-repeat center center/100% 100%;
+}
+
+.top_bottom_border::before,
+.top_bottom_border::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.5); 
+}
+
+.top_bottom_border::before {
+  top: -3px;
+}
+
+.top_bottom_border::after {
+  bottom: -3px;
 }
 .blendMode{
   // width: 100%;

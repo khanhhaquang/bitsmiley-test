@@ -25,7 +25,7 @@ const useWBTCContract = () => {
     args: address &&
       contractAddresses?.BitSmiley && [address, contractAddresses?.BitSmiley]
   })
-  console.log(isAllowanceVaultManager)
+  // console.log(isAllowanceVaultManager)
 
   const { data: gitBalanceWBTC, refetch: refetchBalanceWBTC } =
     useReadWbtcContractBalanceOf({

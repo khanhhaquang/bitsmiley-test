@@ -1,7 +1,17 @@
 export const bitSmileyABI = [
   {
     inputs: [],
+    stateMutability: 'nonpayable',
+    type: 'constructor'
+  },
+  {
+    inputs: [],
     name: 'AlreadyOpenedVault',
+    type: 'error'
+  },
+  {
+    inputs: [],
+    name: 'CannotBeLiquidated',
     type: 'error'
   },
   {
@@ -11,12 +21,12 @@ export const bitSmileyABI = [
   },
   {
     inputs: [],
-    name: 'MsgValueNotEnough',
+    name: 'InvalidPenalty',
     type: 'error'
   },
   {
     inputs: [],
-    name: 'NotEnoughToPayFee',
+    name: 'MsgValueIncorrect',
     type: 'error'
   },
   {
@@ -78,6 +88,80 @@ export const bitSmileyABI = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: 'address',
+        name: 'vault',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'collateral',
+        type: 'uint256'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'bitUSD',
+        type: 'uint256'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'liquidator',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'penalty',
+        type: 'uint256'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'recipient',
+        type: 'address'
+      }
+    ],
+    name: 'Liquidated',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'user',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'vault',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'int256',
+        name: 'collateral',
+        type: 'int256'
+      },
+      {
+        indexed: false,
+        internalType: 'int256',
+        name: 'bitUSD',
+        type: 'int256'
+      }
+    ],
+    name: 'Mint',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: 'address',
         name: 'previousOwner',
@@ -91,6 +175,31 @@ export const bitSmileyABI = [
       }
     ],
     name: 'OwnershipTransferred',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'what',
+        type: 'string'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'previous',
+        type: 'uint256'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'current',
+        type: 'uint256'
+      }
+    ],
+    name: 'ParameterUpdated',
     type: 'event'
   },
   {
@@ -112,32 +221,26 @@ export const bitSmileyABI = [
       {
         indexed: false,
         internalType: 'address',
+        name: 'user',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
         name: 'vault',
         type: 'address'
       },
       {
         indexed: false,
         internalType: 'int256',
-        name: 'collateralRelease',
+        name: 'collateral',
         type: 'int256'
       },
       {
         indexed: false,
         internalType: 'int256',
-        name: 'bitUSDBurnt',
+        name: 'bitUSD',
         type: 'int256'
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'fee',
-        type: 'uint256'
-      },
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'feeRecipient',
-        type: 'address'
       }
     ],
     name: 'Repay',
@@ -170,6 +273,25 @@ export const bitSmileyABI = [
     type: 'event'
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'user',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'vault',
+        type: 'address'
+      }
+    ],
+    name: 'VaultOpened',
+    type: 'event'
+  },
+  {
     inputs: [],
     name: 'BTC_COLLATERAL_ID',
     outputs: [
@@ -177,6 +299,19 @@ export const bitSmileyABI = [
         internalType: 'bytes32',
         name: '',
         type: 'bytes32'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'PENALTY_BASE',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256'
       }
     ],
     stateMutability: 'view',
@@ -196,19 +331,6 @@ export const bitSmileyABI = [
     type: 'function'
   },
   {
-    inputs: [],
-    name: 'feeRecipient',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
     inputs: [
       {
         internalType: 'address',
@@ -216,24 +338,45 @@ export const bitSmileyABI = [
         type: 'address'
       },
       {
-        internalType: 'address',
-        name: '_stabilityFee',
-        type: 'address'
+        internalType: 'uint256',
+        name: '_liquidationPenalty',
+        type: 'uint256'
       },
       {
         internalType: 'address',
-        name: '_bitUSD',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_feeRecipient',
+        name: '_penaltyRecipient',
         type: 'address'
       }
     ],
     name: 'initialize',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_vault',
+        type: 'address'
+      }
+    ],
+    name: 'liquidateVaultBTC',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'liquidationPenalty',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256'
+      }
+    ],
+    stateMutability: 'view',
     type: 'function'
   },
   {
@@ -257,19 +400,6 @@ export const bitSmileyABI = [
     name: 'mintFromBTC',
     outputs: [],
     stateMutability: 'payable',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'nextVaultId',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
     type: 'function'
   },
   {
@@ -344,6 +474,19 @@ export const bitSmileyABI = [
   },
   {
     inputs: [],
+    name: 'penaltyRecipient',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
     name: 'proxiableUUID',
     outputs: [
       {
@@ -386,16 +529,29 @@ export const bitSmileyABI = [
     type: 'function'
   },
   {
-    inputs: [],
-    name: 'stabilityFee',
-    outputs: [
+    inputs: [
       {
-        internalType: 'contract IStabilityFee',
-        name: '',
+        internalType: 'uint256',
+        name: '_penalty',
+        type: 'uint256'
+      }
+    ],
+    name: 'setPenalty',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_recipient',
         type: 'address'
       }
     ],
-    stateMutability: 'view',
+    name: 'setPenaltyRecipient',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function'
   },
   {
@@ -875,12 +1031,17 @@ export const oraclesABI = [
 export const vaultManagerABI = [
   {
     inputs: [],
-    name: 'BelowMinDebt',
+    stateMutability: 'nonpayable',
+    type: 'constructor'
+  },
+  {
+    inputs: [],
+    name: 'AlreadyInitialized',
     type: 'error'
   },
   {
     inputs: [],
-    name: 'CollateralNotInitialized',
+    name: 'BelowMinDebt',
     type: 'error'
   },
   {
@@ -890,7 +1051,7 @@ export const vaultManagerABI = [
   },
   {
     inputs: [],
-    name: 'DivideByZero',
+    name: 'InvalidValue',
     type: 'error'
   },
   {
@@ -900,7 +1061,17 @@ export const vaultManagerABI = [
   },
   {
     inputs: [],
+    name: 'NotInitialized',
+    type: 'error'
+  },
+  {
+    inputs: [],
     name: 'UnsafeRate',
+    type: 'error'
+  },
+  {
+    inputs: [],
+    name: 'VaultDebtLimitReached',
     type: 'error'
   },
   {
@@ -945,18 +1116,30 @@ export const vaultManagerABI = [
     inputs: [
       {
         indexed: false,
-        internalType: 'address',
-        name: 'previousCaller',
-        type: 'address'
+        internalType: 'bytes32',
+        name: 'collateral',
+        type: 'bytes32'
       },
       {
         indexed: false,
-        internalType: 'address',
-        name: 'currentCaller',
-        type: 'address'
+        internalType: 'string',
+        name: 'what',
+        type: 'string'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'previous',
+        type: 'uint256'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'current',
+        type: 'uint256'
       }
     ],
-    name: 'CallerUpdated',
+    name: 'CollateralParameterUpdated',
     type: 'event'
   },
   {
@@ -996,25 +1179,24 @@ export const vaultManagerABI = [
     inputs: [
       {
         indexed: false,
-        internalType: 'address',
-        name: 'account',
-        type: 'address'
-      }
-    ],
-    name: 'Paused',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
+        internalType: 'string',
+        name: 'what',
+        type: 'string'
+      },
       {
         indexed: false,
-        internalType: 'address',
-        name: 'account',
-        type: 'address'
+        internalType: 'uint256',
+        name: 'previous',
+        type: 'uint256'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'current',
+        type: 'uint256'
       }
     ],
-    name: 'Unpaused',
+    name: 'SystemParameterUpdated',
     type: 'event'
   },
   {
@@ -1059,19 +1241,6 @@ export const vaultManagerABI = [
   {
     inputs: [
       {
-        internalType: 'address',
-        name: '_operator',
-        type: 'address'
-      }
-    ],
-    name: 'approveOperator',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
         internalType: 'bytes32',
         name: '_collateralId',
         type: 'bytes32'
@@ -1079,16 +1248,6 @@ export const vaultManagerABI = [
       {
         internalType: 'address',
         name: '_vaultAddr',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_collateralProvider',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_debtOwner',
         type: 'address'
       },
       {
@@ -1176,68 +1335,17 @@ export const vaultManagerABI = [
       },
       {
         internalType: 'uint256',
+        name: 'vaultMaxDebt',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
+        name: 'vaultMinDebt',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
         name: 'maxDebt',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'minDebt',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32'
-      },
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      }
-    ],
-    name: 'credit',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'debt',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      }
-    ],
-    name: 'eligible',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
         type: 'uint256'
       }
     ],
@@ -1252,16 +1360,33 @@ export const vaultManagerABI = [
         type: 'bytes32'
       },
       {
+        internalType: 'address',
+        name: '_vaultAddr',
+        type: 'address'
+      },
+      {
+        internalType: 'uint256',
+        name: '_bitUSD',
+        type: 'uint256'
+      },
+      {
         internalType: 'uint256',
         name: '_collateral',
         type: 'uint256'
       }
     ],
-    name: 'evaluateCollateral',
+    name: 'confiscate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'debt',
     outputs: [
       {
         internalType: 'uint256',
-        name: 'collateralEvaluation',
+        name: '',
         type: 'uint256'
       }
     ],
@@ -1331,7 +1456,7 @@ export const vaultManagerABI = [
           },
           {
             internalType: 'uint256',
-            name: 'collateralRate',
+            name: 'healthFactor',
             type: 'uint256'
           },
           {
@@ -1345,22 +1470,60 @@ export const vaultManagerABI = [
             type: 'uint256'
           },
           {
-            internalType: 'uint256',
+            internalType: 'int256',
             name: 'availableToWithdraw',
-            type: 'uint256'
+            type: 'int256'
           },
           {
-            internalType: 'uint256',
+            internalType: 'int256',
             name: 'availableToMint',
-            type: 'uint256'
+            type: 'int256'
           }
         ],
-        internalType: 'struct VaultManager.VaultOverview',
+        internalType: 'struct VaultManager.VaultChange',
         name: 'o',
         type: 'tuple'
       }
     ],
     stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '_collateralId',
+        type: 'bytes32'
+      },
+      {
+        internalType: 'address',
+        name: '_token',
+        type: 'address'
+      },
+      {
+        internalType: 'uint256',
+        name: '_safeFactor',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
+        name: '_maxDebt',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
+        name: '_vaultMinDebt',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
+        name: '_vaultMaxDebt',
+        type: 'uint256'
+      }
+    ],
+    name: 'initCollateral',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function'
   },
   {
@@ -1379,30 +1542,6 @@ export const vaultManagerABI = [
     name: 'initialize',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      }
-    ],
-    name: 'operators',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool'
-      }
-    ],
-    stateMutability: 'view',
     type: 'function'
   },
   {
@@ -1426,19 +1565,6 @@ export const vaultManagerABI = [
         internalType: 'address',
         name: '',
         type: 'address'
-      }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'paused',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool'
       }
     ],
     stateMutability: 'view',
@@ -1481,72 +1607,62 @@ export const vaultManagerABI = [
     inputs: [
       {
         internalType: 'bytes32',
+        name: '_id',
+        type: 'bytes32'
+      },
+      {
+        internalType: 'uint256',
+        name: '_maxDebt',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
+        name: '_vaultMinDebt',
+        type: 'uint256'
+      },
+      {
+        internalType: 'uint256',
+        name: '_vaultMaxDebt',
+        type: 'uint256'
+      }
+    ],
+    name: 'setCollateralDebtCaps',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: '_collateralId',
+        type: 'bytes32'
+      },
+      {
+        internalType: 'uint256',
+        name: '_v',
+        type: 'uint256'
+      }
+    ],
+    name: 'setCollateralSafetyFactor',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
         name: '_collateralId',
         type: 'bytes32'
       },
       {
         internalType: 'address',
-        name: '_tokenAddress',
+        name: '_v',
         type: 'address'
-      },
-      {
-        internalType: 'uint256',
-        name: '_safetyFactor',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: '_maxDebt',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: '_minDebt',
-        type: 'uint256'
       }
     ],
-    name: 'setCollateral',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: '_collateralId',
-        type: 'bytes32'
-      },
-      {
-        internalType: 'uint256',
-        name: '_maxDebt',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: '_minDebt',
-        type: 'uint256'
-      }
-    ],
-    name: 'setCollateralLevels',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: '_collateralId',
-        type: 'bytes32'
-      },
-      {
-        internalType: 'uint256',
-        name: '_safetyFactor',
-        type: 'uint256'
-      }
-    ],
-    name: 'setCollateralSafetyFactor',
+    name: 'setCollateralToken',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -1568,7 +1684,7 @@ export const vaultManagerABI = [
     inputs: [
       {
         internalType: 'uint256',
-        name: '_totalDebtCeiling',
+        name: '_v',
         type: 'uint256'
       }
     ],
@@ -1594,57 +1710,11 @@ export const vaultManagerABI = [
     inputs: [
       {
         internalType: 'address',
-        name: '_from',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_to',
-        type: 'address'
-      },
-      {
-        internalType: 'int256',
-        name: '_amount',
-        type: 'int256'
-      }
-    ],
-    name: 'transferEligible',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
         name: 'newOwner',
         type: 'address'
       }
     ],
     name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: '_collateralId',
-        type: 'bytes32'
-      },
-      {
-        internalType: 'address',
-        name: '_vault',
-        type: 'address'
-      },
-      {
-        internalType: 'int256',
-        name: '_amount',
-        type: 'int256'
-      }
-    ],
-    name: 'updateCredits',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -1701,19 +1771,21 @@ export const vaultManagerABI = [
         type: 'bool'
       },
       {
-        internalType: 'uint256',
-        name: 'bitUSDEvaluation',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'lockedCollateral',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'collateralEvaluation',
-        type: 'uint256'
+        components: [
+          {
+            internalType: 'uint256',
+            name: 'lockedCollateral',
+            type: 'uint256'
+          },
+          {
+            internalType: 'uint256',
+            name: 'debtBitUSD',
+            type: 'uint256'
+          }
+        ],
+        internalType: 'struct IVaultManager.Vault',
+        name: 'vault',
+        type: 'tuple'
       }
     ],
     stateMutability: 'view',

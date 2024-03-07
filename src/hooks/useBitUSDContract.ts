@@ -16,7 +16,7 @@ const useBitUSDContract = () => {
       args: address &&
         contractAddresses?.BitSmiley && [address, contractAddresses?.BitSmiley]
     })
-  console.log(isBitUSDAllowance)
+  // console.log(isBitUSDAllowance)
 
   const { data: gitBalanceBitUSD, refetch: refetchBalanceBitUSD } =
     useReadBitUsdContractBalanceOf({

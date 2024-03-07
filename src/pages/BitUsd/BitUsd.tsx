@@ -6,6 +6,9 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { vaultsInfoService } from '@/services/vaultsInfo'
 import Tooltip from '@/components/Tooltip'
 import { useChainId } from 'wagmi'
+import { WEBSITE } from '@/config/links'
+import { openUrl } from '@/utils/getAssetsUrl'
+import { cn } from '@/utils/cn'
 
 interface Vault {
   isOpenVault: boolean
@@ -110,7 +113,13 @@ const AvailableMintingPairs: React.FC<{
                   ? 'wBTC2 - bitUSD'
                   : `wBTC${index + 1} - bitUSD`}
             </li>
-            <li className="flex flex-1 items-center justify-end gap-x-1.5 text-right">
+            <li
+              className={cn(
+                'flex flex-1 items-center justify-end gap-x-1.5 text-right cursor-pointer'
+              )}
+              onClick={() =>
+                item.network == 'Merlin' && openUrl(WEBSITE.merlinchain)
+              }>
               {item.network} <LinkOutIcon />
             </li>
             <li className="flex-1 text-right">{item.maxLTV * 100}%</li>
@@ -171,7 +180,13 @@ const MyVaults: React.FC<{
                   ? 'wBTC2 - bitUSD'
                   : `wBTC${index + 1} - bitUSD`}
             </li>
-            <li className="flex flex-1 items-center justify-center text-center">
+            <li
+              className={cn(
+                'flex flex-1 items-center justify-center text-center cursor-pointer'
+              )}
+              onClick={() =>
+                item.network == 'Merlin' && openUrl(WEBSITE.merlinchain)
+              }>
               {item.network} <LinkOutIcon />
             </li>
             <li className="mr-[10px] flex-1 text-right">

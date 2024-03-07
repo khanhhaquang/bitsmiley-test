@@ -1,10 +1,10 @@
 import './index.scss'
-import { formatDecimal, formatMoney } from '@/utils/formatter'
+import { formatAmountThousands, formatDecimal } from '@/utils/formatter'
 
 interface OverviewBoxObject {
   availableToMint?: number
   debtBitUSD?: number
-  collateralRate?: number
+  healthFactor?: number
   lockedCollateral?: number
   liquidationPrice?: number
   availableToWithdraw?: number
@@ -22,32 +22,47 @@ export const OverviewBox: React.FC<{
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Liquidation Price</p>
             <h1 className="mb-4 mt-1 whitespace-nowrap font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData?.liquidationPrice || 0, 2))}
+              $
+              {listData?.liquidationPrice == 0
+                ? ' -'
+                : formatAmountThousands(
+                    (listData?.liquidationPrice || 0).toString(),
+                    2
+                  )}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center whitespace-nowrap bg-black pl-[8px] font-ibmr text-white">
               ${' '}
-              {formatMoney(
-                formatDecimal(afterDataInit.liquidationPrice || 0, 2)
-              )}{' '}
+              {afterDataInit.liquidationPrice == 0
+                ? ' - '
+                : formatAmountThousands(
+                    (afterDataInit.liquidationPrice || 0).toString(),
+                    2
+                  )}
               after ⓘ
             </div>
           </div>
           <div className="mt-[24px] w-[50%] pl-[10px]">
             <p className="font-ibmr text-base">Health factor</p>
             <h1 className="mb-4 mt-1 whitespace-nowrap font-ppnb text-[72px] leading-[51px]">
-              {formatDecimal(listData?.collateralRate || 0, 2)} %
+              {formatDecimal((listData?.healthFactor || 0).toString(), 1)}%
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center whitespace-nowrap bg-black pl-[8px] font-ibmr text-white">
-              {formatDecimal(afterDataInit.collateralRate || 0, 2)}% after ⓘ
+              {formatDecimal((afterDataInit.healthFactor || 0).toString(), 1)} %
+              afterⓘ
             </div>
           </div>
           <div className="mt-[24px] w-[50%]">
             <p className="font-ibmr text-base">Vault Debt</p>
             <h1 className="mb-4 mt-1 whitespace-nowrap font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData?.debtBitUSD || 0, 4))}
+              $
+              {formatAmountThousands((listData?.debtBitUSD || 0).toString(), 4)}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center whitespace-nowrap bg-black pl-[8px] font-ibmr text-white">
-              $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 4))}{' '}
+              ${' '}
+              {formatAmountThousands(
+                (afterDataInit?.debtBitUSD || 0).toString(),
+                4
+              )}
               after ⓘ
             </div>
           </div>
@@ -60,16 +75,17 @@ export const OverviewBox: React.FC<{
               Collateral locked
             </p>
             <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData?.lockedCollateral || 0, 4)
-              )}{' '}
+              {formatAmountThousands(
+                (listData?.lockedCollateral || 0).toString(),
+                4
+              )}
               BTC
             </h1>
             <div className="relative flex h-[31px] min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.lockedCollateral || 0, 4)
-              )}{' '}
+              {formatAmountThousands(
+                (afterDataInit.lockedCollateral || 0).toString(),
+                4
+              )}
               after
             </div>
           </div>
@@ -78,16 +94,17 @@ export const OverviewBox: React.FC<{
               Available to withdraw
             </p>
             <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData?.availableToWithdraw || 0, 4)
-              )}{' '}
+              {formatAmountThousands(
+                (listData?.availableToWithdraw || 0).toString(),
+                4
+              )}
               BTC
             </h1>
             <div className="relative flex h-[31px] w-auto min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.availableToWithdraw || 0, 4)
-              )}{' '}
+              {formatAmountThousands(
+                (afterDataInit.availableToWithdraw || 0).toString(),
+                4
+              )}
               after
             </div>
           </div>
@@ -96,16 +113,17 @@ export const OverviewBox: React.FC<{
               Available to mint
             </p>
             <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData?.availableToMint || 0, 4)
-              )}{' '}
+              {formatAmountThousands(
+                (listData?.availableToMint || 0).toString(),
+                2
+              )}
               bitUSD
             </h1>
             <div className="relative flex h-[31px] min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.availableToMint || 0, 4)
-              )}{' '}
+              {formatAmountThousands(
+                (afterDataInit.availableToMint || '0').toString(),
+                2
+              )}
               after
             </div>
           </div>
