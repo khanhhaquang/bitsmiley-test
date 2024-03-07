@@ -32,6 +32,7 @@ import FailIcon from './fail.svg'
 import ArrowTopRightIcon from './arrow-top-right.svg'
 import HistoryPointIcon from './history-point.svg'
 import BugIcon from './bug.svg'
+import WarningOutline from './warning-outline.svg'
 
 export {
   DotIcon,
@@ -67,5 +68,6 @@ export {
   FailIcon,
   ArrowTopRightIcon,
   HistoryPointIcon,
-  BugIcon
+  BugIcon,
+  WarningOutline
 }

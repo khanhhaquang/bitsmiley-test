@@ -5,6 +5,11 @@ import { LinkOutIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { vaultsInfoService } from '@/services/vaultsInfo'
 import { useChainId } from 'wagmi'
+import { WEBSITE } from '@/config/links'
+import { openUrl, getOpenUrl } from '@/utils/getAssetsUrl'
+import { cn } from '@/utils/cn'
+import { formatDecimal } from '@/utils/formatter'
+import { Image } from '@/components/Image'
 import {
   Tooltip,
   TooltipContent,
@@ -16,7 +21,7 @@ interface Vault {
   network: string
   maxLTV: number
   borrowRate: number
-  minSize: number
+  vaultFloor: number
   liquidity: number
   chainId: number
   collateralRatio: number
@@ -106,7 +111,8 @@ const AvailableMintingPairs: React.FC<{
     (item: Vault, index: number) =>
       !item.isOpenVault && (
         <dd className="border-b-2 border-dashed border-white/50" key={index}>
-          <ul className="flex items-center px-3 py-6 font-ibmr text-white">
+          <ul
+            className={cn('flex items-center px-3 py-6 font-ibmr text-white')}>
             <li className="w-[140px] whitespace-nowrap">
               {item.network == 'Merlin'
                 ? 'wBTC1 - bitUSD'
@@ -114,12 +120,18 @@ const AvailableMintingPairs: React.FC<{
                   ? 'wBTC2 - bitUSD'
                   : `wBTC${index + 1} - bitUSD`}
             </li>
-            <li className="flex flex-1 items-center justify-end gap-x-1.5 text-right">
+            <li
+              className={cn(
+                'flex flex-1 items-center justify-end gap-x-1.5 text-right cursor-pointer'
+              )}
+              onClick={() =>
+                item.network == 'Merlin' && openUrl(WEBSITE.merlinchain)
+              }>
               {item.network} <LinkOutIcon />
             </li>
             <li className="flex-1 text-right">{item.maxLTV * 100}%</li>
             <li className="flex-1 text-right">{item.borrowRate * 100}%</li>
-            <li className="flex-1 text-right ">{item.minSize} $</li>
+            <li className="flex-1 text-right ">{item.vaultFloor} $</li>
             <li className="flex-1 text-right">{item.liquidity} BTC</li>
             <li className="ml-[50] flex-1 text-right">
               <button
@@ -160,7 +172,7 @@ const AvailableMintingPairs: React.FC<{
                   </TooltipContent>
                 </Tooltip>
               </li>
-              <li className="flex-1 text-right">Min Size ⓘ</li>
+              <li className="flex-1 text-right">Vault floor ⓘ</li>
               <li className="flex-1 text-right">
                 <Tooltip>
                   <TooltipTrigger>
@@ -189,7 +201,9 @@ const MyVaults: React.FC<{
   const renderedItems = list.map(
     (item: Vault, index: number) =>
       item.isOpenVault && (
-        <dd className="border-b-2 border-dashed border-white/50" key={index}>
+        <dd
+          className="relative border-b-2 border-dashed border-white/50"
+          key={index}>
           <ul className="flex items-center px-[12px] py-[24px] font-ibmr text-white">
             <li className="flex-1">
               {item.network == 'Merlin'
@@ -198,14 +212,20 @@ const MyVaults: React.FC<{
                   ? 'wBTC2 - bitUSD'
                   : `wBTC${index + 1} - bitUSD`}
             </li>
-            <li className="flex flex-1 items-center justify-center text-center">
+            <li
+              className={cn(
+                'flex flex-1 items-center justify-center text-center cursor-pointer'
+              )}
+              onClick={() =>
+                item.network == 'Merlin' && openUrl(WEBSITE.merlinchain)
+              }>
               {item.network} <LinkOutIcon />
             </li>
             <li className="mr-[10px] flex-1 text-right">
               {item.collateralRatio * 100}%
             </li>
             <li className="mr-[10px] flex-1 text-right">
-              {item.collateralLocked} BTC
+              {formatDecimal(item.collateralLocked, 4)} BTC
             </li>
             <li className="mr-[10px] flex-1 text-right">{item.totalDebt} $</li>
             <li className="flex-1 text-right">
@@ -216,6 +236,18 @@ const MyVaults: React.FC<{
               </button>
             </li>
           </ul>
+          {item.collateralRatio <= 1 && item.collateralRatio > 0 && (
+            <div className="absolute bottom-1 flex items-center font-ibmr text-[14px]">
+              <Image
+                src={getOpenUrl('warning')}
+                className="mr-[8px] w-[24px]"
+              />
+              <span className="text-red1">
+                This wallet is in the process of liquidation. Repay or deposit
+                BTC to avoid liquidation
+              </span>
+            </div>
+          )}
         </dd>
       )
   )

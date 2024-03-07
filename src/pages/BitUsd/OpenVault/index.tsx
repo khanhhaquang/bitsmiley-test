@@ -7,7 +7,12 @@ import { getOpenUrl, openUrl } from '@/utils/getAssetsUrl'
 import { useNavigate, useParams } from 'react-router-dom'
 import { bitSmileyABI, bitUSDABI } from '@/abi/abi'
 import { SCANTXHASH } from '@/config/links'
-import { formatDecimal, formatMoney } from '@/utils/formatter'
+import {
+  formatDecimal,
+  formatMoney,
+  processInput,
+  formatAmountThousands
+} from '@/utils/formatter'
 import LoadingAnimation from '@/components/LoadingAnimation'
 import { displayAddress } from '@/utils/formatter'
 
@@ -22,15 +27,35 @@ import useGetUservault from '@/hooks/useGetUservault'
 import { Hash } from 'viem'
 import { useMintingPairs } from '@/hooks/useMintingPairs'
 import { cn } from '@/utils/cn'
+import { OverviewBox } from '@/components/OverviewBox'
+import { VaultTitleBar } from '@/components/VaultTitleBar'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface overviewBoxObject {
   availableToMint?: number
   debtBitUSD?: number
-  collateralRate?: number
+  healthFactor?: number
   lockedCollateral?: number
   liquidationPrice?: number
   availableToWithdraw?: number
 }
+
+// interface VaultsStateBar {
+//   borrowRate?: number
+//   chainId?: number
+//   collateralLocked?: number
+//   collateralRatio?: number
+//   isOpenVault?: boolean
+//   liquidity?: number
+//   maxLTV?: number
+//   minSize?: number
+//   network?: number
+//   totalDebt?: number
+// }
 
 const OpenVault: React.FC = () => {
   const navigate = useNavigate()
@@ -38,9 +63,10 @@ const OpenVault: React.FC = () => {
   const pairChainId = Number(params.chainId)
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
 
-  const [userInputValue, setUserInputValue] = useState(0)
-  const [inputValue, setInputValue] = useState()
+  const [userInputValue, setUserInputValue] = useState('0')
+  const [inputValue, setInputValue] = useState('')
   const [isLoding, setIsLodingValue] = useState(false)
+  const [disableButton, setDisableButton] = useState(false)
   //1=>Start ; 2=>mint bitUSD; 3=>mint bitUSD ing;4=> Minting Completed;5=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
   const [isApproveStatus, setIsApproveStatus] = useState(1)
@@ -52,7 +78,7 @@ const OpenVault: React.FC = () => {
 
   const [overviewDataInit, setOverviewDataInit] = useState({
     liquidationPrice: 0,
-    collateralRate: 0,
+    healthFactor: 0,
     debtBitUSD: 0,
     lockedCollateral: 0,
     availableToWithdraw: 0,
@@ -60,7 +86,7 @@ const OpenVault: React.FC = () => {
   })
   const [overviewAfterDataInit, setOverviewAfterDataInit] = useState({
     liquidationPrice: 0,
-    collateralRate: 0,
+    healthFactor: 0,
     debtBitUSD: 0,
     lockedCollateral: 0,
     availableToWithdraw: 0,
@@ -73,7 +99,7 @@ const OpenVault: React.FC = () => {
 
   const { vaultManagerData } = useUserVaultManager(userInputValue)
   const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
-    useUserVaultManager(0)
+    useUserVaultManager('0')
   const [txnId, setTxnId] = useState<Hash>()
   const { status } = useWaitForTransactionReceipt({ hash: txnId })
 
@@ -96,7 +122,7 @@ const OpenVault: React.FC = () => {
     setOverviewDataInit(
       overviewInit as SetStateAction<{
         liquidationPrice: number
-        collateralRate: number
+        healthFactor: number
         debtBitUSD: number
         lockedCollateral: number
         availableToWithdraw: number
@@ -141,7 +167,7 @@ const OpenVault: React.FC = () => {
       setBalanceWBTC(formatEther(BigInt(gitBalanceWBTC || '')))
       if (isAllowance !== undefined) {
         const allowanceNum = Number(formatEther(BigInt(isAllowance)))
-        if (allowanceNum >= inputValue) {
+        if (allowanceNum >= Number(inputValue)) {
           setIsApprove(true)
         } else {
           setIsApprove(false)
@@ -151,7 +177,7 @@ const OpenVault: React.FC = () => {
         setOraclePriceOracle(Number(formatEther(BigInt(oraclePrice1))))
       }
     }
-  }, [oraclePrice1, isAllowance])
+  }, [oraclePrice1, isAllowance, gitBalanceWBTC])
   useEffect(() => {
     if (collateralTypes && oraclePrice) {
       getAvailableBitUSD()
@@ -166,7 +192,7 @@ const OpenVault: React.FC = () => {
       const rate = Number(collateral[2]) / 10 ** 27
 
       const collateralEvaluation =
-        (inputValue * oraclePrice * safetyFactor) / rate
+        (Number(inputValue) * oraclePrice * safetyFactor) / rate
       console.log(collateralEvaluation)
       setAvailableBitUSD(collateralEvaluation)
     }
@@ -175,7 +201,7 @@ const OpenVault: React.FC = () => {
   const blurSetupVault = async () => {
     if (isAllowance != undefined) {
       const allowanceNum = Number(formatEther(BigInt(isAllowance)))
-      if (allowanceNum >= inputValue) {
+      if (allowanceNum >= Number(inputValue)) {
         setIsApprove(true)
       } else {
         setIsApprove(false)
@@ -190,33 +216,46 @@ const OpenVault: React.FC = () => {
     if (!flag) {
       return
     }
-    if (inputValue <= 0) return
+    if (Number(inputValue) <= 0) {
+      return
+    }
+    setDisableButton(true)
     setIsApproveStatus(1)
     console.log('approve start--->', inputValue)
-    console.log(parseEther(inputValue.toString()))
-    if (contractAddresses?.WBTC != undefined) {
-      const txnId = await writeContractAsync({
-        abi: bitUSDABI,
-        address: contractAddresses?.WBTC,
-        functionName: 'approve',
-        args: [contractAddresses?.BitSmiley, parseEther(inputValue.toString())]
-      })
-      console.log(txnId)
-      setTxnId(txnId)
-      addTransaction(txnId)
-      if (status !== 'pending') {
-        setIsLodingValue(false)
-        setIsStateValue(1)
-        setIsApprove(true)
-      } else {
+    console.log(parseEther(inputValue))
+    try {
+      if (contractAddresses?.WBTC != undefined) {
+        const txnId = await writeContractAsync({
+          abi: bitUSDABI,
+          address: contractAddresses?.WBTC,
+          functionName: 'approve',
+          args: [
+            contractAddresses?.BitSmiley,
+            parseEther(inputValue.toString())
+          ]
+        })
+        console.log(txnId)
+        setTxnId(txnId)
+        addTransaction(txnId)
         setIsLodingValue(true)
+        // if (status !== 'pending') {
+        //   setIsLodingValue(false)
+        //   setIsStateValue(1)
+        //   setIsApprove(true)
+        // } else {
+        //   setIsLodingValue(true)
+        // }
       }
+    } catch (err) {
+      setDisableButton(false)
     }
   }
   useEffect(() => {
     let closeTimeout: NodeJS.Timeout
     if (status !== 'pending') {
+      setDisableButton(false)
       setIsLodingValue(false)
+      setUserInputValue('0')
       if (isApproveStatus == 1) {
         setIsStateValue(1)
       } else if (isApproveStatus == 2) {
@@ -248,6 +287,8 @@ const OpenVault: React.FC = () => {
     if (!flag) {
       return
     }
+    if (Number(inputValue) <= 0) return
+    setDisableButton(true)
     setIsApproveStatus(2)
     try {
       const collateral = parseEther(inputValue.toString())
@@ -261,18 +302,21 @@ const OpenVault: React.FC = () => {
         if (txnId) {
           setTxnId(txnId)
           addTransaction(txnId)
-          if (status !== 'pending') {
-            setIsLodingValue(false)
-            setIsApprove(true)
-            // setVault1(vault)
-            setIsStateValue(2)
-          } else {
-            setIsLodingValue(true)
-          }
+          setIsLodingValue(true)
+          // if (status !== 'pending') {
+          //   setIsLodingValue(false)
+          //   setIsApprove(true)
+          //   // setVault1(vault)
+          //   setIsStateValue(2)
+          // } else {
+          //   setIsLodingValue(true)
+          // }
         }
       }
     } catch (err) {
       setIsStateValue(5)
+      setIsLodingValue(false)
+      setDisableButton(false)
       console.log(err)
     }
   }
@@ -281,7 +325,7 @@ const OpenVault: React.FC = () => {
     const result = vaultManagerDataInit
     if (
       result?.liquidationPrice !== undefined &&
-      result?.collateralRate !== undefined &&
+      result?.healthFactor !== undefined &&
       result?.debtBitUSD !== undefined &&
       result?.lockedCollateral !== undefined &&
       result?.availableToWithdraw !== undefined &&
@@ -289,8 +333,8 @@ const OpenVault: React.FC = () => {
     ) {
       const arr = {
         liquidationPrice: Number(formatEther(BigInt(result?.liquidationPrice))),
-        // collateralRate: Number(formatEther(result.collateralRate.toString())),
-        collateralRate: (Number(result?.collateralRate) / 1000) * 100,
+        // healthFactor: Number(formatEther(result.healthFactor.toString())),
+        healthFactor: (Number(result?.healthFactor) / 1000) * 100,
         debtBitUSD: Number(formatEther(BigInt(result?.debtBitUSD))),
         lockedCollateral: Number(formatEther(BigInt(result?.lockedCollateral))),
         availableToWithdraw: Number(
@@ -304,49 +348,63 @@ const OpenVault: React.FC = () => {
   }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const regex = /^\d*\.?\d*$/
-    const newValue = event.target.value
-    if (regex.test(newValue)) {
-      setInputValue(Number(newValue))
-      setUserInputValue(Number(newValue))
+    const formatNum = processInput(event.target.value)
+    console.log(event.target.value, formatNum)
+    setInputValue(formatNum)
+    setUserInputValue(formatNum)
+    if (isState == 1) {
+      if (Number(event.target.value) > Number(balanceWBTC)) {
+        setInputValue(formatDecimal(balanceWBTC, 4) || '0')
+        setUserInputValue(formatDecimal(balanceWBTC, 4) || '0')
+      }
+    } else {
+      if (Number(event.target.value) > overviewDataInit.availableToMint) {
+        setInputValue(formatDecimal(overviewDataInit.availableToMint, 4) || '0')
+        setUserInputValue(
+          formatDecimal(overviewDataInit.availableToMint, 4) || '0'
+        )
+      }
     }
   }
-
-  const handleInputBlurMint = async () => {
-    console.log(inputValue)
-    if (inputValue < 0) return
-    if (inputValue > overviewDataInit.availableToMint) {
-      setInputValue(Number(formatDecimal(overviewDataInit.availableToMint, 4)))
-      setUserInputValue(
-        Number(formatDecimal(overviewDataInit.availableToMint, 4))
+  const getAfterData = async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: any = vaultManagerData
+    const arr = {
+      liquidationPrice: Number(
+        formatEther(result.liquidationPrice.toString() || '')
+      ),
+      healthFactor: (Number(result.healthFactor) / 1000) * 100,
+      debtBitUSD: Number(formatEther(result.debtBitUSD || '')),
+      lockedCollateral: Number(
+        formatEther(result.lockedCollateral.toString() || '')
+      ),
+      availableToWithdraw: Number(
+        formatEther(result.availableToWithdraw.toString())
+      ).toFixed(4),
+      availableToMint: Number(
+        formatEther(result.availableToMint.toString() || '')
       )
     }
-
-    const result = vaultManagerData
-    if (
-      result?.liquidationPrice != undefined &&
-      result?.collateralRate != undefined &&
-      result?.debtBitUSD != undefined &&
-      result?.lockedCollateral != undefined &&
-      result?.availableToWithdraw != undefined &&
-      result?.availableToMint != undefined
-    ) {
-      const arr = {
-        liquidationPrice: Number(formatEther(BigInt(result?.liquidationPrice))),
-        // collateralRate: Number(formatEther(result.collateralRate.toString())),
-        collateralRate: (Number(result?.collateralRate) / 1000) * 100,
-        debtBitUSD: Number(formatEther(BigInt(result?.debtBitUSD))),
-        lockedCollateral: Number(formatEther(BigInt(result?.lockedCollateral))),
-        availableToWithdraw: Number(
-          formatEther(BigInt(result?.availableToWithdraw))
-        ),
-        availableToMint: Number(formatEther(BigInt(result?.availableToMint)))
-      }
-      // const overviewInit = await overviewData(inputValue)
-      // console.log('====>---', overviewInit)
-      setOverviewAfterDataInit(arr)
+    if (userInputValue != '0') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setOverviewAfterDataInit(arr as any)
+    } else {
+      setOverviewAfterDataInit({
+        liquidationPrice: 0,
+        healthFactor: 0,
+        debtBitUSD: 0,
+        lockedCollateral: 0,
+        availableToWithdraw: 0,
+        availableToMint: 0
+      })
     }
   }
+  useEffect(() => {
+    if (vaultManagerData) {
+      console.log(vaultManagerData)
+      getAfterData()
+    }
+  }, [vaultManagerData])
 
   const onClickMintBitUsd = async () => {
     const flag = await isGlobalStatus()
@@ -354,20 +412,13 @@ const OpenVault: React.FC = () => {
       return
     }
     console.log(inputValue)
+    if (Number(inputValue) <= 0) return
+    setDisableButton(true)
     setIsApproveStatus(3)
-    if (inputValue <= 0) return
     try {
       const USDAmount = parseEther(inputValue.toString())
       console.log('vault1===', vault1, 'bitUSDAmount', USDAmount.toString())
-      const parameter = [
-        vault1,
-        USDAmount,
-        0
-        // , //btc
-        // { value: 0, gasPrice: gasPrice }
-      ]
-      // contractNetworkNew.BitSmiley,
-      //     bitSmileyABI
+      const parameter = [vault1, USDAmount, 0]
       if (contractAddresses !== undefined) {
         const txnId = await writeContractAsync({
           abi: bitSmileyABI,
@@ -378,20 +429,32 @@ const OpenVault: React.FC = () => {
         if (txnId) {
           setTxnId(txnId)
           addTransaction(txnId)
-          if (status !== 'pending') {
-            setIsLodingValue(false)
-            setIsStateValue(4)
-          } else {
-            setIsLodingValue(true)
-          }
+          setIsLodingValue(true)
+          // if (status !== 'pending') {
+          //   setIsLodingValue(false)
+          //   setIsStateValue(4)
+          // } else {
+          //   setIsLodingValue(true)
+          // }
         }
       }
     } catch (err) {
       console.log(err)
+      setIsLodingValue(false)
+      setDisableButton(false)
+      setIsStateValue(5)
     }
   }
   const handClickFild = () => {
-    setIsStateValue(1)
+    if (isApproveStatus == 1) {
+      setIsStateValue(1)
+    } else if (isApproveStatus == 2) {
+      setIsStateValue(1)
+    } else if (isApproveStatus == 3) {
+      setIsStateValue(3)
+    } else {
+      setIsStateValue(3)
+    }
   }
   const okClick = () => {
     navigate('/bit-usd')
@@ -420,7 +483,7 @@ const OpenVault: React.FC = () => {
         <div className=" container mx-auto">
           <dl className="mx-auto mt-[9px] max-w-[1530px] ">
             <dt className="mb-[16px]">
-              <NetworkInfo list={mintingPair} />
+              <VaultTitleBar list={mintingPair} />
             </dt>
           </dl>
           <div className={cn('line_bottom mb-[31px]')}></div>
@@ -435,12 +498,12 @@ const OpenVault: React.FC = () => {
                 <CornerPin></CornerPin>
                 <TitleBlock titleValue="Overview"></TitleBlock>
                 {isState == 3 || isState == 4 ? (
-                  <MintBitUsdOverviewBox
+                  <OverviewBox
                     listData={overviewDataInit}
                     afterDataInit={overviewAfterDataInit}
                   />
                 ) : (
-                  <OverviewBox />
+                  <OverviewBoxImg />
                 )}
               </div>
             </div>
@@ -468,6 +531,7 @@ const OpenVault: React.FC = () => {
                     />
                   ) : isState == 1 ? (
                     <SetupVault
+                      disableButton={disableButton}
                       balance={balanceWBTC}
                       AvailableBitUSD={AvailableBitUSD}
                       price={oraclePrice}
@@ -475,8 +539,8 @@ const OpenVault: React.FC = () => {
                       isApprove={isApprove}
                       handleBlur={blurSetupVault}
                       handleInputChange={handleInputChange}
-                      handApproveFun={handApproveFun}
-                      handStartFun={StartFun}
+                      handApproveFun={() => !disableButton && handApproveFun()}
+                      handStartFun={() => !disableButton && StartFun()}
                     />
                   ) : isState == 2 ? (
                     <MintBitUSDBox
@@ -489,11 +553,14 @@ const OpenVault: React.FC = () => {
                     />
                   ) : isState == 3 ? (
                     <MintBitUSDIng
+                      disableButton={disableButton}
                       afterDataInit={overviewAfterDataInit}
                       listData={overviewDataInit}
                       inputValue={inputValue}
-                      handOnClickMint={onClickMintBitUsd}
-                      handleBlur={handleInputBlurMint}
+                      handOnClickMint={() =>
+                        !disableButton && onClickMintBitUsd()
+                      }
+                      handleBlur={() => {}}
                       handleInputChange={handleInputChange}
                     />
                   ) : isState == 4 ? (
@@ -521,50 +588,6 @@ const OpenVault: React.FC = () => {
       </div>
       {/* <CopyRightAndLinks /> */}
     </div>
-  )
-}
-
-const NetworkInfo: React.FC<{
-  list: object
-}> = ({ list }) => {
-  console.log(list)
-  const items = [
-    {
-      name: 'Borrow rate',
-      value: `${list.borrowRate * 100} %`
-    },
-    {
-      name: 'Liquidation Penalty',
-      value: `${list.liquidity * 100} %`
-    },
-    {
-      name: 'Vault Floor',
-      value: `6k bitUSD `
-    },
-    {
-      name: 'Vault Ceiling',
-      value: `300k bitUSD`
-    },
-    // {
-    //   name: 'Min Size',
-    //   value: `${list.minSize * 100} BTC`
-    // },
-    {
-      name: 'Max LTV',
-      value: `${list.maxLTV * 100} %`
-    }
-  ]
-  const renderedItems = items.map((item, index) => (
-    <li key={index} className="mr-[40px] text-center">
-      {item.name}: {item.value} ⓘ
-    </li>
-  ))
-  return (
-    <>
-      <ul className="flex justify-center font-ibmr text-white">
-        {renderedItems}
-      </ul>
-    </>
   )
 }
 
@@ -604,7 +627,8 @@ const CornerPin: React.FC = () => {
 }
 
 const SetupVault: React.FC<{
-  inputValue: number
+  disableButton: boolean
+  inputValue: string
   balance: number | string
   isApprove: boolean
   price: number
@@ -614,6 +638,7 @@ const SetupVault: React.FC<{
   handApproveFun: () => void
   handleBlur: () => void
 }> = ({
+  disableButton,
   inputValue,
   balance,
   handleBlur,
@@ -627,15 +652,16 @@ const SetupVault: React.FC<{
   return (
     <>
       <div className="mb-[27px] mt-[84px] flex items-center justify-between font-ibmr text-[16px] text-white">
-        <span>Deposit BTC</span>
+        <span>Deposit wBTC</span>
         <span>{Number(balance)} available</span>
       </div>
       <div className="mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
           placeholder="0"
-          className="input_style flex h-[47px] w-auto items-center font-ibmb
-        text-[36px] leading-[47px] hover:border-none"
+          className={cn(
+            'input_style flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none'
+          )}
           onBlur={handleBlur}
           value={inputValue}
           onChange={handleInputChange}
@@ -643,7 +669,7 @@ const SetupVault: React.FC<{
         <p className="mt-3 font-ibmr text-[16px] text-white/[.8]">
           ~
           {formatMoney(
-            formatDecimal((price as number) * (inputValue as number), 4)
+            formatDecimal((price as number) * Number(inputValue), 4)
           )}
           USD
         </p>
@@ -678,32 +704,76 @@ const SetupVault: React.FC<{
       <div className="mt-[78px] flex justify-center">
         {!isApprove ? (
           <button
-            className="relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
-          border-solid border-white bg-blue"
+            className={cn(
+              `relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
+          border-solid border-white bg-blue `,
+              disableButton && 'bg-[#5C5C5C] border-[#828282]'
+            )}
             onClick={handApproveFun}>
-            <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-            <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
-            <span className="ml-[21px] font-ppnb text-[48px] text-white">
+            <div
+              className={cn(
+                'button_bg absolute -left-[6px] -top-[3px]',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
+            <div
+              className={cn(
+                'button_bg absolute -right-[6px] -top-[3px] rotate-180',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
+            <span
+              className={cn(
+                'ml-[21px] font-ppnb text-[36px] text-white',
+                disableButton && ' text-white/[.5]'
+              )}>
               Give permission to use BTC
             </span>
-            <Image
-              src={getOpenUrl('Union02')}
-              className="ml-2 mr-[21px] w-[22px]"
-            />
+            <Tooltip>
+              <TooltipTrigger>
+                <Image
+                  src={getOpenUrl('Union02')}
+                  className={cn(
+                    'ml-2 mr-[21px] w-[22px]',
+                    disableButton && ' opacity-50'
+                  )}
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                To continue, you need to allow bitSmiley smart contracts to use
+                your wBTC. This has to be done only once for each token.
+              </TooltipContent>
+            </Tooltip>
           </button>
         ) : (
           <button
-            className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
-          border-solid border-white bg-blue"
+            className={cn(
+              'relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
+              disableButton && 'bg-[#5C5C5C] border-[#828282]'
+            )}
             onClick={handStartFun}>
-            <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-            <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
-            <span className="ml-[21px] font-ppnb text-[48px] text-white">
+            <div
+              className={cn(
+                'button_bg absolute -left-[6px] -top-[3px]',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
+            <div
+              className={cn(
+                'button_bg absolute -right-[6px] -top-[3px] rotate-180',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
+
+            <span
+              className={cn(
+                'ml-[21px] font-ppnb text-[36px] text-white',
+                disableButton && ' text-white/[.5]'
+              )}>
               Start
             </span>
             <Image
               src={getOpenUrl('union01')}
-              className="ml-2 mr-[14px] w-[79px]"
+              className={cn(
+                'ml-2 mr-[14px] w-[79px]',
+                disableButton && ' opacity-50'
+              )}
             />
           </button>
         )}
@@ -713,13 +783,15 @@ const SetupVault: React.FC<{
 }
 
 const MintBitUSDIng: React.FC<{
-  inputValue: number
+  disableButton: boolean
+  inputValue: string
   listData: overviewBoxObject
   afterDataInit: overviewBoxObject
   handleBlur: () => void
   handOnClickMint: () => void
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }> = ({
+  disableButton,
   inputValue,
   handleInputChange,
   handOnClickMint,
@@ -738,14 +810,18 @@ const MintBitUSDIng: React.FC<{
       <div className="relative mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          className="input_style flex h-[47px] w-auto items-center font-ibmb
-        text-[36px] leading-[47px] hover:border-none"
+          className={cn(
+            'input_style flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none'
+          )}
           placeholder="0"
           onBlur={handleBlur}
           value={inputValue}
           onChange={handleInputChange}
         />
-        <p className="absolute -top-[17px] right-[20px] mt-3 font-ppnb text-[48px] text-blue/[.5]">
+        <p
+          className={cn(
+            'absolute -top-[17px] right-[20px] mt-3 font-ppnb text-[48px] text-blue/[.5]'
+          )}>
           bitUSD
         </p>
       </div>
@@ -768,14 +844,16 @@ const MintBitUSDIng: React.FC<{
         <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
           <span className="whitespace-nowrap">Health factor</span>
           <p className="flex items-center justify-between font-ibmb">
-            <span>{formatDecimal(listData.collateralRate, 1)} % </span>
+            <span>
+              {formatDecimal((listData.healthFactor || 0).toString(), 1)} %{' '}
+            </span>
             <Image
               src={getOpenUrl('return')}
               className="ml-2 mr-[9px] w-[5px]"
             />
             <span className="text-green">
               {' '}
-              {formatDecimal(afterDataInit.collateralRate, 1)} %
+              {formatDecimal((afterDataInit.healthFactor || 0).toString(), 1)} %
             </span>
           </p>
         </li>
@@ -783,7 +861,11 @@ const MintBitUSDIng: React.FC<{
           <span className="whitespace-nowrap">Available to mint bitUSD</span>
           <p className="flex items-center justify-between whitespace-nowrap font-ibmb">
             <span>
-              {formatMoney(formatDecimal(listData.availableToMint, 2))} ${' '}
+              {formatAmountThousands(
+                (listData.availableToMint || 0).toString(),
+                2
+              )}{' '}
+              ${' '}
             </span>
             <Image
               src={getOpenUrl('return')}
@@ -791,7 +873,11 @@ const MintBitUSDIng: React.FC<{
             />
             <span className="text-green">
               {' '}
-              {formatMoney(formatDecimal(afterDataInit.availableToMint, 2))} $
+              {formatAmountThousands(
+                (afterDataInit.availableToMint || 0).toString(),
+                2
+              )}{' '}
+              $
             </span>
           </p>
         </li>
@@ -799,33 +885,62 @@ const MintBitUSDIng: React.FC<{
           <span className="whitespace-nowrap">Liquidation Price</span>
           <p className="flex items-center justify-between font-ibmb">
             <span>
-              {formatMoney(formatDecimal(listData.liquidationPrice, 2))} ${' '}
+              {listData.liquidationPrice == 0
+                ? ' - '
+                : formatAmountThousands(
+                    (listData.liquidationPrice || 0).toString(),
+                    2
+                  )}{' '}
+              $
             </span>
             <Image
               src={getOpenUrl('return')}
               className="ml-2 mr-[9px] w-[5px]"
             />
             <span className="text-green">
-              {' '}
-              {formatMoney(formatDecimal(afterDataInit.liquidationPrice, 2))} $
+              {afterDataInit.liquidationPrice == 0
+                ? ' - '
+                : formatAmountThousands(
+                    (afterDataInit.liquidationPrice || 0).toString(),
+                    2
+                  )}{' '}
+              $
             </span>
           </p>
         </li>
       </ul>
 
-      <div className="absolute bottom-[34px] mt-[28px] flex justify-center">
+      <div
+        className={cn('absolute bottom-[34px] w-[517px] flex justify-center')}>
         <button
-          className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
-        border-solid border-white bg-blue"
+          className={cn(
+            'relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
+            disableButton && 'bg-[#5C5C5C] border-[#828282]'
+          )}
           onClick={handOnClickMint}>
-          <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-          <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
-          <span className="ml-[21px] font-ppnb text-[48px] text-white">
+          <div
+            className={cn(
+              'button_bg absolute -left-[6px] -top-[3px]',
+              disableButton && 'button_bg_disable h-[77px]'
+            )}></div>
+          <div
+            className={cn(
+              'button_bg absolute -right-[6px] -top-[3px] rotate-180',
+              disableButton && 'button_bg_disable h-[77px]'
+            )}></div>
+          <span
+            className={cn(
+              'ml-[21px] font-ppnb text-[48px] text-white',
+              disableButton && ' text-white/[.5]'
+            )}>
             Start
           </span>
           <Image
             src={getOpenUrl('union01')}
-            className="ml-2 mr-[14px] w-[79px]"
+            className={cn(
+              'ml-2 mr-[14px] w-[79px]',
+              disableButton && ' opacity-50'
+            )}
           />
         </button>
       </div>
@@ -879,8 +994,14 @@ const MintBitUSDBox: React.FC<{
               className="relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
             border-solid border-white bg-blue"
               onClick={handleOkClick}>
-              <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-              <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
+              <div
+                className={cn(
+                  'button_bg absolute -left-[6px] -top-[3px]'
+                )}></div>
+              <div
+                className={cn(
+                  'button_bg absolute -right-[6px] -top-[3px] rotate-180'
+                )}></div>
               <span className="ml-[21px] font-ppnb text-[48px] text-white">
                 Ok
               </span>
@@ -890,8 +1011,14 @@ const MintBitUSDBox: React.FC<{
               className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
             border-solid border-white bg-blue"
               onClick={handleClick}>
-              <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-              <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
+              <div
+                className={cn(
+                  'button_bg absolute -left-[6px] -top-[3px]'
+                )}></div>
+              <div
+                className={cn(
+                  'button_bg absolute -right-[6px] -top-[3px] rotate-180'
+                )}></div>
               <span className="ml-[21px] font-ppnb text-[48px] text-white">
                 Mint bitUSD
               </span>
@@ -907,139 +1034,11 @@ const MintBitUSDBox: React.FC<{
   )
 }
 
-const OverviewBox: React.FC = () => {
+const OverviewBoxImg: React.FC = () => {
   return (
     <>
       <div className="mt-[94px] flex items-center justify-center">
         <Image src={getOpenUrl('Untitled')} className="mr-[44px] w-[251px]" />
-        {/* <div className={`text-white ${isOpacity?'opacity-50':''}`}>
-        <div>
-          <p className="text-base font-ibmr">Collateral locked</p>
-          <h1 className="text-[72px] leading-[51px] font-ppnb mt-1 mb-3">$0.00</h1>
-          <div className="relative font-ibmb bg-white w-[144px] h-[29px] text-black pl-[8px] flex items-center"> 
-            <div className="button_white absolute -left-[4px] top-0 w-[4px] h-[29px]"></div>
-            <div className="button_white rotate-180 absolute -right-[4px] top-0 w-[4px] h-[29px]"></div>
-            40,000 After 
-          </div>
-        </div>
-        <div className="mt-[34px]">
-          <p className="text-base font-ibmr">Available to generate</p>
-          <h1 className="text-[72px] leading-[51px] font-ppnb mt-1 mb-3">$0.00</h1>
-          <div className="relative font-ibmb bg-white w-[144px] h-[29px] text-black pl-[8px] flex items-center"> 
-            <div className="button_white absolute -left-[4px] top-0 w-[4px] h-[29px]"></div>
-            <div className="button_white rotate-180 absolute -right-[4px] top-0 w-[4px] h-[29px]"></div>
-            40,000 After 
-          </div>
-        </div>
-      </div> */}
-      </div>
-    </>
-  )
-}
-
-const MintBitUsdOverviewBox: React.FC<{
-  listData: overviewBoxObject
-  afterDataInit: overviewBoxObject
-}> = ({ listData, afterDataInit }) => {
-  return (
-    <>
-      <div className="mt-[10px]  px-[30px]">
-        <div
-          className={`flex flex-wrap items-center justify-between px-[30px] text-white`}>
-          <div className="mt-[24px] w-[50%]">
-            <p className="font-ibmr text-base">Liquidation Price</p>
-            <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              $
-              {listData?.liquidationPrice == 0
-                ? ' -'
-                : formatMoney(formatDecimal(listData.liquidationPrice || 0, 2))}
-            </h1>
-            <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              ${' '}
-              {formatMoney(
-                formatDecimal(afterDataInit.liquidationPrice || 0, 2)
-              )}{' '}
-              after ⓘ{/* $ {afterDataInit.liquidationPrice} after ⓘ  */}
-            </div>
-          </div>
-          <div className="mt-[24px] w-[50%] pl-[10px]">
-            <p className="font-ibmr text-base">Health factor</p>
-            <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              {formatDecimal(listData.collateralRate || 0, 1)}%
-            </h1>
-            <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              % {formatDecimal(afterDataInit.collateralRate || 0, 1)} after ⓘ
-            </div>
-          </div>
-          <div className="mt-[24px] w-[50%]">
-            <p className="font-ibmr text-base">Vault Debt</p>
-            <h1 className="mb-4 mt-1 font-ppnb text-[72px] leading-[51px]">
-              ${formatMoney(formatDecimal(listData.debtBitUSD || 0, 2))}
-            </h1>
-            <div className="relative flex h-[31px] w-[196px] items-center bg-black pl-[8px] font-ibmr text-white">
-              $ {formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 2))}{' '}
-              after ⓘ
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`mt-[20px] flex items-start justify-center text-white/[.7]`}>
-          <div className="mt-[24px]">
-            <p className="whitespace-nowrap font-ibmr text-[14px]">
-              Collateral locked
-            </p>
-            <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData.lockedCollateral || 0, 4)
-              )}{' '}
-              BTC
-            </h1>
-            <div className="relative flex h-[31px] min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.lockedCollateral || 0, 4)
-              )}{' '}
-              after
-            </div>
-          </div>
-          <div className="mt-[24px] pl-[18px] pr-[18px]">
-            <p className="whitespace-nowrap font-ibmr text-[14px]">
-              Available to withdraw
-            </p>
-            <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData.availableToWithdraw || 0, 4)
-              )}{' '}
-              BTC
-            </h1>
-            <div className="relative flex h-[31px] min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.availableToWithdraw || 0, 4)
-              )}{' '}
-              after
-            </div>
-          </div>
-          <div className="mt-[24px]">
-            <p className="whitespace-nowrap font-ibmr text-[14px] ">
-              Available to mint
-            </p>
-            <h1 className="mb-[6px] whitespace-nowrap font-ppnb text-[32px] leading-[32px]">
-              {' '}
-              {formatMoney(
-                formatDecimal(listData.availableToMint || 0, 4)
-              )}{' '}
-              bitUSD
-            </h1>
-            <div className="relative flex h-[31px] min-w-[100px] items-center bg-black pl-[8px] font-ibmr text-[14px] text-white">
-              {formatMoney(
-                formatDecimal(afterDataInit.availableToMint || 0, 4)
-              )}{' '}
-              after
-            </div>
-          </div>
-        </div>
       </div>
     </>
   )
@@ -1048,7 +1047,7 @@ const MintBitUsdOverviewBox: React.FC<{
 const FailedTitleBlock: React.FC = () => {
   return (
     <>
-      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-[#FF0000]">
+      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-red1">
         <span className=" bg-black px-[24px]">Changes Failed</span>
       </h3>
     </>

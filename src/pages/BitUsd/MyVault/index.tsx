@@ -5,7 +5,12 @@ import './index.scss'
 import { getOpenUrl, openUrl } from '@/utils/getAssetsUrl'
 import { parseEther, formatEther as viemFormatEther } from 'viem'
 import { SCANTXHASH } from '@/config/links'
-import { formatDecimal, formatMoney } from '@/utils/formatter'
+import {
+  formatDecimal,
+  formatMoney,
+  processInput,
+  formatAmountThousands
+} from '@/utils/formatter'
 import { bitSmileyABI, bitUSDABI } from '@/abi/abi'
 import LoadingAnimation from '@/components/LoadingAnimation'
 
@@ -23,11 +28,18 @@ import { useMintingPairs } from '@/hooks/useMintingPairs'
 import { useParams } from 'react-router-dom'
 import { Hash } from 'viem'
 import { OverviewBox } from '@/components/OverviewBox'
+import { cn } from '@/utils/cn'
+import { VaultTitleBar } from '@/components/VaultTitleBar'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface overviewBoxObject {
   availableToMint?: number
   debtBitUSD?: number
-  collateralRate?: number
+  healthFactor?: number
   lockedCollateral?: number
   liquidationPrice?: number
   availableToWithdraw?: number
@@ -47,10 +59,12 @@ const formatEther = (v?: bigint | boolean | number | string) =>
 const MyVault: React.FC = () => {
   const params = useParams()
   const pairChainId = Number(params.chainId)
+  const liquidationValues: number = 100
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
-  const [inputNum, setInputNum] = useState(0)
-  const [inputValue, setInputValue] = useState()
-  const [withdrawValue, setWithdrawValue] = useState()
+  const [disableButton, setDisableButton] = useState(false)
+  const [inputNum, setInputNum] = useState('0')
+  const [inputValue, setInputValue] = useState('')
+  const [withdrawValue, setWithdrawValue] = useState('')
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Make Changes-next  ; 2=>Vault Changes-Vault Changes ; 3=>Changes Completed=>ok ;4=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
@@ -71,7 +85,7 @@ const MyVault: React.FC = () => {
     overviewBoxObject | undefined
   >({
     liquidationPrice: 0,
-    collateralRate: 0,
+    healthFactor: 0,
     debtBitUSD: 0,
     lockedCollateral: 0,
     availableToWithdraw: 0,
@@ -79,7 +93,7 @@ const MyVault: React.FC = () => {
   })
   const [overviewAfterDataInit, setOverviewAfterDataInit] = useState({
     liquidationPrice: 0,
-    collateralRate: 0,
+    healthFactor: 0,
     debtBitUSD: 0,
     lockedCollateral: 0,
     availableToWithdraw: 0,
@@ -96,13 +110,13 @@ const MyVault: React.FC = () => {
     vaultManagerAfterData,
     refetchVaultManagerAfterData
   } = useUserVaultManagerChange(inputNum, isDeposit, coinType)
-  console.log(vaultManagerData)
+  // console.log(vaultManagerData)
 
   const [txnId, setTxnId] = useState<Hash>()
   const { status } = useWaitForTransactionReceipt({ hash: txnId })
 
   const { oraclePrice1, refetchOraclePrice1 } = useGetOraclePrice()
-  console.log(oraclePrice1)
+  // console.log(oraclePrice1)
   const {
     isAllowanceVaultManager,
     refetchisAllowanceVaultManager,
@@ -130,15 +144,20 @@ const MyVault: React.FC = () => {
   useEffect(() => {
     let closeTimeout: NodeJS.Timeout
     if (status !== 'pending') {
+      setDisableButton(false)
       refetchisAllowanceVaultManager()
       refetchisBitUSDAllowance()
       refetchBalanceWBTC()
       refetchBalanceBitUSD()
       refetchVaultManagerData()
-      refetchVaultManagerAfterData()
-      // setInputValue(0)
-      // setWithdrawValue(0)
-      // setInputNum(0)
+      setOverviewAfterDataInit({
+        liquidationPrice: 0,
+        healthFactor: 0,
+        debtBitUSD: 0,
+        lockedCollateral: 0,
+        availableToWithdraw: 0,
+        availableToMint: 0
+      })
       if (isTxStatus == 1) {
         setIsStateValue(2)
         setIsApprove(true)
@@ -191,20 +210,22 @@ const MyVault: React.FC = () => {
   const initData = async () => {
     const overviewInit = await overviewData(1)
     console.log(overviewInit)
-    setOverviewDataInit(overviewInit)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setOverviewDataInit(overviewInit as any)
   }
 
   const typeChangeFun = async (i: number) => {
     console.log(i)
-    setInputValue()
-    setWithdrawValue()
-    setInputNum()
+    setInputValue('0')
+    setWithdrawValue('0')
+    setInputNum('0')
     setCoinType(i)
     refetchVaultManagerData()
     const overviewInit = await overviewData(1)
-    setOverviewDataInit(overviewInit)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setOverviewDataInit(overviewInit as any)
   }
-  console.log(vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC)
+  // console.log(vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC)
   useEffect(() => {
     console.log(vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC)
     console.log(vaultManagerData && gitBalanceBitUSD && gitBalanceWBTC)
@@ -217,6 +238,7 @@ const MyVault: React.FC = () => {
     //  eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC])
   const overviewData = async (type: number) => {
+    console.log(withdrawValue, inputNum)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any = {}
     if (type == 1) {
@@ -224,69 +246,111 @@ const MyVault: React.FC = () => {
     } else {
       result = vaultManagerAfterData
     }
-    console.log(vaultManagerData, vaultManagerAfterData)
     const arr = {
       liquidationPrice: Number(
-        formatEther(result.liquidationPrice.toString() || '')
+        formatEther(result?.liquidationPrice.toString() || '')
       ),
-      collateralRate: (Number(result.collateralRate) / 1000) * 100,
-      debtBitUSD: Number(formatEther(result.debtBitUSD || '')),
-      lockedCollateral: Number(
-        formatEther(result.lockedCollateral.toString() || '')
-      ),
+      healthFactor: (Number(result?.healthFactor) / 1000) * 100,
+      debtBitUSD: Number(formatEther(result?.debtBitUSD || '')),
+      lockedCollateral: formatEther(result?.lockedCollateral.toString() || ''),
       availableToWithdraw: Number(
-        formatEther(result.availableToWithdraw.toString())
-      ),
+        formatEther(result?.availableToWithdraw.toString())
+      ).toFixed(4),
       availableToMint: Number(
-        formatEther(result.availableToMint.toString() || '')
-      )
+        formatEther(result?.availableToMint.toString() || '')
+      ).toFixed(4)
     }
     console.log(arr)
     return arr
   }
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const regex = /^\d*\.?\d*$/
-    const newValue = event.target.value
-    if (regex.test(newValue)) {
-      setWithdrawValue(Number(newValue))
-      setInputNum(Number(newValue))
+  const handleInputChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const num: string = processInput(event.target.value)
+    setInputNum(num)
+    setWithdrawValue(num)
+    if (Number(num) < 0) return
+    if (coinType == 1) {
+      const ava = overviewDataInit?.availableToMint
+      if (ava !== undefined && Number(num) > ava) {
+        setWithdrawValue(formatDecimal(ava || '0', 4).toString())
+        setInputNum(formatDecimal(ava || '0', 4).toString())
+      }
+    } else {
+      const ava = overviewDataInit?.availableToWithdraw
+      if (ava !== undefined && Number(num) > ava) {
+        setWithdrawValue(formatDecimal(ava || '0', 4).toString())
+        setInputNum(formatDecimal(ava || '0', 4).toString())
+      }
+    }
+    refetchVaultManagerAfterData()
+  }
+  const getAfterData = async () => {
+    const overviewInit = await overviewData(0)
+    if (inputNum != '0') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setOverviewAfterDataInit(overviewInit as any)
+    } else {
+      setOverviewAfterDataInit({
+        liquidationPrice: 0,
+        healthFactor: 0,
+        debtBitUSD: 0,
+        lockedCollateral: 0,
+        availableToWithdraw: 0,
+        availableToMint: 0
+      })
     }
   }
 
-  const handleInputChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const regex = /^\d*\.?\d*$/
-    const newValue = event.target.value
-    if (regex.test(newValue)) {
-      setInputValue(Number(newValue))
-      setInputNum(Number(newValue))
+  useEffect(() => {
+    if (vaultManagerAfterData) {
+      getAfterData()
     }
+  }, [vaultManagerAfterData])
+
+  const handleInputChange1 = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const num = processInput(event.target.value)
+    setInputValue(num)
+    setInputNum(num)
+    if (coinType == 1) {
+      if (Number(num) > Number(bitUsdBalance)) {
+        setInputValue(formatDecimal(bitUsdBalance || '0', 4).toString())
+        setInputNum(formatDecimal(bitUsdBalance || '0', 4).toString())
+      }
+    } else {
+      if (Number(num) > Number(balanceWBTC)) {
+        setInputValue(formatDecimal(balanceWBTC || '0', 4).toString())
+        setInputNum(formatDecimal(balanceWBTC || '0', 4).toString())
+      }
+    }
+    refetchVaultManagerAfterData()
+    const overviewInit = await overviewData(0)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setOverviewAfterDataInit(overviewInit as any)
   }
 
   const handOnFocusChange = () => {
     setIsDeposit(false)
+    setInputNum(withdrawValue)
   }
 
   const handOnFocusChange1 = () => {
     setIsDeposit(true)
+    setInputNum(inputValue)
   }
 
-  const mintFromBTCFun = async (val: number, btcNum: number) => {
+  const mintFromBTCFun = async (val: string, btcNum: string) => {
     if (coinType == 1) {
-      if (val <= 0) return
+      if (Number(val) <= 0) return
     } else {
-      if (btcNum <= 0) return
+      if (Number(btcNum) <= 0) return
     }
     try {
       const USDAmount = parseEther(val.toString())
       const BTCAmount = parseEther(btcNum.toString())
-      console.log(
-        'vault1===',
-        vault1,
-        'bitUSDAmount',
-        USDAmount.toString(),
-        BTCAmount.toString()
-      )
       const parameter = [vault1, USDAmount, BTCAmount]
       if (contractAddresses?.BitSmiley != undefined) {
         const txnId = await writeContractAsync({
@@ -300,9 +364,9 @@ const MyVault: React.FC = () => {
           setTxnId(txnId)
           addTransaction(txnId)
           if (status !== 'pending') {
-            setInputValue()
-            setWithdrawValue()
-            setInputNum()
+            setInputValue('0')
+            setWithdrawValue('0')
+            setInputNum('0')
             setIsLodingValue(false)
             setIsStateValue(3)
           }
@@ -310,15 +374,16 @@ const MyVault: React.FC = () => {
       }
     } catch (err) {
       console.log(err)
+      setDisableButton(false)
       setIsStateValue(1)
     }
   }
 
-  const repayToBTCFun = async (val: number, btcNum: number) => {
+  const repayToBTCFun = async (val: string, btcNum: string) => {
     if (coinType == 1) {
-      if (val <= 0) return
+      if (Number(val) <= 0) return
     } else {
-      if (btcNum <= 0) return
+      if (Number(btcNum) <= 0) return
     }
 
     try {
@@ -344,58 +409,18 @@ const MyVault: React.FC = () => {
         setTxnId(txnId)
         addTransaction(txnId)
         if (status !== 'pending') {
-          setInputValue()
-          setWithdrawValue()
-          setInputNum()
+          setInputValue('0')
+          setWithdrawValue('0')
+          setInputNum('0')
           setIsLodingValue(false)
           setIsStateValue(3)
         }
       }
     } catch (err) {
       console.log(err)
+      setDisableButton(false)
       setIsStateValue(1)
     }
-  }
-  const handleInputBlurMint1 = async () => {
-    console.log('---', inputValue)
-    if (coinType == 1) {
-      if (inputValue > Number(bitUsdBalance)) {
-        setInputValue(Number(formatDecimal(bitUsdBalance, 4)))
-        setInputNum(Number(formatDecimal(bitUsdBalance, 4)))
-      }
-    } else {
-      if (inputValue > Number(balanceWBTC)) {
-        setInputValue(Number(formatDecimal(balanceWBTC, 4)))
-        setInputNum(Number(formatDecimal(balanceWBTC, 4)))
-      }
-    }
-    const overviewInit = await overviewData(0)
-    console.log('====>---', overviewInit)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setOverviewAfterDataInit(overviewInit as any)
-  }
-
-  const handleInputBlurMint = async () => {
-    console.log(withdrawValue, -withdrawValue)
-    if (withdrawValue < 0) return
-    if (coinType == 1) {
-      const ava = overviewDataInit?.availableToMint
-      if (ava !== undefined && withdrawValue > ava) {
-        setWithdrawValue(Number(formatDecimal(ava, 2)))
-        setInputNum(Number(formatDecimal(ava, 2)))
-      }
-    } else {
-      const ava = overviewDataInit?.availableToWithdraw
-      if (ava !== undefined && withdrawValue > ava) {
-        setWithdrawValue(Number(formatDecimal(ava, 2)))
-        setInputNum(Number(formatDecimal(ava, 2)))
-      }
-    }
-    refetchVaultManagerAfterData()
-    const overviewInit = await overviewData(0)
-    console.log('====>---', overviewInit)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setOverviewAfterDataInit(overviewInit as any)
   }
   /*
    * coinType=1=>bitusd;coinType=0=>wBTC
@@ -403,6 +428,9 @@ const MyVault: React.FC = () => {
   const handNextisDeposit = async () => {
     const flag = await isGlobalStatus()
     if (!flag) {
+      return
+    }
+    if (Number(inputNum) <= 0) {
       return
     }
     setIsApprove(true)
@@ -415,8 +443,9 @@ const MyVault: React.FC = () => {
         console.log('repay bitusd')
         if (isBitUSDAllowance != undefined) {
           const allowanceNum = Number(formatEther(isBitUSDAllowance.toString()))
-          console.log(allowanceNum)
-          allowanceNum >= inputValue ? setIsApprove(true) : setIsApprove(false)
+          allowanceNum >= Number(inputNum)
+            ? setIsApprove(true)
+            : setIsApprove(false)
         }
       }
     } else {
@@ -429,28 +458,30 @@ const MyVault: React.FC = () => {
         const allowanceNum = Number(
           formatEther(isAllowanceVaultManager?.toString() || '')
         )
-        console.log(allowanceNum)
-        allowanceNum >= inputValue ? setIsApprove(true) : setIsApprove(false)
+        allowanceNum >= Number(inputNum)
+          ? setIsApprove(true)
+          : setIsApprove(false)
       }
     }
     setIsStateValue(2)
   }
   const handClickConfirm = async () => {
+    setDisableButton(true)
     setIsTxStatus(2)
     if (coinType == 1) {
       if (!isDeposit) {
-        mintFromBTCFun(withdrawValue, 0)
+        mintFromBTCFun(inputNum, '0')
       } else {
-        console.log('return bitUSD', inputValue)
-        repayToBTCFun(inputValue, 0)
+        console.log('return bitUSD', inputNum)
+        repayToBTCFun(inputNum, '0')
       }
     } else {
       console.log('WBTC', isDeposit)
       if (!isDeposit) {
-        repayToBTCFun(0, withdrawValue)
+        repayToBTCFun('0', inputNum)
       } else {
-        console.log('return bitUSD', inputValue)
-        mintFromBTCFun(0, inputValue)
+        console.log('return bitUSD', inputNum)
+        mintFromBTCFun('0', inputNum)
       }
     }
   }
@@ -458,26 +489,30 @@ const MyVault: React.FC = () => {
   const approveFun = async () => {
     setIsTxStatus(1)
     console.log('approve start--->')
-    const addressApprove = contractAddresses?.BitSmiley
-    let contractApprove = contractAddresses?.BitUSDL2
-    if (coinType == 0) {
-      contractApprove = contractAddresses?.WBTC
-    }
-    if (contractApprove != undefined) {
-      const txnId = await writeContractAsync({
-        abi: bitUSDABI,
-        address: contractApprove,
-        functionName: 'approve',
-        args: [addressApprove, parseEther(inputValue.toString())]
-      })
-      console.log(txnId)
-      setIsLodingValue(true)
-      setTxnId(txnId)
-      addTransaction(txnId)
-      if (status !== 'pending') {
-        setIsLodingValue(false)
-        setIsApprove(true)
+    try {
+      const addressApprove = contractAddresses?.BitSmiley
+      let contractApprove = contractAddresses?.BitUSDL2
+      if (coinType == 0) {
+        contractApprove = contractAddresses?.WBTC
       }
+      if (contractApprove != undefined) {
+        const txnId = await writeContractAsync({
+          abi: bitUSDABI,
+          address: contractApprove,
+          functionName: 'approve',
+          args: [addressApprove, parseEther(inputValue.toString())]
+        })
+        console.log(txnId)
+        setIsLodingValue(true)
+        setTxnId(txnId)
+        addTransaction(txnId)
+        if (status !== 'pending') {
+          setIsLodingValue(false)
+          setIsApprove(true)
+        }
+      }
+    } catch (err) {
+      setDisableButton(false)
     }
   }
 
@@ -490,6 +525,7 @@ const MyVault: React.FC = () => {
     if (!flag) {
       return
     }
+    setDisableButton(true)
     approveFun()
     // if (coinType == 1) {
     //   approveFun(BitUSDL2Contract, bitSmileyAddrees)
@@ -499,9 +535,9 @@ const MyVault: React.FC = () => {
   }
 
   const handClickOk = () => {
-    setInputValue()
-    setWithdrawValue()
-    setInputNum()
+    setInputValue('0')
+    setWithdrawValue('0')
+    setInputNum('0')
     setIsStateValue(1)
   }
 
@@ -517,9 +553,13 @@ const MyVault: React.FC = () => {
           <TitleBox message="My Vaults" isWhite={true} />
         </div>
         <div className=" container mx-auto">
-          <dl className="mx-auto mt-[9px] max-w-[1220px] ">
+          <dl className="mx-auto mt-[9px] max-w-[1530px] ">
             <dt className="mb-[16px]">
-              <ul className="table_title_color flex justify-center font-ibmb">
+              <VaultTitleBar list={mintingPair} />
+              {/* <ul
+                className={cn(
+                  'table_title_color flex justify-center font-ibmb'
+                )}>
                 <li className="mr-[50px] text-center">
                   Stability fee: {Number(mintingPair.borrowRate) * 100}% ⓘ{' '}
                 </li>
@@ -530,25 +570,30 @@ const MyVault: React.FC = () => {
                 <li className="mr-[50px] text-center">
                   Max LTV: {Number(mintingPair.maxLTV) * 100}% ⓘ
                 </li>
-              </ul>
+              </ul> */}
             </dt>
           </dl>
-          <div className="line_bottom mb-[31px]"></div>
+          <div className={cn('line_bottom mb-[31px]')}></div>
 
           <div className="flex justify-center pb-[250px]">
-            <div className="grid_bg relative mr-[99px] h-[528px] w-[629px] flex-none">
-              <div className="blendMode t-0 l-0 absolute"></div>
+            <div
+              className={cn(
+                'grid_bg relative mr-[99px] h-[528px] w-[629px] flex-none'
+              )}>
+              <div className={cn('blendMode t-0 l-0 absolute')}></div>
               <div className="relative h-[528px]">
                 <CornerPin></CornerPin>
                 <TitleBlock titleValue="Overview"></TitleBlock>
                 <OverviewBox
+                  liquidationValues={liquidationValues}
                   listData={overviewDataInit}
                   afterDataInit={overviewAfterDataInit}
                 />
               </div>
             </div>
-            <div className="grid_bg relative flex-none">
-              <div className="blendMode_blue t-0 l-0 absolute"></div>
+            <div className={cn('grid_bg relative flex-none')}>
+              <div
+                className={cn('blendMode_blue top-[20px] l-0 absolute')}></div>
               <div className="relative h-[528px] w-[629px] px-[53px] ">
                 <CornerPin></CornerPin>
                 {isState == 4 ? (
@@ -580,6 +625,7 @@ const MyVault: React.FC = () => {
                     />
                   ) : isState == 1 ? (
                     <SetupVault
+                      liquidationValues={liquidationValues}
                       type={coinType}
                       listData={overviewDataInit}
                       isDeposit={isDeposit}
@@ -590,23 +636,25 @@ const MyVault: React.FC = () => {
                       handNextisDeposit={handNextisDeposit}
                       handleInputChange1={handleInputChange1}
                       handOnFocusChange1={handOnFocusChange1}
-                      handleBlur1={handleInputBlurMint1}
-                      handleBlur={handleInputBlurMint}
+                      handleBlur1={() => {}}
+                      handleBlur={() => {}}
                       handleInputChange={handleInputChange}
                       handOnFocusChange={handOnFocusChange}
                     />
                   ) : isState == 2 ? (
                     <ConfirmBox
+                      disableButton={disableButton}
                       type={coinType}
                       isApprove={isApprove}
                       afterDataInit={overviewAfterDataInit}
                       listData={overviewDataInit}
-                      handApproveFun={handApproveFun}
+                      handApproveFun={() => !disableButton && handApproveFun()}
                       handClickBack={handClickBack}
-                      handClickConfirm={handClickConfirm}
+                      handClickConfirm={() =>
+                        !disableButton && handClickConfirm()
+                      }
                     />
-                  ) : // <MintBitUSDBox toastMsg="ly created a vault. You can find it in “My Vault”. Continue to mint bitUSD from this vault"/>:
-                  isState == 3 ? (
+                  ) : isState == 3 ? (
                     <MintBitUSDBox
                       isOk={true}
                       handleClick={() => {}}
@@ -627,7 +675,6 @@ const MyVault: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* <CopyRightAndLinks /> */}
     </div>
   )
 }
@@ -657,7 +704,6 @@ const TabBar: React.FC<{
     <>
       <div className="mt-[5px] border-b-[1px] border-blue font-ibmr">
         {renderedItems}
-        {/* <span className="inline-block px-[12px] py-[2px] active:bg-blue text-white cursor-pointer">bitUSD</span> */}
       </div>
     </>
   )
@@ -677,7 +723,7 @@ const TitleBlock: React.FC<{
 const FailedTitleBlock: React.FC = () => {
   return (
     <>
-      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-[#FF0000]">
+      <h3 className="flex h-[46px] items-center justify-center text-center font-ppnb text-[36px] text-red1">
         <span className=" bg-black px-[24px]">Changes Failed</span>
       </h3>
     </>
@@ -687,18 +733,31 @@ const FailedTitleBlock: React.FC = () => {
 const CornerPin: React.FC = () => {
   return (
     <>
-      <div className="union01 absolute left-0 top-[22px] h-[24px] w-[24px]"></div>
-      <div className="union01 absolute right-0 top-[22px] h-[24px] w-[24px] rotate-90"></div>
-      <div className="union01 absolute bottom-0 left-0 h-[24px] w-[24px] -rotate-90"></div>
-      <div className="union01 absolute bottom-0 right-0 h-[24px] w-[24px] -rotate-180"></div>
+      <div
+        className={cn(
+          'union01 absolute left-0 top-[22px] h-[24px] w-[24px]'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute right-0 top-[22px] h-[24px] w-[24px] rotate-90'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute bottom-0 left-0 h-[24px] w-[24px] -rotate-90'
+        )}></div>
+      <div
+        className={cn(
+          'union01 absolute bottom-0 right-0 h-[24px] w-[24px] -rotate-180'
+        )}></div>
     </>
   )
 }
 
 const SetupVault: React.FC<{
+  liquidationValues: number
   isDeposit: boolean
-  inputValue: number
-  withdrawValue: number
+  inputValue: string
+  withdrawValue: string
   type: number
   listData?: overviewBoxObject
   bitUsdBalance: string | number
@@ -711,6 +770,7 @@ const SetupVault: React.FC<{
   handleBlur1: () => void
   handleBlur: () => void
 }> = ({
+  liquidationValues,
   price,
   handleBlur1,
   handleBlur,
@@ -726,6 +786,15 @@ const SetupVault: React.FC<{
   listData,
   handleInputChange
 }) => {
+  let isLiquidation: boolean = false
+  if (
+    listData != undefined &&
+    listData.healthFactor != undefined &&
+    listData.healthFactor <= liquidationValues &&
+    listData.healthFactor > 0
+  ) {
+    isLiquidation = true
+  }
   if (!listData) return null
   return (
     <>
@@ -746,10 +815,10 @@ const SetupVault: React.FC<{
       <div className="mb-[15px] bg-black/[.35] px-[20px] py-[10px]">
         <input
           type="number"
-          className={`input_style flex h-[47px] w-auto items-center font-ibmb
-        text-[36px] leading-[47px] hover:border-none ${
-          !isDeposit ? 'text-white/[.5] opacity-50' : ''
-        }`}
+          className={cn(
+            'input_style flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none ordinal slashed-zero tabular-nums',
+            !isDeposit && 'text-white/[.5] opacity-50'
+          )}
           placeholder="0"
           readOnly={!isDeposit}
           onFocus={handOnFocusChange1}
@@ -761,7 +830,7 @@ const SetupVault: React.FC<{
           <p className="mt-3 font-ibmr text-[16px] text-white/[.8]">
             ~
             {formatMoney(
-              formatDecimal((price as number) * (inputValue as number), 4)
+              formatDecimal((price as number) * Number(inputValue), 4)
             )}{' '}
             USD
           </p>
@@ -772,7 +841,10 @@ const SetupVault: React.FC<{
       <p className="h-[20px] text-center font-ibmr text-white">or</p>
 
       {type == 0 ? (
-        <div className="-mt-[5px] mb-[7px] flex items-center justify-between font-ibmr text-[14px] text-white">
+        <div
+          className={cn(
+            '-mt-[5px] mb-[7px] flex items-center justify-between font-ibmr text-[14px] text-white'
+          )}>
           <span>Withdraw</span>
           <span>
             Max:{' '}
@@ -791,25 +863,34 @@ const SetupVault: React.FC<{
       )}
 
       {/* readOnly text-white/[.5] opacity-50*/}
-      <div className="mb-[15px] bg-black/[.35] px-[20px] py-[10px]">
+      <div
+        className={cn(
+          'mb-[15px] bg-black/[.35] px-[20px] py-[10px]',
+          isLiquidation && 'bg-white/[.2] rounded-[12px]'
+        )}>
         <input
           type="number"
           placeholder="0"
-          className={`input_style  flex h-[47px] w-auto items-center font-ibmb
-        text-[36px] leading-[47px] hover:border-none ${
-          isDeposit ? 'text-white/[.5] opacity-50' : ''
-        }`}
-          readOnly={isDeposit}
+          className={cn(
+            'input_style  flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none',
+            isLiquidation || (isDeposit && 'text-white/[.5] opacity-50'),
+            isLiquidation && 'cursor-not-allowed'
+          )}
+          readOnly={isLiquidation || isDeposit}
           onFocus={handOnFocusChange}
           onBlur={handleBlur}
           value={withdrawValue}
           onChange={handleInputChange}
         />
         {type == 0 ? (
-          <p className="mt-3 font-ibmr text-[16px] text-white/[.8]">
+          <p
+            className={cn(
+              'mt-3 font-ibmr text-[16px] text-white/[.8]',
+              isLiquidation && 'text-white/[.2]'
+            )}>
             ~
             {formatMoney(
-              formatDecimal((price as number) * (withdrawValue as number), 4)
+              formatDecimal((price as number) * Number(withdrawValue), 4)
             )}{' '}
             USD
           </p>
@@ -825,8 +906,12 @@ const SetupVault: React.FC<{
           className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
           border-solid border-white bg-blue"
           onClick={handNextisDeposit}>
-          <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-          <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
+          <div
+            className={cn('button_bg absolute -left-[6px] -top-[3px]')}></div>
+          <div
+            className={cn(
+              'button_bg absolute -right-[6px] -top-[3px] rotate-180'
+            )}></div>
           <span className="ml-[21px] font-ppnb text-[48px] text-white">
             Next
           </span>
@@ -841,6 +926,7 @@ const SetupVault: React.FC<{
 }
 
 const ConfirmBox: React.FC<{
+  disableButton: boolean
   isApprove: boolean
   listData?: overviewBoxObject
   afterDataInit: overviewBoxObject
@@ -850,6 +936,7 @@ const ConfirmBox: React.FC<{
   handClickConfirm: () => void
 }> = ({
   type = 0,
+  disableButton,
   isApprove,
   listData,
   afterDataInit,
@@ -858,94 +945,86 @@ const ConfirmBox: React.FC<{
   handApproveFun
 }) => {
   if (!listData) return null
-  const items = [
+  const wBTCitems = [
     {
-      id: 1,
       name: 'Collateral locked',
       num1:
-        formatMoney(formatDecimal(listData.availableToWithdraw || 0, 4)) +
-        ' BTC',
-      num2:
-        formatMoney(formatDecimal(afterDataInit.availableToWithdraw || 0, 4)) +
-        ' wBTC'
-    },
-    {
-      id: 2,
-      name: 'Health factor',
-      num1: formatMoney(formatDecimal(listData.collateralRate || 0, 2)) + '%',
-      num2:
-        formatMoney(formatDecimal(afterDataInit.collateralRate || 0, 2)) + '%'
-    },
-    {
-      id: 3,
-      name: 'Liquidation price',
-      num1:
-        '$ ' + formatMoney(formatDecimal(listData.liquidationPrice || 0, 2)),
-      num2:
-        '$ ' +
-        formatMoney(formatDecimal(afterDataInit.liquidationPrice || 0, 2))
-    },
-    {
-      id: 4,
-      name: 'Available to mint',
-      num1: '$ ' + formatMoney(formatDecimal(listData.availableToMint || 0, 4)),
-      num2:
-        '$ ' + formatMoney(formatDecimal(afterDataInit.availableToMint || 0, 4))
-    },
-    {
-      id: 5,
-      name: 'Available to withdraw',
-      num1:
-        formatMoney(formatDecimal(listData.availableToWithdraw || 0, 4)) +
+        formatAmountThousands((listData.lockedCollateral || 0).toString(), 4) +
         ' wBTC',
       num2:
-        formatMoney(formatDecimal(afterDataInit.availableToWithdraw || 0, 4)) +
-        ' wBTC'
+        formatAmountThousands(
+          (afterDataInit.lockedCollateral || 0).toString(),
+          4
+        ) + ' wBTC'
     }
   ]
-  const items2 = [
+  const bitUsditems = [
     {
-      id: 1,
       name: 'Total debt',
-      num1: '$ ' + formatMoney(formatDecimal(listData.debtBitUSD || 0, 4)),
-      num2: '$ ' + formatMoney(formatDecimal(afterDataInit.debtBitUSD || 0, 4))
-    },
-    {
-      id: 2,
-      name: 'Health factor',
-      num1: formatMoney(formatDecimal(listData.collateralRate || 0, 2)) + ' %',
+      num1:
+        formatAmountThousands((listData.debtBitUSD || 0).toString(), 4) +
+        'bitUSD',
       num2:
-        formatMoney(formatDecimal(afterDataInit.collateralRate || 0, 2)) + ' %'
+        formatAmountThousands((afterDataInit.debtBitUSD || 0).toString(), 4) +
+        'bitUSD'
+    }
+  ]
+  const commonParam = [
+    {
+      name: 'Health factor',
+      num1: formatDecimal((listData.healthFactor || 0).toString(), 1) + ' %',
+      num2:
+        formatDecimal((afterDataInit.healthFactor || 0).toString(), 1) + ' %'
     },
     {
-      id: 3,
       name: 'Liquidation Price',
       num1:
-        '$ ' + formatMoney(formatDecimal(listData.liquidationPrice || 0, 2)),
+        listData.liquidationPrice == 0
+          ? '$ - '
+          : '$ ' +
+            formatAmountThousands(
+              (listData.liquidationPrice || '-').toString(),
+              2
+            ),
+      num2:
+        afterDataInit.liquidationPrice == 0
+          ? '$ - '
+          : '$ ' +
+            formatAmountThousands(
+              (afterDataInit.liquidationPrice || '-').toString(),
+              2
+            )
+    },
+    {
+      name: 'Available to mint',
+      num1:
+        '$ ' +
+        formatAmountThousands((listData.availableToMint || 0).toString(), 2),
       num2:
         '$ ' +
-        formatMoney(formatDecimal(afterDataInit.liquidationPrice || 0, 2))
+        formatAmountThousands(
+          (afterDataInit.availableToMint || 0).toString(),
+          2
+        )
     },
     {
-      id: 4,
-      name: 'Available to mint',
-      num1: '$ ' + formatMoney(formatDecimal(listData.availableToMint || 0, 4)),
-      num2:
-        '$ ' + formatMoney(formatDecimal(afterDataInit.availableToMint || 0, 4))
-    },
-    {
-      id: 5,
       name: 'Available to withdraw',
       num1:
-        formatMoney(formatDecimal(listData.availableToWithdraw || 0, 4)) +
-        ' wBTC',
+        formatAmountThousands(
+          (listData.availableToWithdraw || 0).toString(),
+          4
+        ) + ' wBTC',
       num2:
-        formatMoney(formatDecimal(afterDataInit.availableToWithdraw || 0, 4)) +
-        ' wBTC'
+        formatAmountThousands(
+          (afterDataInit.availableToWithdraw || 0).toString(),
+          4
+        ) + ' wBTC'
     }
   ]
   let arr = []
-  type == 0 ? (arr = items) : (arr = items2)
+  type == 0
+    ? (arr = [...wBTCitems, ...commonParam])
+    : (arr = [...bitUsditems, ...commonParam])
   const renderedItems = arr.map((item, index) => (
     <li
       key={index}
@@ -963,37 +1042,73 @@ const ConfirmBox: React.FC<{
     <>
       <ul className="mt-[59px]">{renderedItems}</ul>
 
-      <div className="absolute bottom-[34px] mt-[28px] flex w-[520px] justify-between">
+      <div
+        className={cn(
+          'absolute bottom-[34px] mt-[28px] flex w-[520px] justify-between'
+        )}>
         <button
-          className="bg-[#000000]/.5 relative flex h-[77px] w-[233px] items-center justify-center
-          border-y-[3px] border-solid border-white"
+          className={cn(
+            'bg-[#000000]/.5 relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white'
+          )}
           onClick={handClickBack}>
-          <div className="button_bg3 absolute -left-[6px] -top-[3px]"></div>
-          <div className="button_bg3 absolute -right-[6px] -top-[3px] rotate-180"></div>
+          <div
+            className={cn('button_bg3 absolute -left-[6px] -top-[3px]')}></div>
+          <div
+            className={cn(
+              'button_bg3 absolute -right-[6px] -top-[3px] rotate-180'
+            )}></div>
           <span className="font-ppnb text-[48px] text-white">Back</span>
         </button>
         {!isApprove ? (
           <button
-            className="relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px]
-          border-solid border-white bg-blue"
+            className={cn(
+              'relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
+              disableButton && 'bg-[#5C5C5C] border-[#828282]'
+            )}
             onClick={handApproveFun}>
-            <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-            <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
+            <div
+              className={cn(
+                'button_bg absolute -left-[6px] -top-[3px]',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
+            <div
+              className={cn(
+                'button_bg absolute -right-[6px] -top-[3px] rotate-180',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
             <span className="ml-[21px] font-ppnb text-[48px] text-white">
               Approve
             </span>
-            <Image
-              src={getOpenUrl('Union02')}
-              className="ml-2 mr-[21px] w-[22px]"
-            />
+            <Tooltip>
+              <TooltipTrigger>
+                <Image
+                  src={getOpenUrl('Union02')}
+                  className="ml-2 mr-[21px] w-[22px]"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                To continue, you need to allow bitSmiley smart contracts to use
+                your wBTC. This has to be done only once for each token.
+              </TooltipContent>
+            </Tooltip>
           </button>
         ) : (
           <button
-            className="relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px]
-        border-solid border-white bg-blue"
+            className={cn(
+              'relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
+              disableButton && 'bg-[#5C5C5C] border-[#828282]'
+            )}
             onClick={handClickConfirm}>
-            <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-            <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
+            <div
+              className={cn(
+                'button_bg absolute -left-[6px] -top-[3px]',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
+            <div
+              className={cn(
+                'button_bg absolute -right-[6px] -top-[3px] rotate-180',
+                disableButton && 'button_bg_disable h-[77px]'
+              )}></div>
             <span className="font-ppnb text-[48px] text-white">Confirm</span>
           </button>
         )}

@@ -22,6 +22,7 @@ const colors = {
   grey6: '#949494',
   grey7: '#B9B9B9',
   red: '#CE2D2D',
+  red1: '#FF0000',
   pink: '#FF64AE',
   cyan: '#00FFD1',
   warning: '#F00'

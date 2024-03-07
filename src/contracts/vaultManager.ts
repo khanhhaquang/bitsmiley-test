@@ -10,12 +10,15 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const vaultManagerAbi = [
+  { type: 'constructor', inputs: [], stateMutability: 'nonpayable' },
+  { type: 'error', inputs: [], name: 'AlreadyInitialized' },
   { type: 'error', inputs: [], name: 'BelowMinDebt' },
-  { type: 'error', inputs: [], name: 'CollateralNotInitialized' },
   { type: 'error', inputs: [], name: 'DebtCeilingExceeded' },
-  { type: 'error', inputs: [], name: 'DivideByZero' },
+  { type: 'error', inputs: [], name: 'InvalidValue' },
   { type: 'error', inputs: [], name: 'NotAuthorized' },
+  { type: 'error', inputs: [], name: 'NotInitialized' },
   { type: 'error', inputs: [], name: 'UnsafeRate' },
+  { type: 'error', inputs: [], name: 'VaultDebtLimitReached' },
   { type: 'error', inputs: [], name: 'VaultPositionNotSafe' },
   {
     type: 'event',
@@ -54,19 +57,26 @@ export const vaultManagerAbi = [
     anonymous: false,
     inputs: [
       {
-        name: 'previousCaller',
-        internalType: 'address',
-        type: 'address',
+        name: 'collateral',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false
+      },
+      { name: 'what', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'previous',
+        internalType: 'uint256',
+        type: 'uint256',
         indexed: false
       },
       {
-        name: 'currentCaller',
-        internalType: 'address',
-        type: 'address',
+        name: 'current',
+        internalType: 'uint256',
+        type: 'uint256',
         indexed: false
       }
     ],
-    name: 'CallerUpdated'
+    name: 'CollateralParameterUpdated'
   },
   {
     type: 'event',
@@ -99,27 +109,21 @@ export const vaultManagerAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      { name: 'what', internalType: 'string', type: 'string', indexed: false },
       {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
+        name: 'previous',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false
+      },
+      {
+        name: 'current',
+        internalType: 'uint256',
+        type: 'uint256',
         indexed: false
       }
     ],
-    name: 'Paused'
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'account',
-        internalType: 'address',
-        type: 'address',
-        indexed: false
-      }
-    ],
-    name: 'Unpaused'
+    name: 'SystemParameterUpdated'
   },
   {
     type: 'event',
@@ -150,18 +154,9 @@ export const vaultManagerAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '_operator', internalType: 'address', type: 'address' }],
-    name: 'approveOperator',
-    outputs: [],
-    stateMutability: 'nonpayable'
-  },
-  {
-    type: 'function',
     inputs: [
       { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
       { name: '_vaultAddr', internalType: 'address', type: 'address' },
-      { name: '_collateralProvider', internalType: 'address', type: 'address' },
-      { name: '_debtOwner', internalType: 'address', type: 'address' },
       { name: '_collateral', internalType: 'int256', type: 'int256' },
       { name: '_bitUSD', internalType: 'int256', type: 'int256' }
     ],
@@ -195,49 +190,29 @@ export const vaultManagerAbi = [
       { name: 'rate', internalType: 'uint256', type: 'uint256' },
       { name: 'totalDebt', internalType: 'uint256', type: 'uint256' },
       { name: 'totalLocked', internalType: 'uint256', type: 'uint256' },
-      { name: 'maxDebt', internalType: 'uint256', type: 'uint256' },
-      { name: 'minDebt', internalType: 'uint256', type: 'uint256' }
+      { name: 'vaultMaxDebt', internalType: 'uint256', type: 'uint256' },
+      { name: 'vaultMinDebt', internalType: 'uint256', type: 'uint256' },
+      { name: 'maxDebt', internalType: 'uint256', type: 'uint256' }
     ],
-    stateMutability: 'view'
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '', internalType: 'bytes32', type: 'bytes32' },
-      { name: '', internalType: 'address', type: 'address' }
-    ],
-    name: 'credit',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view'
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'debt',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view'
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'eligible',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view'
   },
   {
     type: 'function',
     inputs: [
       { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_vaultAddr', internalType: 'address', type: 'address' },
+      { name: '_bitUSD', internalType: 'uint256', type: 'uint256' },
       { name: '_collateral', internalType: 'uint256', type: 'uint256' }
     ],
-    name: 'evaluateCollateral',
-    outputs: [
-      {
-        name: 'collateralEvaluation',
-        internalType: 'uint256',
-        type: 'uint256'
-      }
-    ],
+    name: 'confiscate',
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'debt',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view'
   },
   {
@@ -263,7 +238,7 @@ export const vaultManagerAbi = [
     outputs: [
       {
         name: 'o',
-        internalType: 'struct VaultManager.VaultOverview',
+        internalType: 'struct VaultManager.VaultChange',
         type: 'tuple',
         components: [
           {
@@ -271,7 +246,7 @@ export const vaultManagerAbi = [
             internalType: 'uint256',
             type: 'uint256'
           },
-          { name: 'collateralRate', internalType: 'uint256', type: 'uint256' },
+          { name: 'healthFactor', internalType: 'uint256', type: 'uint256' },
           { name: 'debtBitUSD', internalType: 'uint256', type: 'uint256' },
           {
             name: 'lockedCollateral',
@@ -280,14 +255,28 @@ export const vaultManagerAbi = [
           },
           {
             name: 'availableToWithdraw',
-            internalType: 'uint256',
-            type: 'uint256'
+            internalType: 'int256',
+            type: 'int256'
           },
-          { name: 'availableToMint', internalType: 'uint256', type: 'uint256' }
+          { name: 'availableToMint', internalType: 'int256', type: 'int256' }
         ]
       }
     ],
     stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_token', internalType: 'address', type: 'address' },
+      { name: '_safeFactor', internalType: 'uint256', type: 'uint256' },
+      { name: '_maxDebt', internalType: 'uint256', type: 'uint256' },
+      { name: '_vaultMinDebt', internalType: 'uint256', type: 'uint256' },
+      { name: '_vaultMaxDebt', internalType: 'uint256', type: 'uint256' }
+    ],
+    name: 'initCollateral',
+    outputs: [],
+    stateMutability: 'nonpayable'
   },
   {
     type: 'function',
@@ -301,16 +290,6 @@ export const vaultManagerAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: '', internalType: 'address', type: 'address' },
-      { name: '', internalType: 'address', type: 'address' }
-    ],
-    name: 'operators',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view'
-  },
-  {
-    type: 'function',
     inputs: [],
     name: 'oracle',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
@@ -321,13 +300,6 @@ export const vaultManagerAbi = [
     inputs: [],
     name: 'owner',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view'
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'paused',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view'
   },
   {
@@ -354,13 +326,12 @@ export const vaultManagerAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_tokenAddress', internalType: 'address', type: 'address' },
-      { name: '_safetyFactor', internalType: 'uint256', type: 'uint256' },
+      { name: '_id', internalType: 'bytes32', type: 'bytes32' },
       { name: '_maxDebt', internalType: 'uint256', type: 'uint256' },
-      { name: '_minDebt', internalType: 'uint256', type: 'uint256' }
+      { name: '_vaultMinDebt', internalType: 'uint256', type: 'uint256' },
+      { name: '_vaultMaxDebt', internalType: 'uint256', type: 'uint256' }
     ],
-    name: 'setCollateral',
+    name: 'setCollateralDebtCaps',
     outputs: [],
     stateMutability: 'nonpayable'
   },
@@ -368,20 +339,19 @@ export const vaultManagerAbi = [
     type: 'function',
     inputs: [
       { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_maxDebt', internalType: 'uint256', type: 'uint256' },
-      { name: '_minDebt', internalType: 'uint256', type: 'uint256' }
-    ],
-    name: 'setCollateralLevels',
-    outputs: [],
-    stateMutability: 'nonpayable'
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_safetyFactor', internalType: 'uint256', type: 'uint256' }
+      { name: '_v', internalType: 'uint256', type: 'uint256' }
     ],
     name: 'setCollateralSafetyFactor',
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_v', internalType: 'address', type: 'address' }
+    ],
+    name: 'setCollateralToken',
     outputs: [],
     stateMutability: 'nonpayable'
   },
@@ -394,9 +364,7 @@ export const vaultManagerAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: '_totalDebtCeiling', internalType: 'uint256', type: 'uint256' }
-    ],
+    inputs: [{ name: '_v', internalType: 'uint256', type: 'uint256' }],
     name: 'setTotalDebtCeiling',
     outputs: [],
     stateMutability: 'nonpayable'
@@ -410,30 +378,8 @@ export const vaultManagerAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: '_from', internalType: 'address', type: 'address' },
-      { name: '_to', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'int256', type: 'int256' }
-    ],
-    name: 'transferEligible',
-    outputs: [],
-    stateMutability: 'nonpayable'
-  },
-  {
-    type: 'function',
     inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
     name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable'
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
-      { name: '_vault', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'int256', type: 'int256' }
-    ],
-    name: 'updateCredits',
     outputs: [],
     stateMutability: 'nonpayable'
   },
@@ -465,12 +411,18 @@ export const vaultManagerAbi = [
     name: 'vaultPosition',
     outputs: [
       { name: 'isSafe', internalType: 'bool', type: 'bool' },
-      { name: 'bitUSDEvaluation', internalType: 'uint256', type: 'uint256' },
-      { name: 'lockedCollateral', internalType: 'uint256', type: 'uint256' },
       {
-        name: 'collateralEvaluation',
-        internalType: 'uint256',
-        type: 'uint256'
+        name: 'vault',
+        internalType: 'struct IVaultManager.Vault',
+        type: 'tuple',
+        components: [
+          {
+            name: 'lockedCollateral',
+            internalType: 'uint256',
+            type: 'uint256'
+          },
+          { name: 'debtBitUSD', internalType: 'uint256', type: 'uint256' }
+        ]
       }
     ],
     stateMutability: 'view'
@@ -544,37 +496,12 @@ export const useReadVaultManagerCollateralTypes =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"credit"`
- */
-export const useReadVaultManagerCredit = /*#__PURE__*/ createUseReadContract({
-  abi: vaultManagerAbi,
-  functionName: 'credit'
-})
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"debt"`
  */
 export const useReadVaultManagerDebt = /*#__PURE__*/ createUseReadContract({
   abi: vaultManagerAbi,
   functionName: 'debt'
 })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"eligible"`
- */
-export const useReadVaultManagerEligible = /*#__PURE__*/ createUseReadContract({
-  abi: vaultManagerAbi,
-  functionName: 'eligible'
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"evaluateCollateral"`
- */
-export const useReadVaultManagerEvaluateCollateral =
-  /*#__PURE__*/ createUseReadContract({
-    abi: vaultManagerAbi,
-    functionName: 'evaluateCollateral'
-  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"getDebt"`
@@ -594,13 +521,6 @@ export const useReadVaultManagerGetVaultChange =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"operators"`
- */
-export const useReadVaultManagerOperators = /*#__PURE__*/ createUseReadContract(
-  { abi: vaultManagerAbi, functionName: 'operators' }
-)
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"oracle"`
  */
 export const useReadVaultManagerOracle = /*#__PURE__*/ createUseReadContract({
@@ -614,14 +534,6 @@ export const useReadVaultManagerOracle = /*#__PURE__*/ createUseReadContract({
 export const useReadVaultManagerOwner = /*#__PURE__*/ createUseReadContract({
   abi: vaultManagerAbi,
   functionName: 'owner'
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"paused"`
- */
-export const useReadVaultManagerPaused = /*#__PURE__*/ createUseReadContract({
-  abi: vaultManagerAbi,
-  functionName: 'paused'
 })
 
 /**
@@ -667,21 +579,30 @@ export const useWriteVaultManager = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"approveOperator"`
- */
-export const useWriteVaultManagerApproveOperator =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: vaultManagerAbi,
-    functionName: 'approveOperator'
-  })
-
-/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"calculate"`
  */
 export const useWriteVaultManagerCalculate =
   /*#__PURE__*/ createUseWriteContract({
     abi: vaultManagerAbi,
     functionName: 'calculate'
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"confiscate"`
+ */
+export const useWriteVaultManagerConfiscate =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vaultManagerAbi,
+    functionName: 'confiscate'
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"initCollateral"`
+ */
+export const useWriteVaultManagerInitCollateral =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vaultManagerAbi,
+    functionName: 'initCollateral'
   })
 
 /**
@@ -712,21 +633,12 @@ export const useWriteVaultManagerSetCaller =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateral"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateralDebtCaps"`
  */
-export const useWriteVaultManagerSetCollateral =
+export const useWriteVaultManagerSetCollateralDebtCaps =
   /*#__PURE__*/ createUseWriteContract({
     abi: vaultManagerAbi,
-    functionName: 'setCollateral'
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateralLevels"`
- */
-export const useWriteVaultManagerSetCollateralLevels =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: vaultManagerAbi,
-    functionName: 'setCollateralLevels'
+    functionName: 'setCollateralDebtCaps'
   })
 
 /**
@@ -736,6 +648,15 @@ export const useWriteVaultManagerSetCollateralSafetyFactor =
   /*#__PURE__*/ createUseWriteContract({
     abi: vaultManagerAbi,
     functionName: 'setCollateralSafetyFactor'
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateralToken"`
+ */
+export const useWriteVaultManagerSetCollateralToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: vaultManagerAbi,
+    functionName: 'setCollateralToken'
   })
 
 /**
@@ -757,30 +678,12 @@ export const useWriteVaultManagerSetTotalDebtCeiling =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"transferEligible"`
- */
-export const useWriteVaultManagerTransferEligible =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: vaultManagerAbi,
-    functionName: 'transferEligible'
-  })
-
-/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"transferOwnership"`
  */
 export const useWriteVaultManagerTransferOwnership =
   /*#__PURE__*/ createUseWriteContract({
     abi: vaultManagerAbi,
     functionName: 'transferOwnership'
-  })
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"updateCredits"`
- */
-export const useWriteVaultManagerUpdateCredits =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: vaultManagerAbi,
-    functionName: 'updateCredits'
   })
 
 /**
@@ -809,21 +712,30 @@ export const useSimulateVaultManager = /*#__PURE__*/ createUseSimulateContract({
 })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"approveOperator"`
- */
-export const useSimulateVaultManagerApproveOperator =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: vaultManagerAbi,
-    functionName: 'approveOperator'
-  })
-
-/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"calculate"`
  */
 export const useSimulateVaultManagerCalculate =
   /*#__PURE__*/ createUseSimulateContract({
     abi: vaultManagerAbi,
     functionName: 'calculate'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"confiscate"`
+ */
+export const useSimulateVaultManagerConfiscate =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vaultManagerAbi,
+    functionName: 'confiscate'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"initCollateral"`
+ */
+export const useSimulateVaultManagerInitCollateral =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vaultManagerAbi,
+    functionName: 'initCollateral'
   })
 
 /**
@@ -854,21 +766,12 @@ export const useSimulateVaultManagerSetCaller =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateral"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateralDebtCaps"`
  */
-export const useSimulateVaultManagerSetCollateral =
+export const useSimulateVaultManagerSetCollateralDebtCaps =
   /*#__PURE__*/ createUseSimulateContract({
     abi: vaultManagerAbi,
-    functionName: 'setCollateral'
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateralLevels"`
- */
-export const useSimulateVaultManagerSetCollateralLevels =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: vaultManagerAbi,
-    functionName: 'setCollateralLevels'
+    functionName: 'setCollateralDebtCaps'
   })
 
 /**
@@ -878,6 +781,15 @@ export const useSimulateVaultManagerSetCollateralSafetyFactor =
   /*#__PURE__*/ createUseSimulateContract({
     abi: vaultManagerAbi,
     functionName: 'setCollateralSafetyFactor'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"setCollateralToken"`
+ */
+export const useSimulateVaultManagerSetCollateralToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: vaultManagerAbi,
+    functionName: 'setCollateralToken'
   })
 
 /**
@@ -899,30 +811,12 @@ export const useSimulateVaultManagerSetTotalDebtCeiling =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"transferEligible"`
- */
-export const useSimulateVaultManagerTransferEligible =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: vaultManagerAbi,
-    functionName: 'transferEligible'
-  })
-
-/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"transferOwnership"`
  */
 export const useSimulateVaultManagerTransferOwnership =
   /*#__PURE__*/ createUseSimulateContract({
     abi: vaultManagerAbi,
     functionName: 'transferOwnership'
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link vaultManagerAbi}__ and `functionName` set to `"updateCredits"`
- */
-export const useSimulateVaultManagerUpdateCredits =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: vaultManagerAbi,
-    functionName: 'updateCredits'
   })
 
 /**
@@ -968,12 +862,12 @@ export const useWatchVaultManagerBeaconUpgradedEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultManagerAbi}__ and `eventName` set to `"CallerUpdated"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultManagerAbi}__ and `eventName` set to `"CollateralParameterUpdated"`
  */
-export const useWatchVaultManagerCallerUpdatedEvent =
+export const useWatchVaultManagerCollateralParameterUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: vaultManagerAbi,
-    eventName: 'CallerUpdated'
+    eventName: 'CollateralParameterUpdated'
   })
 
 /**
@@ -995,21 +889,12 @@ export const useWatchVaultManagerOwnershipTransferredEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultManagerAbi}__ and `eventName` set to `"Paused"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultManagerAbi}__ and `eventName` set to `"SystemParameterUpdated"`
  */
-export const useWatchVaultManagerPausedEvent =
+export const useWatchVaultManagerSystemParameterUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: vaultManagerAbi,
-    eventName: 'Paused'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultManagerAbi}__ and `eventName` set to `"Unpaused"`
- */
-export const useWatchVaultManagerUnpausedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: vaultManagerAbi,
-    eventName: 'Unpaused'
+    eventName: 'SystemParameterUpdated'
   })
 
 /**

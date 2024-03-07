@@ -1,4 +1,5 @@
 import './index.scss'
+import { cn } from '@/utils/cn'
 
 export const TitleBox: React.FC<{
   message: string
@@ -7,9 +8,10 @@ export const TitleBox: React.FC<{
   return (
     <>
       <div
-        className={`flex h-[71px] items-center justify-center bg-white font-ppnb text-[48px] ${
-          isWhite ? 'bg_White' : 'bg_blue'
-        }`}>
+        className={cn(
+          'flex h-[71px] items-center justify-center bg-white font-ppnb text-[48px] bg_blue',
+          isWhite && 'bg_White'
+        )}>
         {message}
       </div>
     </>

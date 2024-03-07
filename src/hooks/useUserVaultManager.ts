@@ -9,11 +9,11 @@ import useContractAddresses from './useNetworkAddresses'
 import useGetUservault from './useGetUservault'
 import { parseEther } from 'viem'
 
-const useUserVaultManager = (amount: number) => {
+const useUserVaultManager = (amount: string) => {
   const contractAddresses = useContractAddresses()
   const { vault1 } = useGetUservault()
   console.log('vault1--->', vault1)
-  const bitUSDAmount = parseEther(amount.toString())
+  const bitUSDAmount = parseEther(amount)
   const { data: vaultManagerData } = useReadVaultManagerGetVaultChange({
     address: contractAddresses?.VaultManager,
     args: vault1 && [

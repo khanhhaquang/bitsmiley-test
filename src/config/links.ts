@@ -20,3 +20,7 @@ export const INSCRIPTION_CHECKER_LINK = {
 export const SCANTXHASH = {
   test: 'https://testnet-scan.merlinchain.io/tx/'
 }
+
+export const WEBSITE = {
+  merlinchain: 'https://merlinchain.io/'
+}

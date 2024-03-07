@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-
+import { cn } from '@/utils/cn'
 interface LoadingAnimationProps {
   text?: string
 }
@@ -19,10 +19,10 @@ const LoadingAnimation: React.FC<LoadingAnimationProps> = ({
     return () => {
       clearInterval(intervalId)
     }
-  }, [])
+  }, [text])
 
   return (
-    <div className="loading-container">
+    <div className={cn('loading-container')}>
       <span>{loadingText}</span>
     </div>
   )

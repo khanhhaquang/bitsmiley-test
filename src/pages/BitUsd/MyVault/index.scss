@@ -51,6 +51,28 @@
   height: 77px;
   background: url('@/assets/net/Frame03.png') no-repeat center center/100%;
 }
+.top_bottom_border::before,
+.top_bottom_border::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.5); 
+}
+.button_bg_disable{
+  width: 6px;
+  height: 77px;
+  background: url('@/assets/net/disable.png') no-repeat center center/100% 100%;
+}
+
+.top_bottom_border::before {
+  top: -3px;
+}
+
+.top_bottom_border::after {
+  bottom: -3px;
+}
 .blendMode{
   // width: 100%;
   background: #4E4E4E;

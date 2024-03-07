@@ -12,6 +12,39 @@ export const displayAddress = (
   )
 }
 
+export const formatAmountThousands = (num: string, decimal: number = 2) => {
+  const sum: number = Number(num)
+
+  if (sum < 1000) {
+    return formatDecimal(sum.toString(), decimal) + ' '
+  } else if (sum >= 1000 && sum < 1000000) {
+    return formatDecimal(sum / 1000, decimal) + ' K '
+  } else if (sum >= 1000000 && sum < 1000000000) {
+    return formatDecimal(sum / 1000000, decimal) + ' M '
+  } else if (sum >= 1000000000 && sum < 1000000000000) {
+    return formatDecimal(sum / 1000000000, decimal) + ' B ' //（Billion）
+  } else if (sum >= 1000000000000) {
+    return formatDecimal(sum / 1000000000000, decimal) + ' T ' //（Trillion）
+  } else {
+    return '0'
+  }
+}
+
+export const processInput = (userInput: string) => {
+  userInput = userInput.replace(/-/g, '')
+  if (userInput.includes('.')) {
+    const [integerPart, decimalPart] = userInput.split('.')
+    const str =
+      integerPart.length > 1 ? integerPart.replace(/^0+/, '') : integerPart
+    const truncatedDecimal = decimalPart.slice(0, 18)
+    const formattedNum = `${str}.${truncatedDecimal}`
+    return formattedNum
+  } else {
+    userInput = userInput.length > 1 ? userInput.replace(/^0+/, '') : userInput
+  }
+  return userInput
+}
+
 export const formatMoney = (number: number | string | undefined = 0) => {
   const num: string = number.toString()
   const index = num.indexOf('.')
@@ -31,6 +64,7 @@ export const formatMoney = (number: number | string | undefined = 0) => {
   }
   return D
 }
+
 export const formatDecimal = (
   num: number | string | undefined,
   decimal: number = 2
