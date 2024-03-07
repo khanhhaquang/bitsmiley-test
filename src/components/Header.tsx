@@ -21,7 +21,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
           {!isHome && (
             <>
               <LinkItem name="Home" pathname="/" />
-              {/* <LinkItem name="bitPoint" pathname="/bit-point" /> */}
+              <LinkItem name="bitPoint" pathname="/bit-point" />
               <LinkItem name="AlphaNet" pathname="/bit-usd" />
             </>
           )}
@@ -41,7 +41,7 @@ const EnterAppButton: React.FC = () => {
 
   const featuresEnabled = useSelector(getFeaturesEnabled)
 
-  const isEntered = location.pathname.startsWith('/bit-usd')
+  const isEntered = location.pathname !== '/'
   const isAlphaNetEnabled = featuresEnabled?.AlphaNet === FeatureEnabled.ENABLED
 
   if (isEntered || !isAlphaNetEnabled) return null

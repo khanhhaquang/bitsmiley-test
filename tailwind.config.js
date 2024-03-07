@@ -18,6 +18,7 @@ const colors = {
   grey4: '#3C3C3C',
   grey5: '#ffffff4d',
   grey6: '#949494',
+  grey7: '#B9B9B9',
   red: '#CE2D2D',
   pink: '#FF64AE',
   cyan: '#00FFD1',
