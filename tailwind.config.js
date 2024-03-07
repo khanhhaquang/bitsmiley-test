@@ -18,6 +18,7 @@ const colors = {
   grey4: '#3C3C3C',
   grey5: '#ffffff4d',
   grey6: '#949494',
+  grey7: '#B9B9B9',
   red: '#CE2D2D',
   pink: '#FF64AE',
   cyan: '#00FFD1',
@@ -43,10 +44,20 @@ export default {
         },
         slide: {
           '0%': { transform: 'translateX(-100%)' }
+        },
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' }
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' }
         }
       }),
       animation: {
-        pop: 'popOut 150ms ease-in-out'
+        pop: 'popOut 150ms ease-in-out',
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out'
       },
       fontFamily: {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
@@ -84,5 +95,5 @@ export default {
       }
     }
   },
-  plugins: []
+  plugins: [require('tailwindcss-animate')]
 }

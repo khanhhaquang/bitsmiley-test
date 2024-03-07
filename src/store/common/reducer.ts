@@ -3,7 +3,7 @@ import { createReducer } from '@reduxjs/toolkit'
 import actions from './actions'
 import { RootState } from '@/store/rootReducer'
 import { IFeaturesEnabled, IProject } from '@/services/project'
-import { Hash } from 'viem'
+import { Hash, isHash } from 'viem'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 
@@ -17,7 +17,9 @@ const initState: {
   networkError: false,
   currentTypewritterSeq: 0,
   transactions: (
-    getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS)?.split(',') || []
+    getLocalStorage(LOCAL_STORAGE_KEYS.TXIDS)
+      ?.split(',')
+      .filter((v) => isHash(v)) || []
   ).filter((v) => !!v) as Hash[],
   project: null,
   featuresEnabled: null

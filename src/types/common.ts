@@ -3,3 +3,8 @@ export interface IResponse<T> {
   code: number
   message: string
 }
+
+export enum LoginType {
+  OKX = 'okx',
+  METAMASK = 'metamask'
+}

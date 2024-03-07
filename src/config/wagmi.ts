@@ -1,5 +1,4 @@
 import { type Chain } from 'viem'
-import { injected } from 'wagmi/connectors'
 
 export const merlinTestnet = {
   id: 686868,
@@ -28,14 +27,3 @@ export const merlinMainnet = {
 } as const satisfies Chain
 
 export const customChains = [merlinTestnet, merlinMainnet] as Chain[]
-
-export const connectors = {
-  okx: injected({
-    target: () => ({
-      id: 'okxwalletProvider',
-      name: 'Okx Wallet Provider',
-      provider: window.okxwallet
-    })
-  }),
-  metamask: injected({ target: 'metaMask' })
-}

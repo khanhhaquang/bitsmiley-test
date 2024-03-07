@@ -1,3 +1,5 @@
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+
 const setLocalStorage = (key: string, data: string) => {
   localStorage.setItem(key, data)
 }
@@ -11,7 +13,9 @@ const deleteLocalStorage = (key: string) => {
 }
 
 const clearStorage = () => {
-  localStorage.clear()
+  Object.values(LOCAL_STORAGE_KEYS).forEach((key) => {
+    localStorage.removeItem(key)
+  })
 }
 
 export { clearStorage, setLocalStorage, deleteLocalStorage, getLocalStorage }

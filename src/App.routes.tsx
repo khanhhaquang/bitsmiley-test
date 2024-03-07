@@ -5,15 +5,12 @@ import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const Main = lazy(() => import('@/pages/Main'))
 const MainBitUsd = lazy(() => import('@/pages/BitUsd'))
-const MainBitPoint = lazy(() => import('@/pages/BitPoint'))
+
+const BitPoint = lazy(() => import('@/pages/BitPoint'))
 
 const BitUsd = lazy(() => import('@/pages/BitUsd/BitUsd'))
-const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
 const OpenVault = lazy(() => import('@/pages/BitUsd/OpenVault'))
 const MyVault = lazy(() => import('@/pages/BitUsd/MyVault'))
-
-const BitPointCaptain = lazy(() => import('@/pages/BitPoint/Captain'))
-const BitPointMember = lazy(() => import('@/pages/BitPoint/Member'))
 
 const Routes = () => {
   const { featuresEnabled } = useProjectInfo()
@@ -60,21 +57,7 @@ const Routes = () => {
     {
       path: 'bit-point',
       id: 'bitPoint',
-      element: <MainBitPoint />,
-      children: [
-        {
-          index: true,
-          element: <BitPoint />
-        },
-        {
-          path: 'captain',
-          element: <BitPointCaptain />
-        },
-        {
-          path: 'member',
-          element: <BitPointMember />
-        }
-      ]
+      element: <BitPoint />
     }
   ]
 

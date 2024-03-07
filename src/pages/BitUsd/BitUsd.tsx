@@ -4,11 +4,15 @@ import { TitleBox } from '@/components/Title'
 import { LinkOutIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { vaultsInfoService } from '@/services/vaultsInfo'
-import Tooltip from '@/components/Tooltip'
 import { useChainId } from 'wagmi'
 import { WEBSITE } from '@/config/links'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 
 interface Vault {
   isOpenVault: boolean
@@ -105,7 +109,8 @@ const AvailableMintingPairs: React.FC<{
     (item: Vault, index: number) =>
       !item.isOpenVault && (
         <dd className="border-b-2 border-dashed border-white/50" key={index}>
-          <ul className="flex items-center px-3 py-6 font-ibmr text-white">
+          <ul
+            className={cn('flex items-center px-3 py-6 font-ibmr text-white')}>
             <li className="w-[140px] whitespace-nowrap">
               {item.network == 'Merlin'
                 ? 'wBTC1 - bitUSD'
@@ -147,13 +152,36 @@ const AvailableMintingPairs: React.FC<{
               <li className="w-[140px]"></li>
               <li className="flex-1 text-right">Network</li>
               <li className="flex-1 text-right">
-                <Tooltip text="MAX LTV">
-                  <span>Max LTV ⓘ</span>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Max LTV ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>Max Loan to Value Ratio</TooltipContent>
                 </Tooltip>
               </li>
-              <li className="flex-1 text-right">Borrow rate ⓘ</li>
-              <li className="flex-1 text-right">Min Size ⓘ </li>
-              <li className="flex-1 text-right">Liquidity ⓘ </li>
+              <li className="flex-1 text-right">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Borrow rate ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    The annual borrow rate for vaults, calculated based on your
+                    outstanding vault debt.
+                  </TooltipContent>
+                </Tooltip>
+              </li>
+              <li className="flex-1 text-right">Min Size ⓘ</li>
+              <li className="flex-1 text-right">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Liquidity ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Amount of bitUSD available to be generated from BTC
+                    according the global protocol debt ceiling
+                  </TooltipContent>
+                </Tooltip>
+              </li>
               <li className="ml-[50] flex-1 text-center"></li>
             </ul>
           </dt>
