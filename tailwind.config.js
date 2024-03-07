@@ -8,6 +8,8 @@ const colors = {
   blue1: '#516DF2',
   blue2: '#1C2A89',
   blue3: '#93A4F7',
+  blue4: '#001992',
+  blue5: '#172B8F',
   green: '#29F863',
   green2: '#41EAB7',
   green3: '#A4FFE4',
@@ -83,6 +85,8 @@ export default {
         'stake-now-button': '4px 4px 0px 0px rgba(0, 0, 0, 0.30)'
       },
       backgroundImage: {
+        bitpointPointBg:
+          'url("/src/assets/illustrations/bitpoint/your-point-bg.png")',
         onchainLoading: 'url("/src/assets/illustrations/onchain-loading.png")',
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
         mobile: 'url("/src/assets/illustrations/mobile-bg.png")',

@@ -29,6 +29,9 @@ import MetamaskIcon from './metamask.svg'
 import SpinIcon from './spin.svg'
 import SuccessIcon from './success.svg'
 import FailIcon from './fail.svg'
+import ArrowTopRightIcon from './arrow-top-right.svg'
+import HistoryPointIcon from './history-point.svg'
+import BugIcon from './bug.svg'
 import WarningOutline from './warning-outline.svg'
 
 export {
@@ -63,5 +66,8 @@ export {
   SpinIcon,
   SuccessIcon,
   FailIcon,
+  ArrowTopRightIcon,
+  HistoryPointIcon,
+  BugIcon,
   WarningOutline
 }
