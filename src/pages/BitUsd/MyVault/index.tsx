@@ -255,10 +255,10 @@ const MyVault: React.FC = () => {
       lockedCollateral: formatEther(result?.lockedCollateral.toString() || ''),
       availableToWithdraw: Number(
         formatEther(result?.availableToWithdraw.toString())
-      ),
+      ).toFixed(4),
       availableToMint: Number(
         formatEther(result?.availableToMint.toString() || '')
-      )
+      ).toFixed(4)
     }
     console.log(arr)
     return arr
@@ -274,14 +274,14 @@ const MyVault: React.FC = () => {
     if (coinType == 1) {
       const ava = overviewDataInit?.availableToMint
       if (ava !== undefined && Number(num) > ava) {
-        setWithdrawValue(formatDecimal(ava || '0', 2).toString())
-        setInputNum(formatDecimal(ava || '0', 2).toString())
+        setWithdrawValue(formatDecimal(ava || '0', 4).toString())
+        setInputNum(formatDecimal(ava || '0', 4).toString())
       }
     } else {
       const ava = overviewDataInit?.availableToWithdraw
       if (ava !== undefined && Number(num) > ava) {
-        setWithdrawValue(formatDecimal(ava || '0', 2).toString())
-        setInputNum(formatDecimal(ava || '0', 2).toString())
+        setWithdrawValue(formatDecimal(ava || '0', 4).toString())
+        setInputNum(formatDecimal(ava || '0', 4).toString())
       }
     }
     refetchVaultManagerAfterData()

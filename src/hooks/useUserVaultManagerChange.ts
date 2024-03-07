@@ -25,7 +25,7 @@ const useUserVaultManager = (val: string, isDeposit: boolean, type: number) => {
       commonParam.BTC,
       vault1,
       BigInt(0),
-      BigInt(amount),
+      BigInt(Math.floor(Number(amount))),
       BigInt(safeRate * 10000000)
     ]
   } else {
@@ -37,7 +37,7 @@ const useUserVaultManager = (val: string, isDeposit: boolean, type: number) => {
     parameter = vault1 && [
       commonParam.BTC,
       vault1,
-      BigInt(amount),
+      BigInt(Math.floor(Number(amount))),
       BigInt(0),
       BigInt(safeRate * 10000000)
     ]

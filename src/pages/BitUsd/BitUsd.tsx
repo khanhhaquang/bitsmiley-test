@@ -8,6 +8,7 @@ import { useChainId } from 'wagmi'
 import { WEBSITE } from '@/config/links'
 import { openUrl, getOpenUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
+import { formatDecimal } from '@/utils/formatter'
 import { Image } from '@/components/Image'
 import {
   Tooltip,
@@ -224,7 +225,7 @@ const MyVaults: React.FC<{
               {item.collateralRatio * 100}%
             </li>
             <li className="mr-[10px] flex-1 text-right">
-              {item.collateralLocked} BTC
+              {formatDecimal(item.collateralLocked, 4)} BTC
             </li>
             <li className="mr-[10px] flex-1 text-right">{item.totalDebt} $</li>
             <li className="flex-1 text-right">

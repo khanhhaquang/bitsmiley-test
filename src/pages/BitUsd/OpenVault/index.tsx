@@ -380,7 +380,7 @@ const OpenVault: React.FC = () => {
       ),
       availableToWithdraw: Number(
         formatEther(result.availableToWithdraw.toString())
-      ),
+      ).toFixed(4),
       availableToMint: Number(
         formatEther(result.availableToMint.toString() || '')
       )
