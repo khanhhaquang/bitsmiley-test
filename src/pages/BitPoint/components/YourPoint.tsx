@@ -1,6 +1,5 @@
 import {
-  ArrowTopRightIcon,
-  BugIcon,
+  BoostIcon,
   HistoryPointIcon,
   YourPointHeaderIcon
 } from '@/assets/icons'
@@ -38,9 +37,6 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
           </p>
 
           <p className="relative flex min-w-[121px] flex-col items-start">
-            <a className="absolute right-1 top-1 text-green">
-              <ArrowTopRightIcon />
-            </a>
             <span className="font-ibmr text-sm text-white/70">Rank</span>
             <p className="font-ppnb text-6xl text-white">
               {userPoint?.rank}
@@ -62,10 +58,12 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
 
         <div className="flex justify-between">
           <div className="flex flex-col items-start gap-y-2">
-            <span className="font-ibmr text-sm text-white/70">Boost</span>
+            <span className="flex items-center gap-1 font-ibmr text-sm text-white/70">
+              <BoostIcon />
+              Boost
+            </span>
             <div className="flex gap-x-4">
               <div className="relative flex h-16 w-[96px] flex-col items-start justify-between rounded-sm bg-yourPointStats px-3 py-1.5">
-                <BugIcon className="absolute right-2 top-1/2 z-0 -translate-y-1/2" />
                 <span className="relative font-ibmr text-sm text-white">
                   Team ⓘ
                 </span>
@@ -75,7 +73,6 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
               </div>
 
               <div className="relative flex h-[76px] w-[106px] flex-col items-start justify-between rounded-sm bg-yourPointStats px-3 py-1.5">
-                <BugIcon className="absolute right-2 top-1/2 z-0 -translate-y-1/2 scale-125" />
                 <span className="relative font-ibmr text-sm text-white">
                   bitDisk ⓘ
                 </span>

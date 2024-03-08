@@ -31,7 +31,6 @@ import SuccessIcon from './success.svg'
 import FailIcon from './fail.svg'
 import ArrowTopRightIcon from './arrow-top-right.svg'
 import HistoryPointIcon from './history-point.svg'
-import BugIcon from './bug.svg'
 import WarningOutline from './warning-outline.svg'
 import ScoreBoardIcon from './score-board.svg'
 import SmileyIcon from './smiley.svg'
@@ -42,6 +41,7 @@ import PeopleIcon from './people.svg'
 import CopyIcon from './copy.svg'
 import LevelIcon from './level.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
+import BoostIcon from './boost.svg'
 
 export {
   DotIcon,
@@ -77,7 +77,6 @@ export {
   FailIcon,
   ArrowTopRightIcon,
   HistoryPointIcon,
-  BugIcon,
   WarningOutline,
   ScoreBoardIcon,
   SmileyIcon,
@@ -87,5 +86,6 @@ export {
   PeopleIcon,
   CopyIcon,
   LevelIcon,
-  YourPointHeaderIcon
+  YourPointHeaderIcon,
+  BoostIcon
 }
