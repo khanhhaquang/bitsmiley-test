@@ -63,8 +63,8 @@ const MyVault: React.FC = () => {
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
   const [disableButton, setDisableButton] = useState(false)
   const [inputNum, setInputNum] = useState('0')
-  const [inputValue, setInputValue] = useState('')
-  const [withdrawValue, setWithdrawValue] = useState('')
+  const [inputValue, setInputValue] = useState('0')
+  const [withdrawValue, setWithdrawValue] = useState('0')
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Make Changes-next  ; 2=>Vault Changes-Vault Changes ; 3=>Changes Completed=>ok ;4=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
@@ -216,8 +216,8 @@ const MyVault: React.FC = () => {
 
   const typeChangeFun = async (i: number) => {
     console.log(i)
-    setInputValue(' ')
-    setWithdrawValue(' ')
+    setInputValue('0')
+    setWithdrawValue('0')
     setInputNum('0')
     setCoinType(i)
     // refetchVaultManagerData()
@@ -278,7 +278,6 @@ const MyVault: React.FC = () => {
     const num: string = processInput(event.target.value)
     setInputNum(num)
     setWithdrawValue(num)
-    setInputValue(' ')
     if (Number(num) < 0) return
     if (coinType == 1) {
       const ava = overviewDataInit?.availableToMint
@@ -297,6 +296,7 @@ const MyVault: React.FC = () => {
   }
   const getAfterData = async () => {
     const overviewInit = await overviewData(0)
+    console.log(inputNum, overviewInit)
     if (inputNum != '0') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setOverviewAfterDataInit(overviewInit as any)
@@ -322,18 +322,21 @@ const MyVault: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const num = processInput(event.target.value)
-    setInputValue(num)
-    setInputNum(num)
-    setWithdrawValue(' ')
     if (coinType == 1) {
       if (Number(num) > Number(bitUsdBalance)) {
         setInputValue(formatDecimal(bitUsdBalance || '0', 4).toString())
         setInputNum(formatDecimal(bitUsdBalance || '0', 4).toString())
+      } else {
+        setInputValue(num)
+        setInputNum(num)
       }
     } else {
       if (Number(num) > Number(balanceWBTC)) {
         setInputValue(formatDecimal(balanceWBTC || '0', 4).toString())
         setInputNum(formatDecimal(balanceWBTC || '0', 4).toString())
+      } else {
+        setInputValue(num)
+        setInputNum(num)
       }
     }
     refetchVaultManagerAfterData()
@@ -344,28 +347,12 @@ const MyVault: React.FC = () => {
 
   const handOnFocusChange = () => {
     setIsDeposit(false)
-    setOverviewAfterDataInit({
-      liquidationPrice: 0,
-      healthFactor: 0,
-      debtBitUSD: 0,
-      lockedCollateral: 0,
-      availableToWithdraw: 0,
-      availableToMint: 0
-    })
-    // setInputNum(withdrawValue)
+    setInputNum(withdrawValue)
   }
 
   const handOnFocusChange1 = () => {
     setIsDeposit(true)
-    setOverviewAfterDataInit({
-      liquidationPrice: 0,
-      healthFactor: 0,
-      debtBitUSD: 0,
-      lockedCollateral: 0,
-      availableToWithdraw: 0,
-      availableToMint: 0
-    })
-    // setInputNum(inputValue)
+    setInputNum(inputValue)
   }
 
   const mintFromBTCFun = async (val: string, btcNum: string) => {
@@ -561,8 +548,8 @@ const MyVault: React.FC = () => {
   }
 
   const handClickOk = () => {
-    setInputValue(' ')
-    setWithdrawValue(' ')
+    setInputValue('0')
+    setWithdrawValue('0')
     setInputNum('0')
     setIsStateValue(1)
   }
