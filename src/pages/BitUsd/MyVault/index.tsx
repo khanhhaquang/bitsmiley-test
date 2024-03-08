@@ -150,19 +150,19 @@ const MyVault: React.FC = () => {
       refetchBalanceWBTC()
       refetchBalanceBitUSD()
       refetchVaultManagerData()
-      setOverviewAfterDataInit({
-        liquidationPrice: 0,
-        healthFactor: 0,
-        debtBitUSD: 0,
-        lockedCollateral: 0,
-        availableToWithdraw: 0,
-        availableToMint: 0
-      })
       if (isTxStatus == 1) {
         setIsStateValue(2)
         setIsApprove(true)
       } else {
         setIsStateValue(3)
+        setOverviewAfterDataInit({
+          liquidationPrice: 0,
+          healthFactor: 0,
+          debtBitUSD: 0,
+          lockedCollateral: 0,
+          availableToWithdraw: 0,
+          availableToMint: 0
+        })
       }
 
       setIsLodingValue(false)
@@ -284,12 +284,48 @@ const MyVault: React.FC = () => {
       if (ava !== undefined && Number(num) > ava) {
         setWithdrawValue(formatDecimal(ava || '0', 4).toString())
         setInputNum(formatDecimal(ava || '0', 4).toString())
+        if (ava != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
+      } else {
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     } else {
       const ava = overviewDataInit?.availableToWithdraw
       if (ava !== undefined && Number(num) > ava) {
         setWithdrawValue(formatDecimal(ava || '0', 4).toString())
         setInputNum(formatDecimal(ava || '0', 4).toString())
+        if (ava != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
+      } else {
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     }
     refetchVaultManagerAfterData()
@@ -322,27 +358,57 @@ const MyVault: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const num = processInput(event.target.value)
+    setInputValue(num)
+    setInputNum(num)
     if (coinType == 1) {
       if (Number(num) > Number(bitUsdBalance)) {
         setInputValue(formatDecimal(bitUsdBalance || '0', 4).toString())
         setInputNum(formatDecimal(bitUsdBalance || '0', 4).toString())
+        refetchVaultManagerAfterData()
+        if (Number(bitUsdBalance) != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
       } else {
-        setInputValue(num)
-        setInputNum(num)
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     } else {
       if (Number(num) > Number(balanceWBTC)) {
         setInputValue(formatDecimal(balanceWBTC || '0', 4).toString())
         setInputNum(formatDecimal(balanceWBTC || '0', 4).toString())
+        refetchVaultManagerAfterData()
+        if (Number(balanceWBTC) != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
       } else {
-        setInputValue(num)
-        setInputNum(num)
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     }
-    refetchVaultManagerAfterData()
-    const overviewInit = await overviewData(0)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setOverviewAfterDataInit(overviewInit as any)
   }
 
   const handOnFocusChange = () => {
