@@ -18,13 +18,13 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
     <div
       className={cn(
         'border border-blue5 relative w-[515px] bg-black overflow-hidden',
-        'py-7 px-6',
+        'py-5 px-6',
         className
       )}>
       <div className="absolute inset-0 z-0 bg-bitpointPointBg" />
       <div className="absolute inset-0 z-0 bg-blue4 mix-blend-hard-light" />
       <div className="relative z-10 flex flex-col">
-        <h2 className="mb-6 flex items-center gap-1 font-ppnb text-4xl text-blue">
+        <h2 className="mb-6 flex items-center gap-1 font-ppnb text-2xl text-blue">
           <YourPointHeaderIcon />
           Your bitPoint
         </h2>
