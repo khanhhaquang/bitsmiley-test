@@ -21,6 +21,7 @@ const colors = {
   grey5: '#ffffff4d',
   grey6: '#949494',
   grey7: '#B9B9B9',
+  grey8: '#2B2B2B',
   red: '#CE2D2D',
   red1: '#FF0000',
   pink: '#FF64AE',
@@ -89,6 +90,7 @@ export default {
           'url("/src/assets/illustrations/bitpoint/your-point-bg.png")',
         onchainLoading: 'url("/src/assets/illustrations/onchain-loading.png")',
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
+        scoreboard: 'url("/src/assets/illustrations/scoreboard-mask.png")',
         mobile: 'url("/src/assets/illustrations/mobile-bg.png")',
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")',
         'mint-success-modal':

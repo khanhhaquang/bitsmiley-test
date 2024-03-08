@@ -33,6 +33,11 @@ import ArrowTopRightIcon from './arrow-top-right.svg'
 import HistoryPointIcon from './history-point.svg'
 import BugIcon from './bug.svg'
 import WarningOutline from './warning-outline.svg'
+import ScoreBoardIcon from './score-board.svg'
+import SmileyIcon from './smiley.svg'
+import Smiley3Icon from './smiley3.svg'
+import ChevronLeftIcon from './chevron-left.svg'
+import ChevronRightIcon from './chevron-right.svg'
 
 export {
   DotIcon,
@@ -69,5 +74,10 @@ export {
   ArrowTopRightIcon,
   HistoryPointIcon,
   BugIcon,
-  WarningOutline
+  WarningOutline,
+  ScoreBoardIcon,
+  SmileyIcon,
+  Smiley3Icon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 }

@@ -12,8 +12,61 @@ export interface IUserPoint {
   updateTime?: string
   teamAddition?: number
   captainAddress?: string
-  invitationCode?: string
+  invitationCode?: string | null
   yesterdayPoint?: number
+}
+
+export type TPageable = {
+  pageNumber: number
+  pageSize: number
+  offset: number
+  unpaged: boolean
+  paged: boolean
+}
+
+export interface ITeamRank {
+  id?: number
+  invitationCode?: string | null
+  yesterdayPoint?: string
+  captainAddress?: Address
+  level?: number
+  rank?: number
+  teamTotal?: number
+  totalPoint?: number
+  teamAddition?: number
+}
+
+export interface IIndividualRank {
+  id?: number
+  address?: Address
+  invitationCode?: string | null
+  yesterdayPoint?: number
+  bitDisc?: number
+  joinTeam?: boolean
+  captainAddress?: Address
+  createTime?: string
+  updateTime?: string
+  totalPoint?: number
+  teamAddition?: number
+}
+
+export interface IRank<T> {
+  content?: T[]
+  pageable?: TPageable
+  last?: boolean
+  totalPages?: number
+  totalElements?: number
+  first?: boolean
+  numberOfElements?: number
+  size?: number
+  number?: number
+  empty?: boolean
+}
+
+export interface IPageParams {
+  page: number
+  size: number
+  search?: string
 }
 
 export const TeamService = {
@@ -44,5 +97,23 @@ export const TeamService = {
       axiosInstance
         .get(`/team/getMyTeamInfo/${address}`)
         .then((res) => res.data)
+  },
+  getTeamRank: {
+    key: 'team.getTeamRank',
+    call: (params: IPageParams) =>
+      axiosInstance.post<IResponse<IRank<[ITeamRank, number]>>>(
+        '/rank/getTeamRank',
+        null,
+        { params }
+      )
+  },
+  getUserPointRank: {
+    key: 'team.getUserPointRank',
+    call: (params: IPageParams) =>
+      axiosInstance.post<IResponse<IRank<[IIndividualRank, number]>>>(
+        '/rank/getUserPointRank',
+        null,
+        { params }
+      )
   }
 }
