@@ -3,22 +3,40 @@ import { cn } from '@/utils/cn'
 import { Input, InputProps } from '@/components/ui/input'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserPoint } from '@/hooks/useUserPoint'
-import Captain from './Captain'
-import Member from './Member'
+import { CaptainScoreboard } from './components/CaptainScoreboard'
+import { YourPoint } from './components/YourPoint'
+import { ScoreBoard } from './components/Scoreboard'
+import { YourTeam } from './components/YourTeam'
 
 const BitPoint: React.FC = () => {
   const { isConnected } = useUserInfo()
   const { isJoined, isCaptain, isLoading: isLoadingUserPoint } = useUserPoint()
 
   if (!isConnected) return <NotConnected />
-
   if (isLoadingUserPoint) return <Loading />
-
   if (!isJoined) return <Invitation />
 
-  if (isCaptain) return <Captain />
-
-  return <Member />
+  return (
+    <div className="flex h-screen w-screen items-start justify-center gap-x-7 overflow-x-hidden py-[180px]">
+      {isCaptain ? (
+        <>
+          <CaptainScoreboard />
+          <div className="flex flex-col gap-y-4">
+            <YourPoint />
+            <ScoreBoard />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col gap-y-4">
+            <YourPoint />
+            <YourTeam />
+          </div>
+          <ScoreBoard />
+        </>
+      )}
+    </div>
+  )
 }
 
 const Loading: React.FC = () => {

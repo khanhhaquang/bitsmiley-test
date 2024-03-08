@@ -14,6 +14,7 @@ const colors = {
   green2: '#41EAB7',
   green3: '#A4FFE4',
   green4: '#0ABB86',
+  green5: '#0F712A',
   black2: '#010101',
   grey2: '#8F8F8F',
   grey3: '#232323',
@@ -21,6 +22,7 @@ const colors = {
   grey5: '#ffffff4d',
   grey6: '#949494',
   grey7: '#B9B9B9',
+  grey8: '#2B2B2B',
   red: '#CE2D2D',
   red1: '#FF0000',
   pink: '#FF64AE',
@@ -89,6 +91,7 @@ export default {
           'url("/src/assets/illustrations/bitpoint/your-point-bg.png")',
         onchainLoading: 'url("/src/assets/illustrations/onchain-loading.png")',
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
+        scoreboard: 'url("/src/assets/illustrations/scoreboard-mask.png")',
         mobile: 'url("/src/assets/illustrations/mobile-bg.png")',
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")',
         'mint-success-modal':
@@ -96,7 +99,9 @@ export default {
         'gold-og':
           'linear-gradient(180deg, #FFC700 0%, #FFF8DD 19%, #8F6F00 45.5%, #FFC700 67%, #876A00 100%)',
         'express-black':
-          'linear-gradient(90deg, #FFF 4.33%, #868686 30.27%, #FFF 38.38%, #434343 62.96%, #707070 69.23%, #FFF 79.63%, #696969 90.22%, #CCC 97.33%)'
+          'linear-gradient(90deg, #FFF 4.33%, #868686 30.27%, #FFF 38.38%, #434343 62.96%, #707070 69.23%, #FFF 79.63%, #696969 90.22%, #CCC 97.33%)',
+        yourPointStats:
+          'linear-gradient(124deg, rgba(38, 72, 239, 0.30) 16.19%, rgba(0, 8, 45, 0.30) 96.03%)'
       }
     }
   },

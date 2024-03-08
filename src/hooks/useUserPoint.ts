@@ -5,7 +5,7 @@ import { TeamService } from '@/services/team'
 export const useUserPoint = () => {
   const { address } = useUserInfo()
   const {
-    data: userPointRes,
+    data: userPoint,
     isLoading: isLoadingUserPoint,
     isRefetching: isRefetchingUserPoint,
     refetch: refetchUserPoint
@@ -13,7 +13,8 @@ export const useUserPoint = () => {
     queryKey: [TeamService.getUserPointInfo.key, address],
     queryFn: () =>
       !address ? null : TeamService.getUserPointInfo.call(address),
-    enabled: !!address
+    enabled: !!address,
+    select: (res) => res?.data
   })
 
   const { mutateAsync: createTeam, isPending: isPendingCreateTeam } =
@@ -37,7 +38,6 @@ export const useUserPoint = () => {
 
   const isJoiningTeam = isPendingJoinTeam || isRefetchingUserPoint
 
-  const userPoint = userPointRes?.data
   const isJoined = userPoint?.joinTeam
   const isCaptain =
     isJoined &&
