@@ -1,5 +1,5 @@
+import { SearchInput } from './SearchInput'
 import { SmileyIcon, Smiley3Icon, ScoreBoardIcon } from '@/assets/icons'
-import { Input } from '@/components/ui/input'
 import { displayAddress } from '@/utils/formatter'
 import { Pagination } from './Pagination'
 import { usePagination } from '@/hooks/usePagination'
@@ -26,10 +26,10 @@ export const ScoreBoard: React.FC = () => {
     fetchPreviousPage,
     setCurrentPageNum,
     setSearchValue
-  } = usePagination<ITeamRank | IIndividualRank>({
+  } = usePagination<[ITeamRank, number] | [IIndividualRank, number]>({
     queryKey: isTeam
-      ? TeamService.getTeamRank.key
-      : TeamService.getUserPointRank.key,
+      ? [TeamService.getTeamRank.key]
+      : [TeamService.getUserPointRank.key],
     queryFn: isTeam
       ? TeamService.getTeamRank.call
       : TeamService.getUserPointRank.call
@@ -75,11 +75,7 @@ export const ScoreBoard: React.FC = () => {
             </span>
           </div>
 
-          <Input
-            onChange={(e) => setSearchValue(e.target.value.trim())}
-            placeholder="Search"
-            className="w-[360px] rounded-sm border-0 bg-white/10 px-2.5 py-0.5 backdrop-blur-[2px] placeholder:text-center placeholder:text-white/20"
-          />
+          <SearchInput onChange={setSearchValue} />
 
           <div className="my-2 flex items-center justify-between text-blue">
             <span>Rank</span>
@@ -90,7 +86,7 @@ export const ScoreBoard: React.FC = () => {
           <div className="mb-2 h-[1px] w-full bg-blue/50 backdrop-blur-[2px]" />
 
           <div className="mb-9 flex flex-col gap-y-2">
-            {currentPageData?.map(({ data, rank }) => (
+            {currentPageData?.map(([data, rank]) => (
               <div key={data.id} className="flex items-center justify-between">
                 <span>#{rank}</span>
                 <span>

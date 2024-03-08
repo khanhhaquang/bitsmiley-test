@@ -1,7 +1,13 @@
-import { CopyIcon, LevelIcon, PeopleIcon } from '@/assets/icons'
 import { cn } from '@/utils/cn'
+import { LevelIcon, PeopleIcon } from '@/assets/icons'
+import { CopyButton } from '@/components/CopyButton'
+import { useTeamInfo } from '@/hooks/useTeamInfo'
 
 const YourTeam: React.FC = () => {
+  const { myTeamInfo } = useTeamInfo()
+
+  if (!myTeamInfo) return null
+
   return (
     <div
       className={cn(
@@ -16,39 +22,48 @@ const YourTeam: React.FC = () => {
           <span className="font-ppnb text-4xl text-green/40">Your team</span>
           <span className="flex items-center justify-between gap-x-1">
             <PeopleIcon />
-            <span className="font-ibmr text-sm text-white/70">242</span>
+            <span className="font-ibmr text-sm text-white/70">
+              {myTeamInfo.teamMemberTotal}
+            </span>
           </span>
         </div>
 
         <div className="mb-11 mt-3 flex items-center gap-x-1.5">
-          <span className="font-ppnb text-5xl">45j1425D</span>
-          <CopyIcon />
+          <span className="font-ppnb text-5xl">
+            {myTeamInfo.invitationCode}
+          </span>
+          <CopyButton
+            text={myTeamInfo.invitationCode}
+            className="text-white hover:text-white/50"
+          />
         </div>
 
-        <div className="flex items-center gap-x-9">
+        <div className="flex items-start gap-x-9">
           <div className="flex flex-col gap-y-1">
             <div className="font-ibmr text-sm text-white/70">Rank</div>
             <div className="flex items-end">
-              <span className="font-ppnb text-5xl">443</span>
-              <span className="font-ppnb text-2xl text-white/50">/3948</span>
+              <span className="font-ppnb text-5xl">{myTeamInfo.rank}</span>
+              <span className="font-ppnb text-2xl text-white/50">
+                /{myTeamInfo.teamTotal}
+              </span>
             </div>
           </div>
 
           <div className="flex flex-col gap-y-1">
             <div className="font-ibmr text-sm text-white/70">Team bitPoint</div>
-            <div className="font-ppnb text-5xl">4930</div>
+            <div className="font-ppnb text-5xl">{myTeamInfo.totalPoint}</div>
           </div>
 
-          <div className="flex flex-col gap-y-1">
-            <div className="font-ibmr text-sm text-white/70">Level ⓘ</div>
-            <div className="flex items-center gap-x-2">
-              <LevelIcon />
-              <LevelIcon />
-              <LevelIcon />
-              <LevelIcon />
-              <LevelIcon />
+          {!!myTeamInfo.level && (
+            <div className="flex flex-col gap-y-2">
+              <div className="font-ibmr text-sm text-white/70">Level ⓘ</div>
+              <div className="flex items-center gap-x-2">
+                {Array(myTeamInfo.level).map((_, idx) => (
+                  <LevelIcon key={idx} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
