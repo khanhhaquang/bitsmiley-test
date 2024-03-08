@@ -216,14 +216,22 @@ const MyVault: React.FC = () => {
 
   const typeChangeFun = async (i: number) => {
     console.log(i)
-    setInputValue('0')
-    setWithdrawValue('0')
+    setInputValue(' ')
+    setWithdrawValue(' ')
     setInputNum('0')
     setCoinType(i)
-    refetchVaultManagerData()
-    const overviewInit = await overviewData(1)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setOverviewDataInit(overviewInit as any)
+    // refetchVaultManagerData()
+    setOverviewAfterDataInit({
+      liquidationPrice: 0,
+      healthFactor: 0,
+      debtBitUSD: 0,
+      lockedCollateral: 0,
+      availableToWithdraw: 0,
+      availableToMint: 0
+    })
+    // const overviewInit = await overviewData(1)
+    // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // setOverviewDataInit(overviewInit as any)
   }
   // console.log(vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC)
   useEffect(() => {
@@ -270,6 +278,7 @@ const MyVault: React.FC = () => {
     const num: string = processInput(event.target.value)
     setInputNum(num)
     setWithdrawValue(num)
+    setInputValue(' ')
     if (Number(num) < 0) return
     if (coinType == 1) {
       const ava = overviewDataInit?.availableToMint
@@ -315,6 +324,7 @@ const MyVault: React.FC = () => {
     const num = processInput(event.target.value)
     setInputValue(num)
     setInputNum(num)
+    setWithdrawValue(' ')
     if (coinType == 1) {
       if (Number(num) > Number(bitUsdBalance)) {
         setInputValue(formatDecimal(bitUsdBalance || '0', 4).toString())
@@ -334,12 +344,28 @@ const MyVault: React.FC = () => {
 
   const handOnFocusChange = () => {
     setIsDeposit(false)
-    setInputNum(withdrawValue)
+    setOverviewAfterDataInit({
+      liquidationPrice: 0,
+      healthFactor: 0,
+      debtBitUSD: 0,
+      lockedCollateral: 0,
+      availableToWithdraw: 0,
+      availableToMint: 0
+    })
+    // setInputNum(withdrawValue)
   }
 
   const handOnFocusChange1 = () => {
     setIsDeposit(true)
-    setInputNum(inputValue)
+    setOverviewAfterDataInit({
+      liquidationPrice: 0,
+      healthFactor: 0,
+      debtBitUSD: 0,
+      lockedCollateral: 0,
+      availableToWithdraw: 0,
+      availableToMint: 0
+    })
+    // setInputNum(inputValue)
   }
 
   const mintFromBTCFun = async (val: string, btcNum: string) => {
@@ -535,8 +561,8 @@ const MyVault: React.FC = () => {
   }
 
   const handClickOk = () => {
-    setInputValue('0')
-    setWithdrawValue('0')
+    setInputValue(' ')
+    setWithdrawValue(' ')
     setInputNum('0')
     setIsStateValue(1)
   }
@@ -625,6 +651,7 @@ const MyVault: React.FC = () => {
                     />
                   ) : isState == 1 ? (
                     <SetupVault
+                      inputNum={inputNum}
                       liquidationValues={liquidationValues}
                       type={coinType}
                       listData={overviewDataInit}
@@ -782,6 +809,7 @@ const SetupVault: React.FC<{
   listData?: overviewBoxObject
   bitUsdBalance: string | number
   price: string | number
+  inputNum: string
   handOnFocusChange1: () => void
   handOnFocusChange: () => void
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -790,6 +818,7 @@ const SetupVault: React.FC<{
   handleBlur1: () => void
   handleBlur: () => void
 }> = ({
+  inputNum,
   liquidationValues,
   price,
   handleBlur1,
@@ -923,14 +952,20 @@ const SetupVault: React.FC<{
           type == 1 ? 'mt-[50px]' : 'mt-[28px]'
         } `}>
         <button
-          className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
-          border-solid border-white bg-blue"
+          className={cn(
+            'cursor-pointer relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
+            Number(inputNum) <= 0 && 'bg-[#5C5C5C] border-[#828282]'
+          )}
           onClick={handNextisDeposit}>
           <div
-            className={cn('button_bg absolute -left-[6px] -top-[3px]')}></div>
+            className={cn(
+              'button_bg absolute -left-[6px] -top-[3px]',
+              Number(inputNum) <= 0 && 'button_bg_disable h-[77px]'
+            )}></div>
           <div
             className={cn(
-              'button_bg absolute -right-[6px] -top-[3px] rotate-180'
+              'button_bg absolute -right-[6px] -top-[3px] rotate-180',
+              Number(inputNum) <= 0 && 'button_bg_disable h-[77px]'
             )}></div>
           <span className="ml-[21px] font-ppnb text-[48px] text-white">
             Next
@@ -1068,7 +1103,7 @@ const ConfirmBox: React.FC<{
         )}>
         <button
           className={cn(
-            'bg-[#000000]/.5 relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white'
+            'bg-[#000000]/.5 relative cursor-pointer flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white'
           )}
           onClick={handClickBack}>
           <div
@@ -1080,9 +1115,9 @@ const ConfirmBox: React.FC<{
           <span className="font-ppnb text-[48px] text-white">Back</span>
         </button>
         {!isApprove ? (
-          <button
+          <div
             className={cn(
-              'relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
+              'relative cursor-pointer flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
               disableButton && 'bg-[#5C5C5C] border-[#828282]'
             )}
             onClick={handApproveFun}>
@@ -1111,11 +1146,11 @@ const ConfirmBox: React.FC<{
                 your wBTC. This has to be done only once for each token.
               </TooltipContent>
             </Tooltip>
-          </button>
+          </div>
         ) : (
           <button
             className={cn(
-              'relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
+              'relative cursor-pointer flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
               disableButton && 'bg-[#5C5C5C] border-[#828282]'
             )}
             onClick={handClickConfirm}>
@@ -1151,10 +1186,17 @@ const LoadingBox: React.FC<{
         </p>
         <div className="absolute bottom-[34px] mt-[28px] flex justify-center">
           <button
-            className="relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
-          border-solid border-white/[.5] bg-white/[.2]">
-            <div className="button_bg2 absolute -left-[6px] -top-[3px]"></div>
-            <div className="button_bg2 absolute -right-[6px] -top-[3px] rotate-180"></div>
+            className={cn(
+              'cursor-pointer relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px] border-solid border-white/[.5] bg-white/[.2]'
+            )}>
+            <div
+              className={cn(
+                'button_bg2 absolute -left-[6px] -top-[3px]'
+              )}></div>
+            <div
+              className={cn(
+                'button_bg2 absolute -right-[6px] -top-[3px] rotate-180'
+              )}></div>
             <span className="ml-[21px] font-ppnb text-[48px] text-white/[.5]">
               <LoadingAnimation text="Processing"></LoadingAnimation>
             </span>
@@ -1180,18 +1222,25 @@ const MintBitUSDBox: React.FC<{
         <div className="absolute bottom-[34px] mt-[28px] flex justify-center">
           {isOk ? (
             <button
-              className="relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
-            border-solid border-white bg-blue"
+              className={cn(
+                'cursor-pointer relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px] border-solid border-white bg-blue'
+              )}
               onClick={handClickOk}>
-              <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-              <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
+              <div
+                className={cn(
+                  'button_bg absolute -left-[6px] -top-[3px]'
+                )}></div>
+              <div
+                className={cn(
+                  'button_bg absolute -right-[6px] -top-[3px] rotate-180'
+                )}></div>
               <span className="ml-[21px] font-ppnb text-[48px] text-white">
                 Ok
               </span>
             </button>
           ) : (
             <button
-              className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
+              className="relative flex h-[77px] w-[517px] cursor-pointer items-center justify-between border-y-[3px]
             border-solid border-white bg-blue"
               onClick={handleClick}>
               <div className="button_bg absolute -left-[6px] -top-[3px]"></div>

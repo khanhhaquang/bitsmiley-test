@@ -7,7 +7,7 @@ import { useChainId } from 'wagmi'
 import { WEBSITE } from '@/config/links'
 import { openUrl, getOpenUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
-import { formatDecimal } from '@/utils/formatter'
+import { formatDecimal, formatAmountThousands } from '@/utils/formatter'
 import { Image } from '@/components/Image'
 import { useMintingPairs } from '@/hooks/useMintingPairs'
 import LoadingAnimation from '@/components/LoadingAnimation'
@@ -158,14 +158,16 @@ const AvailableMintingPairs: React.FC<{
               {formatDecimal((Number(item.borrowRate) * 100).toFixed(1), 1)}%
             </li>
             <li className="flex-1 text-right ">
-              {formatDecimal(item.vaultFloor, 2)} $
+              {formatAmountThousands((item.vaultFloor || 0).toString(), 2)} $
             </li>
             <li className="flex-1 text-right">
-              {formatDecimal(item.liquidity, 4)} BTC
+              {formatAmountThousands((item.liquidity || 0).toString(), 4)} BTC
             </li>
             <li className="ml-[50] flex-1 text-right">
               <button
-                className="h-[34px] w-[133px] bg-white font-ibmb text-gray-950"
+                className={cn(
+                  ' cursor-pointer h-[34px] w-[133px] bg-white font-ibmb text-gray-950'
+                )}
                 onClick={() => handleClick(item)}>
                 Mint BitUSD
               </button>
@@ -261,17 +263,23 @@ const MyVaults: React.FC<{
               {item.network} <LinkOutIcon />
             </li>
             <li className="mr-[10px] flex-1 text-right">
-              {formatDecimal(item.collateralRatio * 100, 2)}%
+              {formatDecimal(item.collateralRatio * 100, 1)}%
             </li>
             <li className="mr-[10px] flex-1 text-right">
-              {formatDecimal(item.collateralLocked, 4)} BTC
+              {formatAmountThousands(
+                (item.collateralLocked || 0).toString(),
+                4
+              )}{' '}
+              BTC
             </li>
             <li className="mr-[10px] flex-1 text-right">
-              {formatDecimal(item.totalDebt, 4)} $
+              {formatAmountThousands((item.totalDebt || 0).toString(), 4)} $
             </li>
             <li className="flex-1 text-right">
               <button
-                className="h-[34px] w-[133px] bg-white font-ibmb text-gray-950"
+                className={cn(
+                  ' cursor-pointer h-[34px] w-[133px] bg-white font-ibmb text-gray-950'
+                )}
                 onClick={() => handleClick(item)}>
                 Enter Vault
               </button>
