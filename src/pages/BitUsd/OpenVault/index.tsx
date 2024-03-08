@@ -554,7 +554,7 @@ const OpenVault: React.FC = () => {
                   ) : isState == 2 ? (
                     <MintBitUSDBox
                       isOk={false}
-                      toastMsg="ly created a vault. You can find it in “My Vault”. Continue to mint bitUSD from this vault"
+                      toastMsg="You have successfully created a vault. You can find it in “My Vault”. Continue to mint bitUSD from this vault"
                       handleClick={() => {
                         setIsStateValue(3)
                         setInputValue('0')
