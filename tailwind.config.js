@@ -99,7 +99,9 @@ export default {
         'gold-og':
           'linear-gradient(180deg, #FFC700 0%, #FFF8DD 19%, #8F6F00 45.5%, #FFC700 67%, #876A00 100%)',
         'express-black':
-          'linear-gradient(90deg, #FFF 4.33%, #868686 30.27%, #FFF 38.38%, #434343 62.96%, #707070 69.23%, #FFF 79.63%, #696969 90.22%, #CCC 97.33%)'
+          'linear-gradient(90deg, #FFF 4.33%, #868686 30.27%, #FFF 38.38%, #434343 62.96%, #707070 69.23%, #FFF 79.63%, #696969 90.22%, #CCC 97.33%)',
+        yourPointStats:
+          'linear-gradient(124deg, rgba(38, 72, 239, 0.30) 16.19%, rgba(0, 8, 45, 0.30) 96.03%)'
       }
     }
   },

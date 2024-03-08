@@ -7,14 +7,14 @@ import { IIndividualRank, ITeamRank, TeamService } from '@/services/team'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
 
-enum ScroeTab {
+enum ScoreTab {
   Team = 'team',
   Individual = 'individual'
 }
 
 export const ScoreBoard: React.FC = () => {
-  const [tab, setTab] = useState<ScroeTab>(ScroeTab.Team)
-  const isTeam = tab === ScroeTab.Team
+  const [tab, setTab] = useState<ScoreTab>(ScoreTab.Team)
+  const isTeam = tab === ScoreTab.Team
 
   const {
     currentPageData,
@@ -35,7 +35,7 @@ export const ScoreBoard: React.FC = () => {
       : TeamService.getUserPointRank.call
   })
 
-  const handleTabChange = (tab: ScroeTab) => {
+  const handleTabChange = (tab: ScoreTab) => {
     setCurrentPageNum(1)
     setTab(tab)
   }
@@ -59,7 +59,7 @@ export const ScoreBoard: React.FC = () => {
                 isTeam && 'font-ibmb text-blue cursor-default',
                 !isTeam && 'hover:text-white/50'
               )}
-              onClick={() => handleTabChange(ScroeTab.Team)}>
+              onClick={() => handleTabChange(ScoreTab.Team)}>
               <Smiley3Icon />
               <span>Team rank</span>
             </span>
@@ -69,7 +69,7 @@ export const ScoreBoard: React.FC = () => {
                 !isTeam && 'font-ibmb text-blue cursor-default',
                 isTeam && 'hover:text-white/50'
               )}
-              onClick={() => handleTabChange(ScroeTab.Individual)}>
+              onClick={() => handleTabChange(ScoreTab.Individual)}>
               <SmileyIcon />
               <span>Individual rank</span>
             </span>
