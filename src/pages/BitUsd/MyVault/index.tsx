@@ -63,8 +63,8 @@ const MyVault: React.FC = () => {
   const { mintingPair, isLoading } = useMintingPairs(pairChainId)
   const [disableButton, setDisableButton] = useState(false)
   const [inputNum, setInputNum] = useState('0')
-  const [inputValue, setInputValue] = useState('')
-  const [withdrawValue, setWithdrawValue] = useState('')
+  const [inputValue, setInputValue] = useState('0')
+  const [withdrawValue, setWithdrawValue] = useState('0')
   const [isLoding, setIsLodingValue] = useState(false)
   //1=>Make Changes-next  ; 2=>Vault Changes-Vault Changes ; 3=>Changes Completed=>ok ;4=>Changes Failed
   const [isState, setIsStateValue] = useState(1)
@@ -102,7 +102,7 @@ const MyVault: React.FC = () => {
 
   const contractAddresses = useContractAddresses()
   const { writeContractAsync } = useWriteContract()
-  const { address } = useUserInfo()
+  const { address, isConnected } = useUserInfo()
 
   const {
     vaultManagerData,
@@ -150,19 +150,19 @@ const MyVault: React.FC = () => {
       refetchBalanceWBTC()
       refetchBalanceBitUSD()
       refetchVaultManagerData()
-      setOverviewAfterDataInit({
-        liquidationPrice: 0,
-        healthFactor: 0,
-        debtBitUSD: 0,
-        lockedCollateral: 0,
-        availableToWithdraw: 0,
-        availableToMint: 0
-      })
       if (isTxStatus == 1) {
         setIsStateValue(2)
         setIsApprove(true)
       } else {
         setIsStateValue(3)
+        setOverviewAfterDataInit({
+          liquidationPrice: 0,
+          healthFactor: 0,
+          debtBitUSD: 0,
+          lockedCollateral: 0,
+          availableToWithdraw: 0,
+          availableToMint: 0
+        })
       }
 
       setIsLodingValue(false)
@@ -220,10 +220,18 @@ const MyVault: React.FC = () => {
     setWithdrawValue('0')
     setInputNum('0')
     setCoinType(i)
-    refetchVaultManagerData()
-    const overviewInit = await overviewData(1)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setOverviewDataInit(overviewInit as any)
+    // refetchVaultManagerData()
+    setOverviewAfterDataInit({
+      liquidationPrice: 0,
+      healthFactor: 0,
+      debtBitUSD: 0,
+      lockedCollateral: 0,
+      availableToWithdraw: 0,
+      availableToMint: 0
+    })
+    // const overviewInit = await overviewData(1)
+    // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // setOverviewDataInit(overviewInit as any)
   }
   // console.log(vaultManagerData, gitBalanceBitUSD, gitBalanceWBTC)
   useEffect(() => {
@@ -276,18 +284,55 @@ const MyVault: React.FC = () => {
       if (ava !== undefined && Number(num) > ava) {
         setWithdrawValue(formatDecimal(ava || '0', 4).toString())
         setInputNum(formatDecimal(ava || '0', 4).toString())
+        if (ava != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
+      } else {
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     } else {
       const ava = overviewDataInit?.availableToWithdraw
       if (ava !== undefined && Number(num) > ava) {
         setWithdrawValue(formatDecimal(ava || '0', 4).toString())
         setInputNum(formatDecimal(ava || '0', 4).toString())
+        if (ava != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
+      } else {
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     }
     refetchVaultManagerAfterData()
   }
   const getAfterData = async () => {
     const overviewInit = await overviewData(0)
+    console.log(inputNum, overviewInit)
     if (inputNum != '0') {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setOverviewAfterDataInit(overviewInit as any)
@@ -319,17 +364,51 @@ const MyVault: React.FC = () => {
       if (Number(num) > Number(bitUsdBalance)) {
         setInputValue(formatDecimal(bitUsdBalance || '0', 4).toString())
         setInputNum(formatDecimal(bitUsdBalance || '0', 4).toString())
+        refetchVaultManagerAfterData()
+        if (Number(bitUsdBalance) != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
+      } else {
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     } else {
       if (Number(num) > Number(balanceWBTC)) {
         setInputValue(formatDecimal(balanceWBTC || '0', 4).toString())
         setInputNum(formatDecimal(balanceWBTC || '0', 4).toString())
+        refetchVaultManagerAfterData()
+        if (Number(balanceWBTC) != 0) {
+          const overviewInit = await overviewData(0)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setOverviewAfterDataInit(overviewInit as any)
+        } else {
+          setOverviewAfterDataInit({
+            liquidationPrice: 0,
+            healthFactor: 0,
+            debtBitUSD: 0,
+            lockedCollateral: 0,
+            availableToWithdraw: 0,
+            availableToMint: 0
+          })
+        }
+      } else {
+        const overviewInit = await overviewData(0)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setOverviewAfterDataInit(overviewInit as any)
       }
     }
-    refetchVaultManagerAfterData()
-    const overviewInit = await overviewData(0)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setOverviewAfterDataInit(overviewInit as any)
   }
 
   const handOnFocusChange = () => {
@@ -541,9 +620,9 @@ const MyVault: React.FC = () => {
     setIsStateValue(1)
   }
 
-  if (isLoading) return <div>loading...</div>
+  if (isLoading) return <Loading />
   if (!mintingPair) return null
-
+  if (!isConnected) return <NotConnected />
   // if (isNetworkError) return <NetworkErrorPage />
 
   return (
@@ -625,6 +704,7 @@ const MyVault: React.FC = () => {
                     />
                   ) : isState == 1 ? (
                     <SetupVault
+                      inputNum={inputNum}
                       liquidationValues={liquidationValues}
                       type={coinType}
                       listData={overviewDataInit}
@@ -673,6 +753,26 @@ const MyVault: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+const Loading: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center text-white">
+      <LoadingAnimation text="loading"></LoadingAnimation>
+    </div>
+  )
+}
+
+const NotConnected: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center border-white text-white">
+      <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
+        <div className="font-ppnb text-5xl">Connect wallet first</div>
+        <div className="max-w-[330px] text-center font-ibmr text-sm">
+          To earn bitPoint, connect your wallet to conitnue.
         </div>
       </div>
     </div>
@@ -762,6 +862,7 @@ const SetupVault: React.FC<{
   listData?: overviewBoxObject
   bitUsdBalance: string | number
   price: string | number
+  inputNum: string
   handOnFocusChange1: () => void
   handOnFocusChange: () => void
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -770,6 +871,7 @@ const SetupVault: React.FC<{
   handleBlur1: () => void
   handleBlur: () => void
 }> = ({
+  inputNum,
   liquidationValues,
   price,
   handleBlur1,
@@ -903,14 +1005,20 @@ const SetupVault: React.FC<{
           type == 1 ? 'mt-[50px]' : 'mt-[28px]'
         } `}>
         <button
-          className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
-          border-solid border-white bg-blue"
+          className={cn(
+            'cursor-pointer relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
+            Number(inputNum) <= 0 && 'bg-[#5C5C5C] border-[#828282]'
+          )}
           onClick={handNextisDeposit}>
           <div
-            className={cn('button_bg absolute -left-[6px] -top-[3px]')}></div>
+            className={cn(
+              'button_bg absolute -left-[6px] -top-[3px]',
+              Number(inputNum) <= 0 && 'button_bg_disable h-[77px]'
+            )}></div>
           <div
             className={cn(
-              'button_bg absolute -right-[6px] -top-[3px] rotate-180'
+              'button_bg absolute -right-[6px] -top-[3px] rotate-180',
+              Number(inputNum) <= 0 && 'button_bg_disable h-[77px]'
             )}></div>
           <span className="ml-[21px] font-ppnb text-[48px] text-white">
             Next
@@ -1048,7 +1156,7 @@ const ConfirmBox: React.FC<{
         )}>
         <button
           className={cn(
-            'bg-[#000000]/.5 relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white'
+            'bg-[#000000]/.5 relative cursor-pointer flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white'
           )}
           onClick={handClickBack}>
           <div
@@ -1060,9 +1168,9 @@ const ConfirmBox: React.FC<{
           <span className="font-ppnb text-[48px] text-white">Back</span>
         </button>
         {!isApprove ? (
-          <button
+          <div
             className={cn(
-              'relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
+              'relative cursor-pointer flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
               disableButton && 'bg-[#5C5C5C] border-[#828282]'
             )}
             onClick={handApproveFun}>
@@ -1091,11 +1199,11 @@ const ConfirmBox: React.FC<{
                 your wBTC. This has to be done only once for each token.
               </TooltipContent>
             </Tooltip>
-          </button>
+          </div>
         ) : (
           <button
             className={cn(
-              'relative flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
+              'relative cursor-pointer flex h-[77px] w-[233px] items-center justify-center border-y-[3px] border-solid border-white bg-blue',
               disableButton && 'bg-[#5C5C5C] border-[#828282]'
             )}
             onClick={handClickConfirm}>
@@ -1131,10 +1239,17 @@ const LoadingBox: React.FC<{
         </p>
         <div className="absolute bottom-[34px] mt-[28px] flex justify-center">
           <button
-            className="relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
-          border-solid border-white/[.5] bg-white/[.2]">
-            <div className="button_bg2 absolute -left-[6px] -top-[3px]"></div>
-            <div className="button_bg2 absolute -right-[6px] -top-[3px] rotate-180"></div>
+            className={cn(
+              'cursor-pointer relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px] border-solid border-white/[.5] bg-white/[.2]'
+            )}>
+            <div
+              className={cn(
+                'button_bg2 absolute -left-[6px] -top-[3px]'
+              )}></div>
+            <div
+              className={cn(
+                'button_bg2 absolute -right-[6px] -top-[3px] rotate-180'
+              )}></div>
             <span className="ml-[21px] font-ppnb text-[48px] text-white/[.5]">
               <LoadingAnimation text="Processing"></LoadingAnimation>
             </span>
@@ -1160,18 +1275,25 @@ const MintBitUSDBox: React.FC<{
         <div className="absolute bottom-[34px] mt-[28px] flex justify-center">
           {isOk ? (
             <button
-              className="relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
-            border-solid border-white bg-blue"
+              className={cn(
+                'cursor-pointer relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px] border-solid border-white bg-blue'
+              )}
               onClick={handClickOk}>
-              <div className="button_bg absolute -left-[6px] -top-[3px]"></div>
-              <div className="button_bg absolute -right-[6px] -top-[3px] rotate-180"></div>
+              <div
+                className={cn(
+                  'button_bg absolute -left-[6px] -top-[3px]'
+                )}></div>
+              <div
+                className={cn(
+                  'button_bg absolute -right-[6px] -top-[3px] rotate-180'
+                )}></div>
               <span className="ml-[21px] font-ppnb text-[48px] text-white">
                 Ok
               </span>
             </button>
           ) : (
             <button
-              className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
+              className="relative flex h-[77px] w-[517px] cursor-pointer items-center justify-between border-y-[3px]
             border-solid border-white bg-blue"
               onClick={handleClick}>
               <div className="button_bg absolute -left-[6px] -top-[3px]"></div>

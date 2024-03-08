@@ -95,7 +95,7 @@ const OpenVault: React.FC = () => {
 
   const contractAddresses = useContractAddresses()
   const { writeContractAsync } = useWriteContract()
-  const { address } = useUserInfo()
+  const { address, isConnected } = useUserInfo()
 
   const { vaultManagerData } = useUserVaultManager(userInputValue)
   const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
@@ -104,7 +104,12 @@ const OpenVault: React.FC = () => {
   const { status } = useWaitForTransactionReceipt({ hash: txnId })
 
   const { oraclePrice1, refetchOraclePrice1 } = useGetOraclePrice()
-  const { isAllowance, gitBalanceWBTC, refetchBalanceWBTC } = useWBTCContract()
+  const {
+    isAllowance,
+    gitBalanceWBTC,
+    refetchisAllowance,
+    refetchBalanceWBTC
+  } = useWBTCContract()
   const { removeTransaction, addTransaction } = useStoreActions()
   const { vault1, refetchVault1 } = useGetUservault()
 
@@ -179,35 +184,35 @@ const OpenVault: React.FC = () => {
     }
   }, [oraclePrice1, isAllowance, gitBalanceWBTC])
   useEffect(() => {
-    if (collateralTypes && oraclePrice) {
-      getAvailableBitUSD()
+    if (collateralTypes && oraclePrice > 0) {
+      getAvailableBitUSD(inputValue)
     }
   }, [collateralTypes, oraclePrice])
 
-  const getAvailableBitUSD = async () => {
+  const getAvailableBitUSD = async (amount: string) => {
     const collateral = collateralTypes
     console.log(collateral)
     if (collateral) {
       const safetyFactor = Number(collateral[1]) / 10 ** 9
       const rate = Number(collateral[2]) / 10 ** 27
-
       const collateralEvaluation =
-        (Number(inputValue) * oraclePrice * safetyFactor) / rate
+        (Number(amount) * oraclePrice * safetyFactor) / rate
       console.log(collateralEvaluation)
       setAvailableBitUSD(collateralEvaluation)
     }
   }
 
-  const blurSetupVault = async () => {
+  const blurSetupVault = async (amount: string) => {
     if (isAllowance != undefined) {
       const allowanceNum = Number(formatEther(BigInt(isAllowance)))
-      if (allowanceNum >= Number(inputValue)) {
+      console.log(allowanceNum, isAllowance)
+      if (allowanceNum >= Number(amount)) {
         setIsApprove(true)
       } else {
         setIsApprove(false)
       }
 
-      getAvailableBitUSD()
+      getAvailableBitUSD(amount)
     }
   }
 
@@ -258,6 +263,7 @@ const OpenVault: React.FC = () => {
       setUserInputValue('0')
       if (isApproveStatus == 1) {
         setIsStateValue(1)
+        refetchisAllowance()
       } else if (isApproveStatus == 2) {
         refetchBalanceWBTC()
         setIsStateValue(2)
@@ -353,12 +359,14 @@ const OpenVault: React.FC = () => {
     setInputValue(formatNum)
     setUserInputValue(formatNum)
     if (isState == 1) {
-      if (Number(event.target.value) > Number(balanceWBTC)) {
+      if (Number(formatNum) > Number(balanceWBTC)) {
         setInputValue(formatDecimal(balanceWBTC, 4) || '0')
         setUserInputValue(formatDecimal(balanceWBTC, 4) || '0')
       }
+      refetchisAllowance()
+      blurSetupVault(formatNum)
     } else {
-      if (Number(event.target.value) > overviewDataInit.availableToMint) {
+      if (Number(formatNum) > overviewDataInit.availableToMint) {
         setInputValue(formatDecimal(overviewDataInit.availableToMint, 4) || '0')
         setUserInputValue(
           formatDecimal(overviewDataInit.availableToMint, 4) || '0'
@@ -461,7 +469,8 @@ const OpenVault: React.FC = () => {
   }
 
   // if (isNetworkError) return <NetworkErrorPage />
-  if (isLoading) return <div>loading...</div>
+  if (isLoading) return <Loading />
+  if (!isConnected) return <NotConnected />
   if (!mintingPair) return null
 
   console.log(mintingPair)
@@ -537,7 +546,7 @@ const OpenVault: React.FC = () => {
                       price={oraclePrice}
                       inputValue={inputValue}
                       isApprove={isApprove}
-                      handleBlur={blurSetupVault}
+                      handleBlur={() => blurSetupVault(inputValue)}
                       handleInputChange={handleInputChange}
                       handApproveFun={() => !disableButton && handApproveFun()}
                       handStartFun={() => !disableButton && StartFun()}
@@ -545,9 +554,11 @@ const OpenVault: React.FC = () => {
                   ) : isState == 2 ? (
                     <MintBitUSDBox
                       isOk={false}
-                      toastMsg="ly created a vault. You can find it in “My Vault”. Continue to mint bitUSD from this vault"
+                      toastMsg="You have successfully created a vault. You can find it in “My Vault”. Continue to mint bitUSD from this vault"
                       handleClick={() => {
                         setIsStateValue(3)
+                        setInputValue('0')
+                        setUserInputValue('0')
                       }}
                       handleOkClick={() => {}}
                     />
@@ -587,6 +598,27 @@ const OpenVault: React.FC = () => {
         </div>
       </div>
       {/* <CopyRightAndLinks /> */}
+    </div>
+  )
+}
+
+const NotConnected: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center border-white text-white">
+      <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
+        <div className="font-ppnb text-5xl">Connect wallet first</div>
+        <div className="max-w-[330px] text-center font-ibmr text-sm">
+          To earn bitPoint, connect your wallet to conitnue.
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Loading: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center text-white">
+      <LoadingAnimation text="loading"></LoadingAnimation>
     </div>
   )
 }
@@ -722,7 +754,7 @@ const SetupVault: React.FC<{
               )}></div>
             <span
               className={cn(
-                'ml-[21px] font-ppnb text-[36px] text-white',
+                'ml-[21px] font-ppnb text-[36px] text-white cursor-pointer',
                 disableButton && ' text-white/[.5]'
               )}>
               Give permission to use BTC
@@ -746,7 +778,7 @@ const SetupVault: React.FC<{
         ) : (
           <button
             className={cn(
-              'relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
+              ' cursor-pointer relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
               disableButton && 'bg-[#5C5C5C] border-[#828282]'
             )}
             onClick={handStartFun}>
@@ -807,11 +839,11 @@ const MintBitUSDIng: React.FC<{
           Max: {formatMoney(formatDecimal(listData.availableToMint, 4))} $
         </span>
       </div>
-      <div className="relative mb-[27px] bg-black/[.35] px-[20px] py-[10px]">
+      <div className="relative mb-[27px] bg-black/[.35] px-[20px] py-[10px] pr-[147px]">
         <input
           type="number"
           className={cn(
-            'input_style flex h-[47px] w-auto items-center font-ibmb text-[36px] leading-[47px] hover:border-none'
+            'input_style flex h-[47px] w-[370px] items-center font-ibmb overflow-hidden text-[36px] leading-[47px] hover:border-none'
           )}
           placeholder="0"
           onBlur={handleBlur}
@@ -914,7 +946,7 @@ const MintBitUSDIng: React.FC<{
         className={cn('absolute bottom-[34px] w-[517px] flex justify-center')}>
         <button
           className={cn(
-            'relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
+            ' cursor-pointer relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px] border-solid border-white bg-blue',
             disableButton && 'bg-[#5C5C5C] border-[#828282]'
           )}
           onClick={handOnClickMint}>
@@ -991,8 +1023,9 @@ const MintBitUSDBox: React.FC<{
         <div className="absolute bottom-[34px] mt-[28px] flex justify-center">
           {isOk ? (
             <button
-              className="relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px]
-            border-solid border-white bg-blue"
+              className={cn(
+                'relative flex h-[77px] w-[517px] items-center justify-center border-y-[3px] border-solid border-white bg-blue cursor-pointer'
+              )}
               onClick={handleOkClick}>
               <div
                 className={cn(
@@ -1008,8 +1041,8 @@ const MintBitUSDBox: React.FC<{
             </button>
           ) : (
             <button
-              className="relative flex h-[77px] w-[517px] items-center justify-between border-y-[3px]
-            border-solid border-white bg-blue"
+              className="relative flex h-[77px] w-[517px] cursor-pointer items-center justify-between
+            border-y-[3px] border-solid border-white  bg-blue"
               onClick={handleClick}>
               <div
                 className={cn(

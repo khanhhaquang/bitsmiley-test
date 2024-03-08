@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { TitleBox } from '@/components/Title'
 import { LinkOutIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { vaultsInfoService } from '@/services/vaultsInfo'
 import { useChainId } from 'wagmi'
 import { WEBSITE } from '@/config/links'
 import { openUrl, getOpenUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
-import { formatDecimal } from '@/utils/formatter'
+import { formatDecimal, formatAmountThousands } from '@/utils/formatter'
 import { Image } from '@/components/Image'
+import { useMintingPairs } from '@/hooks/useMintingPairs'
+import LoadingAnimation from '@/components/LoadingAnimation'
 import {
   Tooltip,
   TooltipContent,
@@ -19,45 +20,44 @@ import {
 interface Vault {
   isOpenVault: boolean
   network: string
-  maxLTV: number
-  borrowRate: number
+  maxLTV: string
+  borrowRate: string
   vaultFloor: number
-  liquidity: number
+  liquidity: string
   chainId: number
   collateralRatio: number
   collateralLocked: number
-  totalDebt: number
+  totalDebt: string
 }
 
 const BitUsd: React.FC = () => {
   const navigate = useNavigate()
   const { address, isConnected } = useUserInfo()
   const chainId = useChainId()
-  const [mintingPairs, setMintingPairs] = useState<Vault[]>([])
+  const [availableMintingPairs, setAvailableMintingPairs] = useState<Vault[]>(
+    []
+  )
   const [myVaults, setMyVaults] = useState<Vault[]>([])
-
+  const { mintingPairs, isLoading } = useMintingPairs()
   const getMintingPairs = async () => {
     if (address && isConnected) {
-      try {
-        const data =
-          await vaultsInfoService.getMintingPairsRequest.call(address)
-        const array1: Array<Vault> = [],
-          array2: Array<Vault> = []
-        data.data.forEach((v: Vault) => {
+      const array1: Array<Vault> = [],
+        array2: Array<Vault> = []
+      mintingPairs != undefined &&
+        mintingPairs.forEach((v: Vault) => {
           v.isOpenVault ? array1.push(v) : array2.push(v)
         })
-        setMyVaults(array1)
-        setMintingPairs(array2)
-      } catch (err) {
-        console.log(err)
-      }
+      setMyVaults(array1)
+      setAvailableMintingPairs(array2)
     }
   }
 
   useEffect(() => {
-    getMintingPairs()
+    if (mintingPairs) {
+      getMintingPairs()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [mintingPairs])
 
   const goToMyVaults = async (item: Vault) => {
     if (item.chainId === chainId) {
@@ -69,7 +69,8 @@ const BitUsd: React.FC = () => {
       navigate(`./vault/${chainId}`)
     }
   }
-
+  if (!isConnected) return <NotConnected />
+  if (isLoading) return <Loading />
   return (
     <div>
       <div>
@@ -84,13 +85,13 @@ const BitUsd: React.FC = () => {
             />
           </>
         )}
-        {mintingPairs.length > 0 && (
+        {availableMintingPairs.length > 0 && (
           <>
             <div className=" mx-auto mt-[164px] max-w-[1434px]">
               <TitleBox message="Available Minting Pairs" />
             </div>
             <AvailableMintingPairs
-              list={mintingPairs}
+              list={availableMintingPairs}
               handleClick={(item: Vault) => goToOpenVault(item)}
             />
           </>
@@ -98,6 +99,27 @@ const BitUsd: React.FC = () => {
         <p className="mb-[177px] mt-[194px] flex justify-center text-white/5">
           More assets coming soon...
         </p>
+      </div>
+    </div>
+  )
+}
+
+const Loading: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center text-white">
+      <LoadingAnimation text="loading"></LoadingAnimation>
+    </div>
+  )
+}
+
+const NotConnected: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center border-white text-white">
+      <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
+        <div className="font-ppnb text-5xl">Connect wallet first</div>
+        <div className="max-w-[330px] text-center font-ibmr text-sm">
+          To earn bitPoint, connect your wallet to conitnue.
+        </div>
       </div>
     </div>
   )
@@ -129,13 +151,23 @@ const AvailableMintingPairs: React.FC<{
               }>
               {item.network} <LinkOutIcon />
             </li>
-            <li className="flex-1 text-right">{item.maxLTV * 100}%</li>
-            <li className="flex-1 text-right">{item.borrowRate * 100}%</li>
-            <li className="flex-1 text-right ">{item.vaultFloor} $</li>
-            <li className="flex-1 text-right">{item.liquidity} BTC</li>
+            <li className="flex-1 text-right">
+              {formatDecimal((Number(item.maxLTV) * 100).toFixed(1), 1)}%
+            </li>
+            <li className="flex-1 text-right">
+              {formatDecimal((Number(item.borrowRate) * 100).toFixed(1), 1)}%
+            </li>
+            <li className="flex-1 text-right ">
+              {formatAmountThousands((item.vaultFloor || 0).toString(), 2)} $
+            </li>
+            <li className="flex-1 text-right">
+              {formatAmountThousands((item.liquidity || 0).toString(), 4)} BTC
+            </li>
             <li className="ml-[50] flex-1 text-right">
               <button
-                className="h-[34px] w-[133px] bg-white font-ibmb text-gray-950"
+                className={cn(
+                  ' cursor-pointer h-[34px] w-[133px] bg-white font-ibmb text-gray-950'
+                )}
                 onClick={() => handleClick(item)}>
                 Mint BitUSD
               </button>
@@ -172,7 +204,16 @@ const AvailableMintingPairs: React.FC<{
                   </TooltipContent>
                 </Tooltip>
               </li>
-              <li className="flex-1 text-right">Vault floor ⓘ</li>
+              <li className="flex-1 text-right">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Vault floor ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Minimum amount of bitUSD required to be minted from a Vault
+                  </TooltipContent>
+                </Tooltip>
+              </li>
               <li className="flex-1 text-right">
                 <Tooltip>
                   <TooltipTrigger>
@@ -222,15 +263,23 @@ const MyVaults: React.FC<{
               {item.network} <LinkOutIcon />
             </li>
             <li className="mr-[10px] flex-1 text-right">
-              {item.collateralRatio * 100}%
+              {formatDecimal(item.collateralRatio * 100, 1)}%
             </li>
             <li className="mr-[10px] flex-1 text-right">
-              {formatDecimal(item.collateralLocked, 4)} BTC
+              {formatAmountThousands(
+                (item.collateralLocked || 0).toString(),
+                4
+              )}{' '}
+              BTC
             </li>
-            <li className="mr-[10px] flex-1 text-right">{item.totalDebt} $</li>
+            <li className="mr-[10px] flex-1 text-right">
+              {formatAmountThousands((item.totalDebt || 0).toString(), 4)} $
+            </li>
             <li className="flex-1 text-right">
               <button
-                className="h-[34px] w-[133px] bg-white font-ibmb text-gray-950"
+                className={cn(
+                  ' cursor-pointer h-[34px] w-[133px] bg-white font-ibmb text-gray-950'
+                )}
                 onClick={() => handleClick(item)}>
                 Enter Vault
               </button>
@@ -259,9 +308,26 @@ const MyVaults: React.FC<{
           <ul className="flex justify-between font-ibmb [&>li]:text-white/70">
             <li className="flex-1"></li>
             <li className="flex-1 text-center">Network</li>
-            <li className="mr-[10px] flex-1 text-right">Health Factor ⓘ</li>
+            <li className="mr-[10px] flex-1 text-right">
+              <Tooltip>
+                <TooltipTrigger>
+                  <span>Health Factor ⓘ</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Indicates the health status of an account. Any vaults that
+                  drop below 1 face liquidation.
+                </TooltipContent>
+              </Tooltip>
+            </li>
             <li className="mr-[10px] flex-1 text-right">Collateral Locked</li>
-            <li className="mr-[10px] flex-1 text-right">Total Debt ⓘ </li>
+            <li className="mr-[10px] flex-1 text-right">
+              <Tooltip>
+                <TooltipTrigger>
+                  <span>Total Debt ⓘ </span>
+                </TooltipTrigger>
+                <TooltipContent>bitUSD debt + Stability Fee</TooltipContent>
+              </Tooltip>
+            </li>
             <li className="w-64 flex-1 text-center"></li>
           </ul>
         </dt>
