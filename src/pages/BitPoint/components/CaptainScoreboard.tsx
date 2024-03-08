@@ -3,7 +3,7 @@ import { SearchInput } from './SearchInput'
 import { usePagination } from '@/hooks/usePagination'
 import { IPageParams, ITeamMember, TeamService } from '@/services/team'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { Pagination } from './Pagination'
+import { Pagination } from '@/components/Pagination'
 import { displayAddress } from '@/utils/formatter'
 import { useTeamInfo } from '@/hooks/useTeamInfo'
 import { CopyButton } from '@/components/CopyButton'
@@ -38,11 +38,9 @@ export const CaptainScoreboard: React.FC = () => {
     pageSize: 12
   })
 
-  if (!myTeamInfo) return null
-
   return (
     <div className="relative border border-green/30 bg-black text-white">
-      <div className="absolute inset-0 z-0 bg-scoreboard" />
+      <div className="absolute inset-0 z-0 bg-bitpointPointBg bg-cover bg-no-repeat" />
       <div className="absolute inset-0 z-0 bg-green5 mix-blend-hard-light" />
 
       <div className="relative z-10 px-7 pb-6 pt-4 text-white">
@@ -57,30 +55,32 @@ export const CaptainScoreboard: React.FC = () => {
             </div>
             <div className="flex items-center gap-x-1.5">
               <span className="font-ibmr font-bold">
-                {myTeamInfo.invitationCode}
+                {myTeamInfo?.invitationCode}
               </span>
-              <CopyButton text={myTeamInfo.invitationCode} />
+              <CopyButton text={myTeamInfo?.invitationCode} />
             </div>
           </div>
         </div>
 
         <div className="mt-2 flex flex-col gap-y-1">
           <div className="font-ibmr text-sm text-white/70">Team bitPoint</div>
-          <div className="font-ppnb text-5xl">{myTeamInfo.totalPoint}</div>
+          <div className="font-ppnb text-6xl">{myTeamInfo?.totalPoint}</div>
         </div>
 
         <div className="mt-4 flex items-start justify-between">
           <div className="flex flex-col gap-y-1">
             <div className="font-ibmr text-sm text-white/70">Team Rank</div>
             <div className="flex items-end">
-              <span className="font-ppnb text-5xl">{myTeamInfo.rank}</span>
-              <span className="pb-1.5 font-ppnb text-2xl text-white/50">
-                /{myTeamInfo.teamTotal}
-              </span>
+              <div className="font-ppnb text-6xl text-white">
+                {myTeamInfo?.rank}
+                <span className="text-2xl text-white/50">
+                  /{myTeamInfo?.teamTotal}
+                </span>
+              </div>
             </div>
           </div>
 
-          {myTeamInfo.level && (
+          {!!myTeamInfo?.level && (
             <div className="flex flex-col gap-y-2">
               <div className="font-ibmr text-sm text-white/70">Level ⓘ</div>
               <div className="flex items-center gap-x-2">
@@ -100,7 +100,7 @@ export const CaptainScoreboard: React.FC = () => {
             <span className="flex items-center justify-between gap-x-1">
               <PeopleIcon />
               <span className="font-ibmr text-sm text-white/70">
-                {myTeamInfo.teamMemberTotal}
+                {myTeamInfo?.teamMemberTotal}
               </span>
             </span>
           </div>

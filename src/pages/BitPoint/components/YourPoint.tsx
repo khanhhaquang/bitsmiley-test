@@ -10,7 +10,7 @@ type YourPointProps = {
   className?: string
 }
 
-const YourPoint: React.FC<YourPointProps> = ({ className }) => {
+export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
   const { userPoint } = useUserPoint()
 
   return (
@@ -20,7 +20,7 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
         'py-5 px-6',
         className
       )}>
-      <div className="absolute inset-0 z-0 bg-bitpointPointBg" />
+      <div className="absolute inset-0 z-0 bg-bitpointPointBg bg-cover bg-no-repeat" />
       <div className="absolute inset-0 z-0 bg-blue4 mix-blend-hard-light" />
       <div className="relative z-10 flex flex-col">
         <h2 className="mb-6 flex items-center gap-1 font-ppnb text-2xl text-blue">
@@ -85,7 +85,7 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
 
           <p className="relative flex flex-col items-center gap-y-[18px]">
             <span className="font-ibmr text-sm text-white/70">History</span>
-            <a className="text-white">
+            <a className="cursor-not-allowed text-white">
               <HistoryPointIcon />
             </a>
           </p>
@@ -94,5 +94,3 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
     </div>
   )
 }
-
-export default YourPoint

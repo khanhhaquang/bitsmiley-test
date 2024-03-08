@@ -1,7 +1,7 @@
 import { SearchInput } from './SearchInput'
 import { SmileyIcon, Smiley3Icon, ScoreBoardIcon } from '@/assets/icons'
 import { displayAddress } from '@/utils/formatter'
-import { Pagination } from './Pagination'
+import { Pagination } from '../../../components/Pagination'
 import { usePagination } from '@/hooks/usePagination'
 import { IIndividualRank, ITeamRank, TeamService } from '@/services/team'
 import { useState } from 'react'
@@ -50,7 +50,7 @@ export const ScoreBoard: React.FC = () => {
 
   return (
     <div className="relative border border-white/20 bg-black text-white">
-      <div className="absolute inset-0 z-0 bg-scoreboard" />
+      <div className="absolute inset-0 z-0 bg-scoreboard bg-cover bg-no-repeat" />
       <div className="absolute inset-0 z-0 bg-grey8 mix-blend-hard-light" />
 
       <div className="relative z-10 text-white">

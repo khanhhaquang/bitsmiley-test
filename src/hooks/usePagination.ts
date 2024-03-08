@@ -9,7 +9,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { IResponse } from '@/types/common'
 import { IPageParams, IRank } from '@/services/team'
 
-const PAGE_SIZE = 30
+const PAGE_SIZE = 20
 const SEARCH_DEBOUNCE_DELAY = 500
 
 export const usePagination = <T>({
