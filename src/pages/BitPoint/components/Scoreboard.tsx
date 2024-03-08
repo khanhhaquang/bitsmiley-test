@@ -59,7 +59,7 @@ export const ScoreBoard: React.FC = () => {
           <span className="font-ppnb text-2xl text-white/50">Scoreboard</span>
         </div>
 
-        <div className="mt-10 px-[60px] pb-6 font-ibmr text-sm">
+        <div className="mx-auto mt-10 w-[360px] pb-6 font-ibmr text-sm">
           <div className="mb-5 flex items-center gap-x-6">
             <span
               className={cn(

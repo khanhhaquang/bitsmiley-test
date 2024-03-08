@@ -107,7 +107,10 @@ export const CaptainScoreboard: React.FC = () => {
         </div>
 
         <div className="mx-auto mb-9 flex w-[321px] flex-col items-center gap-y-2">
-          <SearchInput className="w-[321px]" onChange={setSearchValue} />
+          <SearchInput
+            onChange={setSearchValue}
+            className="w-[321px] border border-white/20 backdrop-blur-sm placeholder:text-white/50"
+          />
           <Table className="font-ibmr">
             <TableHeader className="text-sm text-green/70 [&_tr]:border-b-0">
               <TableRow>

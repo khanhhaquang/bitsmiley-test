@@ -10,7 +10,7 @@ export const SearchInput: React.FC<{
       placeholder="Search"
       onChange={(e) => onChange?.(e.target.value.trim())}
       className={cn(
-        'w-[360px] rounded-sm border-0 bg-white/10 px-2.5 py-0.5 backdrop-blur-[2px] placeholder:text-center placeholder:text-white/20',
+        'w-full rounded-sm border-0 bg-white/10 px-2.5 py-0.5 backdrop-blur-[2px] placeholder:text-center placeholder:text-white/20',
         className
       )}
     />

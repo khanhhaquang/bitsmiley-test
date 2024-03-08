@@ -16,7 +16,7 @@ export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
   return (
     <div
       className={cn(
-        'border border-blue5 relative w-[515px] bg-black overflow-hidden',
+        'border border-blue5 relative w-[497px] bg-black overflow-hidden',
         'py-5 px-6',
         className
       )}>
@@ -63,7 +63,7 @@ export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
               Boost
             </span>
             <div className="flex gap-x-4">
-              <div className="relative flex h-16 w-[96px] flex-col items-start justify-between rounded-sm bg-yourPointStats px-3 py-1.5">
+              <div className="relative flex w-[96px] flex-col items-start justify-between gap-y-5 rounded-sm bg-yourPointStats px-3 py-1.5">
                 <span className="relative font-ibmr text-sm text-white">
                   Team ⓘ
                 </span>
@@ -72,7 +72,7 @@ export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
                 </span>
               </div>
 
-              <div className="relative flex h-[76px] w-[106px] flex-col items-start justify-between rounded-sm bg-yourPointStats px-3 py-1.5">
+              <div className="relative flex w-[106px] flex-col items-start justify-between gap-y-5 rounded-sm bg-yourPointStats px-3 py-1.5">
                 <span className="relative font-ibmr text-sm text-white">
                   bitDisk ⓘ
                 </span>
