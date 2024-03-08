@@ -38,6 +38,9 @@ import SmileyIcon from './smiley.svg'
 import Smiley3Icon from './smiley3.svg'
 import ChevronLeftIcon from './chevron-left.svg'
 import ChevronRightIcon from './chevron-right.svg'
+import PeopleIcon from './people.svg'
+import CopyIcon from './copy.svg'
+import LevelIcon from './level.svg'
 
 export {
   DotIcon,
@@ -79,5 +82,8 @@ export {
   SmileyIcon,
   Smiley3Icon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  PeopleIcon,
+  CopyIcon,
+  LevelIcon
 }
