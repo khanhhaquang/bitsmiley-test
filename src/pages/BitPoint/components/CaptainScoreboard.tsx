@@ -39,7 +39,7 @@ export const CaptainScoreboard: React.FC = () => {
   })
 
   return (
-    <div className="relative border border-green/30 bg-black text-white">
+    <div className="relative w-[497px] shrink-0 border border-green/30 bg-black text-white">
       <div className="absolute inset-0 z-0 bg-bitpointPointBg bg-cover bg-no-repeat" />
       <div className="absolute inset-0 z-0 bg-green5 mix-blend-hard-light" />
 

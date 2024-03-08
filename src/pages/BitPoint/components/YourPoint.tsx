@@ -16,7 +16,7 @@ export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
   return (
     <div
       className={cn(
-        'border border-blue5 relative w-[497px] bg-black overflow-hidden',
+        'border border-blue5 shrink-0 relative w-[497px] bg-black overflow-hidden',
         'py-5 px-6',
         className
       )}>
@@ -38,12 +38,12 @@ export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
 
           <p className="relative flex min-w-[121px] flex-col items-start">
             <span className="font-ibmr text-sm text-white/70">Rank</span>
-            <p className="font-ppnb text-6xl text-white">
+            <span className="font-ppnb text-6xl text-white">
               {userPoint?.rank}
               <span className="text-2xl text-white/50">
                 /{userPoint?.userTotal}
               </span>
-            </p>
+            </span>
           </p>
         </div>
 

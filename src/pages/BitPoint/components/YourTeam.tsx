@@ -9,7 +9,7 @@ export const YourTeam: React.FC = () => {
   return (
     <div
       className={cn(
-        'border border-green/30 relative w-[515px] bg-black',
+        'border border-green/30 relative w-[497px] shrink-0 bg-black',
         'py-7 px-6'
       )}>
       <div className="absolute inset-0 z-0 bg-bitpointPointBg bg-cover bg-no-repeat" />
@@ -40,12 +40,12 @@ export const YourTeam: React.FC = () => {
           <div className="flex flex-col gap-y-1">
             <p className="relative flex min-w-[121px] flex-col items-start">
               <span className="font-ibmr text-sm text-white/70">Rank</span>
-              <p className="font-ppnb text-6xl text-white">
+              <span className="font-ppnb text-6xl text-white">
                 {myTeamInfo?.rank}
                 <span className="text-2xl text-white/50">
                   /{myTeamInfo?.teamTotal}
                 </span>
-              </p>
+              </span>
             </p>
           </div>
 

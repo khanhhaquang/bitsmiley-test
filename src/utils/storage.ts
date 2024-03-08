@@ -13,9 +13,10 @@ const deleteLocalStorage = (key: string) => {
 }
 
 const clearStorage = () => {
-  Object.values(LOCAL_STORAGE_KEYS).forEach((key) => {
-    localStorage.removeItem(key)
-  })
+  const persistKeys = [LOCAL_STORAGE_KEYS.PLAY_MUSIC]
+  Object.values(LOCAL_STORAGE_KEYS)
+    .filter((key) => !persistKeys.includes(key))
+    .forEach((key) => localStorage.removeItem(key))
 }
 
 export { clearStorage, setLocalStorage, deleteLocalStorage, getLocalStorage }

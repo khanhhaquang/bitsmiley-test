@@ -49,7 +49,7 @@ export const ScoreBoard: React.FC = () => {
   }
 
   return (
-    <div className="relative border border-white/20 bg-black text-white">
+    <div className="relative w-[497px] shrink-0 border border-white/20 bg-black text-white">
       <div className="absolute inset-0 z-0 bg-scoreboard bg-cover bg-no-repeat" />
       <div className="absolute inset-0 z-0 bg-grey8 mix-blend-hard-light" />
 
