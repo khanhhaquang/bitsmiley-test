@@ -26,7 +26,12 @@ export const usePagination = <T>({
   const debouncedSearchValue = useDebounce(searchValue, SEARCH_DEBOUNCE_DELAY)
   const [currentPageNum, setCurrentPageNum] = useState(1)
 
-  const { data, isFetching, isPlaceholderData, isLoading } = useQuery({
+  const {
+    data: rank,
+    isFetching,
+    isPlaceholderData,
+    isLoading
+  } = useQuery({
     queryKey: [...queryKey, currentPageNum, debouncedSearchValue],
     queryFn: () =>
       queryFn?.({
@@ -35,12 +40,13 @@ export const usePagination = <T>({
         search: debouncedSearchValue
       }),
     placeholderData: keepPreviousData,
-    enabled: !!queryFn
+    enabled: !!queryFn,
+    select: (res) => res?.data?.data
   })
 
   // prefetch the next page
   useEffect(() => {
-    if (!isPlaceholderData && !!queryFn && !data?.data?.data?.last) {
+    if (!isPlaceholderData && !!queryFn && !rank?.last) {
       queryClient.prefetchQuery({
         queryKey: [...queryKey, currentPageNum + 1, debouncedSearchValue],
         queryFn: () =>
@@ -52,7 +58,7 @@ export const usePagination = <T>({
       })
     }
   }, [
-    data,
+    rank,
     queryFn,
     pageSize,
     queryKey,
@@ -68,8 +74,8 @@ export const usePagination = <T>({
     }
   }, [searchValue])
 
-  const totalPagesNum = data?.data?.data?.totalPages
-  const currentPageData = data?.data?.data?.content
+  const totalPagesNum = rank?.totalPages
+  const currentPageData = rank?.content
 
   const hasPreviousPage = currentPageNum > 1
   const hasNextPage = !!totalPagesNum && currentPageNum < totalPagesNum
