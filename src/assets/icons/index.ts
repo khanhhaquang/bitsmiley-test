@@ -41,6 +41,7 @@ import ChevronRightIcon from './chevron-right.svg'
 import PeopleIcon from './people.svg'
 import CopyIcon from './copy.svg'
 import LevelIcon from './level.svg'
+import YourPointHeaderIcon from './your-point-header.svg'
 
 export {
   DotIcon,
@@ -85,5 +86,6 @@ export {
   ChevronRightIcon,
   PeopleIcon,
   CopyIcon,
-  LevelIcon
+  LevelIcon,
+  YourPointHeaderIcon
 }

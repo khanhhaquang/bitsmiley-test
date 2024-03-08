@@ -1,7 +1,11 @@
-import { ArrowTopRightIcon, BugIcon, HistoryPointIcon } from '@/assets/icons'
+import {
+  ArrowTopRightIcon,
+  BugIcon,
+  HistoryPointIcon,
+  YourPointHeaderIcon
+} from '@/assets/icons'
 import { useUserPoint } from '@/hooks/useUserPoint'
 import { cn } from '@/utils/cn'
-import { useMemo } from 'react'
 
 type YourPointProps = {
   className?: string
@@ -9,13 +13,6 @@ type YourPointProps = {
 
 const YourPoint: React.FC<YourPointProps> = ({ className }) => {
   const { userPoint } = useUserPoint()
-
-  const pointGap = useMemo(() => {
-    const gap = (userPoint?.totalPoint ?? 0) - (userPoint?.yesterdayPoint ?? 0)
-
-    if (gap > 0) return `+${gap}`
-    return `-${gap}`
-  }, [userPoint?.totalPoint, userPoint?.yesterdayPoint])
 
   return (
     <div
@@ -27,7 +24,10 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
       <div className="absolute inset-0 z-0 bg-bitpointPointBg" />
       <div className="absolute inset-0 z-0 bg-blue4 mix-blend-hard-light" />
       <div className="relative z-10 flex flex-col">
-        <h2 className="mb-6 font-ppnb text-4xl text-blue">Your bitPoint</h2>
+        <h2 className="mb-6 flex items-center gap-1 font-ppnb text-4xl text-blue">
+          <YourPointHeaderIcon />
+          Your bitPoint
+        </h2>
 
         <div className="flex justify-between">
           <p className="flex flex-col items-start">
@@ -37,19 +37,24 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
             </span>
           </p>
 
-          <p className="relative flex flex-col items-start">
+          <p className="relative flex min-w-[121px] flex-col items-start">
             <a className="absolute right-1 top-1 text-green">
               <ArrowTopRightIcon />
             </a>
             <span className="font-ibmr text-sm text-white/70">Rank</span>
             <p className="font-ppnb text-6xl text-white">
-              443<span className="text-2xl text-white/50">/3948</span>
+              {userPoint?.rank}
+              <span className="text-2xl text-white/50">
+                /{userPoint?.userTotal}
+              </span>
             </p>
           </p>
         </div>
 
         <p className="flex items-center gap-x-3 text-green">
-          <span className="font-ibmb text-2xl">{pointGap}</span>
+          <span className="font-ibmb text-2xl">
+            +{userPoint?.yesterdayPoint}
+          </span>
           <span className="w-20 font-ibmr text-xs">from yesterday</span>
         </p>
 
@@ -65,7 +70,7 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
                   Team ⓘ
                 </span>
                 <span className="relative font-ppnb text-2xl text-green">
-                  +8%
+                  +{userPoint?.teamAddition}%
                 </span>
               </div>
 
@@ -75,7 +80,7 @@ const YourPoint: React.FC<YourPointProps> = ({ className }) => {
                   bitDisk ⓘ
                 </span>
                 <span className="relative font-ppnb text-2xl text-green">
-                  +8%
+                  +{userPoint?.bitDisc}%
                 </span>
               </div>
             </div>
