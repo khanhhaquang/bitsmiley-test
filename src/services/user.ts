@@ -31,6 +31,9 @@ export interface IMintingPair {
   minSize: string
   network: string
   totalDebt: string
+  collateralRatio: number
+  collateralLocked: number
+  vaultFloor: number
 }
 
 export const UserService = {

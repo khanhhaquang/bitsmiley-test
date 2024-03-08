@@ -95,7 +95,7 @@ const OpenVault: React.FC = () => {
 
   const contractAddresses = useContractAddresses()
   const { writeContractAsync } = useWriteContract()
-  const { address } = useUserInfo()
+  const { address, isConnected } = useUserInfo()
 
   const { vaultManagerData } = useUserVaultManager(userInputValue)
   const { vaultManagerDataInit, refetchVaultManagerData, collateralTypes } =
@@ -461,7 +461,8 @@ const OpenVault: React.FC = () => {
   }
 
   // if (isNetworkError) return <NetworkErrorPage />
-  if (isLoading) return <div>loading...</div>
+  if (isLoading) return <Loading />
+  if (!isConnected) return <NotConnected />
   if (!mintingPair) return null
 
   console.log(mintingPair)
@@ -587,6 +588,27 @@ const OpenVault: React.FC = () => {
         </div>
       </div>
       {/* <CopyRightAndLinks /> */}
+    </div>
+  )
+}
+
+const NotConnected: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center border-white text-white">
+      <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
+        <div className="font-ppnb text-5xl">Connect wallet first</div>
+        <div className="max-w-[330px] text-center font-ibmr text-sm">
+          To earn bitPoint, connect your wallet to conitnue.
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Loading: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center text-white">
+      <LoadingAnimation text="loading"></LoadingAnimation>
     </div>
   )
 }

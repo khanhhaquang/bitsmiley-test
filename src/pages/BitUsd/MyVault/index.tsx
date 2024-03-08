@@ -102,7 +102,7 @@ const MyVault: React.FC = () => {
 
   const contractAddresses = useContractAddresses()
   const { writeContractAsync } = useWriteContract()
-  const { address } = useUserInfo()
+  const { address, isConnected } = useUserInfo()
 
   const {
     vaultManagerData,
@@ -541,9 +541,9 @@ const MyVault: React.FC = () => {
     setIsStateValue(1)
   }
 
-  if (isLoading) return <div>loading...</div>
+  if (isLoading) return <Loading />
   if (!mintingPair) return null
-
+  if (!isConnected) return <NotConnected />
   // if (isNetworkError) return <NetworkErrorPage />
 
   return (
@@ -673,6 +673,26 @@ const MyVault: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+const Loading: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center text-white">
+      <LoadingAnimation text="loading"></LoadingAnimation>
+    </div>
+  )
+}
+
+const NotConnected: React.FC = () => {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center border-white text-white">
+      <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
+        <div className="font-ppnb text-5xl">Connect wallet first</div>
+        <div className="max-w-[330px] text-center font-ibmr text-sm">
+          To earn bitPoint, connect your wallet to conitnue.
         </div>
       </div>
     </div>
