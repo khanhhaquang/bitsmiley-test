@@ -9,6 +9,7 @@ export const Pagination: React.FC<{
   onClickPrevious: () => void
   hasNextPage: boolean
   hasPreviousPage: boolean
+  activeNumClassName?: string
 }> = ({
   totalPagesNum,
   currentPageNum,
@@ -16,9 +17,28 @@ export const Pagination: React.FC<{
   onClickNext,
   onClickPrevious,
   hasNextPage,
-  hasPreviousPage
+  hasPreviousPage,
+  activeNumClassName
 }) => {
   if (!totalPagesNum || !currentPageNum) return null
+
+  const renderNumberItem = (num: number) => {
+    const activeNumCls = cn('text-blue font-ibmb', activeNumClassName)
+    return (
+      <div
+        key={num}
+        onClick={() => setCurrentPageNum(num)}
+        className={
+          currentPageNum === num
+            ? activeNumCls
+            : 'cursor-pointer hover:underline'
+        }>
+        {currentPageNum === num && '['}
+        {num}
+        {currentPageNum === num && ']'}
+      </div>
+    )
+  }
 
   const renderNumbers = () => {
     if (totalPagesNum <= 4) {
@@ -26,58 +46,27 @@ export const Pagination: React.FC<{
         <>
           {Array(totalPagesNum)
             .fill(1)
-            .map((_, idx) => (
-              <PaginationNumber
-                key={idx + 1}
-                num={idx + 1}
-                currentPageNum={currentPageNum}
-                setCurrentPageNum={setCurrentPageNum}
-              />
-            ))}
+            .map((_, idx) => renderNumberItem(idx + 1))}
         </>
       )
     }
     return (
       <>
-        <PaginationNumber
-          num={1}
-          currentPageNum={currentPageNum}
-          setCurrentPageNum={setCurrentPageNum}
-        />
-        {currentPageNum > 3 ? (
-          <div>...</div>
-        ) : (
-          <PaginationNumber
-            num={2}
-            currentPageNum={currentPageNum}
-            setCurrentPageNum={setCurrentPageNum}
-          />
+        {renderNumberItem(1)}
+        {currentPageNum > 3 ? <div>...</div> : renderNumberItem(2)}
+        {renderNumberItem(
+          currentPageNum > 3
+            ? currentPageNum >= totalPagesNum - 2
+              ? totalPagesNum - 2
+              : currentPageNum
+            : 3
         )}
-        <PaginationNumber
-          num={
-            currentPageNum > 3
-              ? currentPageNum >= totalPagesNum - 2
-                ? totalPagesNum - 2
-                : currentPageNum
-              : 3
-          }
-          currentPageNum={currentPageNum}
-          setCurrentPageNum={setCurrentPageNum}
-        />
         {currentPageNum > 3 && currentPageNum >= totalPagesNum - 2 ? (
-          <PaginationNumber
-            num={totalPagesNum - 1}
-            currentPageNum={currentPageNum}
-            setCurrentPageNum={setCurrentPageNum}
-          />
+          renderNumberItem(totalPagesNum - 1)
         ) : (
           <div>...</div>
         )}
-        <PaginationNumber
-          num={totalPagesNum}
-          currentPageNum={currentPageNum}
-          setCurrentPageNum={setCurrentPageNum}
-        />
+        {renderNumberItem(totalPagesNum)}
       </>
     )
   }
@@ -103,25 +92,6 @@ export const Pagination: React.FC<{
         )}>
         <ChevronRightIcon />
       </div>
-    </div>
-  )
-}
-
-const PaginationNumber: React.FC<{
-  num: number
-  currentPageNum: number
-  setCurrentPageNum: React.Dispatch<React.SetStateAction<number>>
-}> = ({ currentPageNum, num, setCurrentPageNum }) => {
-  return (
-    <div
-      onClick={() => setCurrentPageNum(num)}
-      className={cn(
-        'cursor-pointer hover:underline',
-        currentPageNum === num && 'text-green/70 font-ibmb'
-      )}>
-      {currentPageNum === num && '['}
-      {num}
-      {currentPageNum === num && ']'}
     </div>
   )
 }

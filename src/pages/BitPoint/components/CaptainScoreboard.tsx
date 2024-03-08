@@ -7,6 +7,14 @@ import { Pagination } from './Pagination'
 import { displayAddress } from '@/utils/formatter'
 import { useTeamInfo } from '@/hooks/useTeamInfo'
 import { CopyButton } from '@/components/CopyButton'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 export const CaptainScoreboard: React.FC = () => {
   const { address } = useUserInfo()
@@ -100,19 +108,24 @@ export const CaptainScoreboard: React.FC = () => {
 
         <div className="mx-auto mb-9 flex w-[321px] flex-col items-center gap-y-2">
           <SearchInput className="w-[321px]" onChange={setSearchValue} />
-          <div className="flex w-full items-center justify-between font-ibmr text-sm text-green/70">
-            <span>Member name</span>
-            <span>bitPoint</span>
-          </div>
-
-          {currentPageData?.map((item) => (
-            <div
-              key={item.id}
-              className="flex w-full items-center justify-between font-ibmr text-sm">
-              <span>{displayAddress(item.memberAddress, 3, 3)}</span>
-              <span>{item.totalPoint}</span>
-            </div>
-          ))}
+          <Table className="font-ibmr">
+            <TableHeader className="text-sm text-green/70 [&_tr]:border-b-0">
+              <TableRow>
+                <TableHead>Member name</TableHead>
+                <TableHead>bitPoint</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentPageData?.map((item) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    {displayAddress(item.memberAddress, 3, 3)}
+                  </TableCell>
+                  <TableCell>{item.totalPoint}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
 
         <Pagination
@@ -123,6 +136,7 @@ export const CaptainScoreboard: React.FC = () => {
           hasPreviousPage={hasPreviousPage}
           onClickPrevious={fetchPreviousPage}
           setCurrentPageNum={setCurrentPageNum}
+          activeNumClassName="text-green/70"
         />
       </div>
     </div>

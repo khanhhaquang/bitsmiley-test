@@ -6,6 +6,14 @@ import { usePagination } from '@/hooks/usePagination'
 import { IIndividualRank, ITeamRank, TeamService } from '@/services/team'
 import { useState } from 'react'
 import { cn } from '@/utils/cn'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 
 enum ScoreTab {
   Team = 'team',
@@ -77,31 +85,32 @@ export const ScoreBoard: React.FC = () => {
 
           <SearchInput onChange={setSearchValue} />
 
-          <div className="my-2 flex items-center justify-between text-blue">
-            <span>Rank</span>
-            <span>{isTeam ? 'Team' : 'User'} name</span>
-            <span>bitPoint</span>
-          </div>
-
-          <div className="mb-2 h-[1px] w-full bg-blue/50 backdrop-blur-[2px]" />
-
-          <div className="mb-9 flex flex-col gap-y-2">
-            {currentPageData?.map(([data, rank]) => (
-              <div key={data.id} className="flex items-center justify-between">
-                <span>#{rank}</span>
-                <span>
-                  {displayAddress(
-                    isTeam
-                      ? data.captainAddress
-                      : (data as IIndividualRank).address,
-                    3,
-                    3
-                  )}
-                </span>
-                <span>{data.totalPoint}</span>
-              </div>
-            ))}
-          </div>
+          <Table className="mb-9">
+            <TableHeader className="text-blue [&_tr]:border-blue/50">
+              <TableRow>
+                <TableHead>Rank</TableHead>
+                <TableHead>{isTeam ? 'Team' : 'User'} name</TableHead>
+                <TableHead>bitPoint</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentPageData?.map(([data, rank]) => (
+                <TableRow key={data.id}>
+                  <TableCell className="font-medium">#{rank}</TableCell>
+                  <TableCell>
+                    {displayAddress(
+                      isTeam
+                        ? data.captainAddress
+                        : (data as IIndividualRank).address,
+                      3,
+                      3
+                    )}
+                  </TableCell>
+                  <TableCell>{data.totalPoint}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
 
           <Pagination
             hasNextPage={hasNextPage}
