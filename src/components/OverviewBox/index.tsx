@@ -2,6 +2,11 @@ import './index.scss'
 import { cn } from '@/utils/cn'
 import { formatAmountThousands, formatDecimal } from '@/utils/formatter'
 import { WarningOutline } from '@/assets/icons'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 interface OverviewBoxObject {
   availableToMint?: number
   debtBitUSD?: number
@@ -47,14 +52,26 @@ export const OverviewBox: React.FC<{
                   )}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center whitespace-nowrap bg-black pl-[8px] font-ibmr text-white">
-              ${' '}
-              {afterDataInit.liquidationPrice == 0
-                ? ' - '
-                : formatAmountThousands(
-                    (afterDataInit.liquidationPrice || 0).toString(),
-                    2
-                  )}
-              after ⓘ
+              <Tooltip>
+                <TooltipTrigger>
+                  <span>
+                    ${' '}
+                    {afterDataInit.liquidationPrice == 0
+                      ? ' - '
+                      : formatAmountThousands(
+                          (afterDataInit.liquidationPrice || 0).toString(),
+                          2
+                        )}
+                    after ⓘ
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <span>
+                    Collateral price below which your position will face
+                    liquidation
+                  </span>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
           <div className="mt-[24px] w-[50%] pl-[10px]">
@@ -67,8 +84,21 @@ export const OverviewBox: React.FC<{
               {formatDecimal((listData?.healthFactor || 0).toString(), 1)}%
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center whitespace-nowrap bg-black pl-[8px] font-ibmr text-white">
-              {formatDecimal((afterDataInit.healthFactor || 0).toString(), 1)} %
-              afterⓘ
+              <Tooltip>
+                <TooltipTrigger>
+                  <span>
+                    {formatDecimal(
+                      (afterDataInit.healthFactor || 0).toString(),
+                      1
+                    )}{' '}
+                    after ⓘ
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Indicates the health status of an account. Any vaults that
+                  drop below 1 face liquidation.
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
           <div className="mt-[24px] w-[50%]">
@@ -82,12 +112,19 @@ export const OverviewBox: React.FC<{
               {formatAmountThousands((listData?.debtBitUSD || 0).toString(), 4)}
             </h1>
             <div className="relative flex h-[31px] w-[196px] items-center whitespace-nowrap bg-black pl-[8px] font-ibmr text-white">
-              ${' '}
-              {formatAmountThousands(
-                (afterDataInit?.debtBitUSD || 0).toString(),
-                4
-              )}
-              after ⓘ
+              <Tooltip>
+                <TooltipTrigger>
+                  <span>
+                    ${' '}
+                    {formatAmountThousands(
+                      (afterDataInit?.debtBitUSD || 0).toString(),
+                      4
+                    )}
+                    after ⓘ
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>bitUSD debt + Stability Fee</TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>

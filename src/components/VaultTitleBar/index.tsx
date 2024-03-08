@@ -1,4 +1,3 @@
-import './index.scss'
 import { formatAmountThousands } from '@/utils/formatter'
 import {
   Tooltip,
@@ -15,39 +14,46 @@ export const VaultTitleBar: React.FC<{
   const items = [
     {
       name: 'Borrow rate',
-      value: `${(list?.borrowRate as number) * 100} %`
+      value: `${(list?.borrowRate as number) * 100} % `,
+      tooltipMsg: `The annual borrow rate for vaults, calculated based on your
+      outstanding vault debt.`
     },
     {
       name: 'Liquidation Penalty',
-      value: `${(list?.liquidationPenalty as number) * 100} %`
+      value: `${(list?.liquidationPenalty as number) * 100} % `,
+      tooltipMsg: ``
     },
     {
       name: 'Vault Floor',
       value: `${formatAmountThousands(
         (list?.vaultFloor || 0).toString(),
         4
-      )} bitUSD`
+      )} bitUSD `,
+      tooltipMsg: `Minimum amount of bitUSD required to be minted from a Vault`
     },
     {
       name: 'Vault Ceiling',
       value: `${formatAmountThousands(
         (list?.vaultCeiling || 0).toString(),
         4
-      )} bitUSD`
+      )} bitUSD `,
+      tooltipMsg: `Maximum amount of bitUSD that can to be minted from a Vault`
     },
     {
       name: 'Max LTV',
-      value: `${(list?.maxLTV as number) * 100} %`
+      value: `${(list?.maxLTV as number) * 100} % `,
+      tooltipMsg: `Max Loan to Value Ratio`
     }
   ]
   const renderedItems = items.map((item, index) => (
     <li key={index} className="mr-[40px] text-center">
-      {item.name}: {item.value}
       <Tooltip>
         <TooltipTrigger>
-          <span> ⓘ</span>
+          <span>
+            {item.name}: {item.value} ⓘ
+          </span>
         </TooltipTrigger>
-        <TooltipContent></TooltipContent>
+        {item.tooltipMsg && <TooltipContent>{item.tooltipMsg}</TooltipContent>}
       </Tooltip>
     </li>
   ))

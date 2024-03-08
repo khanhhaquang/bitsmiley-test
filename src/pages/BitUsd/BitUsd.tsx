@@ -172,7 +172,16 @@ const AvailableMintingPairs: React.FC<{
                   </TooltipContent>
                 </Tooltip>
               </li>
-              <li className="flex-1 text-right">Vault floor ⓘ</li>
+              <li className="flex-1 text-right">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>Vault floor ⓘ</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Minimum amount of bitUSD required to be minted from a Vault
+                  </TooltipContent>
+                </Tooltip>
+              </li>
               <li className="flex-1 text-right">
                 <Tooltip>
                   <TooltipTrigger>
@@ -259,9 +268,26 @@ const MyVaults: React.FC<{
           <ul className="flex justify-between font-ibmb [&>li]:text-white/70">
             <li className="flex-1"></li>
             <li className="flex-1 text-center">Network</li>
-            <li className="mr-[10px] flex-1 text-right">Health Factor ⓘ</li>
+            <li className="mr-[10px] flex-1 text-right">
+              <Tooltip>
+                <TooltipTrigger>
+                  <span>Health Factor ⓘ</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Indicates the health status of an account. Any vaults that
+                  drop below 1 face liquidation.
+                </TooltipContent>
+              </Tooltip>
+            </li>
             <li className="mr-[10px] flex-1 text-right">Collateral Locked</li>
-            <li className="mr-[10px] flex-1 text-right">Total Debt ⓘ </li>
+            <li className="mr-[10px] flex-1 text-right">
+              <Tooltip>
+                <TooltipTrigger>
+                  <span>Total Debt ⓘ </span>
+                </TooltipTrigger>
+                <TooltipContent>bitUSD debt + Stability Fee</TooltipContent>
+              </Tooltip>
+            </li>
             <li className="w-64 flex-1 text-center"></li>
           </ul>
         </dt>
