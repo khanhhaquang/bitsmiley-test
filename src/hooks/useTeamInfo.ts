@@ -5,7 +5,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 export const useTeamInfo = () => {
   const { address } = useUserInfo()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, ...rest } = useQuery({
     queryKey: [TeamService.getMyTeamInfo.key, address],
     queryFn: () => (!address ? null : TeamService.getMyTeamInfo.call(address)),
     enabled: !!address
@@ -13,5 +13,5 @@ export const useTeamInfo = () => {
 
   const myTeamInfo = data?.data
 
-  return { myTeamInfo, isLoading }
+  return { myTeamInfo, isLoading, ...rest }
 }

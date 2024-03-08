@@ -4,16 +4,18 @@ import { Address } from 'viem'
 
 export interface IUserPoint {
   id?: number
+  rank?: number
   joinTeam?: true
   address?: string
   bitDisc?: number
+  userTotal?: number
   totalPoint?: number
   createTime?: string
   updateTime?: string
   teamAddition?: number
   captainAddress?: string
-  invitationCode?: string | null
   yesterdayPoint?: number
+  invitationCode?: string | null
 }
 
 export type TPageable = {

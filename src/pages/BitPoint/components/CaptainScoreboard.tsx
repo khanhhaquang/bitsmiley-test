@@ -1,4 +1,4 @@
-import { CopyIcon, CrownIcon, LevelIcon, PeopleIcon } from '@/assets/icons'
+import { CrownIcon, LevelIcon, PeopleIcon } from '@/assets/icons'
 import { SearchInput } from './SearchInput'
 import { usePagination } from '@/hooks/usePagination'
 import { IPageParams, ITeamMember, TeamService } from '@/services/team'
@@ -6,10 +6,11 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { Pagination } from './Pagination'
 import { displayAddress } from '@/utils/formatter'
 import { useTeamInfo } from '@/hooks/useTeamInfo'
-import { copyToClipboard } from '@/utils/copy'
+import { CopyButton } from '@/components/CopyButton'
 
 export const CaptainScoreboard: React.FC = () => {
   const { address } = useUserInfo()
+  const { myTeamInfo } = useTeamInfo()
   const {
     currentPageData,
     currentPageNum,
@@ -28,12 +29,6 @@ export const CaptainScoreboard: React.FC = () => {
           TeamService.getMyTeamMembers.call(params, address),
     pageSize: 12
   })
-
-  const { myTeamInfo } = useTeamInfo()
-
-  const handleCopy = () => {
-    copyToClipboard(myTeamInfo?.invitationCode || '')
-  }
 
   if (!myTeamInfo) return null
 
@@ -56,10 +51,7 @@ export const CaptainScoreboard: React.FC = () => {
               <span className="font-ibmr font-bold">
                 {myTeamInfo.invitationCode}
               </span>
-              <CopyIcon
-                onClick={handleCopy}
-                className="cursor-pointer text-green hover:text-green/70"
-              />
+              <CopyButton text={myTeamInfo.invitationCode} />
             </div>
           </div>
         </div>

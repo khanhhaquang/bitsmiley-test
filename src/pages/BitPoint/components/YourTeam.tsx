@@ -1,14 +1,10 @@
-import { CopyIcon, LevelIcon, PeopleIcon } from '@/assets/icons'
-import { useTeamInfo } from '@/hooks/useTeamInfo'
 import { cn } from '@/utils/cn'
-import { copyToClipboard } from '@/utils/copy'
+import { LevelIcon, PeopleIcon } from '@/assets/icons'
+import { CopyButton } from '@/components/CopyButton'
+import { useTeamInfo } from '@/hooks/useTeamInfo'
 
 const YourTeam: React.FC = () => {
   const { myTeamInfo } = useTeamInfo()
-
-  const handleCopy = () => {
-    copyToClipboard(myTeamInfo?.invitationCode || '')
-  }
 
   if (!myTeamInfo) return null
 
@@ -36,9 +32,9 @@ const YourTeam: React.FC = () => {
           <span className="font-ppnb text-5xl">
             {myTeamInfo.invitationCode}
           </span>
-          <CopyIcon
-            onClick={handleCopy}
-            className="cursor-pointer text-white hover:text-white/50"
+          <CopyButton
+            text={myTeamInfo.invitationCode}
+            className="text-white hover:text-white/50"
           />
         </div>
 
