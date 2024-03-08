@@ -34,6 +34,7 @@ export interface ITeamRank {
   teamTotal?: number
   totalPoint?: number
   teamAddition?: number
+  teamMemberTotal?: number
 }
 
 export interface IIndividualRank {
@@ -48,6 +49,13 @@ export interface IIndividualRank {
   updateTime?: string
   totalPoint?: number
   teamAddition?: number
+}
+
+export interface ITeamMember {
+  id?: number
+  teamID?: number
+  memberAddress?: Address
+  totalPoint?: number
 }
 
 export interface IRank<T> {
@@ -93,7 +101,7 @@ export const TeamService = {
   },
   getMyTeamInfo: {
     key: 'team.getMyTeamInfo',
-    call: (address: Address): Promise<IResponse<IUserPoint>> =>
+    call: (address: Address): Promise<IResponse<ITeamRank>> =>
       axiosInstance
         .get(`/team/getMyTeamInfo/${address}`)
         .then((res) => res.data)
@@ -114,6 +122,15 @@ export const TeamService = {
         '/rank/getUserPointRank',
         null,
         { params }
+      )
+  },
+  getMyTeamMembers: {
+    key: 'team.getMyTeamMembers',
+    call: (params: IPageParams, address: Address) =>
+      axiosInstance.post<IResponse<IRank<ITeamMember>>>(
+        '/team/getMyTeamMembers',
+        null,
+        { params: { address, ...params } }
       )
   }
 }

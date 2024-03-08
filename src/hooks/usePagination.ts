@@ -14,12 +14,12 @@ const SEARCH_DEBOUNCE_DELAY = 500
 
 export const usePagination = <T>({
   queryKey,
-  queryFn
+  queryFn,
+  pageSize = PAGE_SIZE
 }: {
-  queryKey: string
-  queryFn: (
-    params: IPageParams
-  ) => Promise<AxiosResponse<IResponse<IRank<[T, number]>>>>
+  queryKey: string[]
+  queryFn?: (params: IPageParams) => Promise<AxiosResponse<IResponse<IRank<T>>>>
+  pageSize?: number
 }) => {
   const queryClient = useQueryClient()
   const [searchValue, setSearchValue] = useState('')
@@ -27,37 +27,39 @@ export const usePagination = <T>({
   const [currentPageNum, setCurrentPageNum] = useState(1)
 
   const { data, isFetching, isPlaceholderData, isLoading } = useQuery({
-    queryKey: [queryKey, currentPageNum, debouncedSearchValue],
+    queryKey: [...queryKey, currentPageNum, debouncedSearchValue],
     queryFn: () =>
-      queryFn({
+      queryFn?.({
         page: currentPageNum,
-        size: PAGE_SIZE,
+        size: pageSize,
         search: debouncedSearchValue
       }),
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    enabled: !!queryFn
   })
 
   // prefetch the next page
   useEffect(() => {
-    if (!isPlaceholderData && !data?.data?.data?.last) {
+    if (!isPlaceholderData && !!queryFn && !data?.data?.data?.last) {
       queryClient.prefetchQuery({
-        queryKey: [queryKey, currentPageNum + 1, debouncedSearchValue],
+        queryKey: [...queryKey, currentPageNum + 1, debouncedSearchValue],
         queryFn: () =>
           queryFn({
             page: currentPageNum + 1,
-            size: PAGE_SIZE,
+            size: pageSize,
             search: debouncedSearchValue
           })
       })
     }
   }, [
     data,
-    isPlaceholderData,
-    currentPageNum,
-    queryClient,
-    debouncedSearchValue,
+    queryFn,
+    pageSize,
     queryKey,
-    queryFn
+    queryClient,
+    currentPageNum,
+    isPlaceholderData,
+    debouncedSearchValue
   ])
 
   useEffect(() => {
@@ -67,10 +69,7 @@ export const usePagination = <T>({
   }, [searchValue])
 
   const totalPagesNum = data?.data?.data?.totalPages
-  const currentPageData = data?.data?.data?.content?.map((item) => ({
-    data: item?.[0],
-    rank: item?.[1]
-  }))
+  const currentPageData = data?.data?.data?.content
 
   const hasPreviousPage = currentPageNum > 1
   const hasNextPage = !!totalPagesNum && currentPageNum < totalPagesNum
