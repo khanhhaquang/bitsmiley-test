@@ -1229,10 +1229,17 @@ const ConfirmBox: React.FC<{
                   className="ml-2 mr-[21px] w-[22px]"
                 />
               </TooltipTrigger>
-              <TooltipContent>
-                To continue, you need to allow bitSmiley smart contracts to use
-                your wBTC. This has to be done only once for each token.
-              </TooltipContent>
+              {type == 0 ? (
+                <TooltipContent>
+                  To continue, you need to allow bitSmiley smart contracts to
+                  use your wBTC.
+                </TooltipContent>
+              ) : (
+                <TooltipContent>
+                  To continue, you need to allow bitSmiley smart contracts to
+                  use your bitUSD.
+                </TooltipContent>
+              )}
             </Tooltip>
           </div>
         ) : (

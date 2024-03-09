@@ -772,7 +772,7 @@ const SetupVault: React.FC<{
               </TooltipTrigger>
               <TooltipContent>
                 To continue, you need to allow bitSmiley smart contracts to use
-                your wBTC. This has to be done only once for each token.
+                your wBTC.
               </TooltipContent>
             </Tooltip>
           </button>
