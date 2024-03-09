@@ -13,9 +13,9 @@ export const VaultTitleBar: React.FC<{
   if (!list) return null
   const items = [
     {
-      name: 'Borrow rate',
+      name: 'Stability Fee',
       value: `${(list?.borrowRate as number) * 100} % `,
-      tooltipMsg: `The annual borrow rate for vaults, calculated based on your
+      tooltipMsg: `The annual Stability Fee for vaults, calculated based on your
       outstanding vault debt.`
     },
     {
@@ -50,7 +50,8 @@ export const VaultTitleBar: React.FC<{
       <Tooltip>
         <TooltipTrigger>
           <span>
-            {item.name}: {item.value} ⓘ
+            {item.name}: {index == 0 && <s>5.5</s>} {item.value}{' '}
+            {item.tooltipMsg && 'ⓘ'}
           </span>
         </TooltipTrigger>
         {item.tooltipMsg && <TooltipContent>{item.tooltipMsg}</TooltipContent>}
