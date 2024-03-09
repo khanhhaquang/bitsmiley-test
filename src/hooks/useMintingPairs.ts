@@ -9,8 +9,7 @@ export const useMintingPairs = (chainId?: number) => {
     queryKey: [UserService.getMintingPairs.key, address],
     queryFn: () =>
       !address ? null : UserService.getMintingPairs.call(address),
-    enabled: !!address,
-    refetchInterval: 5000
+    enabled: !!address
   })
 
   const mintingPairs = data?.data
