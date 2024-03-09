@@ -1063,32 +1063,50 @@ const ConfirmBox: React.FC<{
     {
       name: 'Collateral locked',
       num1:
-        formatAmountThousands((listData.lockedCollateral || 0).toString(), 4) +
-        ' wBTC',
+        listData.lockedCollateral == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (listData.lockedCollateral || 0).toString(),
+              4
+            ) + ' wBTC',
       num2:
-        formatAmountThousands(
-          (afterDataInit.lockedCollateral || 0).toString(),
-          4
-        ) + ' wBTC'
+        afterDataInit.lockedCollateral == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (afterDataInit.lockedCollateral || 0).toString(),
+              4
+            ) + ' wBTC'
     }
   ]
   const bitUsditems = [
     {
       name: 'Total debt',
       num1:
-        formatAmountThousands((listData.debtBitUSD || 0).toString(), 4) +
-        'bitUSD',
+        listData.debtBitUSD == 0
+          ? ' - bitUSD'
+          : formatAmountThousands((listData.debtBitUSD || 0).toString(), 4) +
+            'bitUSD',
       num2:
-        formatAmountThousands((afterDataInit.debtBitUSD || 0).toString(), 4) +
-        'bitUSD'
+        afterDataInit.debtBitUSD == 0
+          ? ' - bitUSD'
+          : formatAmountThousands(
+              (afterDataInit.debtBitUSD || 0).toString(),
+              4
+            ) + 'bitUSD'
     }
   ]
   const commonParam = [
     {
       name: 'Health factor',
-      num1: formatDecimal((listData.healthFactor || 0).toString(), 1) + ' %',
+      num1:
+        listData.healthFactor == 0
+          ? ' - %'
+          : formatDecimal((listData.healthFactor || 0).toString(), 1) + ' %',
       num2:
-        formatDecimal((afterDataInit.healthFactor || 0).toString(), 1) + ' %'
+        afterDataInit.healthFactor == 0
+          ? ' - %'
+          : formatDecimal((afterDataInit.healthFactor || 0).toString(), 1) +
+            ' %'
     },
     {
       name: 'Liquidation Price',
@@ -1112,27 +1130,38 @@ const ConfirmBox: React.FC<{
     {
       name: 'Available to mint',
       num1:
-        '$ ' +
-        formatAmountThousands((listData.availableToMint || 0).toString(), 2),
+        listData.availableToMint == 0
+          ? '$ - '
+          : '$ ' +
+            formatAmountThousands(
+              (listData.availableToMint || 0).toString(),
+              2
+            ),
       num2:
         '$ ' +
-        formatAmountThousands(
-          (afterDataInit.availableToMint || 0).toString(),
-          2
-        )
+        (afterDataInit.availableToMint == 0
+          ? ' - '
+          : formatAmountThousands(
+              (afterDataInit.availableToMint || 0).toString(),
+              2
+            ))
     },
     {
       name: 'Available to withdraw',
       num1:
-        formatAmountThousands(
-          (listData.availableToWithdraw || 0).toString(),
-          4
-        ) + ' wBTC',
+        listData.availableToWithdraw == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (listData.availableToWithdraw || 0).toString(),
+              4
+            ) + ' wBTC',
       num2:
-        formatAmountThousands(
-          (afterDataInit.availableToWithdraw || 0).toString(),
-          4
-        ) + ' wBTC'
+        afterDataInit.availableToWithdraw == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (afterDataInit.availableToWithdraw || 0).toString(),
+              4
+            ) + ' wBTC'
     }
   ]
   let arr = []

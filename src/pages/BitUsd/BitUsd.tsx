@@ -196,11 +196,11 @@ const AvailableMintingPairs: React.FC<{
               <li className="flex-1 text-right">
                 <Tooltip>
                   <TooltipTrigger>
-                    <span>Borrow rate ⓘ</span>
+                    <span>Stability Fee ⓘ</span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    The annual borrow rate for vaults, calculated based on your
-                    outstanding vault debt.
+                    The annual Stability Fee for vaults, calculated based on
+                    your outstanding vault debt.
                   </TooltipContent>
                 </Tooltip>
               </li>
