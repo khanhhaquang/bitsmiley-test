@@ -9,8 +9,9 @@ import { openUrl, getOpenUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
 import { formatDecimal, formatAmountThousands } from '@/utils/formatter'
 import { Image } from '@/components/Image'
-import { useMintingPairs } from '@/hooks/useMintingPairs'
 import LoadingAnimation from '@/components/LoadingAnimation'
+import { UserService } from '@/services/user'
+
 import {
   Tooltip,
   TooltipContent,
@@ -38,26 +39,31 @@ const BitUsd: React.FC = () => {
     []
   )
   const [myVaults, setMyVaults] = useState<Vault[]>([])
-  const { mintingPairs, isLoading } = useMintingPairs()
+  const [isLoading, setIsLoading] = useState(true)
   const getMintingPairs = async () => {
     if (address && isConnected) {
-      const array1: Array<Vault> = [],
-        array2: Array<Vault> = []
-      mintingPairs != undefined &&
-        mintingPairs.forEach((v: Vault) => {
-          v.isOpenVault ? array1.push(v) : array2.push(v)
-        })
-      setMyVaults(array1)
-      setAvailableMintingPairs(array2)
+      const { code, data } = await UserService.getMintingPairs.call(address)
+      console.log(data)
+      if (code == 0) {
+        setIsLoading(false)
+        const array1: Array<Vault> = [],
+          array2: Array<Vault> = []
+        data != undefined &&
+          data.forEach((v: Vault) => {
+            v.isOpenVault ? array1.push(v) : array2.push(v)
+          })
+        setMyVaults(array1)
+        setAvailableMintingPairs(array2)
+      }
     }
   }
 
   useEffect(() => {
-    if (mintingPairs) {
+    if (address) {
       getMintingPairs()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mintingPairs])
+  }, [address])
 
   const goToMyVaults = async (item: Vault) => {
     if (item.chainId === chainId) {
