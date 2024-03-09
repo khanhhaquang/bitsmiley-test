@@ -118,7 +118,7 @@ const NotConnected: React.FC = () => {
       <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
         <div className="font-ppnb text-5xl">Connect wallet first</div>
         <div className="max-w-[330px] text-center font-ibmr text-sm">
-          To earn bitPoint, connect your wallet to conitnue.
+          connect your wallet to conitnue.
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@ const AvailableMintingPairs: React.FC<{
                   ' cursor-pointer h-[34px] w-[133px] bg-white font-ibmb text-gray-950'
                 )}
                 onClick={() => handleClick(item)}>
-                Mint BitUSD
+                Mint bitUSD
               </button>
             </li>
           </ul>
@@ -196,11 +196,11 @@ const AvailableMintingPairs: React.FC<{
               <li className="flex-1 text-right">
                 <Tooltip>
                   <TooltipTrigger>
-                    <span>Borrow rate ⓘ</span>
+                    <span>Stability Fee ⓘ</span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    The annual borrow rate for vaults, calculated based on your
-                    outstanding vault debt.
+                    The annual Stability Fee for vaults, calculated based on
+                    your outstanding vault debt.
                   </TooltipContent>
                 </Tooltip>
               </li>

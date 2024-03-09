@@ -517,7 +517,8 @@ const OpenVault: React.FC = () => {
               </div>
             </div>
             <div className={cn('grid_bg relative flex-none')}>
-              <div className={cn('blendMode_blue t-0 l-0 absolute')}></div>
+              <div
+                className={cn('blendMode_blue top-[20px] l-0 absolute')}></div>
               <div className="relative h-[528px] w-[629px] px-[53px] ">
                 <CornerPin></CornerPin>
                 {isState == 5 ? (
@@ -608,7 +609,7 @@ const NotConnected: React.FC = () => {
       <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
         <div className="font-ppnb text-5xl">Connect wallet first</div>
         <div className="max-w-[330px] text-center font-ibmr text-sm">
-          To earn bitPoint, connect your wallet to conitnue.
+          connect your wallet to conitnue.
         </div>
       </div>
     </div>
@@ -771,7 +772,7 @@ const SetupVault: React.FC<{
               </TooltipTrigger>
               <TooltipContent>
                 To continue, you need to allow bitSmiley smart contracts to use
-                your wBTC. This has to be done only once for each token.
+                your wBTC.
               </TooltipContent>
             </Tooltip>
           </button>
@@ -862,41 +863,10 @@ const MintBitUSDIng: React.FC<{
         <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
           <span className="whitespace-nowrap">Vault Debt</span>
           <p className="flex items-center justify-between font-ibmb">
-            <span>{formatMoney(formatDecimal(listData.debtBitUSD, 2))} $ </span>
-            <Image
-              src={getOpenUrl('return')}
-              className="ml-2 mr-[9px] w-[5px]"
-            />
-            <span className="text-green">
-              {' '}
-              {formatMoney(formatDecimal(afterDataInit.debtBitUSD, 2))} $
-            </span>
-          </p>
-        </li>
-        <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
-          <span className="whitespace-nowrap">Health factor</span>
-          <p className="flex items-center justify-between font-ibmb">
             <span>
-              {formatDecimal((listData.healthFactor || 0).toString(), 1)} %{' '}
-            </span>
-            <Image
-              src={getOpenUrl('return')}
-              className="ml-2 mr-[9px] w-[5px]"
-            />
-            <span className="text-green">
-              {' '}
-              {formatDecimal((afterDataInit.healthFactor || 0).toString(), 1)} %
-            </span>
-          </p>
-        </li>
-        <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
-          <span className="whitespace-nowrap">Available to mint bitUSD</span>
-          <p className="flex items-center justify-between whitespace-nowrap font-ibmb">
-            <span>
-              {formatAmountThousands(
-                (listData.availableToMint || 0).toString(),
-                2
-              )}{' '}
+              {listData?.debtBitUSD == 0
+                ? ' - '
+                : formatMoney(formatDecimal(listData.debtBitUSD, 2))}{' '}
               ${' '}
             </span>
             <Image
@@ -905,10 +875,65 @@ const MintBitUSDIng: React.FC<{
             />
             <span className="text-green">
               {' '}
-              {formatAmountThousands(
-                (afterDataInit.availableToMint || 0).toString(),
-                2
-              )}{' '}
+              {afterDataInit.debtBitUSD == 0
+                ? ' - '
+                : formatMoney(formatDecimal(afterDataInit.debtBitUSD, 2))}{' '}
+              $
+            </span>
+          </p>
+        </li>
+        <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
+          <span className="whitespace-nowrap">Health factor</span>
+          <p className="flex items-center justify-between font-ibmb">
+            <span>
+              {listData.healthFactor == 0
+                ? ' - '
+                : formatDecimal(
+                    (listData.healthFactor || 0).toString(),
+                    1
+                  )}{' '}
+              %{' '}
+            </span>
+            <Image
+              src={getOpenUrl('return')}
+              className="ml-2 mr-[9px] w-[5px]"
+            />
+            <span className="text-green">
+              {' '}
+              {afterDataInit.healthFactor == 0
+                ? ' - '
+                : formatDecimal(
+                    (afterDataInit.healthFactor || 0).toString(),
+                    1
+                  )}{' '}
+              %
+            </span>
+          </p>
+        </li>
+        <li className="mb-[8px] flex h-[21px] items-center justify-between font-ibmr text-[16px] text-white">
+          <span className="whitespace-nowrap">Available to mint bitUSD</span>
+          <p className="flex items-center justify-between whitespace-nowrap font-ibmb">
+            <span>
+              {listData.availableToMint == 0
+                ? ' - '
+                : formatAmountThousands(
+                    (listData.availableToMint || 0).toString(),
+                    2
+                  )}{' '}
+              ${' '}
+            </span>
+            <Image
+              src={getOpenUrl('return')}
+              className="ml-2 mr-[9px] w-[5px]"
+            />
+            <span className="text-green">
+              {' '}
+              {afterDataInit.availableToMint == 0
+                ? ' - '
+                : formatAmountThousands(
+                    (afterDataInit.availableToMint || 0).toString(),
+                    2
+                  )}{' '}
               $
             </span>
           </p>

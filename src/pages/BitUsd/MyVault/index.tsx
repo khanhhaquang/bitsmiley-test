@@ -704,6 +704,7 @@ const MyVault: React.FC = () => {
                     />
                   ) : isState == 1 ? (
                     <SetupVault
+                      wBTCBalance={balanceWBTC}
                       inputNum={inputNum}
                       liquidationValues={liquidationValues}
                       type={coinType}
@@ -772,7 +773,7 @@ const NotConnected: React.FC = () => {
       <div className="flex flex-col items-center justify-center gap-y-12 border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
         <div className="font-ppnb text-5xl">Connect wallet first</div>
         <div className="max-w-[330px] text-center font-ibmr text-sm">
-          To earn bitPoint, connect your wallet to conitnue.
+          connect your wallet to conitnue.
         </div>
       </div>
     </div>
@@ -792,7 +793,7 @@ const TabBar: React.FC<{
       key={index}
       className={`${
         type == index
-          ? 'bg-blue text-black transition duration-200 ease-in'
+          ? cn('bg-blue text-black transition duration-200 ease-in font-ibmb')
           : 'text-white transition duration-200 ease-in'
       } inline-block 
         cursor-pointer px-[12px] py-[2px] active:bg-blue`}
@@ -854,6 +855,7 @@ const CornerPin: React.FC = () => {
 }
 
 const SetupVault: React.FC<{
+  wBTCBalance: string | number
   liquidationValues: number
   isDeposit: boolean
   inputValue: string
@@ -871,6 +873,7 @@ const SetupVault: React.FC<{
   handleBlur1: () => void
   handleBlur: () => void
 }> = ({
+  wBTCBalance,
   inputNum,
   liquidationValues,
   price,
@@ -903,6 +906,9 @@ const SetupVault: React.FC<{
       {type == 0 ? (
         <div className="mb-[14px] mt-[15px] flex items-center justify-between font-ibmr text-[14px] text-white">
           <span>Deposit wBTC</span>
+          <span>
+            {formatMoney(formatDecimal(Number(wBTCBalance), 4))} available
+          </span>
         </div>
       ) : type == 1 ? (
         <div className="mb-[14px] mt-[25px] flex items-center justify-between font-ibmr text-[14px] text-white">
@@ -1057,32 +1063,50 @@ const ConfirmBox: React.FC<{
     {
       name: 'Collateral locked',
       num1:
-        formatAmountThousands((listData.lockedCollateral || 0).toString(), 4) +
-        ' wBTC',
+        listData.lockedCollateral == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (listData.lockedCollateral || 0).toString(),
+              4
+            ) + ' wBTC',
       num2:
-        formatAmountThousands(
-          (afterDataInit.lockedCollateral || 0).toString(),
-          4
-        ) + ' wBTC'
+        afterDataInit.lockedCollateral == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (afterDataInit.lockedCollateral || 0).toString(),
+              4
+            ) + ' wBTC'
     }
   ]
   const bitUsditems = [
     {
       name: 'Total debt',
       num1:
-        formatAmountThousands((listData.debtBitUSD || 0).toString(), 4) +
-        'bitUSD',
+        listData.debtBitUSD == 0
+          ? ' - bitUSD'
+          : formatAmountThousands((listData.debtBitUSD || 0).toString(), 4) +
+            'bitUSD',
       num2:
-        formatAmountThousands((afterDataInit.debtBitUSD || 0).toString(), 4) +
-        'bitUSD'
+        afterDataInit.debtBitUSD == 0
+          ? ' - bitUSD'
+          : formatAmountThousands(
+              (afterDataInit.debtBitUSD || 0).toString(),
+              4
+            ) + 'bitUSD'
     }
   ]
   const commonParam = [
     {
       name: 'Health factor',
-      num1: formatDecimal((listData.healthFactor || 0).toString(), 1) + ' %',
+      num1:
+        listData.healthFactor == 0
+          ? ' - %'
+          : formatDecimal((listData.healthFactor || 0).toString(), 1) + ' %',
       num2:
-        formatDecimal((afterDataInit.healthFactor || 0).toString(), 1) + ' %'
+        afterDataInit.healthFactor == 0
+          ? ' - %'
+          : formatDecimal((afterDataInit.healthFactor || 0).toString(), 1) +
+            ' %'
     },
     {
       name: 'Liquidation Price',
@@ -1106,27 +1130,38 @@ const ConfirmBox: React.FC<{
     {
       name: 'Available to mint',
       num1:
-        '$ ' +
-        formatAmountThousands((listData.availableToMint || 0).toString(), 2),
+        listData.availableToMint == 0
+          ? '$ - '
+          : '$ ' +
+            formatAmountThousands(
+              (listData.availableToMint || 0).toString(),
+              2
+            ),
       num2:
         '$ ' +
-        formatAmountThousands(
-          (afterDataInit.availableToMint || 0).toString(),
-          2
-        )
+        (afterDataInit.availableToMint == 0
+          ? ' - '
+          : formatAmountThousands(
+              (afterDataInit.availableToMint || 0).toString(),
+              2
+            ))
     },
     {
       name: 'Available to withdraw',
       num1:
-        formatAmountThousands(
-          (listData.availableToWithdraw || 0).toString(),
-          4
-        ) + ' wBTC',
+        listData.availableToWithdraw == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (listData.availableToWithdraw || 0).toString(),
+              4
+            ) + ' wBTC',
       num2:
-        formatAmountThousands(
-          (afterDataInit.availableToWithdraw || 0).toString(),
-          4
-        ) + ' wBTC'
+        afterDataInit.availableToWithdraw == 0
+          ? ' - wBTC'
+          : formatAmountThousands(
+              (afterDataInit.availableToWithdraw || 0).toString(),
+              4
+            ) + ' wBTC'
     }
   ]
   let arr = []
@@ -1194,10 +1229,17 @@ const ConfirmBox: React.FC<{
                   className="ml-2 mr-[21px] w-[22px]"
                 />
               </TooltipTrigger>
-              <TooltipContent>
-                To continue, you need to allow bitSmiley smart contracts to use
-                your wBTC. This has to be done only once for each token.
-              </TooltipContent>
+              {type == 0 ? (
+                <TooltipContent>
+                  To continue, you need to allow bitSmiley smart contracts to
+                  use your wBTC.
+                </TooltipContent>
+              ) : (
+                <TooltipContent>
+                  To continue, you need to allow bitSmiley smart contracts to
+                  use your bitUSD.
+                </TooltipContent>
+              )}
             </Tooltip>
           </div>
         ) : (
