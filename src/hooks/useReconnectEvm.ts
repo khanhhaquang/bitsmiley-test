@@ -37,7 +37,6 @@ const useReconnectEvm = () => {
     if (
       localLoginType !== LoginType.OKX ||
       !connectors.okx ||
-      isConnectedWagmi ||
       !particleEvmAddress
     )
       return
@@ -50,7 +49,7 @@ const useReconnectEvm = () => {
         console.log('reconnect error: ', e)
         setIsError(true)
       })
-  }, [config, connectors.okx, isConnectedWagmi, particleEvmAddress])
+  }, [config, connectors.okx, particleEvmAddress])
 
   useEffect(() => {
     if (localLoginType !== LoginType.METAMASK || !connectors.metamask) return
