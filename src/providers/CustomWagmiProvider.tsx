@@ -7,7 +7,8 @@ import NetworkErrorPage from '@/pages/NetworkError'
 import LoadingResourcesPage from '@/pages/LoadingResources'
 import {
   ConnectProvider as BTCConnectProvider,
-  OKXConnector
+  OKXConnector,
+  UnisatConnector
 } from '@particle-network/btc-connectkit'
 
 const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
@@ -67,7 +68,7 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
           }
         }
       }}
-      connectors={[new OKXConnector()]}>
+      connectors={[new OKXConnector(), new UnisatConnector()]}>
       <WagmiProvider reconnectOnMount={false} config={config}>
         {children}
       </WagmiProvider>

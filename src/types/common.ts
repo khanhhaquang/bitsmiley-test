@@ -6,5 +6,6 @@ export interface IResponse<T> {
 
 export enum LoginType {
   OKX = 'okx',
-  METAMASK = 'metamask'
+  METAMASK = 'metamask',
+  UNISAT = 'unisat'
 }
