@@ -1,8 +1,7 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract,
-  createUseWatchContractEvent
+  createUseSimulateContract
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -431,28 +430,4 @@ export const useSimulateBitUsdContractTransferFrom =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitUsdContractAbi,
     functionName: 'transferFrom'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitUsdContractAbi}__
- */
-export const useWatchBitUsdContractEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: bitUsdContractAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitUsdContractAbi}__ and `eventName` set to `"Approval"`
- */
-export const useWatchBitUsdContractApprovalEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: bitUsdContractAbi,
-    eventName: 'Approval'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitUsdContractAbi}__ and `eventName` set to `"Transfer"`
- */
-export const useWatchBitUsdContractTransferEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: bitUsdContractAbi,
-    eventName: 'Transfer'
   })

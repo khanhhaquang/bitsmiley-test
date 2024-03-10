@@ -5,6 +5,10 @@ import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import NetworkErrorPage from '@/pages/NetworkError'
 import LoadingResourcesPage from '@/pages/LoadingResources'
+import {
+  ConnectProvider as BTCConnectProvider,
+  OKXConnector
+} from '@particle-network/btc-connectkit'
 
 const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
   const [isEntered, setIsEntered] = useState(false)
@@ -45,7 +49,30 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
 
   if (isError || !config) return <NetworkErrorPage />
 
-  return <WagmiProvider config={config}>{children}</WagmiProvider>
+  return (
+    <BTCConnectProvider
+      autoConnect={false}
+      options={{
+        projectId: import.meta.env.VITE_PARTICLE_PROJECT_ID as string,
+        clientKey: import.meta.env.VITE_PARTICLE_CLIENT_KEY as string,
+        appId: import.meta.env.VITE_PARTICLE_APP_ID as string,
+        aaOptions: {
+          accountContracts: {
+            BTC: [
+              {
+                chainIds: supportedChainIds,
+                version: '1.0.0'
+              }
+            ]
+          }
+        }
+      }}
+      connectors={[new OKXConnector()]}>
+      <WagmiProvider reconnectOnMount={false} config={config}>
+        {children}
+      </WagmiProvider>
+    </BTCConnectProvider>
+  )
 }
 
 export default CustomWagmiProvider

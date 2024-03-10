@@ -1,8 +1,7 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract,
-  createUseWatchContractEvent
+  createUseSimulateContract
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,38 +332,4 @@ export const useSimulateErc721TransferFrom =
   /*#__PURE__*/ createUseSimulateContract({
     abi: erc721Abi,
     functionName: 'transferFrom'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__
- */
-export const useWatchErc721Event = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: erc721Abi
-})
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__ and `eventName` set to `"Approval"`
- */
-export const useWatchErc721ApprovalEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: erc721Abi,
-    eventName: 'Approval'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__ and `eventName` set to `"ApprovalForAll"`
- */
-export const useWatchErc721ApprovalForAllEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: erc721Abi,
-    eventName: 'ApprovalForAll'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link erc721Abi}__ and `eventName` set to `"Transfer"`
- */
-export const useWatchErc721TransferEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: erc721Abi,
-    eventName: 'Transfer'
   })

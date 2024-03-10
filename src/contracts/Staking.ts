@@ -1,8 +1,7 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract,
-  createUseWatchContractEvent
+  createUseSimulateContract
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -547,73 +546,4 @@ export const useSimulateStakingContractWithdraw =
   /*#__PURE__*/ createUseSimulateContract({
     abi: stakingContractAbi,
     functionName: 'withdraw'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__
- */
-export const useWatchStakingContractEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: stakingContractAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"AdminChanged"`
- */
-export const useWatchStakingContractAdminChangedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    eventName: 'AdminChanged'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"BeaconUpgraded"`
- */
-export const useWatchStakingContractBeaconUpgradedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    eventName: 'BeaconUpgraded'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Initialized"`
- */
-export const useWatchStakingContractInitializedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    eventName: 'Initialized'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"OwnershipTransferred"`
- */
-export const useWatchStakingContractOwnershipTransferredEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    eventName: 'OwnershipTransferred'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Staked"`
- */
-export const useWatchStakingContractStakedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    eventName: 'Staked'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Upgraded"`
- */
-export const useWatchStakingContractUpgradedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    eventName: 'Upgraded'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link stakingContractAbi}__ and `eventName` set to `"Withdrawn"`
- */
-export const useWatchStakingContractWithdrawnEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: stakingContractAbi,
-    eventName: 'Withdrawn'
   })

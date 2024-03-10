@@ -15,6 +15,7 @@ import EvmConnector from './EvmConnector'
 import WrongNetworkModal from '../WrongNetworkModal'
 import './index.scss'
 import { useNavigate } from 'react-router-dom'
+import { useConnectModal as useParticleConnect } from '@particle-network/btc-connectkit'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -39,6 +40,7 @@ export const ConnectWallet: React.FC<{
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
 
+  const { disconnect: disConnectParticle } = useParticleConnect()
   const { disconnect: disconnectEvm } = useDisconnect()
   const { isError: isNetworkError, setIsError: setIsNetworkError } =
     useReconnectEvm()
@@ -79,6 +81,7 @@ export const ConnectWallet: React.FC<{
         <div
           ref={buttonRef}
           onClick={() => {
+            disConnectParticle()
             disconnectEvm(
               {},
               {

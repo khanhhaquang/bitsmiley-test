@@ -21,6 +21,7 @@
     "pre-commit": "npm run lint"
   },
   "dependencies": {
+    "@particle-network/btc-connectkit": "^1.0.0-alpha.11",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@reduxjs/toolkit": "^2.0.1",
@@ -66,6 +67,7 @@
     "tailwindcss": "^3.4.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
+    "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-svgr": "^4.2.0"
   }
 }

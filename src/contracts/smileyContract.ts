@@ -1,8 +1,7 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract,
-  createUseWatchContractEvent
+  createUseSimulateContract
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -777,118 +776,4 @@ export const useSimulateSmileyContractUpgradeToAndCall =
   /*#__PURE__*/ createUseSimulateContract({
     abi: smileyContractAbi,
     functionName: 'upgradeToAndCall'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__
- */
-export const useWatchSmileyContractEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: smileyContractAbi })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"AdminChanged"`
- */
-export const useWatchSmileyContractAdminChangedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'AdminChanged'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"BeaconUpgraded"`
- */
-export const useWatchSmileyContractBeaconUpgradedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'BeaconUpgraded'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Initialized"`
- */
-export const useWatchSmileyContractInitializedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'Initialized'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Liquidated"`
- */
-export const useWatchSmileyContractLiquidatedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'Liquidated'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Mint"`
- */
-export const useWatchSmileyContractMintEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'Mint'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"OwnershipTransferred"`
- */
-export const useWatchSmileyContractOwnershipTransferredEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'OwnershipTransferred'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"ParameterUpdated"`
- */
-export const useWatchSmileyContractParameterUpdatedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'ParameterUpdated'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Paused"`
- */
-export const useWatchSmileyContractPausedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'Paused'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Repay"`
- */
-export const useWatchSmileyContractRepayEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'Repay'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Unpaused"`
- */
-export const useWatchSmileyContractUnpausedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'Unpaused'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"Upgraded"`
- */
-export const useWatchSmileyContractUpgradedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'Upgraded'
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link smileyContractAbi}__ and `eventName` set to `"VaultOpened"`
- */
-export const useWatchSmileyContractVaultOpenedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: smileyContractAbi,
-    eventName: 'VaultOpened'
   })
