@@ -7,7 +7,7 @@ import { setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { LoginType } from '@/types/common'
 import { useConnector, useETHProvider } from '@particle-network/btc-connectkit'
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 type EvmConnectorProps = {
   onClose: () => void
@@ -15,20 +15,30 @@ type EvmConnectorProps = {
 
 const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
   const { connect } = useConnect()
-  const connectors = useEvmConnectors()
+  const { okxConnector, unisatConnector, metaMaskConnector } =
+    useEvmConnectors()
   const { connect: connectParticle } = useConnector()
+
+  const [loginType, setLoginType] = useState<LoginType>()
 
   const { evmAccount, provider: particleEvmProvider } = useETHProvider()
 
+  const connector = useMemo(() => {
+    if (loginType === LoginType.OKX) return okxConnector
+    if (loginType === LoginType.UNISAT) return unisatConnector
+    return undefined
+  }, [loginType, okxConnector, unisatConnector])
+
   useEffect(() => {
-    if (!evmAccount || !particleEvmProvider || !connectors.okx) return
+    if (!loginType || !evmAccount || !particleEvmProvider || !connector) return
+
     connect(
-      { connector: connectors.okx },
+      { connector },
       { onError: (v) => console.log('connect error: ', v) }
     )
-    setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.OKX)
+    setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, loginType)
     onClose()
-  }, [connect, connectors.okx, evmAccount, onClose, particleEvmProvider])
+  }, [connect, connector, evmAccount, loginType, onClose, particleEvmProvider])
 
   return (
     <>
@@ -41,7 +51,21 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
             return
           }
 
-          connectParticle('okx')
+          connectParticle(LoginType.OKX)
+          setLoginType(LoginType.OKX)
+        }}
+      />
+      <WalletItem
+        iconName="unisat"
+        name="Unisat wallet"
+        connect={async () => {
+          if (!window.unisat) {
+            openUrl(WALLETSITE.unisat)
+            return
+          }
+
+          connectParticle(LoginType.UNISAT)
+          setLoginType(LoginType.UNISAT)
         }}
       />
       <WalletItem
@@ -56,10 +80,10 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
             return
           }
 
-          if (!connectors.metamask) return
+          if (!metaMaskConnector) return
 
           connect(
-            { connector: connectors.metamask },
+            { connector: metaMaskConnector },
             { onError: (v) => console.log('connect error: ', v) }
           )
           setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.METAMASK)
