@@ -14,14 +14,14 @@ export const DearBitSmiler: React.FC = () => {
 }
 
 export const PlayerInfo: React.FC<{ className?: string }> = ({ className }) => {
-  const { address } = useUserInfo()
+  const { addressForDisplay } = useUserInfo()
 
-  if (!address) return null
+  if (!addressForDisplay) return null
 
   return (
     <div className={cn('flex flex-col gap-y-1.5 font-smb text-sm', className)}>
       <div>bitSmiler:</div>
-      <div>{displayAddress(address, 3, 3)}</div>
+      <div>{displayAddress(addressForDisplay, 3, 3)}</div>
     </div>
   )
 }

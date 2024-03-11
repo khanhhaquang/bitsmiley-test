@@ -15,7 +15,10 @@ import EvmConnector from './EvmConnector'
 import WrongNetworkModal from '../WrongNetworkModal'
 import './index.scss'
 import { useNavigate } from 'react-router-dom'
-import { useConnectModal as useParticleConnect } from '@particle-network/btc-connectkit'
+import {
+  useBTCProvider,
+  useConnectModal as useParticleConnect
+} from '@particle-network/btc-connectkit'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -40,6 +43,7 @@ export const ConnectWallet: React.FC<{
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
 
+  const { accounts: btcAccounts } = useBTCProvider()
   const { disconnect: disConnectParticle } = useParticleConnect()
   const { disconnect: disconnectEvm } = useDisconnect()
   const { isError: isNetworkError, setIsError: setIsNetworkError } =
@@ -76,7 +80,9 @@ export const ConnectWallet: React.FC<{
             'shadow-connectwallet-button hover:shadow-connectwallet-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue',
           className
         )}>
-        {isEvmConnected ? displayAddress(evmAddress, 4, 4) : 'CONNECT WALLET'}
+        {isEvmConnected
+          ? displayAddress(btcAccounts[0] || evmAddress, 4, 4)
+          : 'CONNECT WALLET'}
 
         <div
           ref={buttonRef}
