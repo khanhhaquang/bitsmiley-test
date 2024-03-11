@@ -10,12 +10,11 @@ export const NotConnected: React.FC = () => {
         <Image src={getIllustrationUrl('disccoins')} />
         <div className="w-[384px] text-sm">
           <p>
-            Now, you can stake your bitDisc to mine bitJade. BitJade will be
-            converted to the corresponding token quotas that can be purchased
-            during TGE.
+            Now, you can stake your M-bitDisc-Black til TGE to earn bitJade.
+            bitJade will bring you privileges like no others ^_^
           </p>
           <br />
-          <p>Connect wallet to find more...</p>
+          <p>Connect your wallet to find out more...</p>
         </div>
       </div>
     </div>
