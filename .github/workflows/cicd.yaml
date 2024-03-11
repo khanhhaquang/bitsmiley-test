@@ -76,7 +76,7 @@ jobs:
         run: |
           npm ci
 
-          npm run build:pro
+          npm run build:dev
 
           aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
 
