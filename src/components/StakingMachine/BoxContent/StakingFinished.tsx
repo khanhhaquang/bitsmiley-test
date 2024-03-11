@@ -8,8 +8,10 @@ import { useWriteContract } from 'wagmi'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import useContractAddresses from '@/hooks/useNetworkAddresses'
 import useUserStakes from '@/hooks/useUserStakes'
+import { useState } from 'react'
 
 export const StakingFinished: React.FC = () => {
+  const [isRetrieving, setIsRetrieving] = useState(false)
   const { addTransaction } = useStoreActions()
   const contractAddresses = useContractAddresses()
   const { writeContractAsync } = useWriteContract()
@@ -18,15 +20,18 @@ export const StakingFinished: React.FC = () => {
   const handleWithdraw = async () => {
     if (contractAddresses?.staking) {
       try {
+        setIsRetrieving(true)
         const txid = await writeContractAsync({
           abi: stakingAbi,
           functionName: 'withdraw',
-          address: contractAddresses?.staking
+          address: contractAddresses.staking
         })
         addTransaction(txid)
         console.log(txid)
       } catch (error) {
         console.error(error)
+      } finally {
+        setIsRetrieving(false)
       }
     }
   }
@@ -45,12 +50,15 @@ export const StakingFinished: React.FC = () => {
             src={getIllustrationUrl('bit-mint', 'webp')}
             className="border-[3px] border-white"
           />
-          <Button
-            size="xs"
-            className="absolute left-1/2 top-1/2 z-10 w-[100px] -translate-x-1/2 -translate-y-1/2"
-            onClick={handleWithdraw}>
-            Retrieve
-          </Button>
+          <div className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
+            <Button
+              size="xs"
+              className="w-[100px]"
+              onClick={handleWithdraw}
+              disabled={isRetrieving}>
+              {isRetrieving ? 'Retrieving' : 'Retrieve'}
+            </Button>
+          </div>
           <div className="absolute left-0 top-0 h-full w-full bg-black/50"></div>
         </div>
 
