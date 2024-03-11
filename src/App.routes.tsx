@@ -50,18 +50,15 @@ const Routes = () => {
               element: <MyVault />
             }
           ]
+        },
+        {
+          path: 'bit-point',
+          id: 'bitPoint',
+          element: <BitPoint />
         }
       ]
 
-  const bitPointRoutes: RouteObject[] = [
-    {
-      path: 'bit-point',
-      id: 'bitPoint',
-      element: <BitPoint />
-    }
-  ]
-
-  return useRoutes([...basicRoutes, ...alphaNetRoutes, ...bitPointRoutes])
+  return useRoutes([...basicRoutes, ...alphaNetRoutes])
 }
 
 export default Routes
