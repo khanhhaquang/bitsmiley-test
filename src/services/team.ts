@@ -73,6 +73,18 @@ export interface IRank<T> {
   empty?: boolean
 }
 
+export interface IUserPointHistory {
+  address: Address
+  bitDiscBoost: number
+  id: number
+  liquidity: number
+  mintBitUSD: number
+  stake: number
+  teamBoost: number
+  totalPoint: number
+  updateTime: Date
+}
+
 export interface IPageParams {
   page: number
   size: number
@@ -132,6 +144,14 @@ export const TeamService = {
       axiosInstance.post<IResponse<IRank<ITeamMember>>>(
         '/team/getMyTeamMembers',
         null,
+        { params: { address, ...params } }
+      )
+  },
+  getUserPointHistory: {
+    key: 'team.getUserPointHistory',
+    call: (params: IPageParams, address: Address) =>
+      axiosInstance.get<IResponse<IRank<IUserPointHistory>>>(
+        '/history/getUserPointHistory',
         { params: { address, ...params } }
       )
   }

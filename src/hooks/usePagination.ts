@@ -32,7 +32,10 @@ export const usePagination = <T>({
     isPlaceholderData,
     isLoading
   } = useQuery({
-    queryKey: [...queryKey, currentPageNum, debouncedSearchValue],
+    queryKey: [
+      ...queryKey,
+      { size: pageSize, page: currentPageNum, searchBy: debouncedSearchValue }
+    ],
     queryFn: () =>
       queryFn?.({
         page: currentPageNum,

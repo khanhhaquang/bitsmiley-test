@@ -6,7 +6,9 @@ import { useProjectInfo } from '@/hooks/useProjectInfo'
 const Main = lazy(() => import('@/pages/Main'))
 const MainBitUsd = lazy(() => import('@/pages/BitUsd'))
 
-const BitPoint = lazy(() => import('@/pages/BitPoint'))
+const MainBitPoint = lazy(() => import('@/pages/BitPoint'))
+const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
+const BitPointHistory = lazy(() => import('@/pages/BitPoint/BitPointHistory'))
 
 const BitUsd = lazy(() => import('@/pages/BitUsd/BitUsd'))
 const OpenVault = lazy(() => import('@/pages/BitUsd/OpenVault'))
@@ -54,7 +56,17 @@ const Routes = () => {
         {
           path: 'bit-point',
           id: 'bitPoint',
-          element: <BitPoint />
+          element: <MainBitPoint />,
+          children: [
+            {
+              index: true,
+              element: <BitPoint />
+            },
+            {
+              path: 'history',
+              element: <BitPointHistory />
+            }
+          ]
         }
       ]
 
