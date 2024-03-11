@@ -1,3 +1,4 @@
+import { customChains } from '@/config/wagmi'
 import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { providerStore } from '@/store/providerStore'
 import { injected } from 'wagmi/connectors'
@@ -25,7 +26,7 @@ export const useEvmConnectors = () => {
     (p) => p.info.rdns === METAMASK_RDNS
   )
 
-  const { evmAccount } = useETHProvider()
+  const { evmAccount, chainId: evmChainId } = useETHProvider()
   const { provider: particleEvmProvider } = useParticleETHProvider()
 
   const { getNetwork, switchNetwork } = useBTCProvider()
@@ -76,15 +77,23 @@ export const useEvmConnectors = () => {
   )
 
   useEffect(() => {
-    if (!evmAccount) return
+    if (!evmAccount || !evmChainId) return
+
+    const chain = customChains.find((c) => c.id === evmChainId)
+
+    if (!chain) return
 
     getNetwork().then((network) => {
-      if (network === 'livenet') {
+      if (chain.testnet && network === 'livenet') {
         switchNetwork('testnet')
+      }
+
+      if (!chain.testnet && network === 'testnet') {
+        switchNetwork('livenet')
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evmAccount])
+  }, [evmAccount, evmChainId])
 
   return {
     okxConnector,

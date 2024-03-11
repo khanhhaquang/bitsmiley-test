@@ -23,7 +23,7 @@ export const merlinMainnet = {
   blockExplorers: {
     default: { name: 'Merlinscan', url: 'https://scan.merlinchain.io' }
   },
-  testnet: true
+  testnet: false
 } as const satisfies Chain
 
 export const customChains = [merlinTestnet, merlinMainnet] as Chain[]
