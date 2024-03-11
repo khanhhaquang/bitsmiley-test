@@ -42,12 +42,14 @@ import CopyIcon from './copy.svg'
 import LevelIcon from './level.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
 import BoostIcon from './boost.svg'
+import ArrowLeftThinIcon from './arrow-left-thin.svg'
 
 export {
   DotIcon,
   CoinIcon,
   CloseIcon,
   HeaderIcon,
+  ArrowLeftThinIcon,
   ArrowLeftIcon,
   ArrowDownIcon,
   CopyrightIcon,

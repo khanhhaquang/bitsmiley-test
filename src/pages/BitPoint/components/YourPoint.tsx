@@ -5,6 +5,7 @@ import {
 } from '@/assets/icons'
 import { useUserPoint } from '@/hooks/useUserPoint'
 import { cn } from '@/utils/cn'
+import { Link } from 'react-router-dom'
 
 type YourPointProps = {
   className?: string
@@ -85,9 +86,9 @@ export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
 
           <p className="relative flex flex-col items-center gap-y-[18px]">
             <span className="font-ibmr text-sm text-white/70">History</span>
-            <a className="cursor-not-allowed text-white">
+            <Link className="text-white" to="./history">
               <HistoryPointIcon />
-            </a>
+            </Link>
           </p>
         </div>
       </div>
