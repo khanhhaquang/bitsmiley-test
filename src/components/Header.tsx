@@ -11,7 +11,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
   const isHome = location.pathname === '/'
 
   return (
-    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-[242px] text-white">
+    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-12 text-white md:px-[120px] 2xl:px-[242px]">
       <Link to="/">
         <HeaderIcon />
       </Link>

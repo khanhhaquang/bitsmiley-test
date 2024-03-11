@@ -37,7 +37,7 @@ export const CopyRightAndLinks: React.FC<{
   return (
     <>
       <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
-      <div className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between px-[120px] text-white mix-blend-difference">
+      <div className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white mix-blend-difference md:px-[120px] 2xl:px-[242px]">
         <div className="flex items-start gap-x-1.5">
           <CopyrightIcon />
           <span className="cursor-default">bitSmiley team 2024</span>
