@@ -1,16 +1,18 @@
 import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { getTransactions } from '@/store/common/reducer'
+
 import {
   useReadStakingContractGetStakeRewards,
   useReadStakingContractGetUserStakes,
   useReadStakingContractPerAddressLimit,
   useReadStakingContractStakingEnded
 } from '@/contracts/Staking'
-import useContractAddresses from './useNetworkAddresses'
+import { getTransactions } from '@/store/common/reducer'
+
+import { useContractAddresses } from './useContractAddresses'
 import { useUserInfo } from './useUserInfo'
 
-const useUserStakes = () => {
+export const useUserStakes = () => {
   const contractAddresses = useContractAddresses()
   const { address } = useUserInfo()
   const transactions = useSelector(getTransactions)
@@ -77,5 +79,3 @@ const useUserStakes = () => {
     stakeRewards
   }
 }
-
-export default useUserStakes

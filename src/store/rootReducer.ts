@@ -1,5 +1,6 @@
-import common from './common'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
+
+import common from './common'
 
 const allReducers = combineReducers({
   common: common.reducer

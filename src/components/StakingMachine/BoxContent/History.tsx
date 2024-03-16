@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, BitJade } from '@/assets/icons'
-import useUserStakes from '@/hooks/useUserStakes'
+import { useUserStakes } from '@/hooks/useUserStakes'
 
 type HistoryProps = {
   onBackClick: () => void

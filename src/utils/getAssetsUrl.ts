@@ -20,11 +20,6 @@ export const getIllustrationUrl = (name: string, format?: string) => {
   ).href
 }
 
-export const getOpenUrl = (name: string, format?: string) => {
-  return new URL(`/src/assets/net/${name}.${format || 'png'}`, import.meta.url)
-    .href
-}
-
 export const openUrl = (url: string) => {
   window.open(url, '_blank')
 }

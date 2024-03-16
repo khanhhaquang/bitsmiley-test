@@ -1,6 +1,7 @@
+import { Address } from 'viem'
+
 import { axiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
-import { Address } from 'viem'
 
 export interface IUserPoint {
   id?: number

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { cn } from '@/utils/cn'
 import { CopyIcon } from '@/assets/icons'
+import { cn } from '@/utils/cn'
 import { copyToClipboard } from '@/utils/copy'
 
 type TProps = {

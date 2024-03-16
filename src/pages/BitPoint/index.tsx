@@ -1,5 +1,6 @@
 import React, { Suspense, useState } from 'react'
 import { Outlet } from 'react-router-dom'
+
 import { NotConnected } from '@/components/StakingMachine/BoxContent/NotConnected'
 import { Input, InputProps } from '@/components/ui/input'
 import { useUserInfo } from '@/hooks/useUserInfo'

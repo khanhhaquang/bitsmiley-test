@@ -1,19 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
-import { reconnect as reconnectWagmi } from 'wagmi/actions'
-import { CreateConnectorFn, useConfig } from 'wagmi'
-import { useEvmConnectors } from './useEvmConnectors'
-import { getLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { LoginType } from '@/types/common'
-import { useUserInfo } from './useUserInfo'
 import {
   useETHProvider,
   useConnector as useParticleConnector
 } from '@particle-network/btc-connectkit'
+import { useCallback, useEffect, useState } from 'react'
+import { CreateConnectorFn, useConfig } from 'wagmi'
+import { reconnect as reconnectWagmi } from 'wagmi/actions'
+
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { LoginType } from '@/types/common'
+import { getLocalStorage } from '@/utils/storage'
+
+import { useEvmConnectors } from './useEvmConnectors'
+import { useUserInfo } from './useUserInfo'
 
 const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
 
-const useReconnectEvm = () => {
+export const useReconnectEvm = () => {
   const config = useConfig()
   const { isConnected: isConnectedWagmi } = useUserInfo()
   const { unisatConnector, okxConnector, metaMaskConnector } =
@@ -79,5 +81,3 @@ const useReconnectEvm = () => {
 
   return { isError, setIsError }
 }
-
-export default useReconnectEvm

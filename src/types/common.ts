@@ -9,3 +9,11 @@ export enum LoginType {
   METAMASK = 'metamask',
   UNISAT = 'unisat'
 }
+
+export enum TransactionStatus {
+  Idle = 'idle',
+  Signing = 'signing',
+  Processing = 'processing',
+  Success = 'success',
+  Failed = 'failed'
+}

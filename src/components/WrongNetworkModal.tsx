@@ -1,9 +1,10 @@
-import { Image } from '@/components/Image'
-import { Button } from '@/components/Button'
-import { Modal } from '@/components/Modal'
-import { CloseIcon } from '@/assets/icons'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useSwitchChain } from 'wagmi'
+
+import { CloseIcon } from '@/assets/icons'
+import { Button } from '@/components/Button'
+import { Image } from '@/components/Image'
+import { Modal } from '@/components/Modal'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,

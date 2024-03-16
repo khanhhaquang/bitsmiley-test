@@ -1,6 +1,7 @@
-import { TeamService } from '@/services/team'
 import { useQuery } from '@tanstack/react-query'
+
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { TeamService } from '@/services/team'
 
 export const useTeamInfo = () => {
   const { address } = useUserInfo()

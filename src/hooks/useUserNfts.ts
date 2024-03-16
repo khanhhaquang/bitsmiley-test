@@ -1,8 +1,10 @@
-import { INft, UserService } from '@/services/user'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useUserInfo } from './useUserInfo'
 import { useCallback, useMemo } from 'react'
+
+import { INft, UserService } from '@/services/user'
 import { IResponse } from '@/types/common'
+
+import { useUserInfo } from './useUserInfo'
 
 export const useUserNfts = () => {
   const { address, isConnected } = useUserInfo()

@@ -1,13 +1,14 @@
-import { AxiosResponse } from 'axios'
 import {
   keepPreviousData,
   useQueryClient,
   useQuery
 } from '@tanstack/react-query'
+import { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
+
 import { useDebounce } from '@/hooks/useDebounce'
-import { IResponse } from '@/types/common'
 import { IPageParams, IRank } from '@/services/team'
+import { IResponse } from '@/types/common'
 
 const PAGE_SIZE = 20
 const SEARCH_DEBOUNCE_DELAY = 500

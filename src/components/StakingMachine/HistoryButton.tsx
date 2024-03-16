@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { cn } from '@/utils/cn'
+
 import { Image } from '@/components/Image'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import useUserStakes from '@/hooks/useUserStakes'
+import { useUserStakes } from '@/hooks/useUserStakes'
+import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 type HistoryButtonProps = {
   onClick: () => void

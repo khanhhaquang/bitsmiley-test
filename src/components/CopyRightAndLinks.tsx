@@ -1,11 +1,13 @@
+import { useEffect, useRef, useState } from 'react'
+
 import { CopyrightIcon, PlayIcon } from '@/assets/icons'
 import { MEDIA } from '@/config/links'
-import { cn } from '@/utils/cn'
-import { useEffect, useRef, useState } from 'react'
-import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
-import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { cn } from '@/utils/cn'
 import { openUrl } from '@/utils/getAssetsUrl'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+
+import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
 
 export const CopyRightAndLinks: React.FC<{
   musicControl?: boolean
@@ -37,7 +39,7 @@ export const CopyRightAndLinks: React.FC<{
   return (
     <>
       <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
-      <div className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white mix-blend-difference md:px-[120px] 2xl:px-[242px]">
+      <div className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white mix-blend-difference md:px-[120px]">
         <div className="flex items-start gap-x-1.5">
           <CopyrightIcon />
           <span className="cursor-default">bitSmiley team 2024</span>

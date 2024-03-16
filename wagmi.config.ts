@@ -1,14 +1,13 @@
 import { defineConfig } from '@wagmi/cli'
 import { react } from '@wagmi/cli/plugins'
-import erc721StakingAbi from './src/abi/Staking.json'
 import { Abi, erc721Abi } from 'viem'
-import {
-  vaultManagerABI,
-  bitSmileyABI,
-  oraclesABI,
-  bitUSDABI,
-  bitUsdL2ABI
-} from './src/abi/abi'
+
+import bitSmileyAbi from './src/abi/BitSmiley.json'
+import bitUsdAbi from './src/abi/BitUsd.json'
+import bitUsdL2Abi from './src/abi/BitUsdL2.json'
+import oracleAbi from './src/abi/Oracle.json'
+import erc721StakingAbi from './src/abi/Staking.json'
+import vaultManagerAbi from './src/abi/VaultManager.json'
 
 export default defineConfig([
   {
@@ -32,51 +31,51 @@ export default defineConfig([
     plugins: [react()]
   },
   {
-    out: 'src/contracts/vaultManager.ts',
+    out: 'src/contracts/Vault.ts',
     contracts: [
       {
-        name: 'vaultManager',
-        abi: vaultManagerABI as Abi
+        name: 'Vault',
+        abi: vaultManagerAbi as Abi
       }
     ],
     plugins: [react()]
   },
   {
-    out: 'src/contracts/smileyContract.ts',
+    out: 'src/contracts/BitSmiley.ts',
     contracts: [
       {
-        name: 'smileyContract',
-        abi: bitSmileyABI as Abi
+        name: 'BitSmiley',
+        abi: bitSmileyAbi as Abi
       }
     ],
     plugins: [react()]
   },
   {
-    out: 'src/contracts/oracleContract.ts',
+    out: 'src/contracts/Oracle.ts',
     contracts: [
       {
-        name: 'oracleContract',
-        abi: oraclesABI as Abi
+        name: 'Oracle',
+        abi: oracleAbi as Abi
       }
     ],
     plugins: [react()]
   },
   {
-    out: 'src/contracts/WBTCContract.ts',
+    out: 'src/contracts/BitUsd.ts',
     contracts: [
       {
-        name: 'WBTCContract',
-        abi: bitUSDABI as Abi
+        name: 'BitUsd',
+        abi: bitUsdAbi as Abi
       }
     ],
     plugins: [react()]
   },
   {
-    out: 'src/contracts/BitUSDContract.ts',
+    out: 'src/contracts/BitUsdL2.ts',
     contracts: [
       {
-        name: 'BitUSDContract',
-        abi: bitUsdL2ABI as Abi
+        name: 'BitUsdL2',
+        abi: bitUsdL2Abi as Abi
       }
     ],
     plugins: [react()]

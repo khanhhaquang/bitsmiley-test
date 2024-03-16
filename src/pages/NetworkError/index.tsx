@@ -1,7 +1,7 @@
-import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { CanvasFrames } from '@/components/CanvasFrames'
-import { getFrameUrl } from '@/utils/getAssetsUrl'
+import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { Header } from '@/components/Header'
+import { getFrameUrl } from '@/utils/getAssetsUrl'
 
 const NetworkError: React.FC = () => {
   return (

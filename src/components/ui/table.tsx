@@ -62,7 +62,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'flex items-center justify-between transition-colors hover:bg-slate-800/50 data-[state=selected]:bg-slate-800',
+      'flex items-center justify-between transition-colors data-[state=selected]:bg-slate-800',
       className
     )}
     {...props}

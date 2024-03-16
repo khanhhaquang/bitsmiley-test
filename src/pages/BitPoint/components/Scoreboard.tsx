@@ -1,11 +1,6 @@
-import { SearchInput } from './SearchInput'
-import { SmileyIcon, Smiley3Icon, ScoreBoardIcon } from '@/assets/icons'
-import { displayAddress } from '@/utils/formatter'
-import { Pagination } from '../../../components/Pagination'
-import { usePagination } from '@/hooks/usePagination'
-import { IIndividualRank, ITeamRank, TeamService } from '@/services/team'
 import { useState } from 'react'
-import { cn } from '@/utils/cn'
+
+import { SmileyIcon, Smiley3Icon, ScoreBoardIcon } from '@/assets/icons'
 import {
   Table,
   TableBody,
@@ -14,6 +9,14 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { usePagination } from '@/hooks/usePagination'
+import { IIndividualRank, ITeamRank, TeamService } from '@/services/team'
+import { cn } from '@/utils/cn'
+import { displayAddress } from '@/utils/formatter'
+
+import { SearchInput } from './SearchInput'
+
+import { Pagination } from '../../../components/Pagination'
 
 enum ScoreTab {
   Team = 'team',

@@ -1,13 +1,15 @@
-import { useConnect } from 'wagmi'
-import { WalletItem } from '.'
-import { openUrl } from '@/utils/getAssetsUrl'
-import { WALLETSITE } from '@/config/links'
-import { useEvmConnectors } from '@/hooks/useEvmConnectors'
-import { setLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { LoginType } from '@/types/common'
 import { useConnector, useETHProvider } from '@particle-network/btc-connectkit'
 import { useEffect, useMemo, useState } from 'react'
+import { useConnect } from 'wagmi'
+
+import { WALLETSITE } from '@/config/links'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { useEvmConnectors } from '@/hooks/useEvmConnectors'
+import { LoginType } from '@/types/common'
+import { openUrl } from '@/utils/getAssetsUrl'
+import { setLocalStorage } from '@/utils/storage'
+
+import { WalletItem } from '.'
 
 type EvmConnectorProps = {
   onClose: () => void

@@ -23,6 +23,7 @@ const colors = {
   grey6: '#949494',
   grey7: '#B9B9B9',
   grey8: '#2B2B2B',
+  grey9: '#3D3D3D',
   red: '#CE2D2D',
   red1: '#FF0000',
   pink: '#FF64AE',
@@ -42,6 +43,9 @@ export default {
   theme: {
     extend: {
       colors: colors,
+      screens: {
+        '3xl': '1920px'
+      },
       keyframes: () => ({
         popOut: {
           '0%': { scale: '30%' },
@@ -87,6 +91,11 @@ export default {
         'stake-now-button': '4px 4px 0px 0px rgba(0, 0, 0, 0.30)'
       },
       backgroundImage: {
+        bitUsdInputHeaderBg:
+          'url("/src/assets/illustrations/bitusd/input-header-bg.png")',
+        bitUsdContentBg:
+          'radial-gradient(57.37% 53.83% at 48.72% 50%, #120E20 26.87%, #0E0D15 73.65%, #09080B 100%)',
+        bitUsdBg: 'url("/src/assets/illustrations/bitusd-bg.webp")',
         bitpointPointBg:
           'url("/src/assets/illustrations/bitpoint/your-point-bg.png")',
         onchainLoading: 'url("/src/assets/illustrations/onchain-loading.png")',

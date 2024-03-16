@@ -1,12 +1,6 @@
 import { CrownIcon, LevelIcon, PeopleIcon } from '@/assets/icons'
-import { SearchInput } from './SearchInput'
-import { usePagination } from '@/hooks/usePagination'
-import { IPageParams, ITeamMember, TeamService } from '@/services/team'
-import { useUserInfo } from '@/hooks/useUserInfo'
-import { Pagination } from '@/components/Pagination'
-import { displayAddress } from '@/utils/formatter'
-import { useTeamInfo } from '@/hooks/useTeamInfo'
 import { CopyButton } from '@/components/CopyButton'
+import { Pagination } from '@/components/Pagination'
 import {
   Table,
   TableBody,
@@ -15,6 +9,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { usePagination } from '@/hooks/usePagination'
+import { useTeamInfo } from '@/hooks/useTeamInfo'
+import { useUserInfo } from '@/hooks/useUserInfo'
+import { IPageParams, ITeamMember, TeamService } from '@/services/team'
+import { displayAddress } from '@/utils/formatter'
+
+import { SearchInput } from './SearchInput'
 
 export const CaptainScoreboard: React.FC = () => {
   const { address } = useUserInfo()

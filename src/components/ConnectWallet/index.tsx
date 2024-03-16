@@ -1,24 +1,28 @@
-import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
-import { useAccount, useDisconnect } from 'wagmi'
-import { Image } from '@/components/Image'
-import { Modal } from '@/components/Modal'
-import { Button } from '@/components/Button'
-import { displayAddress } from '@/utils/formatter'
-import { CloseIcon } from '@/assets/icons'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { useClickOutside } from '@/hooks/useClickOutside'
-import { getLocalStorage, setLocalStorage, clearStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { cn } from '@/utils/cn'
-import useReconnectEvm from '@/hooks/useReconnectEvm'
-import EvmConnector from './EvmConnector'
-import WrongNetworkModal from '../WrongNetworkModal'
-import './index.scss'
-import { useNavigate } from 'react-router-dom'
 import {
   useBTCProvider,
   useConnectModal as useParticleConnect
 } from '@particle-network/btc-connectkit'
+import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAccount, useDisconnect } from 'wagmi'
+
+import { CloseIcon } from '@/assets/icons'
+import { Button } from '@/components/Button'
+import { Image } from '@/components/Image'
+import { Modal } from '@/components/Modal'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { useClickOutside } from '@/hooks/useClickOutside'
+import { useReconnectEvm } from '@/hooks/useReconnectEvm'
+import { cn } from '@/utils/cn'
+import { displayAddress } from '@/utils/formatter'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { getLocalStorage, setLocalStorage, clearStorage } from '@/utils/storage'
+
+import EvmConnector from './EvmConnector'
+
+import WrongNetworkModal from '../WrongNetworkModal'
+
+import './index.scss'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -175,7 +179,7 @@ const SelectWalletModal: React.FC<{
             {DISCLAIMER_TEXTS.map((t, idx) => (
               <Fragment key={idx}>
                 <li className="flex items-start gap-x-2">
-                  <div className="mt-2 h-[3px] w-[3px] shrink-0 rounded-full bg-white" />
+                  <div className="mt-2 size-[3px] shrink-0 rounded-full bg-white" />
                   <div>{t}</div>
                 </li>
                 {idx !== DISCLAIMER_TEXTS.length - 1 && (
@@ -218,7 +222,7 @@ export const WalletItem: React.FC<{
       onClick={connect}>
       <Image
         src={getIllustrationUrl(iconName)}
-        className="aspect-square h-7 w-7"
+        className="aspect-square size-7"
       />
       <svg
         className="absolute -left-2"

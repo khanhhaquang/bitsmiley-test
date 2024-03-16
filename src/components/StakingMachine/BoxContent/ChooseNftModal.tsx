@@ -1,17 +1,18 @@
-import { useUserInfo } from '@/hooks/useUserInfo'
-import { useWriteContract } from 'wagmi'
-import { CloseIcon } from '@/assets/icons'
-import { Button } from '@/components/Button'
-import { Modal } from '@/components/Modal'
 import { useState } from 'react'
 import { erc721Abi } from 'viem'
-import { useUserNfts } from '@/hooks/useUserNfts'
+import { useWriteContract } from 'wagmi'
+
+import { CloseIcon } from '@/assets/icons'
+import { Button } from '@/components/Button'
 import { Image } from '@/components/Image'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { cn } from '@/utils/cn'
-import { INft } from '@/services/user'
+import { Modal } from '@/components/Modal'
+import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useStoreActions } from '@/hooks/useStoreActions'
-import useContractAddresses from '@/hooks/useNetworkAddresses'
+import { useUserInfo } from '@/hooks/useUserInfo'
+import { useUserNfts } from '@/hooks/useUserNfts'
+import { INft } from '@/services/user'
+import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 type NftProps = {
   nft: INft

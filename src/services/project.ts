@@ -1,6 +1,7 @@
+import { Address } from 'viem'
+
 import { axiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
-import { Address } from 'viem'
 
 export interface IContractAddresses {
   BitSmiley: Address
@@ -22,15 +23,6 @@ export interface IProject {
   web3Info: INetworkInfo[]
 }
 
-export enum FeatureEnabled {
-  ENABLED = 'enable',
-  DISABLED = 'disabled'
-}
-export interface IFeaturesEnabled {
-  Staking: FeatureEnabled
-  AlphaNet: FeatureEnabled
-}
-
 export const ProjectService = {
   getProjectInfo: {
     key: 'project.getProjectInfo',
@@ -38,12 +30,5 @@ export const ProjectService = {
       axiosInstance
         .get<IResponse<IProject>>('/bsInfo/projectInfo ')
         .then((res) => res.data)
-  },
-  getEnabledModules: {
-    key: 'project.getEnabledModules',
-    call: () =>
-      axiosInstance.get<IResponse<IFeaturesEnabled>>(
-        '/bsInfo/getFunctionalModuleInfo'
-      )
   }
 }

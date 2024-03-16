@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 import {
   BoostIcon,
   HistoryPointIcon,
@@ -5,7 +7,6 @@ import {
 } from '@/assets/icons'
 import { useUserPoint } from '@/hooks/useUserPoint'
 import { cn } from '@/utils/cn'
-import { Link } from 'react-router-dom'
 
 type YourPointProps = {
   className?: string

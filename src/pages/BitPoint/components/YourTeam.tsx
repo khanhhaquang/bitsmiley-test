@@ -1,7 +1,7 @@
-import { cn } from '@/utils/cn'
 import { LevelIcon, PeopleIcon } from '@/assets/icons'
 import { CopyButton } from '@/components/CopyButton'
 import { useTeamInfo } from '@/hooks/useTeamInfo'
+import { cn } from '@/utils/cn'
 
 export const YourTeam: React.FC = () => {
   const { myTeamInfo } = useTeamInfo()

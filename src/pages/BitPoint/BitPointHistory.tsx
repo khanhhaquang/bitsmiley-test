@@ -1,9 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+
 import { ArrowLeftThinIcon } from '@/assets/icons'
-import { usePagination } from '@/hooks/usePagination'
-import { useUserInfo } from '@/hooks/useUserInfo'
-import { IPageParams, IUserPointHistory, TeamService } from '@/services/team'
 import { Pagination } from '@/components/Pagination'
 import {
   Table,
@@ -13,6 +11,9 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { usePagination } from '@/hooks/usePagination'
+import { useUserInfo } from '@/hooks/useUserInfo'
+import { IPageParams, IUserPointHistory, TeamService } from '@/services/team'
 
 const BitPointHistory: React.FC = () => {
   const { address } = useUserInfo()
@@ -60,7 +61,7 @@ const BitPointHistory: React.FC = () => {
 
           <TableBody>
             {currentPageData?.map((v) => (
-              <TableRow key={v.id} className="px-6 py-6">
+              <TableRow key={v.id} className="p-6">
                 <TableCell>{v.updateTime.toString()}</TableCell>
                 <TableCell>{v.mintBitUSD}</TableCell>
                 <TableCell>{v.stake}</TableCell>

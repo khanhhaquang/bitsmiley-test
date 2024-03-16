@@ -1,28 +1,33 @@
 import { lazy } from 'react'
 import { Navigate, RouteObject, useRoutes } from 'react-router-dom'
-import { FeatureEnabled } from '@/services/project'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const Main = lazy(() => import('@/pages/Main'))
-const MainBitUsd = lazy(() => import('@/pages/BitUsd'))
 
-const MainBitPoint = lazy(() => import('@/pages/BitPoint'))
-const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
-const BitPointHistory = lazy(() => import('@/pages/BitPoint/BitPointHistory'))
-
-const BitUsd = lazy(() => import('@/pages/BitUsd/BitUsd'))
-const OpenVault = lazy(() => import('@/pages/BitUsd/OpenVault'))
-const MyVault = lazy(() => import('@/pages/BitUsd/MyVault'))
+const BitUsd = lazy(() => import('@/pages/BitUsd'))
+const BitUsdVault = lazy(() => import('@/pages/BitUsd/Vault'))
+const BitUsdMintingPairs = lazy(() => import('@/pages/BitUsd/MintingPairs'))
 
 const Routes = () => {
-  const { featuresEnabled } = useProjectInfo()
-  const isAlphaNetEnabled = featuresEnabled?.AlphaNet === FeatureEnabled.ENABLED
-
-  const basicRoutes: RouteObject[] = [
+  const routes: RouteObject[] = [
     {
       path: '/',
       id: 'main',
       element: <Main />
+    },
+    {
+      path: 'bit-usd',
+      id: 'bitUSD',
+      element: <BitUsd />,
+      children: [
+        {
+          index: true,
+          element: <BitUsdMintingPairs />
+        },
+        {
+          path: 'vault/:chainId',
+          element: <BitUsdVault />
+        }
+      ]
     },
     {
       path: '*',
@@ -31,46 +36,7 @@ const Routes = () => {
     }
   ]
 
-  const alphaNetRoutes: RouteObject[] = !isAlphaNetEnabled
-    ? []
-    : [
-        {
-          path: 'bit-usd',
-          id: 'bitUsd',
-          element: <MainBitUsd />,
-          children: [
-            {
-              index: true,
-              element: <BitUsd />
-            },
-            {
-              path: 'vault/:chainId',
-              element: <OpenVault />
-            },
-            {
-              path: 'my-vault/:chainId',
-              element: <MyVault />
-            }
-          ]
-        },
-        {
-          path: 'bit-point',
-          id: 'bitPoint',
-          element: <MainBitPoint />,
-          children: [
-            {
-              index: true,
-              element: <BitPoint />
-            },
-            {
-              path: 'history',
-              element: <BitPointHistory />
-            }
-          ]
-        }
-      ]
-
-  return useRoutes([...basicRoutes, ...alphaNetRoutes])
+  return useRoutes(routes)
 }
 
 export default Routes

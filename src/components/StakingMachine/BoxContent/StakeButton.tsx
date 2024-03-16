@@ -1,8 +1,9 @@
-import { Button } from '@/components/Button'
-import { useUserNfts } from '@/hooks/useUserNfts'
 import { useState } from 'react'
-import { Modal } from '@/components/Modal'
+
 import { CloseIcon } from '@/assets/icons'
+import { Button } from '@/components/Button'
+import { Modal } from '@/components/Modal'
+import { useUserNfts } from '@/hooks/useUserNfts'
 
 const NoNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,

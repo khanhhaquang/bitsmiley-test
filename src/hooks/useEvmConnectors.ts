@@ -1,12 +1,13 @@
-import { customChains } from '@/config/wagmi'
-import { useEffect, useMemo, useSyncExternalStore } from 'react'
-import { providerStore } from '@/store/providerStore'
-import { injected } from 'wagmi/connectors'
 import {
   useBTCProvider,
   useETHProvider,
   useETHProvider as useParticleETHProvider
 } from '@particle-network/btc-connectkit'
+import { useEffect, useMemo, useSyncExternalStore } from 'react'
+import { injected } from 'wagmi/connectors'
+
+import { customChains } from '@/config/wagmi'
+import { providerStore } from '@/store/providerStore'
 
 const OKX_RDNS = 'com.okex.wallet'
 const UNISAT_RDNS = 'unisat.io'

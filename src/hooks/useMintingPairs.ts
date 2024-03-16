@@ -1,7 +1,8 @@
-import { useAccount } from 'wagmi'
-import { UserService } from '@/services/user'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import { useAccount } from 'wagmi'
+
+import { UserService } from '@/services/user'
 
 export const useMintingPairs = (chainId?: number) => {
   const { address } = useAccount()

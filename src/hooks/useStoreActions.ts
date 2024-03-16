@@ -1,9 +1,9 @@
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
-
-import commonActions from '@/store/common/actions'
-import { IFeaturesEnabled, IProject } from '@/services/project'
 import { Hash } from 'viem'
+
+import { IProject } from '@/services/project'
+import commonActions from '@/store/common/actions'
 
 export const useStoreActions = () => {
   const dispatch = useDispatch()
@@ -38,11 +38,6 @@ export const useStoreActions = () => {
     (payload: IProject) => dispatch(commonActions.SET_PROJECT_INFO(payload)),
     [dispatch]
   )
-  const setFeaturesEnabled = useCallback(
-    (payload: IFeaturesEnabled) =>
-      dispatch(commonActions.SET_FEATURESENABLED_INFO(payload)),
-    [dispatch]
-  )
 
   return {
     resetStorage,
@@ -51,7 +46,6 @@ export const useStoreActions = () => {
     addTransaction,
     addTransactions,
     removeTransaction,
-    setProjectInfo,
-    setFeaturesEnabled
+    setProjectInfo
   }
 }

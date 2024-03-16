@@ -1,14 +1,16 @@
-import { ReactNode } from 'react'
-import store from '@/store/rootReducer'
-import { Provider as ReduxProvider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactNode } from 'react'
+import { Provider as ReduxProvider } from 'react-redux'
+import { BrowserRouter } from 'react-router-dom'
+
 import { ModalsContainer } from '@/components/Modal'
-import CustomWagmiProvider from '@/providers/CustomWagmiProvider'
-import { PageLayout } from './components/PageLayout'
-import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from '@/components/ui/toaster'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import CustomWagmiProvider from '@/providers/CustomWagmiProvider'
+import store from '@/store/rootReducer'
+
+import { PageLayout } from './components/PageLayout'
 
 const queryClient = new QueryClient({
   defaultOptions: {

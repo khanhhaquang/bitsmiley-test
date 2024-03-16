@@ -1,6 +1,7 @@
+import { Address, Hash } from 'viem'
+
 import { axiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
-import { Address, Hash } from 'viem'
 
 export enum InvalidReasonEnum {
   NotStarted = 'minting not started yet',
@@ -26,14 +27,25 @@ export interface IMintingPair {
   borrowRate: string
   chainId: number
   isOpenVault: boolean
+  liquidationPenalty: string
   liquidity: string
   maxLTV: string
-  minSize: string
   network: string
-  totalDebt: string
-  collateralRatio: number
-  collateralLocked: number
-  vaultFloor: number
+  vaultCeiling: string
+  vaultFloor: string
+
+  collateralRatio?: string
+  collateralLocked?: string
+  totalDebt?: string
+}
+
+export enum FeatureEnabled {
+  ENABLED = 'enable',
+  DISABLED = 'disabled'
+}
+export interface IFeaturesEnabled {
+  Staking: FeatureEnabled
+  AlphaNet: FeatureEnabled
 }
 
 export const UserService = {
@@ -47,6 +59,13 @@ export const UserService = {
     call: (address: Address): Promise<IResponse<IMintingPair[]>> =>
       axiosInstance
         .get(`user/getMintingPairsInfo/${address}`)
+        .then((res) => res.data)
+  },
+  getEnabledFeatures: {
+    key: 'project.getEnabledFeatures',
+    call: (address: Address): Promise<IResponse<IFeaturesEnabled>> =>
+      axiosInstance
+        .get(`/bsInfo/v2/getFunctionalModuleInfo/${address}`)
         .then((res) => res.data)
   }
 }

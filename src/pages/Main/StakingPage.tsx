@@ -1,14 +1,15 @@
-import { Image } from '@/components/Image'
 import { RefObject, useRef } from 'react'
-import { getFrameUrl, getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
-import { MEDIA } from '@/config/links'
-import { cn } from '@/utils/cn'
+
+import { CoinIcon } from '@/assets/icons'
+import { Button } from '@/components/Button'
 import { CanvasFrames } from '@/components/CanvasFrames'
+import { Image } from '@/components/Image'
+import { StakingMachine } from '@/components/StakingMachine'
+import { MEDIA } from '@/config/links'
 import { useFetchArticles } from '@/hooks/useFetchArticles'
 import { useOnScreen } from '@/hooks/useOnScreen'
-import { CoinIcon } from '@/assets/icons'
-import { StakingMachine } from '@/components/StakingMachine'
-import { Button } from '@/components/Button'
+import { cn } from '@/utils/cn'
+import { getFrameUrl, getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
 
 export const StakingPage: React.FC = () => {
   const whoIsBitSmileyRef = useRef<HTMLDivElement>(null)

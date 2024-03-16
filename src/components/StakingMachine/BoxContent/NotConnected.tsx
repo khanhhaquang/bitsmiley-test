@@ -1,5 +1,6 @@
 import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
 import { DearBitSmiler } from '../Common'
 
 export const NotConnected: React.FC = () => {

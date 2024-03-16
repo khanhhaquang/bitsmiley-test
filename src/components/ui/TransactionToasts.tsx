@@ -1,13 +1,14 @@
-import { useChainId, useChains } from 'wagmi'
-import { getTransactions } from '@/store/common/reducer'
-import { useSelector } from 'react-redux'
 import { useEffect, useMemo, useState } from 'react'
-import { useStoreActions } from '@/hooks/useStoreActions'
+import { useSelector } from 'react-redux'
 import { Hash } from 'viem'
+import { useChainId, useChains, useWaitForTransactionReceipt } from 'wagmi'
+
 import { SuccessIcon } from '@/assets/icons'
-import { useWaitForTransactionReceipt } from 'wagmi'
-import { Toast, ToastClose, ToastDescription } from './toast'
+import { useStoreActions } from '@/hooks/useStoreActions'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { getTransactions } from '@/store/common/reducer'
+
+import { Toast, ToastClose, ToastDescription } from './toast'
 
 type TransactionToastProps = {
   txnId: Hash
@@ -41,7 +42,7 @@ export const TransactionToast: React.FC<TransactionToastProps> = ({
       }}>
       <ToastDescription className="flex items-center gap-x-2">
         {status === 'pending' && (
-          <p className="h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+          <p className="size-4 animate-spin rounded-full border-2 border-solid border-white border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
         )}
         {status === 'success' && <SuccessIcon />}
 

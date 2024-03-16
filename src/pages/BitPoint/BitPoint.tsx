@@ -1,7 +1,8 @@
 import { useUserPoint } from '@/hooks/useUserPoint'
+
 import { CaptainScoreboard } from './components/CaptainScoreboard'
-import { YourPoint } from './components/YourPoint'
 import { ScoreBoard } from './components/Scoreboard'
+import { YourPoint } from './components/YourPoint'
 import { YourTeam } from './components/YourTeam'
 
 const BitPoint: React.FC = () => {

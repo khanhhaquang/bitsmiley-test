@@ -1,13 +1,15 @@
+import { useMemo, useState } from 'react'
+
 import { ArrowDownIcon } from '@/assets/icons'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { Image } from '@/components/Image'
 import { Marquee } from '@/components/Marquee'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { HistoryButton } from './HistoryButton'
+
 import { BoxContent } from './BoxContent'
-import { useMemo, useState } from 'react'
-import { useWindowSize } from '@/hooks/useWindowSize'
+import { HistoryButton } from './HistoryButton'
 
 export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown

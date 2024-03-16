@@ -1,14 +1,16 @@
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { PlayerInfo } from '../Common'
-import { Image } from '@/components/Image'
+import { useState } from 'react'
+import { useWriteContract } from 'wagmi'
+
+import stakingAbi from '@/abi/Staking.json'
 import { BitJade, RightAngle } from '@/assets/icons'
 import { Button } from '@/components/Button'
-import stakingAbi from '@/abi/Staking.json'
-import { useWriteContract } from 'wagmi'
+import { Image } from '@/components/Image'
+import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useStoreActions } from '@/hooks/useStoreActions'
-import useContractAddresses from '@/hooks/useNetworkAddresses'
-import useUserStakes from '@/hooks/useUserStakes'
-import { useState } from 'react'
+import { useUserStakes } from '@/hooks/useUserStakes'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
+import { PlayerInfo } from '../Common'
 
 export const StakingFinished: React.FC = () => {
   const [isRetrieving, setIsRetrieving] = useState(false)
@@ -59,7 +61,7 @@ export const StakingFinished: React.FC = () => {
               {isRetrieving ? 'Retrieving' : 'Retrieve'}
             </Button>
           </div>
-          <div className="absolute left-0 top-0 h-full w-full bg-black/50"></div>
+          <div className="absolute left-0 top-0 size-full bg-black/50"></div>
         </div>
 
         <div className="relative flex h-[163px] w-[311px] flex-col items-center justify-between bg-cyan px-6 pb-6 pt-4 text-sm">

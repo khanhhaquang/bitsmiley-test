@@ -1,9 +1,11 @@
-import { BitJade, RightAngle } from '@/assets/icons'
 import { useState } from 'react'
-import { ChooseNftModal } from './ChooseNftModal'
-import { StakeButton } from './StakeButton'
+
+import { BitJade, RightAngle } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
+import { ChooseNftModal } from './ChooseNftModal'
+import { StakeButton } from './StakeButton'
 
 export const ConnectedNotStaked: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)

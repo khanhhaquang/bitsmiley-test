@@ -1,12 +1,14 @@
 import { useMemo } from 'react'
-import { NotConnected } from './NotConnected'
-import { StakingOnGoing } from './StakingOnGoing'
-import { StakingFinished } from './StakingFinished'
-import { ConnectedNotStaked } from './ConnectedNotStaked'
+
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { useUserStakes } from '@/hooks/useUserStakes'
+
+import { ConnectedNotStaked } from './ConnectedNotStaked'
 import { History } from './History'
+import { NotConnected } from './NotConnected'
 import { OnChainLoading } from './OnchainLoading'
-import useUserStakes from '@/hooks/useUserStakes'
+import { StakingFinished } from './StakingFinished'
+import { StakingOnGoing } from './StakingOnGoing'
 
 type BoxContentProps = {
   isHistoryPage: boolean

@@ -1,8 +1,9 @@
+import { useState, useEffect, ReactNode, useMemo, useRef } from 'react'
+import { useSelector } from 'react-redux'
+
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { getCurrentTypeWritterSeq } from '@/store/common/reducer'
 import { cn } from '@/utils/cn'
-import { useState, useEffect, ReactNode, useMemo, useRef } from 'react'
-import { useSelector } from 'react-redux'
 
 const DEFAULT_MS = 40
 

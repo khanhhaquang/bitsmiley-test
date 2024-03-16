@@ -1,13 +1,15 @@
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { PlayerInfo } from '../Common'
-import { Image } from '@/components/Image'
-import { BitJade, RightAngle } from '@/assets/icons'
-import { ChooseNftModal } from './ChooseNftModal'
 import React, { useMemo, useState } from 'react'
+
+import { BitJade, RightAngle } from '@/assets/icons'
+import { Image } from '@/components/Image'
+import { useUserStakes } from '@/hooks/useUserStakes'
+import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
+import { ChooseNftModal } from './ChooseNftModal'
 import { StakeButton } from './StakeButton'
 
-import useUserStakes from '@/hooks/useUserStakes'
-import { cn } from '@/utils/cn'
+import { PlayerInfo } from '../Common'
 
 export const StakingOnGoing: React.FC = () => {
   const [isChooseModalOpen, setIsChooseModalOpen] = useState(false)
@@ -103,11 +105,11 @@ const MBitdiscBlack: React.FC<{ num: number; className?: string }> = ({
         className
       )}>
       <Image src={getIllustrationUrl('bit-mint', 'webp')} />
-      <div className="absolute left-[-3px] top-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
-      <div className="absolute right-[-3px] top-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
-      <div className="absolute bottom-[-3px] left-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
-      <div className="absolute bottom-[-3px] right-[-3px] z-10 h-[9px] w-[9px] bg-cyan" />
-      <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center bg-grey3/80 text-[32px] text-cyan">
+      <div className="absolute left-[-3px] top-[-3px] z-10 size-[9px] bg-cyan" />
+      <div className="absolute right-[-3px] top-[-3px] z-10 size-[9px] bg-cyan" />
+      <div className="absolute bottom-[-3px] left-[-3px] z-10 size-[9px] bg-cyan" />
+      <div className="absolute bottom-[-3px] right-[-3px] z-10 size-[9px] bg-cyan" />
+      <div className="absolute left-0 top-0 flex size-full items-center justify-center bg-grey3/80 text-[32px] text-cyan">
         x{num}
       </div>
     </div>

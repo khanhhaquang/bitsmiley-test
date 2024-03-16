@@ -1,14 +1,15 @@
 // import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
-import { CanvasFrames } from '@/components/CanvasFrames'
-import { getFrameUrl } from '@/utils/getAssetsUrl'
-import Typewriter from '@/components/Typewriter'
-import { cn } from '@/utils/cn'
 import { useState } from 'react'
+
 import { LoadingLineIcon } from '@/assets/icons'
-import { getLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { Header } from '@/components/Header'
 import { Button } from '@/components/Button'
+import { CanvasFrames } from '@/components/CanvasFrames'
+import { Header } from '@/components/Header'
+import Typewriter from '@/components/Typewriter'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { cn } from '@/utils/cn'
+import { getFrameUrl } from '@/utils/getAssetsUrl'
+import { getLocalStorage } from '@/utils/storage'
 
 const hasVisited =
   !!getLocalStorage(LOCAL_STORAGE_KEYS.PLAY_MUSIC) &&

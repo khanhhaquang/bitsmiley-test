@@ -15,5 +15,5 @@ export const LOCAL_STORAGE_KEYS = {
 
 export const commonParam = {
   BTC: '0xe98e2830be1a7e4156d656a7505e65d08c67660dc618072422e9c78053c261e9' as Hash,
-  safeRate: 50 //50% -50* 10000000
+  safeRate: BigInt(50 * 10000000)
 }

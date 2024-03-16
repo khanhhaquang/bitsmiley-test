@@ -1,15 +1,16 @@
-import { customChains, merlinMainnet, merlinTestnet } from '@/config/wagmi'
-import { ReactNode, useMemo, useState } from 'react'
-import { WagmiProvider, createConfig, http } from 'wagmi'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
-import { usePreloadResources } from '@/hooks/usePreloadResources'
-import NetworkErrorPage from '@/pages/NetworkError'
-import LoadingResourcesPage from '@/pages/LoadingResources'
 import {
   ConnectProvider as BTCConnectProvider,
   OKXConnector,
   UnisatConnector
 } from '@particle-network/btc-connectkit'
+import { ReactNode, useMemo, useState } from 'react'
+import { WagmiProvider, createConfig, http } from 'wagmi'
+
+import { customChains, merlinMainnet, merlinTestnet } from '@/config/wagmi'
+import { usePreloadResources } from '@/hooks/usePreloadResources'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
+import LoadingResourcesPage from '@/pages/LoadingResources'
+import NetworkErrorPage from '@/pages/NetworkError'
 
 const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
   const [isEntered, setIsEntered] = useState(false)
@@ -66,7 +67,8 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
               }
             ]
           }
-        }
+        },
+        walletOptions: { visible: import.meta.env.DEV }
       }}
       connectors={[new OKXConnector(), new UnisatConnector()]}>
       <WagmiProvider reconnectOnMount={false} config={config}>
