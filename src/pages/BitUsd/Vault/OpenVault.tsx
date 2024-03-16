@@ -94,7 +94,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   if (!mintingPair) return null
 
   return (
-    <div className="size-full">
+    <div className="pb-12">
       <ProcessingModal
         message="Waiting for wallet signature"
         open={openVaultTxnStatus === TransactionStatus.Signing}

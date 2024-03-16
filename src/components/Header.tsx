@@ -51,13 +51,13 @@ const EnterAppButton: React.FC = () => {
         className={cn(
           'relative flex size-full items-center justify-center whitespace-nowrap bg-green/10 uppercase text-green group-hover:bg-green/30 group-hover:font-bold group-hover:text-opacity-70 group-active:bg-green/10',
           !isHome &&
-            'text-white bg-white/10 group-hover:bg-white/30 mix-blend-difference'
+            'text-white bg-black/30 group-hover:bg-black/50 mix-blend-difference'
         )}>
         <span>{!isHome ? 'Home' : 'Enter APP'}</span>
-        <RightAngleThin className="absolute left-0 top-0" />
-        <RightAngleThin className="absolute right-0 top-0 rotate-90" />
-        <RightAngleThin className="absolute bottom-0 right-0 rotate-180" />
-        <RightAngleThin className="absolute bottom-0 left-0 -rotate-90" />
+        <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
+        <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
+        <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
+        <RightAngleThin className="absolute bottom-[-1px] left-[-1px] -rotate-90" />
       </div>
     </div>
   )

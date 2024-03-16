@@ -44,7 +44,7 @@ export default {
     extend: {
       colors: colors,
       screens: {
-        '3xl': '1920px'
+        '3xl': '1960px'
       },
       keyframes: () => ({
         popOut: {
