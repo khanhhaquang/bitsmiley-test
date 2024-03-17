@@ -101,20 +101,20 @@ export const MyVaultOverviewTable: TTable<IVault> = [
 export const VaultChangesInfoTable: TTable<IVault> = [
   {
     key: 'liquidationPrice',
-    title: 'Liquidation price',
+    title: 'Liquidation Price',
     message:
       'Vault will be liquidated if the collateral price drops below this',
     format: (item) => displayVaultValues(item).liquidationPrice
   },
   {
     key: 'healthFactor',
-    title: 'Health factor',
+    title: 'Health Factor',
     message: 'Vault will be liquidated if the health factor is less than 100%',
     format: (item) => displayVaultValues(item).healthFactor
   },
   {
     key: 'lockedCollateral',
-    title: 'Locked collateral',
+    title: 'Locked Collateral',
     message: 'Amount of collateral locked in vault',
     format: (item) => displayVaultValues(item).lockedCollateral
   },
@@ -147,7 +147,7 @@ export const VaultInfoTable: TTable<IMintingPair> = [
   },
   {
     key: 'borrowRate',
-    title: 'Borrow rate',
+    title: 'Borrow Rate',
     message: 'The annual stability fee for the bitusd minted',
     format: (item) => displayMintingPairValues(item).borrowRate
   },
@@ -159,7 +159,7 @@ export const VaultInfoTable: TTable<IMintingPair> = [
   },
   {
     key: 'liquidationPenalty',
-    title: 'Liquidity fee',
+    title: 'Liquidation Fee',
     message: 'Fee charged for liquidators',
     format: (item) => displayMintingPairValues(item).liquidationPenalty
   },

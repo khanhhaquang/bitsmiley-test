@@ -451,7 +451,7 @@ const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
       </div>
       <div>
         <span>
-          Borrow rate{' '}
+          Borrow Rate{' '}
           <InfoIndicator message="The annual stability fee for the bitusd minted" />
           :{' '}
         </span>
@@ -459,7 +459,8 @@ const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
       </div>
       <div>
         <span>
-          Liquidity fee <InfoIndicator message="Fee charged for liquidators" />:{' '}
+          Liquidation Fee{' '}
+          <InfoIndicator message="Fee charged for liquidators" />:{' '}
         </span>
         <span>{displayMintingPairValues(mintingPair).liquidationPenalty}</span>
       </div>
