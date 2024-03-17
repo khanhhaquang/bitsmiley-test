@@ -10,7 +10,10 @@ export const useTokenPrice = (tokenId: Hash = commonParam.BTC) => {
 
   const { data } = useReadOracleGetPrice({
     address: contractAddresses?.oracle,
-    args: [tokenId]
+    args: [tokenId],
+    query: {
+      refetchInterval: 5 * 1000
+    }
   })
 
   return data ? Number(formatEther(data)) : 0

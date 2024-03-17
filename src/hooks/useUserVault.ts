@@ -31,7 +31,7 @@ export const useUserVault = () => {
         : formatEther(res.liquidationPrice),
       healthFactor: !res?.healthFactor
         ? ''
-        : (Number(res.healthFactor) / 1000).toString(),
+        : ((Number(res.healthFactor) / 1000) * 100).toString(),
       debtBitUSD: !res?.debtBitUSD ? '' : formatEther(res.debtBitUSD),
       lockedCollateral: !res?.lockedCollateral
         ? ''

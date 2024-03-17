@@ -53,7 +53,8 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const minDeposit = !wbtcPrice
     ? 0
-    : Number(mint) / (wbtcPrice * (Number(commonParam.safeRate) / 10 ** 9))
+    : (Number(mint) / (wbtcPrice * (Number(commonParam.safeRate) / 10 ** 9))) *
+      1.001
 
   const isNextButtonDisabled = useMemo(() => {
     if (!deposit) return true

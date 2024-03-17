@@ -394,7 +394,11 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                 onClick={handleNext}
                 disabled={nextButtonDisabled}
                 className="h-9 w-full flex-1">
-                {isNotApproved ? 'Give permission to use BTC ⓘ' : 'Next'}
+                {isNotApproved
+                  ? `Give permission to use ${
+                      isMintFromBtc ? 'wBTC' : 'bitUSD'
+                    }`
+                  : 'Next'}
               </ActionButton>
             </div>
           )}
@@ -428,13 +432,15 @@ const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
       </div>
       <div>
         <span>
-          Borrow rate <InfoIndicator message="borrow rate" />:{' '}
+          Borrow rate{' '}
+          <InfoIndicator message="The annual stability fee for the bitusd minted" />
+          :{' '}
         </span>
         <span>{displayMintingPairValues(mintingPair).borrowRate}</span>
       </div>
       <div>
         <span>
-          Liquidity fee <InfoIndicator message="liquidity fee" />:{' '}
+          Liquidity fee <InfoIndicator message="Fee charged for liquidators" />:{' '}
         </span>
         <span>{displayMintingPairValues(mintingPair).liquidationPenalty}</span>
       </div>

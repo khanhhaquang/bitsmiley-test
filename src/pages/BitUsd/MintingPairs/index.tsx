@@ -82,7 +82,7 @@ const MintingPairsTable: React.FC<{
             <TableHeader className="border-b border-b-white/20 text-sm text-white/70 [&_tr]:mb-0">
               <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
                 {table.map(({ key, title, message }) => (
-                  <TableHead key={key}>
+                  <TableHead key={key} className="text-nowrap">
                     {title} <InfoIndicator message={message} />
                   </TableHead>
                 ))}
@@ -128,9 +128,8 @@ const MintingPairTableRow: React.FC<{
   const [isOpen, setIsOpen] = useState(false)
   const { vault } = useUserVault()
 
-  const collateralRatio = Number(mintingPair.collateralRatio)
   const isInLiquidation =
-    isOpenedVaults && !!collateralRatio && collateralRatio <= 100
+    isOpenedVaults && !!vault?.healthFactor && Number(vault.healthFactor) <= 100
 
   return (
     <>
@@ -138,9 +137,11 @@ const MintingPairTableRow: React.FC<{
         key={mintingPair.chainId}
         className="py-3 [&_td]:w-[120px] [&_td]:p-0">
         {table.map(({ key, format }) => (
-          <TableCell key={key}>{format(mintingPair)}</TableCell>
+          <TableCell key={key} className="text-nowrap">
+            {format(mintingPair)}
+          </TableCell>
         ))}
-        <TableCell className="flex items-center justify-between">
+        <TableCell className="flex w-[150px] items-center justify-end">
           <ActionButton
             onClick={() => navigate(`./vault/${mintingPair.chainId}`)}>
             <span className="flex items-center gap-x-2">

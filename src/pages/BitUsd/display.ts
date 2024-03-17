@@ -24,7 +24,7 @@ export const displayVaultValues = (
   healthFactor:
     (!vault?.healthFactor
       ? DEFAULT_TEXT
-      : formatNumberWithSeparator(vault.healthFactor)) +
+      : formatNumberWithSeparator(vault.healthFactor, 1)) +
     `${withUnit ? PERCENTAGE_UNIT : ''}`,
   debtBitUSD:
     (!vault?.debtBitUSD
@@ -55,23 +55,23 @@ export const displayMintingPairValues = (
   maxLTV:
     (!value?.maxLTV
       ? DEFAULT_TEXT
-      : formatNumberAsCompact(Number(value.maxLTV) * 100)) +
+      : formatNumberWithSeparator(Number(value.maxLTV) * 100, 1)) +
     `${withUnit ? PERCENTAGE_UNIT : ''}`,
   borrowRate:
     (!value?.borrowRate
       ? DEFAULT_TEXT
-      : formatNumberAsCompact(Number(value.borrowRate) * 100)) +
+      : formatNumberWithSeparator(Number(value.borrowRate) * 100, 1)) +
     `${withUnit ? PERCENTAGE_UNIT : ''}`,
   liquidationPenalty:
     (!value?.liquidationPenalty
       ? DEFAULT_TEXT
-      : formatNumberAsCompact(Number(value.liquidationPenalty) * 100)) +
+      : formatNumberWithSeparator(Number(value.liquidationPenalty) * 100, 1)) +
     `${withUnit ? PERCENTAGE_UNIT : ''}`,
 
   collateralRatio:
     (!value?.collateralRatio
       ? DEFAULT_TEXT
-      : formatNumberAsCompact(Number(value.collateralRatio))) +
+      : formatNumberWithSeparator(Number(value.collateralRatio) * 100, 1)) +
     `${withUnit ? PERCENTAGE_UNIT : ''}`,
   liquidity:
     (!value?.liquidity
@@ -92,7 +92,7 @@ export const displayMintingPairValues = (
     (!value?.collateralLocked
       ? DEFAULT_TEXT
       : formatNumberAsCompact(value.collateralLocked)) +
-    `${withUnit ? BITUSD_UNIT : ''}`,
+    `${withUnit ? WBTC_UNIT : ''}`,
   totalDebt:
     (!value?.totalDebt
       ? DEFAULT_TEXT

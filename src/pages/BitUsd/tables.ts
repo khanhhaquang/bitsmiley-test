@@ -32,21 +32,19 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'borrowRate',
     title: 'Borrow Rate',
-    message:
-      'The annual Stability Fee for vaults, calculated based on your outstanding vault debt.',
+    message: 'The annual stability fee for the bitusd minted',
     format: (item) => displayMintingPairValues(item).borrowRate
   },
   {
     key: 'vaultFloor',
-    title: 'Vault floor',
-    message: 'Minimum amount of bitUSD required to be minted from a Vault',
+    title: 'Vault Floor',
+    message: 'Minimum amount of bitUSD required of a vault',
     format: (item) => displayMintingPairValues(item).vaultFloor
   },
   {
     key: 'liquidity',
-    title: 'Global bitUSD available',
-    message:
-      'Amount of bitUSD available to be generated from BTC according the global protocol debt ceiling',
+    title: 'Vault Ceiling',
+    message: 'Max amount of bitusd a vault can mint',
     format: (item) => displayMintingPairValues(item).liquidity
   }
 ]
@@ -104,37 +102,38 @@ export const VaultChangesInfoTable: TTable<IVault> = [
   {
     key: 'liquidationPrice',
     title: 'Liquidation price',
-    message: 'liquidation price',
+    message:
+      'Vault will be liquidated if the collateral price drops below this',
     format: (item) => displayVaultValues(item).liquidationPrice
   },
   {
     key: 'healthFactor',
     title: 'Health factor',
-    message: 'health factor',
+    message: 'Vault will be liquidated if the health factor is less than 100%',
     format: (item) => displayVaultValues(item).healthFactor
   },
   {
     key: 'lockedCollateral',
     title: 'Locked collateral',
-    message: 'Maximum amount of bitUSD that can to be minted from a Vault',
+    message: 'Amount of collateral locked in vault',
     format: (item) => displayVaultValues(item).lockedCollateral
   },
   {
     key: 'availableToWithdraw',
     title: 'Available to withdraw',
-    message: 'Max Loan to Value Ratio',
+    message: 'Max amount of collateral withdrawable from the vault',
     format: (item) => displayVaultValues(item).availableToWithdraw
   },
   {
     key: 'debtBitUSD',
     title: 'Debt bitUSD',
-    message: 'Minimum amount of bitUSD required to be minted from a Vault',
+    message: 'Amount of bitusd minted',
     format: (item) => displayVaultValues(item).debtBitUSD
   },
   {
     key: 'availableToMint',
     title: 'Available to mint',
-    message: 'Max Loan to Value Ratio',
+    message: 'Max amount of bitusd that can be minted from the vault',
     format: (item) => displayVaultValues(item).availableToMint
   }
 ]
@@ -149,25 +148,25 @@ export const VaultInfoTable: TTable<IMintingPair> = [
   {
     key: 'borrowRate',
     title: 'Borrow rate',
-    message: 'borrow rate',
+    message: 'The annual stability fee for the bitusd minted',
     format: (item) => displayMintingPairValues(item).borrowRate
   },
   {
     key: 'liquidity',
-    title: 'Liquidity',
-    message: 'liquidity',
+    title: 'Vault Ceiling',
+    message: 'Max amount of bitusd a vault can mint',
     format: (item) => displayMintingPairValues(item).liquidity
   },
   {
     key: 'liquidationPenalty',
-    title: 'Liquidity Penalty',
-    message: 'liquidity penalty',
+    title: 'Liquidity fee',
+    message: 'Fee charged for liquidators',
     format: (item) => displayMintingPairValues(item).liquidationPenalty
   },
   {
     key: 'vaultCeiling',
     title: 'Vault Ceiling',
-    message: 'vaultCeiling',
+    message: 'Max amount of bitusd a vault can mint',
     format: (item) => displayMintingPairValues(item).vaultCeiling
   }
 ]
