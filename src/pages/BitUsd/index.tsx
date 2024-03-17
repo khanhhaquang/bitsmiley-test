@@ -41,7 +41,7 @@ const BitUsd: React.FC = () => {
             </Suspense>
           </div>
 
-          <div className="absolute bottom-[29.5%] right-[24.7%] z-10 flex h-[3%] w-[14%] items-center justify-center text-nowrap border font-sdm text-xs text-white xl:left-[63%] xl:text-base ">
+          <div className="absolute bottom-[29.5%] right-[24.7%] z-10 flex h-[3%] w-[14%] items-center justify-center text-nowrap font-sdm text-[10px] text-white xl:text-base">
             Current BTC Price:{' '}
             <span className="text-green">
               ${formatNumberWithSeparator(wbtcPrice)}
