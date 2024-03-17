@@ -81,8 +81,10 @@ const MintingPairsTable: React.FC<{
           <Table className="w-full overflow-hidden font-ibmr">
             <TableHeader className="border-b border-b-white/20 text-sm text-white/70 [&_tr]:mb-0">
               <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
-                {table.map(({ key, title, message }) => (
-                  <TableHead key={key} className="text-nowrap">
+                {table.map(({ key, title, message, titleClassName }) => (
+                  <TableHead
+                    key={key}
+                    className={cn('text-nowrap', titleClassName)}>
                     {title} <InfoIndicator message={message} />
                   </TableHead>
                 ))}
@@ -141,7 +143,7 @@ const MintingPairTableRow: React.FC<{
             {format(mintingPair)}
           </TableCell>
         ))}
-        <TableCell className="flex w-[150px] items-center justify-end">
+        <TableCell className="flex w-[150px] items-center justify-end gap-x-2">
           <ActionButton
             onClick={() => navigate(`./vault/${mintingPair.chainId}`)}>
             <span className="flex items-center gap-x-2">

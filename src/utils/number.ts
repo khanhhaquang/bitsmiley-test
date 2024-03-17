@@ -1,37 +1,25 @@
 export const formatNumberWithSeparator = (
   value: number | bigint | string,
-  minimumFractionDigits: number = 4
+  maximumFractionDigits: number = 2
 ) => {
   if (isNaN(Number(value))) return 'NaN'
 
-  const val = Intl.NumberFormat('en-GB', {
-    minimumFractionDigits: minimumFractionDigits + 1,
+  return Intl.NumberFormat('en-GB', {
+    maximumFractionDigits: maximumFractionDigits,
     style: 'decimal'
   }).format(Number(value))
-
-  const newVal = val
-    .split('')
-    .filter((_, index) => index !== val.length - 1)
-    .join('')
-
-  return newVal
 }
 
 export const formatNumberAsCompact = (
   value: number | bigint | string,
-  minimumFractionDigits: number = 4
+  maximumFractionDigits: number = 2
 ) => {
   if (isNaN(Number(value))) return 'NaN'
 
-  const val = Intl.NumberFormat('en', {
-    minimumFractionDigits: minimumFractionDigits + 1,
+  return Intl.NumberFormat('en', {
+    maximumFractionDigits: maximumFractionDigits,
     notation: 'compact'
-  }).format(Number(value))
-
-  const newVal = val
-    .split('')
-    .filter((_, index) => index !== val.length - 2)
-    .join('')
-
-  return newVal
+  })
+    .format(Number(value))
+    .toLowerCase()
 }

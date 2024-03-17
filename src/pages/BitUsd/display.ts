@@ -6,98 +6,83 @@ import {
 } from '@/utils/number'
 
 const WBTC_UNIT = ' wBTC'
-const BITUSD_UNIT = ' bitUSD'
+const BITUSD_UNIT = '$'
 const PERCENTAGE_UNIT = '%'
-const DOLLAR_UNIT = '$'
+const DOLLAR_UNIT = '$' // bitUsd
 
 const DEFAULT_TEXT = '-'
+
+const formatBitUsd = (
+  v?: string,
+  withUnit: boolean = true,
+  compact: boolean = false
+) =>
+  !v
+    ? DEFAULT_TEXT
+    : `${withUnit ? BITUSD_UNIT : ''}` +
+      `${compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}`
+
+const formatWBtc = (v?: string, withUnit = true, compact: boolean = false) =>
+  !v
+    ? DEFAULT_TEXT
+    : `${
+        compact ? formatNumberAsCompact(v, 4) : formatNumberWithSeparator(v, 4)
+      }` + `${withUnit ? WBTC_UNIT : ''}`
+
+const formatMoney = (
+  v?: string,
+  withUnit: boolean = true,
+  compact: boolean = false
+) =>
+  !v
+    ? DEFAULT_TEXT
+    : `${withUnit ? DOLLAR_UNIT : ''}` +
+      `${compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}`
+
+const formatPercentage = (
+  v?: string | number,
+  withUnit: boolean = true,
+  compact: boolean = false
+) =>
+  !v
+    ? DEFAULT_TEXT
+    : `${
+        compact ? formatNumberAsCompact(v, 1) : formatNumberWithSeparator(v, 1)
+      }` + `${withUnit ? PERCENTAGE_UNIT : ''}`
 
 export const displayVaultValues = (
   vault?: IVault,
   withUnit: boolean = true
 ) => ({
-  liquidationPrice:
-    (!vault?.liquidationPrice
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(vault.liquidationPrice)) +
-    `${withUnit ? DOLLAR_UNIT : ''}`,
-  healthFactor:
-    (!vault?.healthFactor
-      ? DEFAULT_TEXT
-      : formatNumberWithSeparator(vault.healthFactor, 1)) +
-    `${withUnit ? PERCENTAGE_UNIT : ''}`,
-  debtBitUSD:
-    (!vault?.debtBitUSD
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(vault.debtBitUSD)) +
-    `${withUnit ? BITUSD_UNIT : ''}`,
-  lockedCollateral:
-    (!vault?.lockedCollateral
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(vault.lockedCollateral)) +
-    `${withUnit ? WBTC_UNIT : ''}`,
-  availableToWithdraw:
-    (!vault?.availableToWithdraw
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(vault.availableToWithdraw)) +
-    `${withUnit ? WBTC_UNIT : ''}`,
-  availableToMint:
-    (!vault?.availableToMint
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(vault.availableToMint)) +
-    `${withUnit ? BITUSD_UNIT : ''}`
+  liquidationPrice: formatMoney(vault?.liquidationPrice, withUnit),
+  healthFactor: formatPercentage(vault?.healthFactor, withUnit),
+  debtBitUSD: formatBitUsd(vault?.debtBitUSD, withUnit),
+  lockedCollateral: formatWBtc(vault?.lockedCollateral, withUnit),
+  availableToWithdraw: formatWBtc(vault?.availableToWithdraw, withUnit),
+  availableToMint: formatBitUsd(vault?.availableToMint, withUnit)
 })
 
 export const displayMintingPairValues = (
   value?: IMintingPair,
   withUnit: boolean = true
 ) => ({
-  maxLTV:
-    (!value?.maxLTV
-      ? DEFAULT_TEXT
-      : formatNumberWithSeparator(Number(value.maxLTV) * 100, 1)) +
-    `${withUnit ? PERCENTAGE_UNIT : ''}`,
-  borrowRate:
-    (!value?.borrowRate
-      ? DEFAULT_TEXT
-      : formatNumberWithSeparator(Number(value.borrowRate) * 100, 1)) +
-    `${withUnit ? PERCENTAGE_UNIT : ''}`,
-  liquidationPenalty:
-    (!value?.liquidationPenalty
-      ? DEFAULT_TEXT
-      : formatNumberWithSeparator(Number(value.liquidationPenalty) * 100, 1)) +
-    `${withUnit ? PERCENTAGE_UNIT : ''}`,
-
-  collateralRatio:
-    (!Number(value?.collateralRatio)
-      ? DEFAULT_TEXT
-      : formatNumberWithSeparator(Number(value?.collateralRatio) * 100, 1)) +
-    `${withUnit ? PERCENTAGE_UNIT : ''}`,
-  liquidity:
-    (!value?.liquidity
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(value.liquidity)) +
-    `${withUnit ? BITUSD_UNIT : ''}`,
-  vaultCeiling:
-    (!value?.vaultCeiling
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(value.vaultCeiling)) +
-    `${withUnit ? BITUSD_UNIT : ''}`,
-  vaultFloor:
-    (!value?.vaultFloor
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(value.vaultFloor)) +
-    `${withUnit ? BITUSD_UNIT : ''}`,
-  collateralLocked:
-    (!value?.collateralLocked
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(value.collateralLocked)) +
-    `${withUnit ? WBTC_UNIT : ''}`,
-  totalDebt:
-    (!value?.totalDebt
-      ? DEFAULT_TEXT
-      : formatNumberAsCompact(value.totalDebt)) +
-    `${withUnit ? BITUSD_UNIT : ''}`,
+  maxLTV: formatPercentage(value?.maxLTV, withUnit),
+  borrowRate: !Number(value?.borrowRate)
+    ? '0%'
+    : formatPercentage(Number(value?.borrowRate) * 100, withUnit),
+  liquidationPenalty: formatPercentage(
+    Number(value?.liquidationPenalty) * 100,
+    withUnit
+  ),
+  collateralRatio: formatPercentage(
+    Number(value?.collateralRatio) * 100,
+    withUnit
+  ),
+  liquidity: formatBitUsd(value?.liquidity, withUnit, true),
+  vaultCeiling: formatBitUsd(value?.vaultCeiling, withUnit, true),
+  vaultFloor: formatBitUsd(value?.vaultFloor, withUnit, true),
+  collateralLocked: formatWBtc(value?.collateralLocked, withUnit, true),
+  totalDebt: formatBitUsd(value?.totalDebt, withUnit, true),
 
   network: !value?.network ? DEFAULT_TEXT : value.network,
   chainId: !value?.chainId ? DEFAULT_TEXT : value.chainId,

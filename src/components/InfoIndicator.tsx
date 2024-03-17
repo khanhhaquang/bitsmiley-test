@@ -11,7 +11,7 @@ export const InfoIndicator: React.FC<{
   if (!message) return null
 
   return (
-    <Tooltip>
+    <Tooltip delayDuration={100}>
       <TooltipTrigger className="cursor-pointer">
         <span>ⓘ</span>
       </TooltipTrigger>

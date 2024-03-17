@@ -200,8 +200,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     value: string
   ) => {
     if (type === 'depositBtc') {
-      setIsMintFromBtc(true)
-
       setDepositBtc(value)
       setWithdrawBtc('')
       setRepayBitUsd('')
@@ -213,8 +211,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
 
     if (type === 'withdrawBtc') {
-      setIsMintFromBtc(false)
-
       setWithdrawBtc(value)
       setDepositBtc('')
       setMintBitUsd('')
@@ -223,8 +219,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
 
     if (type === 'mintBitUsd') {
-      setIsMintFromBtc(true)
-
       setMintBitUsd(value)
       setWithdrawBtc('')
       setRepayBitUsd('')
@@ -233,8 +227,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
 
     if (type === 'repayBitUsd') {
-      setIsMintFromBtc(false)
-
       setRepayBitUsd(value)
       setDepositBtc('')
       setMintBitUsd('')
@@ -287,6 +279,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                 <div className="grid grid-cols-2 gap-x-3">
                   <NumberInput
                     value={depositBtc}
+                    onFocus={() => setIsMintFromBtc(true)}
                     onChange={(e) => handleInput('depositBtc', e.target.value)}
                     greyOut={depositWbtcGreyOut}
                     title="deposit wbtc"
@@ -297,13 +290,20 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   />
                   <NumberInput
                     value={withdrawBtc}
+                    onFocus={() => setIsMintFromBtc(false)}
                     onChange={(e) => handleInput('withdrawBtc', e.target.value)}
                     disabled={withdrawWbtcDisabled}
                     greyOut={withdrawWbtcGreyOut}
                     title="withdraw wbtc"
                     titleSuffix={
-                      'Max: ' +
-                      displayVaultValues(maxVault, false).availableToWithdraw
+                      <span className="flex items-center gap-x-2">
+                        Max: $
+                        {
+                          displayVaultValues(maxVault, false)
+                            .availableToWithdraw
+                        }
+                        <InfoIndicator message="123" />
+                      </span>
                     }
                     inputSuffix={
                       <InputSuffixActionButton
@@ -327,12 +327,12 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   <NumberInput
                     value={mintBitUsd}
                     disabled={mintBitUsdDisabled}
+                    onFocus={() => setIsMintFromBtc(true)}
                     onChange={(e) => handleInput('mintBitUsd', e.target.value)}
                     greyOut={mintBitUsdGreyOut}
                     title="mint bitUSD"
                     titleSuffix={
-                      'Max: ' +
-                      displayVaultValues(maxVault, false).availableToMint
+                      'Max: ' + displayVaultValues(maxVault).availableToMint
                     }
                     inputSuffix={
                       <InputSuffixActionButton
@@ -349,6 +349,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   />
                   <NumberInput
                     value={repayBitUsd}
+                    onFocus={() => setIsMintFromBtc(false)}
                     disabled={repayBitUsdDisabled}
                     onChange={(e) => handleInput('repayBitUsd', e.target.value)}
                     greyOut={repayBitUsdGreyOut}
@@ -451,7 +452,7 @@ const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
       </div>
       <div>
         <span>
-          Borrow Rate{' '}
+          Stability Fee{' '}
           <InfoIndicator message="The annual stability fee for the bitusd minted" />
           :{' '}
         </span>
@@ -459,7 +460,7 @@ const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
       </div>
       <div>
         <span>
-          Liquidation Fee{' '}
+          Liquidation Penalty{' '}
           <InfoIndicator message="Fee charged for liquidators" />:{' '}
         </span>
         <span>{displayMintingPairValues(mintingPair).liquidationPenalty}</span>

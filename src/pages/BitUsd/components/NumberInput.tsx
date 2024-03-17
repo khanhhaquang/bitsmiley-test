@@ -10,6 +10,8 @@ export type NumberInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   inputSuffix?: ReactNode
   disabled?: boolean
   greyOut?: boolean
+  onFocus?: () => void
+  onBlur?: () => void
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
@@ -20,9 +22,12 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   titleSuffix,
   inputSuffix,
   onChange,
+  onFocus,
+  onBlur,
   ...rest
 }) => {
   const [isFocus, setIsFocus] = useState(false)
+  const isGrey = greyOut && !isFocus
 
   return (
     <div className="flex flex-col gap-y-1">
@@ -38,19 +43,25 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       <div
         className={cn(
           'relative border border-blue bg-black/50 px-3 py-1',
-          greyOut && 'bg-white/20'
+          isGrey && 'bg-white/20'
         )}>
         <Input
           inputMode="decimal"
           pattern="^(([1-9][0-9]*(\.)?[0-9]*)|(0(\.)([0-9]*))|(0))$"
           value={value}
           disabled={disabled}
-          onBlur={() => setIsFocus(false)}
-          onFocus={() => setIsFocus(true)}
-          placeholder={greyOut ? '--' : '0.00'}
+          onBlur={() => {
+            setIsFocus(false)
+            onBlur?.()
+          }}
+          onFocus={() => {
+            setIsFocus(true)
+            onFocus?.()
+          }}
+          placeholder={isGrey ? '--' : '0.00'}
           className={cn(
             'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white',
-            greyOut && 'placeholder:text-white/50 text-white/20'
+            isGrey && 'placeholder:text-white/50 text-white/20'
           )}
           onChange={(e) => {
             if (!e.target.validity.valid) return
