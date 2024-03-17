@@ -84,6 +84,26 @@ export const useUserVault = () => {
     query
   })
 
+  const [maxVaultBitUsd, setMaxVaultBitUsd] = useState('')
+  const [maxVaultCollateral, setMaxVaultCollateral] = useState('')
+
+  const debouncedMaxVaultBitUsd = useDebounce(maxVaultBitUsd)
+  const debouncedMaxVaultCollateral = useDebounce(maxVaultCollateral)
+
+  const { data: maxVault } = useReadVaultGetVaultChange({
+    address: vaultManagerAddress,
+    args: vaultAddress
+      ? [
+          commonParam.BTC,
+          vaultAddress,
+          parseEther(debouncedMaxVaultCollateral),
+          parseEther(debouncedMaxVaultBitUsd),
+          commonParam.safeRate
+        ]
+      : undefined,
+    query
+  })
+
   return {
     vault,
     ...rest,
@@ -92,6 +112,9 @@ export const useUserVault = () => {
     changedVault,
     setChangedBitUsd,
     setChangedCollateral,
-    hasChangedVault
+    hasChangedVault,
+    maxVault,
+    setMaxVaultBitUsd,
+    setMaxVaultCollateral
   }
 }

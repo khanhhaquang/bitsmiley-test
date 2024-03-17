@@ -19,6 +19,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   title,
   titleSuffix,
   inputSuffix,
+  onChange,
   ...rest
 }) => {
   const [isFocus, setIsFocus] = useState(false)
@@ -40,7 +41,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           greyOut && 'bg-white/20'
         )}>
         <Input
-          type="number"
+          inputMode="decimal"
+          pattern="^(([1-9][0-9]*(\.)?[0-9]*)|(0(\.)([0-9]*))|(0))$"
           value={value}
           disabled={disabled}
           onBlur={() => setIsFocus(false)}
@@ -50,6 +52,10 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white',
             greyOut && 'placeholder:text-white/50 text-white/20'
           )}
+          onChange={(e) => {
+            if (!e.target.validity.valid) return
+            onChange?.(e)
+          }}
           {...rest}
         />
         <div className="absolute right-1.5 top-1/2 flex h-full -translate-y-1/2 flex-col justify-center font-ibmr text-xs text-white/50">

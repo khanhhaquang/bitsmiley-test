@@ -69,9 +69,9 @@ export const displayMintingPairValues = (
     `${withUnit ? PERCENTAGE_UNIT : ''}`,
 
   collateralRatio:
-    (!value?.collateralRatio
+    (!Number(value?.collateralRatio)
       ? DEFAULT_TEXT
-      : formatNumberWithSeparator(Number(value.collateralRatio) * 100, 1)) +
+      : formatNumberWithSeparator(Number(value?.collateralRatio) * 100, 1)) +
     `${withUnit ? PERCENTAGE_UNIT : ''}`,
   liquidity:
     (!value?.liquidity

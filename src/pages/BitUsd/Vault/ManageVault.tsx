@@ -40,7 +40,10 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     setChangedBitUsd,
     setChangedCollateral,
     hasChangedVault,
-    refetchVault
+    refetchVault,
+    maxVault,
+    setMaxVaultBitUsd,
+    setMaxVaultCollateral
   } = useUserVault()
 
   const contractAddress = useContractAddresses()
@@ -135,31 +138,40 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   }, [depositBtc, wbtcPrice])
 
   const nextButtonDisabled = useMemo(() => {
-    if (!vault || isMintFromBtc === undefined) return true
+    if (!maxVault || !vault || isMintFromBtc === undefined) return true
 
-    const { availableToMint, availableToWithdraw, debtBitUSD } = vault
+    const { availableToMint: maxToMint, availableToWithdraw: maxToWithdraw } =
+      maxVault
 
     if (isMintFromBtc === true) {
       return (
         (!depositBtc && !mintBitUsd) ||
-        Number(mintBitUsd) > Number(availableToMint)
+        (Number(maxToMint) >= 0 && Number(mintBitUsd) > Number(maxToMint))
       )
     }
 
     return (
       (!withdrawBtc && !repayBitUsd) ||
-      Number(withdrawBtc) > Number(availableToWithdraw) ||
-      Number(repayBitUsd) > Number(debtBitUSD)
+      (Number(maxToWithdraw) >= 0 &&
+        Number(withdrawBtc) > Number(maxToWithdraw))
     )
-  }, [depositBtc, isMintFromBtc, mintBitUsd, repayBitUsd, vault, withdrawBtc])
+  }, [
+    depositBtc,
+    isMintFromBtc,
+    maxVault,
+    mintBitUsd,
+    repayBitUsd,
+    vault,
+    withdrawBtc
+  ])
 
   const withdrawWbtcDisabled = useMemo(
-    () => Number(vault?.availableToWithdraw) <= 0,
-    [vault?.availableToWithdraw]
+    () => Number(maxVault?.availableToWithdraw) <= 0,
+    [maxVault?.availableToWithdraw]
   )
   const mintBitUsdDisabled = useMemo(
-    () => Number(vault?.availableToMint) <= 0,
-    [vault?.availableToMint]
+    () => Number(maxVault?.availableToMint) <= 0,
+    [maxVault?.availableToMint]
   )
   const repayBitUsdDisabled = useMemo(
     () => Number(vault?.debtBitUSD) <= 0,
@@ -195,6 +207,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       setRepayBitUsd('')
       setChangedCollateral(value)
       setChangedBitUsd(mintBitUsd)
+
+      setMaxVaultBitUsd('')
+      setMaxVaultCollateral(value)
     }
 
     if (type === 'withdrawBtc') {
@@ -225,6 +240,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       setMintBitUsd('')
       setChangedBitUsd('-' + value)
       setChangedCollateral('-' + withdrawBtc)
+
+      setMaxVaultCollateral('')
+      setMaxVaultBitUsd('-' + value)
     }
   }
 
@@ -285,7 +303,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     title="withdraw wbtc"
                     titleSuffix={
                       'Max: ' +
-                      displayVaultValues(vault, false).availableToWithdraw
+                      displayVaultValues(maxVault, false).availableToWithdraw
                     }
                     inputSuffix={
                       <InputSuffixActionButton
@@ -293,7 +311,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                         onClick={() =>
                           handleInput(
                             'withdrawBtc',
-                            vault?.availableToWithdraw || ''
+                            maxVault?.availableToWithdraw || ''
                           )
                         }>
                         Max
@@ -313,7 +331,8 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     greyOut={mintBitUsdGreyOut}
                     title="mint bitUSD"
                     titleSuffix={
-                      'Max: ' + displayVaultValues(vault, false).availableToMint
+                      'Max: ' +
+                      displayVaultValues(maxVault, false).availableToMint
                     }
                     inputSuffix={
                       <InputSuffixActionButton
@@ -321,7 +340,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                         onClick={() =>
                           handleInput(
                             'mintBitUsd',
-                            vault?.availableToMint || ''
+                            maxVault?.availableToMint || ''
                           )
                         }>
                         Max
