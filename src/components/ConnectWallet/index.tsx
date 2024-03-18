@@ -1,10 +1,6 @@
-import {
-  useBTCProvider,
-  useConnectModal as useParticleConnect
-} from '@particle-network/btc-connectkit'
+import { useBTCProvider } from '@particle-network/btc-connectkit'
 import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
@@ -12,11 +8,12 @@ import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
+import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useReconnectEvm } from '@/hooks/useReconnectEvm'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { getLocalStorage, setLocalStorage, clearStorage } from '@/utils/storage'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 
 import EvmConnector from './EvmConnector'
 
@@ -40,16 +37,14 @@ export const ConnectWallet: React.FC<{
   className?: string
   style?: CSSProperties
 }> = ({ className, style }) => {
-  const navigate = useNavigate()
   const buttonRef = useRef<HTMLDivElement>(null)
   useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
   const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
 
+  const disconnect = useDisconnectAccount()
   const { accounts: btcAccounts } = useBTCProvider()
-  const { disconnect: disConnectParticle } = useParticleConnect()
-  const { disconnect: disconnectEvm } = useDisconnect()
   const { isError: isNetworkError, setIsError: setIsNetworkError } =
     useReconnectEvm()
   const {
@@ -59,7 +54,6 @@ export const ConnectWallet: React.FC<{
   } = useAccount()
 
   useEffect(() => {
-    // WRONG NETWORK CHECKING
     if (!evmChain && !!evmAddress) {
       setIsNetworkError(true)
     }
@@ -91,16 +85,7 @@ export const ConnectWallet: React.FC<{
         <div
           ref={buttonRef}
           onClick={() => {
-            disConnectParticle()
-            disconnectEvm(
-              {},
-              {
-                onSuccess: () => {
-                  clearStorage()
-                  navigate('/')
-                }
-              }
-            )
+            disconnect()
             setIsLogoutDropdownOpen(false)
           }}
           className={cn(
