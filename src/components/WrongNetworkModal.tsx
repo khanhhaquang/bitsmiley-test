@@ -4,6 +4,7 @@ import { CloseIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
+import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
@@ -11,6 +12,7 @@ const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   onClose
 }) => {
   const { chains, switchChain } = useSwitchChain()
+  const disconnect = useDisconnectAccount()
 
   const handleSwitch = () => {
     switchChain(
@@ -19,16 +21,25 @@ const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         onSuccess: (data) => {
           console.info(`Switching successfully to ${data.name}`), onClose()
         },
-        onError: () => console.error('Switching failed')
+        onError: () => {
+          disconnect()
+          onClose()
+          console.error('Switching network failed')
+        }
       }
     )
   }
 
+  const handleClose = () => {
+    handleSwitch()
+    onClose()
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <div className="relative border-2 border-black bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         <CloseIcon
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute right-2.5 top-2.5 cursor-pointer"
         />
         <div className="flex flex-col items-center gap-y-9 p-6 pt-[42px]">
