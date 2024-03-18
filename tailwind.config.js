@@ -75,8 +75,18 @@ export default {
         sdm: ['sdm', ...defaultTheme.fontFamily.sans],
         ppnb: ['ppnb', ...defaultTheme.fontFamily.sans],
         ppnr: ['ppnr', ...defaultTheme.fontFamily.sans],
-        ibmr: ['ibmr', ...defaultTheme.fontFamily.sans],
-        ibmb: ['ibmb', ...defaultTheme.fontFamily.sans]
+        ibmr: [
+          'ibmr',
+          {
+            fontFeatureSettings: '"ss03" on'
+          }
+        ],
+        ibmb: [
+          'ibmb',
+          {
+            fontFeatureSettings: '"ss03" on'
+          }
+        ]
       },
       cursor: {
         default: 'url("/src/assets/icons/cursor-default.svg") 8 0, default',

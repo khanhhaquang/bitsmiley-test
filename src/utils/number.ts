@@ -6,7 +6,8 @@ export const formatNumberWithSeparator = (
 
   return Intl.NumberFormat('en-GB', {
     maximumFractionDigits: maximumFractionDigits,
-    style: 'decimal'
+    style: 'decimal',
+    roundingMode: 'trunc'
   }).format(Number(value))
 }
 
@@ -18,7 +19,8 @@ export const formatNumberAsCompact = (
 
   return Intl.NumberFormat('en', {
     maximumFractionDigits: maximumFractionDigits,
-    notation: 'compact'
+    notation: 'compact',
+    roundingMode: 'trunc'
   })
     .format(Number(value))
     .toLowerCase()
