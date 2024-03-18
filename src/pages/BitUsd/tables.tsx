@@ -144,6 +144,12 @@ export const VaultChangesInfoTable: TTable<IVault> = [
     format: (item) => displayVaultValues(item).lockedCollateral
   },
   {
+    key: 'totalDebt',
+    title: 'Total Debt',
+    message: messages.totalDebt,
+    format: (vault) => displayVaultValues(vault).debtBitUSD
+  },
+  {
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,

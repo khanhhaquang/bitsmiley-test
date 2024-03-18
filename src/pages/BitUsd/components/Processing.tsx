@@ -43,7 +43,6 @@ export const Processing: React.FC<ProcessingProps> = ({
   actionButtonClassName,
   link
 }) => {
-  console.log('🚀 ~ link:', link)
   const borderColorClassName = useMemo(() => {
     if (type === 'success') return 'border-green/70'
     if (type === 'error') return 'border-warning/50'

@@ -78,7 +78,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           }
           className={cn(
             'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white bg-transparent outline-none',
-            isGrey && 'placeholder:text-white/50 text-white/20'
+            isGrey && 'placeholder:text-white/50 text-white/20',
+            disabled && 'cursor-not-allowed'
           )}
         />
         {!disabled && (

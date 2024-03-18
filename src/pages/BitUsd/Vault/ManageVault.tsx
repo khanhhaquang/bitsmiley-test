@@ -192,7 +192,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   ])
 
   const depositWBtcDisabled = useMemo(() => wbtcBalance <= 0, [wbtcBalance])
-
   const withdrawWbtcDisabled = useMemo(
     () => Number(maxVault?.availableToWithdraw) <= 0,
     [maxVault?.availableToWithdraw]
@@ -202,8 +201,8 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     [maxVault?.availableToMint]
   )
   const repayBitUsdDisabled = useMemo(
-    () => Number(vault?.debtBitUSD) <= 0,
-    [vault?.debtBitUSD]
+    () => bitUsdBalance <= 0 || Number(vault?.debtBitUSD) <= 0,
+    [bitUsdBalance, vault?.debtBitUSD]
   )
 
   const depositWbtcGreyOut = useMemo(
@@ -229,6 +228,8 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   ) => {
     const value = v || ''
     if (type === 'depositBtc') {
+      changeFocusToDepositAndMint()
+
       setDepositBtc(value)
       setChangedCollateral(value)
       setChangedBitUsd(mintBitUsd)
@@ -238,18 +239,24 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
 
     if (type === 'withdrawBtc') {
+      changeFocusToWithdrawAndRepay()
+
       setWithdrawBtc(value)
       setChangedCollateral('-' + value)
       setChangedBitUsd('-' + repayBitUsd)
     }
 
     if (type === 'mintBitUsd') {
+      changeFocusToDepositAndMint()
+
       setMintBitUsd(value)
       setChangedCollateral(depositBtc)
       setChangedBitUsd(value)
     }
 
     if (type === 'repayBitUsd') {
+      changeFocusToWithdrawAndRepay()
+
       setRepayBitUsd(value)
       setChangedBitUsd('-' + value)
       setChangedCollateral('-' + withdrawBtc)
