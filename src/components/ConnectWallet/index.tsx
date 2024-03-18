@@ -8,6 +8,7 @@ import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
+import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useReconnectEvm } from '@/hooks/useReconnectEvm'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
@@ -19,7 +20,6 @@ import EvmConnector from './EvmConnector'
 import WrongNetworkModal from '../WrongNetworkModal'
 
 import './index.scss'
-import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
