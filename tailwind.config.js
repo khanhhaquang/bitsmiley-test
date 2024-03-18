@@ -78,13 +78,13 @@ export default {
         ibmr: [
           'ibmr',
           {
-            fontFeatureSettings: '"ss03" on'
+            fontFeatureSettings: "'ss03' on"
           }
         ],
         ibmb: [
           'ibmb',
           {
-            fontFeatureSettings: '"ss03" on'
+            fontFeatureSettings: "'ss03' on"
           }
         ]
       },
