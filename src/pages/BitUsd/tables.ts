@@ -15,7 +15,7 @@ const messages = {
   maxLTV: 'MAX Loan to Value Ratio',
   vaultFloor: 'Minimum amount of bitUSD required to be minted by a Vault.',
   vaultCeiling: 'Maximum amount of bitUSD that can be minted by a Vault.',
-  outStandingDebt: 'bitUSD debt + Stability Fee',
+  totalDebt: 'bitUSD debt + Stability Fee',
   liquidationPenalty: 'The fee that liquidators need to pay to the protocol.'
 }
 
@@ -89,8 +89,8 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
   },
   {
     key: 'totalDebt',
-    title: 'Outstanding Debt',
-    message: messages.outStandingDebt,
+    title: 'Total Debt',
+    message: messages.totalDebt,
     format: (item) => displayMintingPairValues(item).totalDebt
   },
   {
@@ -176,8 +176,8 @@ export const VaultInfoTable: TTable<IVault, IMintingPair> = [
   },
   {
     key: 'debtBitUSD',
-    title: 'Outstanding Debt',
-    message: messages.outStandingDebt,
+    title: 'Total Debt',
+    message: messages.totalDebt,
     format: (vault) => displayVaultValues(vault).debtBitUSD
   },
   {
