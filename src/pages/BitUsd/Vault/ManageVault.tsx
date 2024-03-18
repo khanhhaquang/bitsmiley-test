@@ -27,7 +27,8 @@ import { NumberInput } from '../components/NumberInput'
 import { Processing, ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayMintingPairValues, displayVaultValues } from '../display'
+import { displayVaultValues } from '../display'
+import { ManageVaultHeaderInfoTable } from '../tables'
 
 export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
@@ -323,12 +324,11 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     title="withdraw wbtc"
                     titleSuffix={
                       <span className="flex items-center gap-x-2">
-                        Max: $
+                        Max:{' '}
                         {
                           displayVaultValues(maxVault, false)
                             .availableToWithdraw
                         }
-                        <InfoIndicator message="123" />
                       </span>
                     }
                     inputSuffix={
@@ -482,25 +482,14 @@ const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
 }) => {
   return (
     <div className="mt-6 flex items-center justify-center gap-x-9 font-ibmr text-sm text-white/70">
-      <div>
-        <span>Network: </span>
-        <span>{displayMintingPairValues(mintingPair).network}</span>
-      </div>
-      <div>
-        <span>
-          Stability Fee{' '}
-          <InfoIndicator message="The annual stability fee for the bitusd minted" />
-          :{' '}
-        </span>
-        <span>{displayMintingPairValues(mintingPair).borrowRate}</span>
-      </div>
-      <div>
-        <span>
-          Liquidation Penalty{' '}
-          <InfoIndicator message="Fee charged for liquidators" />:{' '}
-        </span>
-        <span>{displayMintingPairValues(mintingPair).liquidationPenalty}</span>
-      </div>
+      {ManageVaultHeaderInfoTable.map(({ key, title, message, format }) => (
+        <div key={key}>
+          <span>
+            {title} <InfoIndicator message={message} />:{' '}
+          </span>
+          <span>{format(mintingPair)}</span>
+        </div>
+      ))}
     </div>
   )
 }

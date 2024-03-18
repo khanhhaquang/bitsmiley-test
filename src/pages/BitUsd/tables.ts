@@ -5,6 +5,20 @@ import { IVault } from '@/types/vault'
 
 import { displayMintingPairValues, displayVaultValues } from './display'
 
+const messages = {
+  healthFactor:
+    'Indicates the health status of an account. Any vaults that drop below 1 face liquidation.Minimum accepted ratio is 100%.We recommend a ratio over 200% to keep the vault safe from liquidation.',
+  stabilityFee:
+    'The annual borrow rate for vaults, calculated based on your outstanding vault debt.',
+  globalBitUsdAvailable:
+    'Amount of bitUSD available to be generated from BTCMax LTV:Max.',
+  maxLTV: 'MAX Loan to Value Ratio',
+  vaultFloor: 'Minimum amount of bitUSD required to be minted by a Vault.',
+  vaultCeiling: 'Maximum amount of bitUSD that can be minted by a Vault.',
+  outStandingDebt: 'bitUSD debt + Stability Fee',
+  liquidationPenalty: 'The fee that liquidators need to pay to the protocol.'
+}
+
 export type TTable<T> = {
   key: string
   title: string
@@ -27,31 +41,31 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'maxLTV',
     title: 'Max LTV',
-    message: '123',
+    message: messages.maxLTV,
     format: (item) => displayMintingPairValues(item).maxLTV
   },
   {
     key: 'borrowRate',
     title: 'Stability Fee',
-    message: '123',
+    message: messages.stabilityFee,
     format: (item) => displayMintingPairValues(item).borrowRate
   },
   {
     key: 'vaultFloor',
     title: 'Vault Floor',
-    message: '123',
+    message: messages.vaultFloor,
     format: (item) => displayMintingPairValues(item, false).vaultFloor
   },
   {
     key: 'vaultCeiling',
     title: 'Vault Ceiling',
-    message: '123',
+    message: messages.vaultCeiling,
     format: (item) => displayMintingPairValues(item, false).vaultCeiling
   },
   {
     key: 'liquidity',
     title: 'Global bitUSD Available',
-    message: '123',
+    message: messages.globalBitUsdAvailable,
     titleClassName: 'text-wrap',
     format: (item) => displayMintingPairValues(item, false).liquidity
   }
@@ -71,19 +85,18 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'collateral',
     title: 'Collateral',
-    message: '123',
     format: (item) => displayMintingPairValues(item).collateralLocked
   },
   {
     key: 'totalDebt',
-    title: 'Vault Debt',
-    message: '123',
+    title: 'Outstanding Debt',
+    message: messages.outStandingDebt,
     format: (item) => displayMintingPairValues(item).totalDebt
   },
   {
     key: 'healthFactor',
     title: 'Health Factor',
-    message: '123',
+    message: messages.healthFactor,
     format: (item) => displayMintingPairValues(item).collateralRatio
   }
 ]
@@ -106,6 +119,26 @@ export const MyVaultOverviewTable: TTable<IVault> = [
   }
 ]
 
+export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
+  {
+    key: 'network',
+    title: 'Network',
+    format: (item) => displayMintingPairValues(item).network
+  },
+  {
+    key: 'stabilityFee',
+    title: 'Stability Fee',
+    message: messages.stabilityFee,
+    format: (item) => displayMintingPairValues(item).borrowRate
+  },
+  {
+    key: 'liquidationPenalty',
+    title: 'Liquidation Penalty',
+    message: messages.liquidationPenalty,
+    format: (item) => displayMintingPairValues(item).liquidationPenalty
+  }
+]
+
 export const VaultChangesInfoTable: TTable<IVault> = [
   {
     key: 'collateralLocked',
@@ -115,13 +148,12 @@ export const VaultChangesInfoTable: TTable<IVault> = [
   {
     key: 'healthFactor',
     title: 'Health Factor',
-    message: '123',
+    message: messages.healthFactor,
     format: (item) => displayVaultValues(item).healthFactor
   },
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
-    message: '123',
     format: (item) => displayVaultValues(item).liquidationPrice
   },
   {
@@ -146,7 +178,8 @@ export const VaultInfoTable: TTable<IMintingPair> = [
   },
   {
     key: 'totalDebt',
-    title: 'Total Debt',
+    title: 'Outstanding Debt',
+    message: messages.outStandingDebt,
     // TODO calculate
     // format: (item) => displayMintingPairValues(item).totalDebt
     format: () => '--'
@@ -154,7 +187,7 @@ export const VaultInfoTable: TTable<IMintingPair> = [
   {
     key: 'healthFactor',
     title: 'Health Factor',
-    message: '123',
+    message: messages.healthFactor,
     // TODO calculate
     // format: (item) => displayMintingPairValues(item).collateralRatio
     format: () => '--'
@@ -162,13 +195,13 @@ export const VaultInfoTable: TTable<IMintingPair> = [
   {
     key: 'stabilityFee',
     title: 'Stability Fee',
-    message: '123',
+    message: messages.stabilityFee,
     format: (item) => displayMintingPairValues(item).borrowRate
   },
   {
     key: 'liquidityPenalty',
     title: 'Liquidity Penalty',
-    message: '123',
+    message: messages.liquidationPenalty,
     format: (item) => displayMintingPairValues(item).liquidationPenalty
   }
 ]

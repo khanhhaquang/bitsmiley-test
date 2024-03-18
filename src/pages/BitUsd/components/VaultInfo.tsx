@@ -35,18 +35,29 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
   const isVaultChanges = type === 'changes'
   const table = isVaultChanges ? VaultChangesInfoTable : VaultInfoTable
 
-  const isVaultHealthy =
-    isVaultChanges && !!vault && Number(vault?.healthFactor) > 100
-  const isVaultUnHealthy =
-    isVaultChanges && !!vault && Number(vault?.healthFactor) < 100
-  const isChangedVaultHealthy =
+  const isVaultHealthGreen =
+    isVaultChanges && !!vault && Number(vault?.healthFactor) >= 200
+  const isVaultHealthYellow =
+    isVaultChanges &&
+    !!vault &&
+    Number(vault?.healthFactor) >= 120 &&
+    Number(vault?.healthFactor) < 200
+  const isVaultHealthRed =
+    isVaultChanges && !!vault && Number(vault?.healthFactor) < 120
+
+  const isChangedVaultHealthGreen =
     isVaultChanges &&
     hasChangedVault &&
-    Number(changedVault?.healthFactor) > 100
-  const isChangedVaultUnHealthy =
+    Number(changedVault?.healthFactor) >= 200
+  const isChangedVaultHealthYellow =
     isVaultChanges &&
     hasChangedVault &&
-    Number(changedVault?.healthFactor) < 100
+    Number(changedVault?.healthFactor) >= 120 &&
+    Number(changedVault?.healthFactor) < 200
+  const isChangedVaultHealthRed =
+    isVaultChanges &&
+    hasChangedVault &&
+    Number(changedVault?.healthFactor) < 120
 
   return (
     <div
@@ -56,7 +67,7 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
       )}>
       <div
         className={cn(
-          'relative z-10 flex items-center gap-x-8 text-nowrap px-7 py-4 font-ibmr text-sm text-white/70',
+          'relative z-20 flex items-center gap-x-8 text-nowrap px-7 py-4 font-ibmr text-sm text-white/70',
           innerClassName
         )}>
         <div className="flex flex-col gap-y-1.5">
@@ -66,17 +77,19 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
             </div>
           ))}
         </div>
-        <div
-          className={cn(
-            'flex flex-col gap-y-1.5 text-white',
-            isVaultHealthy && 'text-green',
-            isVaultUnHealthy && 'text-yellow',
-            isChangedVaultHealthy && 'text-green',
-            isChangedVaultUnHealthy && 'text-yellow'
-          )}>
+        <div className="flex flex-col gap-y-1.5">
           {table.map(({ key, format }) => (
             <div key={key} className="flex items-center gap-x-2">
-              <span>
+              <span
+                className={
+                  key !== 'healthFactor'
+                    ? ''
+                    : cn(
+                        isVaultHealthGreen && 'text-green',
+                        isVaultHealthYellow && 'text-yellow',
+                        isVaultHealthRed && 'text-warning'
+                      )
+                }>
                 {format(
                   (isVaultChanges ? vault : mintingPairs) as IMintingPair &
                     IVault
@@ -85,7 +98,18 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
               {hasChangedVault && (
                 <>
                   <ChevronRightIcon width={5} />
-                  <span>{format(changedVault as IMintingPair & IVault)}</span>
+                  <span
+                    className={
+                      key !== 'healthFactor'
+                        ? ''
+                        : cn(
+                            isChangedVaultHealthGreen && 'text-green',
+                            isChangedVaultHealthYellow && 'text-yellow',
+                            isChangedVaultHealthRed && 'text-warning'
+                          )
+                    }>
+                    {format(changedVault as IMintingPair & IVault)}
+                  </span>
                 </>
               )}
             </div>
