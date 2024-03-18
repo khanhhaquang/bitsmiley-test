@@ -1,3 +1,5 @@
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
 interface ChainConfig {
   [key: number]: {
     chainId: string
@@ -90,3 +92,8 @@ export const ChainCfg: ChainConfig = {
     blockExplorerUrls: ['https://scan.merlinchain.io']
   }
 }
+
+export const chainsIconUrl: { [key: string]: string } = {
+  4200: getIllustrationUrl('merlin-chain-logo'),
+  686868: getIllustrationUrl('merlin-chain-logo')
+} as const

@@ -11,7 +11,7 @@ export const useUserInfo = () => {
   const { accounts: btcAccounts } = useBTCProvider()
   const {
     address: evmAddress,
-    chain,
+    chainId: evmChainId,
     isConnected: isEvmConnected,
     isConnecting
   } = useAccount()
@@ -29,10 +29,14 @@ export const useUserInfo = () => {
       select: (res) => res?.data
     })
 
+  const evmChain = useMemo(
+    () => customChains.find((c) => c.id === evmChainId),
+    [evmChainId]
+  )
+
   const blockExplorerUrl = useMemo(
-    () =>
-      customChains.find((c) => c.id === chain?.id)?.blockExplorers?.default.url,
-    [chain?.id]
+    () => evmChain?.blockExplorers?.default.url,
+    [evmChain]
   )
 
   const isLoading = isConnecting || isLoadingEnabledFeatures
@@ -43,6 +47,7 @@ export const useUserInfo = () => {
     addressForDisplay,
     enabledFeatures,
     blockExplorerUrl,
+    evmChain,
     isLoading
   }
 }
