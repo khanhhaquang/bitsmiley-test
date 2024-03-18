@@ -44,6 +44,7 @@ import PeopleIcon from './people.svg'
 import PlayIcon from './play.svg'
 import ProcessingInfoModalTitleIcon from './processing-modal-title.svg'
 import ProcessingInfoTitleIcon from './processing-title.svg'
+import RefreshIcon from './refresh.svg'
 import ReturnUpIcon from './return-up.svg'
 import RightAngleThin from './right-angle-thin.svg'
 import RightAngleVaultIcon from './right-angle-vault.svg'
@@ -119,5 +120,6 @@ export {
   ProcessingInfoTitleIcon,
   BitCoinIcon,
   ManageVaultSectionTitleIcon,
-  ReturnUpIcon
+  ReturnUpIcon,
+  RefreshIcon
 }

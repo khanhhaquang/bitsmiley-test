@@ -14,6 +14,8 @@ import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { TransactionStatus } from '@/types/common'
 
+import { useTokenBalance } from './useTokenBalance'
+
 export const useManageVault = () => {
   const config = useConfig()
   const contractAddresses = useContractAddresses()
@@ -24,6 +26,10 @@ export const useManageVault = () => {
   const bitUsdAddress = contractAddresses?.BitUSDL2
   const wBtcAddress = contractAddresses?.WBTC
   const bitSmileyAddress = contractAddresses?.BitSmiley
+
+  const { refetchBalance: refetchWBtcBalance } = useTokenBalance(wBtcAddress)
+  const { refetchBalance: refetchBitUsdBalance } =
+    useTokenBalance(bitUsdAddress)
 
   const { allowance: wBtcAllowance, refetchAllowance: refetchWBtcAllowance } =
     useTokenAllowance(wBtcAddress, bitSmileyAddress)
@@ -107,13 +113,14 @@ export const useManageVault = () => {
 
   useEffect(() => {
     if (openVaultTxnResultStatus === 'success') {
+      refetchWBtcBalance()
       refetchWBtcAllowance()
       setOpenVaultTxnStatus(TransactionStatus.Success)
     }
     if (openVaultTxnResultStatus === 'error') {
       setOpenVaultTxnStatus(TransactionStatus.Failed)
     }
-  }, [openVaultTxnResultStatus, refetchWBtcAllowance])
+  }, [openVaultTxnResultStatus, refetchWBtcAllowance, refetchWBtcBalance])
 
   const openVault = async (deposit: string, mint: string) => {
     const totalNum = Number(mint) + Number(deposit)
@@ -152,13 +159,14 @@ export const useManageVault = () => {
 
   useEffect(() => {
     if (mintResultStatus === 'success') {
+      refetchWBtcBalance()
       refetchWBtcAllowance()
       setMintFromBtcTxnStatus(TransactionStatus.Success)
     }
     if (mintResultStatus === 'error') {
       setMintFromBtcTxnStatus(TransactionStatus.Failed)
     }
-  }, [mintResultStatus, refetchWBtcAllowance])
+  }, [mintResultStatus, refetchWBtcAllowance, refetchWBtcBalance])
 
   const mintFromBtc = async (depositBtc: string, mintBitUsd: string) => {
     if (!bitSmileyAddress || !address || (!depositBtc && !mintBitUsd)) return
@@ -202,13 +210,14 @@ export const useManageVault = () => {
 
   useEffect(() => {
     if (repayResultStatus === 'success') {
+      refetchBitUsdBalance()
       refetchBitUsdAllowance()
       setRepayToBtcTxnStatus(TransactionStatus.Success)
     }
     if (repayResultStatus === 'error') {
       setRepayToBtcTxnStatus(TransactionStatus.Failed)
     }
-  }, [refetchBitUsdAllowance, repayResultStatus])
+  }, [refetchBitUsdAllowance, refetchBitUsdBalance, repayResultStatus])
 
   const repayToBtc = async (withdrawBtc: string, repayBitUsd: string) => {
     if (!bitSmileyAddress || !address || (!withdrawBtc && !repayBitUsd)) return

@@ -8,7 +8,8 @@ export const useTokenAllowance = (contract?: Address, spender?: Address) => {
   const {
     data: allowance,
     refetch: refetchAllowance,
-    isLoading: isLoadingAllowance
+    isLoading: isLoadingAllowance,
+    ...rest
   } = useReadContract({
     abi: erc20Abi,
     functionName: 'allowance',
@@ -17,5 +18,5 @@ export const useTokenAllowance = (contract?: Address, spender?: Address) => {
     query: { select: (res) => (!res ? 0 : Number(formatEther(res))) }
   })
 
-  return { allowance, refetchAllowance, isLoadingAllowance }
+  return { allowance, refetchAllowance, isLoadingAllowance, ...rest }
 }

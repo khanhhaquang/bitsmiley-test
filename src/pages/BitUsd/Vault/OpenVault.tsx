@@ -92,7 +92,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     return (wbtcPrice * Number(deposit)).toFixed(2)
   }, [deposit, wbtcPrice])
 
-  if (!mintingPair) return null
+  if (!mintingPair || !vault) return null
 
   return (
     <div className="pb-12">
@@ -200,7 +200,6 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           <VaultInfo
             vault={vault}
             mintingPairs={mintingPair}
-            title="vault info"
             borderSvg={
               <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full" />
             }

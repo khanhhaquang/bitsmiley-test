@@ -17,11 +17,14 @@ export const useUserVault = () => {
   const bitSmileyAddress = contractAddresses?.BitSmiley
   const vaultManagerAddress = contractAddresses?.VaultManager
 
-  const { data: vaultAddress, refetch: refetchVaultAddress } =
-    useReadBitSmileyOwners({
-      address: bitSmileyAddress,
-      args: address && bitSmileyAddress && [address]
-    })
+  const {
+    data: vaultAddress,
+    refetch: refetchVaultAddress,
+    isFetching: isFetchingVaultAddress
+  } = useReadBitSmileyOwners({
+    address: bitSmileyAddress,
+    args: address && [address]
+  })
 
   const query = {
     placeholderData: keepPreviousData,
@@ -69,7 +72,11 @@ export const useUserVault = () => {
   const hasChangedVault =
     !!debouncedChangedBitUsd || !!debouncedChangedCollateral
 
-  const { data: changedVault } = useReadVaultGetVaultChange({
+  const {
+    data: changedVault,
+    refetch: refetchChangedVault,
+    isFetching: isFetchingChangedVault
+  } = useReadVaultGetVaultChange({
     address: vaultManagerAddress,
     args:
       vaultAddress && hasChangedVault
@@ -90,7 +97,11 @@ export const useUserVault = () => {
   const debouncedMaxVaultBitUsd = useDebounce(maxVaultBitUsd)
   const debouncedMaxVaultCollateral = useDebounce(maxVaultCollateral)
 
-  const { data: maxVault } = useReadVaultGetVaultChange({
+  const {
+    data: maxVault,
+    refetch: refetchMaxVault,
+    isFetching: isFetchingMaxVault
+  } = useReadVaultGetVaultChange({
     address: vaultManagerAddress,
     args: vaultAddress
       ? [
@@ -115,6 +126,11 @@ export const useUserVault = () => {
     hasChangedVault,
     maxVault,
     setMaxVaultBitUsd,
-    setMaxVaultCollateral
+    setMaxVaultCollateral,
+    refetchChangedVault,
+    refetchMaxVault,
+    isFetchingChangedVault,
+    isFetchingMaxVault,
+    isFetchingVaultAddress
   }
 }

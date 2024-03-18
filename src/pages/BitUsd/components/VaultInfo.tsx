@@ -6,6 +6,8 @@ import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
+import { RefreshButton } from './RefreshButton'
+
 import { VaultInfoTable, VaultChangesInfoTable } from '../tables'
 
 type VaultInfoProps = {
@@ -15,7 +17,6 @@ type VaultInfoProps = {
   hasChangedVault?: boolean
 
   mintingPairs?: IMintingPair
-  title: string
   borderSvg: ReactNode
   className?: string
   innerClassName?: string
@@ -27,7 +28,6 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
   vault,
   changedVault,
   hasChangedVault,
-  title,
   borderSvg,
   className,
   innerClassName
@@ -93,8 +93,14 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
         </div>
       </div>
 
-      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 font-smb text-xs text-blue [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)]">
-        {title}
+      <div className="absolute -top-1.5 left-1/2 z-10 -translate-x-1/2 font-smb text-xs text-blue [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)]">
+        {isVaultChanges ? (
+          <span className="flex items-center gap-x-2">
+            Vault Changes <RefreshButton />
+          </span>
+        ) : (
+          'Vault Info'
+        )}
       </div>
 
       {borderSvg}

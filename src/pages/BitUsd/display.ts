@@ -12,8 +12,8 @@ const DOLLAR_UNIT = '$' // bitUsd
 
 const DEFAULT_TEXT = '-'
 
-const formatBitUsd = (
-  v?: string,
+export const formatBitUsd = (
+  v?: string | number,
   withUnit: boolean = true,
   compact: boolean = false
 ) =>
@@ -22,15 +22,19 @@ const formatBitUsd = (
     : `${withUnit ? BITUSD_UNIT : ''}` +
       `${compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}`
 
-const formatWBtc = (v?: string, withUnit = true, compact: boolean = false) =>
+export const formatWBtc = (
+  v?: string | number,
+  withUnit = true,
+  compact: boolean = false
+) =>
   !v
     ? DEFAULT_TEXT
     : `${
         compact ? formatNumberAsCompact(v, 4) : formatNumberWithSeparator(v, 4)
       }` + `${withUnit ? WBTC_UNIT : ''}`
 
-const formatMoney = (
-  v?: string,
+export const formatMoney = (
+  v?: string | number,
   withUnit: boolean = true,
   compact: boolean = false
 ) =>

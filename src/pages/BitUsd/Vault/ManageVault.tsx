@@ -56,6 +56,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const wbtcPrice = useTokenPrice()
   const { balance: wbtcBalance } = useTokenBalance(contractAddress?.WBTC)
+  const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
 
   const {
     wBtcAllowance,
@@ -137,6 +138,18 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
   }, [depositBtc, wbtcPrice])
 
+  const minRepay = useMemo(() => {
+    if (!repayBitUsd || !vault || !mintingPair) return 0
+
+    const debt = Number(vault.debtBitUSD)
+    const floor = Number(mintingPair.vaultFloor)
+    const repay = Number(repayBitUsd)
+    const remain = debt - repay
+
+    if (remain >= floor) return 0
+    return debt - floor
+  }, [mintingPair, repayBitUsd, vault])
+
   const nextButtonDisabled = useMemo(() => {
     if (!maxVault || !vault || isMintFromBtc === undefined) return true
 
@@ -150,16 +163,29 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       )
     }
 
+    if (!!repayBitUsd && Number(repayBitUsd) > bitUsdBalance) return true
+
+    if (
+      !!repayBitUsd &&
+      !!(Number(vault.debtBitUSD) - Number(repayBitUsd)) &&
+      Number(vault.debtBitUSD) - Number(repayBitUsd) <
+        Number(mintingPair?.vaultFloor)
+    ) {
+      return true
+    }
+
     return (
       (!withdrawBtc && !repayBitUsd) ||
       (Number(maxToWithdraw) >= 0 &&
         Number(withdrawBtc) > Number(maxToWithdraw))
     )
   }, [
+    bitUsdBalance,
     depositBtc,
     isMintFromBtc,
     maxVault,
     mintBitUsd,
+    mintingPair?.vaultFloor,
     repayBitUsd,
     vault,
     withdrawBtc
@@ -254,7 +280,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
   }
 
-  if (!mintingPair) return null
+  if (!mintingPair || !vault) return null
 
   return (
     <div className="pb-12">
@@ -355,17 +381,28 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     greyOut={repayBitUsdGreyOut}
                     title="repay bitUSD"
                     titleSuffix={
-                      'Total: ' + displayVaultValues(vault, false).debtBitUSD
+                      'Available: ' + formatNumberAsCompact(bitUsdBalance)
                     }
                     inputSuffix={
-                      <InputSuffixActionButton
-                        disabled={repayBitUsdDisabled}
-                        className="w-[92px]"
-                        onClick={() =>
-                          handleInput('repayBitUsd', vault?.debtBitUSD || '')
-                        }>
-                        Repay all
-                      </InputSuffixActionButton>
+                      <div className="flex items-center gap-x-2">
+                        {!!minRepay && (
+                          <InputSuffixActionButton
+                            onClick={() =>
+                              handleInput('repayBitUsd', minRepay.toString())
+                            }
+                            disabled={repayBitUsdDisabled}>
+                            Min
+                          </InputSuffixActionButton>
+                        )}
+                        <InputSuffixActionButton
+                          disabled={repayBitUsdDisabled}
+                          className="w-[92px]"
+                          onClick={() =>
+                            handleInput('repayBitUsd', vault?.debtBitUSD || '')
+                          }>
+                          Repay all
+                        </InputSuffixActionButton>
+                      </div>
                     }
                   />
                 </div>
@@ -391,7 +428,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             vault={vault}
             changedVault={changedVault}
             hasChangedVault={hasChangedVault}
-            title="vault changes"
             className="aspect-[652/196]"
             innerClassName="gap-x-20"
             borderSvg={
