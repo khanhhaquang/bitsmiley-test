@@ -14,6 +14,7 @@ export type NumberInputProps = {
   onFocus?: () => void
   onBlur?: () => void
   onInputChange?: (v?: string) => void
+  disabledMessage?: string
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
@@ -25,7 +26,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   inputSuffix,
   onFocus,
   onBlur,
-  onInputChange
+  onInputChange,
+  disabledMessage
 }) => {
   const [isFocus, setIsFocus] = useState(false)
   const isGrey = greyOut && !isFocus
@@ -47,7 +49,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       <div
         className={cn(
           'relative border border-blue bg-black/50 px-3 py-1',
-          isGrey && 'bg-white/20'
+          isGrey && 'bg-white/20',
+          disabled && 'bg-white/10'
         )}>
         <IMaskInput
           ref={ref}
@@ -70,15 +73,24 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             setIsFocus(true)
             onFocus?.()
           }}
-          placeholder={isGrey ? '--' : '0.00'}
+          placeholder={
+            disabled && disabledMessage ? '' : isGrey ? '--' : '0.00'
+          }
           className={cn(
             'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white bg-transparent outline-none',
             isGrey && 'placeholder:text-white/50 text-white/20'
           )}
         />
-        <div className="absolute right-1.5 top-1/2 flex h-full -translate-y-1/2 flex-col justify-center font-ibmr text-xs text-white/50">
-          {inputSuffix}
-        </div>
+        {!disabled && (
+          <div className="absolute right-1.5 top-1/2 flex h-full -translate-y-1/2 flex-col justify-center font-ibmr text-xs text-white/50">
+            {inputSuffix}
+          </div>
+        )}
+        {disabled && disabledMessage && (
+          <div className="absolute left-3 top-0 font-ibmr text-xs text-white/50">
+            {disabledMessage}
+          </div>
+        )}
         <div className="absolute left-0 top-0 h-full w-[7px] bg-blue" />
       </div>
     </div>

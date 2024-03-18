@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
@@ -22,7 +22,7 @@ import { NumberInput } from '../components/NumberInput'
 import { Processing, ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayMintingPairValues, formatBitUsd, formatWBtc } from '../display'
+import { displayMintingPairValues, formatBitUsd } from '../display'
 
 export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
@@ -52,16 +52,6 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     approvalTxnStatus === TransactionStatus.Processing
   const isApproved = Number(wBtcAllowance) >= Number(deposit)
 
-  const minDeposit = useMemo(
-    () =>
-      !wbtcPrice
-        ? 0
-        : (Number(mint) /
-            (wbtcPrice * (Number(commonParam.safeRate) / 10 ** 9))) *
-          1.001,
-    [mint, wbtcPrice]
-  )
-
   const maxMint = useMemo(
     () =>
       !deposit
@@ -77,20 +67,23 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const isNextButtonDisabled = useMemo(() => {
     if (!deposit) return true
-    if (mint && deposit && Number(deposit) < minDeposit) return true
+
+    if (Number(deposit) > wbtcBalance) return true
     if (mint && Number(mint) > Number(maxMint)) return true
     if (mint && Number(mint) < Number(mintingPair?.vaultFloor)) return true
-    if (isApproved && Number(deposit) > wbtcBalance) return true
     return false
-  }, [
-    deposit,
-    isApproved,
-    maxMint,
-    minDeposit,
-    mint,
-    mintingPair?.vaultFloor,
-    wbtcBalance
-  ])
+  }, [deposit, maxMint, mint, mintingPair?.vaultFloor, wbtcBalance])
+
+  const depositDisabled = useMemo(() => {
+    if (wbtcBalance <= 0) return true
+  }, [wbtcBalance])
+
+  const mintDisabled = useMemo(() => {
+    return (
+      !!mintingPair?.vaultFloor &&
+      Number(maxMint) < Number(mintingPair?.vaultFloor)
+    )
+  }, [maxMint, mintingPair?.vaultFloor])
 
   const handleNext = () => {
     if (!isApproved) {
@@ -115,13 +108,16 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       healthFactor: !mint
         ? ''
         : (
-            ((wbtcPrice * Number(deposit) * Number(mintingPair?.maxLTV)) /
-              Number(mint)) *
+            ((wbtcPrice * Number(deposit) * 0.75) / Number(mint)) *
             100
           ).toString()
     }),
-    [deposit, mint, mintingPair, wbtcPrice]
+    [deposit, mint, wbtcPrice]
   )
+
+  useEffect(() => {
+    if (mintDisabled) setMint('')
+  }, [mintDisabled])
 
   if (!mintingPair) return null
 
@@ -186,45 +182,31 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           <NumberInput
             value={deposit}
             onInputChange={(v) => handleInput(v, setDeposit)}
+            greyOut={depositDisabled}
+            disabled={depositDisabled}
             title="DEPOSIT WBTC"
-            titleSuffix={
-              minDeposit
-                ? `Min: ${formatWBtc(
-                    minDeposit,
-                    false
-                  )}, Balance: ${formatNumberAsCompact(wbtcBalance)}`
-                : `Balance: ${formatNumberAsCompact(wbtcBalance)}`
-            }
+            titleSuffix={`Balance: ${formatNumberAsCompact(wbtcBalance)}`}
             inputSuffix={
               <div className="flex h-full items-center gap-x-1.5 py-1">
                 {'~' + depositInUsd + '$'}
-                {!!minDeposit && (
-                  <InputSuffixActionButton
-                    onClick={() => setDeposit(minDeposit.toString())}>
-                    Min
-                  </InputSuffixActionButton>
-                )}
               </div>
             }
           />
           <NumberInput
             value={mint}
             onInputChange={(v) => handleInput(v, setMint)}
+            disabled={mintDisabled}
+            greyOut={mintDisabled}
+            disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
+              displayMintingPairValues(mintingPair).vaultFloor
+            } bitUSD`}
             title="Mint bitUSD"
-            titleSuffix={`Min: ${
-              displayMintingPairValues(mintingPair, false).vaultFloor
-            }, Max: ${formatBitUsd(maxMint, false, true)}`}
+            titleSuffix={`Max Mint: ${formatBitUsd(maxMint, false, true)}`}
             inputSuffix={
-              <div className="flex h-full gap-x-1.5 py-1">
-                <InputSuffixActionButton
-                  onClick={() => setMint(mintingPair.vaultFloor || '')}>
-                  Min
-                </InputSuffixActionButton>
-                <InputSuffixActionButton
-                  onClick={() => setMint(maxMint.toString() || '')}>
-                  Max
-                </InputSuffixActionButton>
-              </div>
+              <InputSuffixActionButton
+                onClick={() => setMint(maxMint.toString() || '')}>
+                Max
+              </InputSuffixActionButton>
             }
           />
           <VaultInfo

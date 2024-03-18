@@ -1,16 +1,10 @@
 import { ReactNode } from 'react'
 import { GetTokenReturnType } from 'wagmi/actions'
 
-import { LinkOutIcon } from '@/assets/icons'
-import { customChains } from '@/config/wagmi'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 
-import {
-  DEFAULT_TEXT,
-  displayMintingPairValues,
-  displayVaultValues
-} from './display'
+import { displayMintingPairValues, displayVaultValues } from './display'
 
 export type TTable<T, P = unknown> = {
   key: string
@@ -26,27 +20,22 @@ export type TTokenSymbols = {
 }
 
 const messages = {
-  healthFactor:
-    'Indicates the health status of an account. Any vaults that drop below 1 face liquidation.Minimum accepted ratio is 100%.We recommend a ratio over 200% to keep the vault safe from liquidation.',
-  stabilityFee:
-    'The annual borrow rate for vaults, calculated based on your outstanding vault debt.',
-  globalBitUsdAvailable:
-    'Amount of bitUSD available to be generated from BTCMax LTV:Max.',
-  maxLTV: 'MAX Loan to Value Ratio',
-  vaultFloor: 'Minimum amount of bitUSD required to be minted by a Vault.',
-  vaultCeiling: 'Maximum amount of bitUSD that can be minted by a Vault.',
-  totalDebt: 'bitUSD debt + Stability Fee',
-  liquidationPenalty: 'The fee that liquidators need to pay to the protocol.'
+  healthFactor: 'If drops below 100.0%, the vault will be liquidated.',
+  stabilityFee: 'Interest rate charged to the bitUSD minted.',
+  maxLTV: 'MAX Loan to Value ratio.',
+  vaultFloor: 'Minimum amount of bitUSD required to be minted.',
+  vaultCeiling: 'Maximum amount of bitUSD that can be minted.',
+  totalDebt: 'bitUSD minted plus the interest.',
+  liquidationFee: 'The fee charged to liquidators.',
+  liquidationPrice:
+    'Collateral price below which your vault will be liquidated.'
 }
 
-export const AvailableMintingPairsTable: TTable<IMintingPair, TTokenSymbols> = [
+export const AvailableMintingPairsTable: TTable<IMintingPair, IVault> = [
   {
     key: 'pairName',
     title: '',
-    format: (_, token) =>
-      `${token?.from?.symbol || DEFAULT_TEXT} - ${
-        token?.to?.symbol || DEFAULT_TEXT
-      }`
+    format: () => 'wBTC - bitUSD'
   },
   {
     key: 'maxLTV',
@@ -58,7 +47,12 @@ export const AvailableMintingPairsTable: TTable<IMintingPair, TTokenSymbols> = [
     key: 'borrowRate',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).borrowRate
+    format: () => (
+      <span className="flex items-center gap-x-1">
+        <span className="line-through">13%</span>
+        <span>0%</span>
+      </span>
+    )
   },
   {
     key: 'vaultFloor',
@@ -71,60 +65,31 @@ export const AvailableMintingPairsTable: TTable<IMintingPair, TTokenSymbols> = [
     title: 'Vault Ceiling',
     message: messages.vaultCeiling,
     format: (item) => displayMintingPairValues(item, false).vaultCeiling
-  },
-  {
-    key: 'liquidity',
-    title: 'Global bitUSD Available',
-    message: messages.globalBitUsdAvailable,
-    titleClassName: 'text-wrap',
-    format: (item) => displayMintingPairValues(item, false).liquidity
   }
 ]
 
-export const MyVaultsMintingPairsTable: TTable<IMintingPair, TTokenSymbols> = [
+export const MyVaultsMintingPairsTable: TTable<IMintingPair, IVault> = [
   {
     key: 'pairName',
     title: '',
-    format: (_, token) =>
-      `${token?.from?.symbol || DEFAULT_TEXT} - ${
-        token?.to?.symbol || DEFAULT_TEXT
-      }`
-  },
-  {
-    key: 'Network',
-    title: 'Network',
-    format: (item) => {
-      const chain = customChains.find((c) => c.id === item?.chainId)
-      if (!chain) return DEFAULT_TEXT
-      return (
-        <span className="flex items-center justify-center gap-x-1">
-          {chain.name}
-          <a
-            target="_blank"
-            href={chain.blockExplorers?.default.url}
-            className="shrink-0 cursor-pointer hover:text-white/70">
-            <LinkOutIcon />
-          </a>
-        </span>
-      )
-    }
+    format: () => 'wBTC - bitUSD'
   },
   {
     key: 'collateral',
     title: 'Collateral',
-    format: (item) => displayMintingPairValues(item).collateralLocked
+    format: (_, vault) => displayVaultValues(vault).lockedCollateral
   },
   {
     key: 'totalDebt',
     title: 'Total Debt',
     message: messages.totalDebt,
-    format: (item) => displayMintingPairValues(item).totalDebt
+    format: (_, vault) => displayVaultValues(vault).debtBitUSD
   },
   {
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    format: (item) => displayMintingPairValues(item).collateralRatio
+    format: (_, vault) => displayVaultValues(vault).healthFactor
   }
 ]
 
@@ -132,6 +97,7 @@ export const MyVaultOverviewTable: TTable<IVault> = [
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
+    message: messages.liquidationPrice,
     format: (item) => displayVaultValues(item).liquidationPrice
   },
   {
@@ -156,12 +122,17 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).borrowRate
+    format: () => (
+      <span className="flex items-center gap-x-1">
+        <span className="line-through">13%</span>
+        <span>0%</span>
+      </span>
+    )
   },
   {
     key: 'liquidationPenalty',
-    title: 'Liquidation Penalty',
-    message: messages.liquidationPenalty,
+    title: 'Liquidation Fee',
+    message: messages.liquidationFee,
     format: (item) => displayMintingPairValues(item).liquidationPenalty
   }
 ]
@@ -181,6 +152,7 @@ export const VaultChangesInfoTable: TTable<IVault> = [
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
+    message: messages.liquidationPrice,
     format: (item) => displayVaultValues(item).liquidationPrice
   },
   {
@@ -217,12 +189,17 @@ export const VaultInfoTable: TTable<IVault, IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (_, mintingPair) => displayMintingPairValues(mintingPair).borrowRate
+    format: () => (
+      <span className="flex items-center gap-x-1">
+        <span className="line-through">13%</span>
+        <span>0%</span>
+      </span>
+    )
   },
   {
-    key: 'liquidityPenalty',
-    title: 'Liquidity Penalty',
-    message: messages.liquidationPenalty,
+    key: 'liquidationFee',
+    title: 'Liquidation Fee',
+    message: messages.liquidationFee,
     format: (_, mintingPair) =>
       displayMintingPairValues(mintingPair).liquidationPenalty
   }

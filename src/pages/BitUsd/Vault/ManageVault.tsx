@@ -17,7 +17,10 @@ import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { IMintingPair } from '@/services/user'
 import { TransactionStatus } from '@/types/common'
-import { formatNumberAsCompact } from '@/utils/number'
+import {
+  formatNumberAsCompact,
+  formatNumberWithSeparator
+} from '@/utils/number'
 
 import {
   ActionButton,
@@ -158,39 +161,37 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       maxVault
 
     if (isMintFromBtc === true) {
-      return (
-        (!depositBtc && !mintBitUsd) ||
-        (Number(maxToMint) >= 0 && Number(mintBitUsd) > Number(maxToMint))
-      )
+      if (!depositBtc && !mintBitUsd) return true
+
+      if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
+
+      return Number(maxToMint) >= 0 && Number(mintBitUsd) > Number(maxToMint)
     }
+
+    if (!withdrawBtc && !repayBitUsd) return true
 
     if (!!repayBitUsd && Number(repayBitUsd) > bitUsdBalance) return true
 
-    if (
-      !!repayBitUsd &&
-      !!(Number(vault.debtBitUSD) - Number(repayBitUsd)) &&
-      Number(vault.debtBitUSD) - Number(repayBitUsd) <
-        Number(mintingPair?.vaultFloor)
-    ) {
+    if (Number(repayBitUsd) >= 0 && Number(minRepay) > Number(repayBitUsd))
       return true
-    }
 
     return (
-      (!withdrawBtc && !repayBitUsd) ||
-      (Number(maxToWithdraw) >= 0 &&
-        Number(withdrawBtc) > Number(maxToWithdraw))
+      Number(maxToWithdraw) >= 0 && Number(withdrawBtc) > Number(maxToWithdraw)
     )
   }, [
     bitUsdBalance,
     depositBtc,
     isMintFromBtc,
     maxVault,
+    minRepay,
     mintBitUsd,
-    mintingPair?.vaultFloor,
     repayBitUsd,
     vault,
+    wbtcBalance,
     withdrawBtc
   ])
+
+  const depositWBtcDisabled = useMemo(() => wbtcBalance <= 0, [wbtcBalance])
 
   const withdrawWbtcDisabled = useMemo(
     () => Number(maxVault?.availableToWithdraw) <= 0,
@@ -229,8 +230,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     const value = v || ''
     if (type === 'depositBtc') {
       setDepositBtc(value)
-      setWithdrawBtc('')
-      setRepayBitUsd('')
       setChangedCollateral(value)
       setChangedBitUsd(mintBitUsd)
 
@@ -240,30 +239,36 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
     if (type === 'withdrawBtc') {
       setWithdrawBtc(value)
-      setDepositBtc('')
-      setMintBitUsd('')
       setChangedCollateral('-' + value)
       setChangedBitUsd('-' + repayBitUsd)
     }
 
     if (type === 'mintBitUsd') {
       setMintBitUsd(value)
-      setWithdrawBtc('')
-      setRepayBitUsd('')
       setChangedCollateral(depositBtc)
       setChangedBitUsd(value)
     }
 
     if (type === 'repayBitUsd') {
       setRepayBitUsd(value)
-      setDepositBtc('')
-      setMintBitUsd('')
       setChangedBitUsd('-' + value)
       setChangedCollateral('-' + withdrawBtc)
 
       setMaxVaultCollateral('')
       setMaxVaultBitUsd('-' + value)
     }
+  }
+
+  const changeFocusToDepositAndMint = () => {
+    setIsMintFromBtc(true)
+    setWithdrawBtc('')
+    setRepayBitUsd('')
+  }
+
+  const changeFocusToWithdrawAndRepay = () => {
+    setIsMintFromBtc(false)
+    setDepositBtc('')
+    setMintBitUsd('')
   }
 
   const handleNext = () => {
@@ -307,9 +312,10 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                 <div className="grid grid-cols-2 gap-x-3">
                   <NumberInput
                     value={depositBtc}
-                    onFocus={() => setIsMintFromBtc(true)}
+                    onFocus={() => changeFocusToDepositAndMint()}
                     onInputChange={(v) => handleInput('depositBtc', v)}
                     greyOut={depositWbtcGreyOut}
+                    disabled={depositWBtcDisabled}
                     title="deposit wbtc"
                     inputSuffix={`~${depositInUsd}$`}
                     titleSuffix={
@@ -318,7 +324,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   />
                   <NumberInput
                     value={withdrawBtc}
-                    onFocus={() => setIsMintFromBtc(false)}
+                    onFocus={() => changeFocusToWithdrawAndRepay()}
                     onInputChange={(v) => handleInput('withdrawBtc', v)}
                     disabled={withdrawWbtcDisabled}
                     greyOut={withdrawWbtcGreyOut}
@@ -354,12 +360,13 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   <NumberInput
                     value={mintBitUsd}
                     disabled={mintBitUsdDisabled}
-                    onFocus={() => setIsMintFromBtc(true)}
+                    onFocus={() => changeFocusToDepositAndMint()}
                     onInputChange={(v) => handleInput('mintBitUsd', v)}
                     greyOut={mintBitUsdGreyOut}
                     title="mint bitUSD"
                     titleSuffix={
-                      'Max: ' + displayVaultValues(maxVault).availableToMint
+                      'Max Mint: ' +
+                      displayVaultValues(maxVault, false).availableToMint
                     }
                     inputSuffix={
                       <InputSuffixActionButton
@@ -376,13 +383,13 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   />
                   <NumberInput
                     value={repayBitUsd}
-                    onFocus={() => setIsMintFromBtc(false)}
+                    onFocus={() => changeFocusToWithdrawAndRepay()}
                     disabled={repayBitUsdDisabled}
                     onInputChange={(v) => handleInput('repayBitUsd', v)}
                     greyOut={repayBitUsdGreyOut}
                     title="repay bitUSD"
                     titleSuffix={
-                      'Available: ' + formatNumberAsCompact(bitUsdBalance)
+                      'Available: ' + formatNumberWithSeparator(bitUsdBalance)
                     }
                     inputSuffix={
                       <div className="flex items-center gap-x-2">
@@ -484,9 +491,9 @@ const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
   return (
     <div className="mt-6 flex items-center justify-center gap-x-9 font-ibmr text-sm text-white/70">
       {ManageVaultHeaderInfoTable.map(({ key, title, message, format }) => (
-        <div key={key}>
+        <div key={key} className="flex items-center gap-x-1">
           <span>
-            {title} <InfoIndicator message={message} />:{' '}
+            {title} <InfoIndicator message={message} />:
           </span>
           <span>{format(mintingPair)}</span>
         </div>

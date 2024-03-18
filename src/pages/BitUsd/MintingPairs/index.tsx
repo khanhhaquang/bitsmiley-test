@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useToken } from 'wagmi'
 
 import {
   ArrowDownDoubleIcon,
@@ -18,10 +17,10 @@ import {
   TableHead,
   TableHeader
 } from '@/components/ui/table'
-import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { IMintingPair } from '@/services/user'
+import { IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import { ActionButton } from '../components/ActionButton'
@@ -31,8 +30,7 @@ import {
   AvailableMintingPairsTable,
   MyVaultOverviewTable,
   MyVaultsMintingPairsTable,
-  TTable,
-  TTokenSymbols
+  TTable
 } from '../tables'
 
 const MintingPairs: React.FC = () => {
@@ -62,7 +60,7 @@ const MintingPairs: React.FC = () => {
 
 const MintingPairsTable: React.FC<{
   mintingPairs?: IMintingPair[]
-  table: TTable<IMintingPair, TTokenSymbols>
+  table: TTable<IMintingPair, IVault>
   isOpened?: boolean
 }> = ({ mintingPairs, isOpened, table }) => {
   if (!mintingPairs?.length) return null
@@ -130,7 +128,7 @@ const MintingPairsTable: React.FC<{
 const MintingPairTableRow: React.FC<{
   isOpenedVaults?: boolean
   mintingPair: IMintingPair
-  table: TTable<IMintingPair, TTokenSymbols>
+  table: TTable<IMintingPair, IVault>
 }> = ({ mintingPair, table, isOpenedVaults }) => {
   const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)
@@ -139,12 +137,6 @@ const MintingPairTableRow: React.FC<{
   const isInLiquidation =
     isOpenedVaults && !!vault?.healthFactor && Number(vault.healthFactor) <= 100
 
-  const contractAddresses = useContractAddresses()
-  const { data: wBtcTokenInfo } = useToken({ address: contractAddresses?.WBTC })
-  const { data: bitUsdTokenInfo } = useToken({
-    address: contractAddresses?.BitUSDL2
-  })
-
   return (
     <>
       <TableRow
@@ -152,7 +144,7 @@ const MintingPairTableRow: React.FC<{
         className="py-3 [&_td]:w-[120px] [&_td]:p-0">
         {table.map(({ key, format }) => (
           <TableCell key={key} className="text-nowrap">
-            {format(mintingPair, { from: wBtcTokenInfo, to: bitUsdTokenInfo })}
+            {format(mintingPair, vault)}
           </TableCell>
         ))}
         <TableCell className="flex w-[150px] items-center justify-end gap-x-2">
@@ -209,10 +201,7 @@ const MintingPairTableRow: React.FC<{
                       <div
                         key={key}
                         className="border-r-2 border-black px-2 py-1 last:border-none">
-                        {format(vault, {
-                          from: wBtcTokenInfo,
-                          to: bitUsdTokenInfo
-                        })}
+                        {format(vault)}
                       </div>
                     ))}
                   </div>

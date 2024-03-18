@@ -70,7 +70,7 @@ export const displayMintingPairValues = (
   value?: IMintingPair,
   withUnit: boolean = true
 ) => ({
-  maxLTV: formatPercentage(value?.maxLTV, withUnit),
+  maxLTV: formatPercentage(Number(value?.maxLTV) * 100, withUnit),
   borrowRate: !Number(value?.borrowRate)
     ? '0%'
     : formatPercentage(Number(value?.borrowRate) * 100, withUnit),
