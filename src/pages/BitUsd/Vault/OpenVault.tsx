@@ -100,11 +100,8 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
   }
 
-  const handleInput = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    callback: (v: string) => void
-  ) => {
-    callback(e.target.value)
+  const handleInput = (value?: string, callback?: (v: string) => void) => {
+    callback?.(value || '')
   }
 
   const depositInUsd = useMemo(() => {
@@ -188,7 +185,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
         <div className="mx-auto mt-11 flex w-[400px] flex-col gap-y-4">
           <NumberInput
             value={deposit}
-            onChange={(e) => handleInput(e, setDeposit)}
+            onInputChange={(v) => handleInput(v, setDeposit)}
             title="DEPOSIT WBTC"
             titleSuffix={
               minDeposit
@@ -212,7 +209,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           />
           <NumberInput
             value={mint}
-            onChange={(e) => handleInput(e, setMint)}
+            onInputChange={(v) => handleInput(v, setMint)}
             title="Mint bitUSD"
             titleSuffix={`Min: ${
               displayMintingPairValues(mintingPair, false).vaultFloor

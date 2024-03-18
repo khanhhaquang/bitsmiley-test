@@ -1,10 +1,11 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useRef, useState } from 'react'
+import { IMaskInput } from 'react-imask'
 
 import { InputIndicatorIcon } from '@/assets/icons'
-import { Input } from '@/components/ui/input'
 import { cn } from '@/utils/cn'
 
-export type NumberInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+export type NumberInputProps = {
+  value?: string
   title: ReactNode
   titleSuffix?: ReactNode
   inputSuffix?: ReactNode
@@ -12,6 +13,7 @@ export type NumberInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   greyOut?: boolean
   onFocus?: () => void
   onBlur?: () => void
+  onInputChange?: (v?: string) => void
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
@@ -21,13 +23,15 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   title,
   titleSuffix,
   inputSuffix,
-  onChange,
   onFocus,
   onBlur,
-  ...rest
+  onInputChange
 }) => {
   const [isFocus, setIsFocus] = useState(false)
   const isGrey = greyOut && !isFocus
+
+  const ref = useRef(null)
+  const inputRef = useRef(null)
 
   return (
     <div className="flex flex-col gap-y-1">
@@ -45,10 +49,18 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           'relative border border-blue bg-black/50 px-3 py-1',
           isGrey && 'bg-white/20'
         )}>
-        <Input
-          inputMode="decimal"
-          pattern="^(([1-9][0-9]*(\.)?[0-9]*)|(0(\.)([0-9]*))|(0))$"
+        <IMaskInput
+          ref={ref}
+          mask={Number}
+          thousandsSeparator=","
+          radix="."
+          scale={20}
           value={value}
+          unmask={false}
+          inputRef={inputRef}
+          onAccept={(_, mask) => {
+            onInputChange?.(mask.unmaskedValue)
+          }}
           disabled={disabled}
           onBlur={() => {
             setIsFocus(false)
@@ -60,14 +72,9 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           }}
           placeholder={isGrey ? '--' : '0.00'}
           className={cn(
-            'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white',
+            'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white bg-transparent outline-none',
             isGrey && 'placeholder:text-white/50 text-white/20'
           )}
-          onChange={(e) => {
-            if (!e.target.validity.valid) return
-            onChange?.(e)
-          }}
-          {...rest}
         />
         <div className="absolute right-1.5 top-1/2 flex h-full -translate-y-1/2 flex-col justify-center font-ibmr text-xs text-white/50">
           {inputSuffix}

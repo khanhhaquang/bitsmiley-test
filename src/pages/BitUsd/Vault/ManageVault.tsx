@@ -224,8 +224,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const handleInput = (
     type: 'depositBtc' | 'withdrawBtc' | 'mintBitUsd' | 'repayBitUsd',
-    value: string
+    v?: string
   ) => {
+    const value = v || ''
     if (type === 'depositBtc') {
       setDepositBtc(value)
       setWithdrawBtc('')
@@ -307,7 +308,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   <NumberInput
                     value={depositBtc}
                     onFocus={() => setIsMintFromBtc(true)}
-                    onChange={(e) => handleInput('depositBtc', e.target.value)}
+                    onInputChange={(v) => handleInput('depositBtc', v)}
                     greyOut={depositWbtcGreyOut}
                     title="deposit wbtc"
                     inputSuffix={`~${depositInUsd}$`}
@@ -318,7 +319,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   <NumberInput
                     value={withdrawBtc}
                     onFocus={() => setIsMintFromBtc(false)}
-                    onChange={(e) => handleInput('withdrawBtc', e.target.value)}
+                    onInputChange={(v) => handleInput('withdrawBtc', v)}
                     disabled={withdrawWbtcDisabled}
                     greyOut={withdrawWbtcGreyOut}
                     title="withdraw wbtc"
@@ -354,7 +355,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     value={mintBitUsd}
                     disabled={mintBitUsdDisabled}
                     onFocus={() => setIsMintFromBtc(true)}
-                    onChange={(e) => handleInput('mintBitUsd', e.target.value)}
+                    onInputChange={(v) => handleInput('mintBitUsd', v)}
                     greyOut={mintBitUsdGreyOut}
                     title="mint bitUSD"
                     titleSuffix={
@@ -377,7 +378,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     value={repayBitUsd}
                     onFocus={() => setIsMintFromBtc(false)}
                     disabled={repayBitUsdDisabled}
-                    onChange={(e) => handleInput('repayBitUsd', e.target.value)}
+                    onInputChange={(v) => handleInput('repayBitUsd', v)}
                     greyOut={repayBitUsdGreyOut}
                     title="repay bitUSD"
                     titleSuffix={
