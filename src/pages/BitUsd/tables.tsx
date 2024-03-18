@@ -1,9 +1,29 @@
 import { ReactNode } from 'react'
+import { GetTokenReturnType } from 'wagmi/actions'
 
+import { LinkOutIcon } from '@/assets/icons'
+import { customChains } from '@/config/wagmi'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 
-import { displayMintingPairValues, displayVaultValues } from './display'
+import {
+  DEFAULT_TEXT,
+  displayMintingPairValues,
+  displayVaultValues
+} from './display'
+
+export type TTable<T, P = unknown> = {
+  key: string
+  title: string
+  message?: string
+  titleClassName?: string
+  format: (item?: T, item2?: P) => ReactNode
+}[]
+
+export type TTokenSymbols = {
+  from?: GetTokenReturnType
+  to?: GetTokenReturnType
+}
 
 const messages = {
   healthFactor:
@@ -19,24 +39,14 @@ const messages = {
   liquidationPenalty: 'The fee that liquidators need to pay to the protocol.'
 }
 
-export type TTable<T, P = unknown> = {
-  key: string
-  title: string
-  message?: string
-  titleClassName?: string
-  format: (item?: T, item2?: P) => ReactNode
-}[]
-
-export const AvailableMintingPairsTable: TTable<IMintingPair> = [
+export const AvailableMintingPairsTable: TTable<IMintingPair, TTokenSymbols> = [
   {
     key: 'pairName',
     title: '',
-    format: () => `wBTC - bitUSD`
-  },
-  {
-    key: 'network',
-    title: 'Network',
-    format: (item) => displayMintingPairValues(item).network
+    format: (_, token) =>
+      `${token?.from?.symbol || DEFAULT_TEXT} - ${
+        token?.to?.symbol || DEFAULT_TEXT
+      }`
   },
   {
     key: 'maxLTV',
@@ -71,16 +81,33 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
   }
 ]
 
-export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
+export const MyVaultsMintingPairsTable: TTable<IMintingPair, TTokenSymbols> = [
   {
     key: 'pairName',
     title: '',
-    format: () => `wBTC - bitUSD`
+    format: (_, token) =>
+      `${token?.from?.symbol || DEFAULT_TEXT} - ${
+        token?.to?.symbol || DEFAULT_TEXT
+      }`
   },
   {
     key: 'Network',
     title: 'Network',
-    format: (item) => displayMintingPairValues(item).network
+    format: (item) => {
+      const chain = customChains.find((c) => c.id === item?.chainId)
+      if (!chain) return DEFAULT_TEXT
+      return (
+        <span className="flex items-center justify-center gap-x-1">
+          {chain.name}
+          <a
+            target="_blank"
+            href={chain.blockExplorers?.default.url}
+            className="shrink-0 cursor-pointer hover:text-white/70">
+            <LinkOutIcon />
+          </a>
+        </span>
+      )
+    }
   },
   {
     key: 'collateral',

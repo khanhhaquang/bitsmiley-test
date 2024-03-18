@@ -10,7 +10,7 @@ const BITUSD_UNIT = '$'
 const PERCENTAGE_UNIT = '%'
 const DOLLAR_UNIT = '$' // bitUsd
 
-const DEFAULT_TEXT = '-'
+export const DEFAULT_TEXT = '-'
 
 export const formatBitUsd = (
   v?: string | number,

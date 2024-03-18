@@ -46,7 +46,7 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
     <>
       <WalletItem
         iconName="okx"
-        name="Okx wallet"
+        name="OKX wallet"
         connect={() => {
           if (!window.okxwallet) {
             openUrl(WALLETSITE.okx)
@@ -59,7 +59,7 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
       />
       <WalletItem
         iconName="unisat"
-        name="Unisat wallet"
+        name="UniSat wallet"
         connect={async () => {
           if (!window.unisat) {
             openUrl(WALLETSITE.unisat)
@@ -72,7 +72,7 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({ onClose }) => {
       />
       <WalletItem
         iconName="metamask"
-        name="Metamask wallet"
+        name="MetaMask wallet"
         connect={() => {
           if (
             typeof window.ethereum === 'undefined' ||

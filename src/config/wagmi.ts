@@ -15,7 +15,7 @@ export const merlinTestnet = {
 
 export const merlinMainnet = {
   id: 4200,
-  name: 'Merlin Mainnet',
+  name: 'Merlin',
   nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://rpc.merlinchain.io'] }
