@@ -170,8 +170,8 @@ const MintingPairTableRow: React.FC<{
           <TableCell className="font-ibmr text-sm text-warning">
             <span className="flex items-center gap-x-1">
               <ReturnUpIcon />
-              This wallet is in the process of liquidation! Repay bitUSD or
-              deposit BTC to avoid liquidation
+              This vault is at the risk of liquidation. Repay bitUSD or deposit
+              wBTC to avoid liquidation
             </span>
           </TableCell>
         </TableRow>

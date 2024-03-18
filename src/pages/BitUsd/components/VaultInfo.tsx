@@ -36,27 +36,29 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
   const table = isVaultChanges ? VaultChangesInfoTable : VaultInfoTable
 
   const isVaultHealthGreen =
-    isVaultChanges && !!vault && Number(vault?.healthFactor) >= 200
+    !!vault?.healthFactor && Number(vault?.healthFactor) >= 200
   const isVaultHealthYellow =
-    isVaultChanges &&
-    !!vault &&
+    !!vault?.healthFactor &&
     Number(vault?.healthFactor) >= 120 &&
     Number(vault?.healthFactor) < 200
   const isVaultHealthRed =
-    isVaultChanges && !!vault && Number(vault?.healthFactor) < 120
+    !!vault?.healthFactor && Number(vault?.healthFactor) < 120
 
   const isChangedVaultHealthGreen =
     isVaultChanges &&
     hasChangedVault &&
+    !!changedVault?.healthFactor &&
     Number(changedVault?.healthFactor) >= 200
   const isChangedVaultHealthYellow =
     isVaultChanges &&
     hasChangedVault &&
+    !!changedVault?.healthFactor &&
     Number(changedVault?.healthFactor) >= 120 &&
     Number(changedVault?.healthFactor) < 200
   const isChangedVaultHealthRed =
     isVaultChanges &&
     hasChangedVault &&
+    !!changedVault?.healthFactor &&
     Number(changedVault?.healthFactor) < 120
 
   return (
@@ -82,33 +84,30 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
             <div key={key} className="flex items-center gap-x-2">
               <span
                 className={
-                  key !== 'healthFactor'
-                    ? ''
-                    : cn(
+                  key === 'healthFactor'
+                    ? cn(
                         isVaultHealthGreen && 'text-green',
                         isVaultHealthYellow && 'text-yellow',
                         isVaultHealthRed && 'text-warning'
                       )
+                    : ''
                 }>
-                {format(
-                  (isVaultChanges ? vault : mintingPairs) as IMintingPair &
-                    IVault
-                )}
+                {format(vault, mintingPairs)}
               </span>
               {hasChangedVault && (
                 <>
                   <ChevronRightIcon width={5} />
                   <span
                     className={
-                      key !== 'healthFactor'
-                        ? ''
-                        : cn(
+                      key === 'healthFactor'
+                        ? cn(
                             isChangedVaultHealthGreen && 'text-green',
                             isChangedVaultHealthYellow && 'text-yellow',
                             isChangedVaultHealthRed && 'text-warning'
                           )
+                        : ''
                     }>
-                    {format(changedVault as IMintingPair & IVault)}
+                    {format(changedVault, mintingPairs)}
                   </span>
                 </>
               )}

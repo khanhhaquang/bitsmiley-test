@@ -6,6 +6,7 @@ import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { FeatureEnabled } from '@/services/user'
+import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
@@ -41,10 +42,10 @@ const BitUsd: React.FC = () => {
             </Suspense>
           </div>
 
-          <div className="absolute bottom-[29.5%] right-[24.7%] z-10 flex h-[3%] w-[14%] items-center justify-center text-nowrap font-sdm text-[10px] text-white xl:text-base">
-            Current BTC Price:{' '}
-            <span className="text-green">
-              ${formatNumberWithSeparator(wbtcPrice)}
+          <div className="absolute bottom-[29.5%] right-[24.7%] z-10 flex h-[3%] w-[14%] items-center justify-center gap-x-1 text-nowrap font-sdm text-[10px] text-white xl:text-base">
+            Current BTC Price:
+            <span className={cn(wbtcPrice && 'text-green')}>
+              {wbtcPrice ? `$${formatNumberWithSeparator(wbtcPrice, 4)}` : '-'}
             </span>
           </div>
 

@@ -19,12 +19,12 @@ const messages = {
   liquidationPenalty: 'The fee that liquidators need to pay to the protocol.'
 }
 
-export type TTable<T> = {
+export type TTable<T, P = unknown> = {
   key: string
   title: string
   message?: string
   titleClassName?: string
-  format: (item?: T) => ReactNode
+  format: (item?: T, item2?: P) => ReactNode
 }[]
 
 export const AvailableMintingPairsTable: TTable<IMintingPair> = [
@@ -168,40 +168,35 @@ export const VaultChangesInfoTable: TTable<IVault> = [
   }
 ]
 
-export const VaultInfoTable: TTable<IMintingPair> = [
+export const VaultInfoTable: TTable<IVault, IMintingPair> = [
   {
     key: 'collateralLocked',
     title: 'Collateral Locked',
-    // TODO calculate
-    // format: (item) => displayMintingPairValues(item).collateralLocked
-    format: () => '--'
+    format: (vault) => displayVaultValues(vault).lockedCollateral
   },
   {
-    key: 'totalDebt',
+    key: 'debtBitUSD',
     title: 'Outstanding Debt',
     message: messages.outStandingDebt,
-    // TODO calculate
-    // format: (item) => displayMintingPairValues(item).totalDebt
-    format: () => '--'
+    format: (vault) => displayVaultValues(vault).debtBitUSD
   },
   {
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    // TODO calculate
-    // format: (item) => displayMintingPairValues(item).collateralRatio
-    format: () => '--'
+    format: (vault) => displayVaultValues(vault).healthFactor
   },
   {
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).borrowRate
+    format: (_, mintingPair) => displayMintingPairValues(mintingPair).borrowRate
   },
   {
     key: 'liquidityPenalty',
     title: 'Liquidity Penalty',
     message: messages.liquidationPenalty,
-    format: (item) => displayMintingPairValues(item).liquidationPenalty
+    format: (_, mintingPair) =>
+      displayMintingPairValues(mintingPair).liquidationPenalty
   }
 ]

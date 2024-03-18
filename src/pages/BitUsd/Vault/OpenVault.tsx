@@ -11,6 +11,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { TransactionStatus } from '@/types/common'
+import { IVault } from '@/types/vault'
 import { formatNumberAsCompact } from '@/utils/number'
 
 import {
@@ -27,7 +28,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
   const { mintingPair, refetch: refetchMintingPairs } =
     useUserMintingPairs(chainId)
-  const { vault, refetchVaultAddress } = useUserVault()
+  const { refetchVaultAddress } = useUserVault()
   const { blockExplorerUrl } = useUserInfo()
   const contractAddresses = useContractAddresses()
   const { balance: wbtcBalance } = useTokenBalance(contractAddresses?.WBTC)
@@ -92,7 +93,21 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     return (wbtcPrice * Number(deposit)).toFixed(2)
   }, [deposit, wbtcPrice])
 
-  if (!mintingPair || !vault) return null
+  const vaultInfo: IVault = useMemo(
+    () => ({
+      debtBitUSD: mint,
+      lockedCollateral: deposit,
+      healthFactor: !mint
+        ? ''
+        : (
+            (wbtcPrice * Number(deposit) * Number(mintingPair?.maxLTV)) /
+            Number(mint)
+          ).toString()
+    }),
+    [deposit, mint, mintingPair, wbtcPrice]
+  )
+
+  if (!mintingPair) return null
 
   return (
     <div className="pb-12">
@@ -187,18 +202,18 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             inputSuffix={
               <div className="flex h-full gap-x-1.5 py-1">
                 <InputSuffixActionButton
-                  onClick={() => setMint(mintingPair.vaultFloor)}>
+                  onClick={() => setMint(mintingPair.vaultFloor || '')}>
                   Min
                 </InputSuffixActionButton>
                 <InputSuffixActionButton
-                  onClick={() => setMint(mintingPair.vaultCeiling)}>
+                  onClick={() => setMint(mintingPair.vaultCeiling || '')}>
                   Max
                 </InputSuffixActionButton>
               </div>
             }
           />
           <VaultInfo
-            vault={vault}
+            vault={vaultInfo}
             mintingPairs={mintingPair}
             borderSvg={
               <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full" />
