@@ -26,9 +26,9 @@ import { displayMintingPairValues, formatBitUsd } from '../display'
 
 export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
+  const { refreshVaultValues } = useUserVault()
   const { mintingPair, refetch: refetchMintingPairs } =
     useUserMintingPairs(chainId)
-  const { refetchVaultAddress } = useUserVault()
   const { blockExplorerUrl } = useUserInfo()
   const contractAddresses = useContractAddresses()
   const { balance: wbtcBalance } = useTokenBalance(contractAddresses?.WBTC)
@@ -139,8 +139,8 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
         actionButtonText="Ok"
         open={openVaultTxnStatus === TransactionStatus.Success}
         onClickActionButton={async () => {
-          await refetchVaultAddress()
           await refetchMintingPairs()
+          refreshVaultValues()
           navigate(-1)
         }}
         message="You have successfully created a vault. Now you can see it in the

@@ -44,7 +44,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     setChangedBitUsd,
     setChangedCollateral,
     hasChangedVault,
-    refetchVault,
+    refreshVaultValues,
     maxVault,
     setMaxVaultBitUsd,
     setMaxVaultCollateral
@@ -426,8 +426,8 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
               actionButtonClassName="w-[300px]"
               type={processingType}
               onClickActionButton={async () => {
-                await refetchVault()
                 await refetchMintingPairs()
+                refreshVaultValues()
                 navigate(-1)
               }}
               actionButtonText={processingType !== 'info' ? 'Ok' : ''}

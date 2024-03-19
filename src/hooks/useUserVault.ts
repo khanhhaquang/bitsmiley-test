@@ -7,6 +7,8 @@ import { useReadBitSmileyOwners } from '@/contracts/BitSmiley'
 import { useReadVaultGetVaultChange } from '@/contracts/Vault'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useTokenAllowance } from '@/hooks/useTokenAllowance'
+import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IVaultFromChain } from '@/types/vault'
 
@@ -51,6 +53,7 @@ export const useUserVault = () => {
   const {
     data: vault,
     refetch: refetchVault,
+    isFetching: isFetchingVault,
     ...rest
   } = useReadVaultGetVaultChange({
     address: vaultManagerAddress,
@@ -115,6 +118,46 @@ export const useUserVault = () => {
     query
   })
 
+  const {
+    refetchAllowance: refetchWbtcAllowance,
+    isFetching: isFetchingWbtcAllowance
+  } = useTokenAllowance(contractAddresses?.WBTC, contractAddresses?.BitSmiley)
+  const {
+    refetchAllowance: refetchBitUsdAllowance,
+    isFetching: isFetchingBitUsdAllowance
+  } = useTokenAllowance(
+    contractAddresses?.BitUSDL2,
+    contractAddresses?.BitSmiley
+  )
+  const {
+    refetchBalance: refetchWbtcBalance,
+    isFetching: isFetchingWbtcBalance
+  } = useTokenBalance(contractAddresses?.WBTC)
+  const {
+    refetchBalance: refetchBitUsdBalance,
+    isFetching: isFetchingBitUsdBalance
+  } = useTokenBalance(contractAddresses?.BitUSDL2)
+
+  const isRefreshingVaultValues =
+    isFetchingVaultAddress ||
+    isFetchingVault ||
+    isFetchingMaxVault ||
+    isFetchingChangedVault ||
+    isFetchingBitUsdBalance ||
+    isFetchingWbtcBalance ||
+    isFetchingWbtcAllowance ||
+    isFetchingBitUsdAllowance
+  const refreshVaultValues = () => {
+    refetchVaultAddress()
+    refetchVault()
+    refetchMaxVault()
+    refetchChangedVault()
+    refetchWbtcAllowance()
+    refetchWbtcBalance()
+    refetchBitUsdAllowance()
+    refetchBitUsdBalance()
+  }
+
   return {
     vault,
     ...rest,
@@ -131,6 +174,8 @@ export const useUserVault = () => {
     refetchMaxVault,
     isFetchingChangedVault,
     isFetchingMaxVault,
-    isFetchingVaultAddress
+    isFetchingVaultAddress,
+    refreshVaultValues,
+    isRefreshingVaultValues
   }
 }
