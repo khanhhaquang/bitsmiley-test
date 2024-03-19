@@ -119,8 +119,6 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     if (mintDisabled) setMint('')
   }, [mintDisabled])
 
-  if (!mintingPair) return null
-
   return (
     <div className="pb-12">
       <ProcessingModal

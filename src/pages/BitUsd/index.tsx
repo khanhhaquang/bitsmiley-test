@@ -4,22 +4,15 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { Image } from '@/components/Image'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { FeatureEnabled } from '@/services/user'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
 const BitUsd: React.FC = () => {
-  const {
-    isConnected,
-    enabledFeatures,
-    isLoading: isLoadingUserInfo
-  } = useUserInfo()
-  const { isLoading: isLoadingUserMintingPairs } = useUserMintingPairs()
-
-  const isLoading = isLoadingUserInfo || isLoadingUserMintingPairs
-  const isBitUsdEnabled = enabledFeatures?.AlphaNet === FeatureEnabled.ENABLED
+  const { isConnected, enabledFeatures, isLoading } = useUserInfo()
+  const isBitUsdEnabled =
+    !!enabledFeatures && enabledFeatures?.AlphaNet === FeatureEnabled.ENABLED
 
   const wbtcPrice = useTokenPrice()
 

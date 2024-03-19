@@ -294,8 +294,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
   }
 
-  if (!mintingPair || !vault) return null
-
   return (
     <div className="pb-12">
       <ProcessingModal
@@ -492,9 +490,9 @@ const ManageVaultSectionTitle: React.FC<{ title: string }> = ({ title }) => {
   )
 }
 
-const ManageVaultHeaderInformation: React.FC<{ mintingPair: IMintingPair }> = ({
-  mintingPair
-}) => {
+const ManageVaultHeaderInformation: React.FC<{
+  mintingPair?: IMintingPair
+}> = ({ mintingPair }) => {
   return (
     <div className="mt-6 flex items-center justify-center gap-x-9 font-ibmr text-sm text-white/70">
       {ManageVaultHeaderInfoTable.map(({ key, title, message, format }) => (

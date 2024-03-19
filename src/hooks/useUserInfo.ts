@@ -13,7 +13,8 @@ export const useUserInfo = () => {
     address: evmAddress,
     chainId: evmChainId,
     isConnected: isEvmConnected,
-    isConnecting
+    isConnecting,
+    isReconnecting
   } = useAccount()
 
   const addressForDisplay = (btcAccounts[0] as Address) || evmAddress
@@ -39,7 +40,7 @@ export const useUserInfo = () => {
     [evmChain]
   )
 
-  const isLoading = isConnecting || isLoadingEnabledFeatures
+  const isLoading = isConnecting || isReconnecting || isLoadingEnabledFeatures
 
   return {
     isConnected: isEvmConnected,
