@@ -24,19 +24,31 @@ export interface INft {
 }
 
 export interface IMintingPair {
+  availableToMint: string
+  availableToWithdraw: string
   borrowRate: string
   chainId: number
+  collateralLocked: string
+  healthFactor: string
   isOpenVault: boolean
   liquidationPenalty: string
+  liquidationPrice: string
   liquidity: string
   maxLTV: string
   network: string
+  totalDebt: string
   vaultCeiling: string
   vaultFloor: string
 
-  collateralRatio?: string
-  collateralLocked?: string
-  totalDebt?: string
+  liquidated: {
+    transactionHash: Address
+    recipient: Address
+    collateral: string
+    bitUSD: string
+    penalty: string
+    blockNumber: number
+    timestamp: number
+  }[]
 }
 
 export enum FeatureEnabled {

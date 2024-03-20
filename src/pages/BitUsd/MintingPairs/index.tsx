@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSwitchChain } from 'wagmi'
@@ -24,9 +25,7 @@ import { bobTestnet } from '@/config/wagmi'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
-import { useUserVault } from '@/hooks/useUserVault'
 import { IMintingPair } from '@/services/user'
-import { IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import { ActionButton } from '../components/ActionButton'
@@ -66,7 +65,7 @@ const MintingPairs: React.FC = () => {
 
 const MintingPairsTable: React.FC<{
   mintingPairs?: IMintingPair[]
-  table: TTable<IMintingPair, IVault>
+  table: TTable<IMintingPair>
   isOpened?: boolean
 }> = ({ mintingPairs, isOpened, table }) => {
   if (!mintingPairs?.length) return null
@@ -134,11 +133,10 @@ const MintingPairsTable: React.FC<{
 const MintingPairTableRow: React.FC<{
   isOpenedVaults?: boolean
   mintingPair: IMintingPair
-  table: TTable<IMintingPair, IVault>
+  table: TTable<IMintingPair>
 }> = ({ mintingPair, table, isOpenedVaults }) => {
   const navigate = useNavigate()
   const disconnect = useDisconnectAccount()
-  const { vault } = useUserVault()
   const { evmChainId, isConnected } = useUserInfo()
   const { switchChain } = useSwitchChain()
 
@@ -149,9 +147,9 @@ const MintingPairTableRow: React.FC<{
   const isInLiquidation = useMemo(
     () =>
       isOpenedVaults &&
-      !!vault?.healthFactor &&
-      Number(vault.healthFactor) <= 100,
-    [isOpenedVaults, vault?.healthFactor]
+      !!mintingPair?.healthFactor &&
+      Number(mintingPair.healthFactor) <= 100,
+    [isOpenedVaults, mintingPair.healthFactor]
   )
 
   const handleEnterVault = () => {
@@ -178,6 +176,16 @@ const MintingPairTableRow: React.FC<{
     navigate(`./vault/${mintingPair.chainId}`)
   }
 
+  const liquidated = mintingPair.liquidated?.[0]
+  const liquidatedDate = dayjs(liquidated?.timestamp).format('DD/MM/YYYY')
+
+  const liquidationMessage = useMemo(() => {
+    if (liquidated) return `This vault was liquidated on ${liquidatedDate}`
+    if (isInLiquidation)
+      return 'This vault is at the risk of liquidation. Repay bitUSD or deposit wBTC to avoid liquidation'
+    return ''
+  }, [isInLiquidation, liquidated, liquidatedDate])
+
   return (
     <>
       <SelectWalletModal
@@ -191,7 +199,7 @@ const MintingPairTableRow: React.FC<{
         className="py-3 [&_td]:w-[120px] [&_td]:p-0">
         {table.map(({ key, format }) => (
           <TableCell key={key} className="text-nowrap">
-            {format(mintingPair, vault)}
+            {format(mintingPair)}
           </TableCell>
         ))}
         <TableCell className="flex w-[150px] items-center justify-end gap-x-2">
@@ -215,7 +223,7 @@ const MintingPairTableRow: React.FC<{
         </TableCell>
       </TableRow>
 
-      {isInLiquidation && (
+      {liquidationMessage && (
         <TableRow className="-mt-1.5">
           <TableCell className="font-ibmr text-sm text-warning">
             <span className="flex items-center gap-x-1">
@@ -247,7 +255,7 @@ const MintingPairTableRow: React.FC<{
                       <div
                         key={key}
                         className="border-r-2 border-black px-2 py-1 last:border-none">
-                        {format(vault)}
+                        {format(mintingPair)}
                       </div>
                     ))}
                   </div>

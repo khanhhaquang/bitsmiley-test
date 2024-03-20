@@ -33,7 +33,7 @@ const messages = {
     'Collateral price below which your vault will be liquidated.'
 }
 
-export const AvailableMintingPairsTable: TTable<IMintingPair, IVault> = [
+export const AvailableMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'pairName',
     title: '',
@@ -87,7 +87,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair, IVault> = [
   }
 ]
 
-export const MyVaultsMintingPairsTable: TTable<IMintingPair, IVault> = [
+export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'pairName',
     title: '',
@@ -113,38 +113,38 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair, IVault> = [
   {
     key: 'collateral',
     title: 'Collateral',
-    format: (_, vault) => displayVaultValues(vault).lockedCollateral
+    format: (item) => displayMintingPairValues(item).collateralLocked
   },
   {
     key: 'totalDebt',
     title: 'Total Debt',
     message: messages.totalDebt,
-    format: (_, vault) => displayVaultValues(vault).debtBitUSD
+    format: (item) => displayMintingPairValues(item).totalDebt
   },
   {
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    format: (_, vault) => displayVaultValues(vault).healthFactor
+    format: (item) => displayMintingPairValues(item).healthFactor
   }
 ]
 
-export const MyVaultOverviewTable: TTable<IVault> = [
+export const MyVaultOverviewTable: TTable<IMintingPair> = [
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
     message: messages.liquidationPrice,
-    format: (item) => displayVaultValues(item).liquidationPrice
+    format: (item) => displayMintingPairValues(item).liquidationPrice
   },
   {
     key: 'availableToWithdraw',
     title: 'Available To Withdraw',
-    format: (item) => displayVaultValues(item).availableToWithdraw
+    format: (item) => displayMintingPairValues(item).availableToWithdraw
   },
   {
     key: 'availableToMint',
     title: 'Available To Mint',
-    format: (item) => displayVaultValues(item).availableToMint
+    format: (item) => displayMintingPairValues(item).availableToMint
   }
 ]
 

@@ -78,15 +78,15 @@ export const displayMintingPairValues = (
     Number(value?.liquidationPenalty) * 100,
     withUnit
   ),
-  collateralRatio: formatPercentage(
-    Number(value?.collateralRatio) * 100,
-    withUnit
-  ),
+  liquidationPrice: formatMoney(value?.liquidationPrice, withUnit),
+  healthFactor: formatPercentage(Number(value?.healthFactor) * 100, withUnit),
   liquidity: formatBitUsd(value?.liquidity, withUnit, true),
   vaultCeiling: formatBitUsd(value?.vaultCeiling, withUnit, true),
   vaultFloor: formatBitUsd(value?.vaultFloor, withUnit, true),
   collateralLocked: formatWBtc(value?.collateralLocked, withUnit, true),
   totalDebt: formatBitUsd(value?.totalDebt, withUnit, true),
+  availableToWithdraw: formatWBtc(value?.availableToWithdraw, withUnit),
+  availableToMint: formatBitUsd(value?.availableToMint, withUnit),
 
   network: !value?.network ? DEFAULT_TEXT : value.network,
   chainId: !value?.chainId ? DEFAULT_TEXT : value.chainId,

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -294,12 +295,50 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
   }
 
+  const liquidated = mintingPair?.liquidated?.[0]
+  const liquidatedHash = liquidated?.transactionHash
+  const liquidatedDate = dayjs(liquidated?.timestamp).format('DD/MM/YYYY')
+
+  const [isLiquidatedModalOpen, setIsLiquidatedModalOpen] =
+    useState(!!liquidated)
+
   return (
     <div className="pb-12">
       <ProcessingModal
         message="Waiting for wallet signature"
         open={isTransactionStatusSigning}
       />
+
+      {!!liquidated && (
+        <ProcessingModal
+          title="liquidated"
+          titleClassName="text-warning"
+          message={
+            <div className="flex flex-col items-center gap-y-9">
+              <div>
+                This vault was liquidated on {liquidatedDate}. You may check the
+                transaction{' '}
+                <span className="flex cursor-pointer items-center justify-center text-green">
+                  [
+                  <a
+                    className="hover:underline"
+                    target="_blank"
+                    href={`${blockExplorerUrl}/tx/${liquidatedHash}`}>
+                    here
+                  </a>
+                  ]
+                </span>
+              </div>
+              <ActionButton
+                className="w-[165px]"
+                onClick={() => setIsLiquidatedModalOpen(false)}>
+                Enter vault
+              </ActionButton>
+            </div>
+          }
+          open={isLiquidatedModalOpen}
+        />
+      )}
 
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation mintingPair={mintingPair} />
