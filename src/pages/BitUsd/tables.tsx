@@ -1,12 +1,12 @@
 import { ReactNode } from 'react'
 import { GetTokenReturnType } from 'wagmi/actions'
 
+import { LinkOutIcon } from '@/assets/icons'
+import { customChains } from '@/config/wagmi'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 
 import { displayMintingPairValues, displayVaultValues } from './display'
-import { LinkOutIcon } from '@/assets/icons'
-import { customChains } from '@/config/wagmi'
 
 export type TTable<T, P = unknown> = {
   key: string

@@ -18,6 +18,7 @@ export const NetworkIndicator: React.FC<{ className?: string }> = ({
         )}>
         {chainIconUrl && <Image width={15} height={15} src={chainIconUrl} />}
         {evmChain.name}
+        <span className="ml-2 size-2 rounded-full bg-green" />
       </div>
     )
   )
