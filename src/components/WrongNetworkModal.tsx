@@ -46,6 +46,7 @@ const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <div className="flex flex-col items-center gap-y-2">
               {chains.map((v) => (
                 <button
+                  key={v.id}
                   onClick={() => handleSwitch(v.id)}
                   className="flex cursor-pointer items-center gap-x-2 rounded-md px-3 py-2 text-base hover:bg-grey7">
                   <Image
