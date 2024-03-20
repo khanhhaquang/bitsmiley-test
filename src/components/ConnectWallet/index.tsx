@@ -136,8 +136,13 @@ export const SelectWalletModal: React.FC<{
           <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
           <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
             We are working on adding more wallets. Don’t have any wallet listed
-            here? Select a provider below to create one
+            here? Select a provider below to create one.
           </div>
+          {hideParticle && (
+            <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm text-yellow">
+              Unitsat and OKX wallets are not supported now for BOB network.
+            </div>
+          )}
           <div className="flex flex-col gap-y-6">
             <EvmConnector
               onClose={onClose}
