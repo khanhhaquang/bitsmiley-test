@@ -109,10 +109,12 @@ export const ConnectWallet: React.FC<{
   )
 }
 
-const SelectWalletModal: React.FC<{
+export const SelectWalletModal: React.FC<{
+  expectedChainId?: number
+  hideParticle?: boolean
   isOpen: boolean
   onClose: () => void
-}> = ({ isOpen, onClose }) => {
+}> = ({ isOpen, hideParticle, onClose, expectedChainId }) => {
   const [isConfirmed, setIsConfirmed] = useState(
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
@@ -137,7 +139,11 @@ const SelectWalletModal: React.FC<{
             here? Select a provider below to create one
           </div>
           <div className="flex flex-col gap-y-6">
-            <EvmConnector onClose={onClose} />
+            <EvmConnector
+              onClose={onClose}
+              hideParticle={hideParticle}
+              expectedChainId={expectedChainId}
+            />
           </div>
         </div>
       </>

@@ -49,6 +49,7 @@ export const useUserInfo = () => {
     enabledFeatures,
     blockExplorerUrl,
     evmChain,
+    evmChainId,
     isLoading
   }
 }

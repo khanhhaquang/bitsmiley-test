@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
+import { OnChainLoader } from '@/components/OnchainLoader'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { FeatureEnabled } from '@/services/user'
@@ -26,7 +27,7 @@ const BitUsd: React.FC = () => {
   return (
     <div className="h-screen w-screen overflow-x-hidden bg-bitUsdBg bg-cover bg-center bg-no-repeat text-white">
       {isLoading ? (
-        <div>loading...</div>
+        <OnChainLoader />
       ) : (
         <div className="relative -top-8 left-1/2 aspect-[1960/1273] w-[1280px] -translate-x-1/2 xl:w-[1960px] 3xl:w-full">
           <div className="scrollbar-none absolute left-[24%] top-[24%] z-50 size-full h-[40%] w-[51.2%] overflow-y-auto overflow-x-hidden overscroll-contain">

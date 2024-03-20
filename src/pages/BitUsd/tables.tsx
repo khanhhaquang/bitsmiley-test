@@ -5,6 +5,8 @@ import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 
 import { displayMintingPairValues, displayVaultValues } from './display'
+import { LinkOutIcon } from '@/assets/icons'
+import { customChains } from '@/config/wagmi'
 
 export type TTable<T, P = unknown> = {
   key: string
@@ -36,6 +38,23 @@ export const AvailableMintingPairsTable: TTable<IMintingPair, IVault> = [
     key: 'pairName',
     title: '',
     format: () => 'wBTC - bitUSD'
+  },
+  {
+    key: 'chainId',
+    title: 'Network',
+    format: (item) => (
+      <span className="flex items-center gap-2">
+        {item?.network}
+        <a
+          href={
+            customChains.find((v) => v.id === item?.chainId)?.blockExplorers
+              ?.default.url
+          }
+          target="_blank">
+          <LinkOutIcon width={13} height={13} />
+        </a>
+      </span>
+    )
   },
   {
     key: 'maxLTV',
@@ -73,6 +92,23 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair, IVault> = [
     key: 'pairName',
     title: '',
     format: () => 'wBTC - bitUSD'
+  },
+  {
+    key: 'chainId',
+    title: 'Network',
+    format: (item) => (
+      <span className="flex items-center gap-2">
+        {item?.network}
+        <a
+          href={
+            customChains.find((v) => v.id === item?.chainId)?.blockExplorers
+              ?.default.url
+          }
+          target="_blank">
+          <LinkOutIcon width={13} height={13} />
+        </a>
+      </span>
+    )
   },
   {
     key: 'collateral',
