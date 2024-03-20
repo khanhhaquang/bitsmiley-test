@@ -6,7 +6,12 @@ import {
 import { ReactNode, useMemo, useState } from 'react'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 
-import { customChains, merlinMainnet, merlinTestnet } from '@/config/wagmi'
+import {
+  bobTestnet,
+  customChains,
+  merlinMainnet,
+  merlinTestnet
+} from '@/config/wagmi'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import LoadingResourcesPage from '@/pages/LoadingResources'
@@ -36,7 +41,8 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
       chains: [initialChains, ...restChains],
       transports: {
         [merlinTestnet.id]: http(),
-        [merlinMainnet.id]: http()
+        [merlinMainnet.id]: http(),
+        [bobTestnet.id]: http()
       }
     })
   }, [supportedChains])
@@ -62,7 +68,8 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
           accountContracts: {
             BTC: [
               {
-                chainIds: supportedChainIds,
+                //TODO: PARTICLE DOES NOT SUPPORT BOB YET
+                chainIds: supportedChainIds.filter((v) => v !== bobTestnet.id),
                 version: '1.0.0'
               }
             ]

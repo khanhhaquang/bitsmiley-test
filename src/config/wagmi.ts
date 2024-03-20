@@ -26,4 +26,24 @@ export const merlinMainnet = {
   testnet: false
 } as const satisfies Chain
 
-export const customChains = [merlinTestnet, merlinMainnet] as Chain[]
+export const bobTestnet = {
+  id: 111,
+  name: 'BOB Testnet',
+  nativeCurrency: { name: 'Sepolia ETH', symbol: 'SepETH', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://testnet.rpc.gobob.xyz/'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'BOB Scan',
+      url: 'https://testnet-explorer.gobob.xyz/'
+    }
+  },
+  testnet: true
+} as const satisfies Chain
+
+export const customChains = [
+  merlinTestnet,
+  merlinMainnet,
+  bobTestnet
+] as Chain[]

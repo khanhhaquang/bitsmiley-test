@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSwitchChain } from 'wagmi'
 
 import {
   ArrowDownDoubleIcon,
@@ -7,7 +8,9 @@ import {
   ReturnUpIcon,
   RightAngleVaultIcon
 } from '@/assets/icons'
+import { SelectWalletModal } from '@/components/ConnectWallet'
 import { InfoIndicator } from '@/components/InfoIndicator'
+import { OnChainLoader } from '@/components/OnchainLoader'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import {
   Table,
@@ -17,6 +20,9 @@ import {
   TableHead,
   TableHeader
 } from '@/components/ui/table'
+import { bobTestnet } from '@/config/wagmi'
+import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { IMintingPair } from '@/services/user'
@@ -40,7 +46,7 @@ const MintingPairs: React.FC = () => {
   return (
     <div className="flex size-full flex-col items-center justify-center gap-y-12">
       {isLoading ? (
-        <div>loading..</div>
+        <OnChainLoader />
       ) : (
         <>
           <MintingPairsTable
@@ -131,14 +137,55 @@ const MintingPairTableRow: React.FC<{
   table: TTable<IMintingPair, IVault>
 }> = ({ mintingPair, table, isOpenedVaults }) => {
   const navigate = useNavigate()
-  const [isOpen, setIsOpen] = useState(false)
+  const disconnect = useDisconnectAccount()
   const { vault } = useUserVault()
+  const { evmChainId, isConnected } = useUserInfo()
+  const { switchChain } = useSwitchChain()
 
-  const isInLiquidation =
-    isOpenedVaults && !!vault?.healthFactor && Number(vault.healthFactor) <= 100
+  const [isOpen, setIsOpen] = useState(false)
+  const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
+    useState(false)
+
+  const isInLiquidation = useMemo(
+    () =>
+      isOpenedVaults &&
+      !!vault?.healthFactor &&
+      Number(vault.healthFactor) <= 100,
+    [isOpenedVaults, vault?.healthFactor]
+  )
+
+  const handleEnterVault = () => {
+    if (evmChainId && isConnected && mintingPair.chainId !== evmChainId) {
+      switchChain(
+        { chainId: mintingPair.chainId },
+        {
+          onSuccess: () => {
+            navigate(`./vault/${mintingPair.chainId}`)
+          },
+          onError: () => {
+            disconnect()
+            console.error('Switching network failed')
+          }
+        }
+      )
+      return
+    }
+
+    if (mintingPair.chainId !== evmChainId) {
+      setIsConnectWalletModalOpen(true)
+      return
+    }
+    navigate(`./vault/${mintingPair.chainId}`)
+  }
 
   return (
     <>
+      <SelectWalletModal
+        expectedChainId={mintingPair.chainId}
+        hideParticle={mintingPair.chainId === bobTestnet.id} //TODO: CHECKING FOR MAINNET WHEN IT'S AVAILABLE
+        isOpen={isConnectWalletModalOpen}
+        onClose={() => setIsConnectWalletModalOpen(false)}
+      />
       <TableRow
         key={mintingPair.chainId}
         className="py-3 [&_td]:w-[120px] [&_td]:p-0">
@@ -148,8 +195,7 @@ const MintingPairTableRow: React.FC<{
           </TableCell>
         ))}
         <TableCell className="flex w-[150px] items-center justify-end gap-x-2">
-          <ActionButton
-            onClick={() => navigate(`./vault/${mintingPair.chainId}`)}>
+          <ActionButton onClick={() => handleEnterVault()}>
             <span className="flex items-center gap-x-2">
               {isOpenedVaults ? 'Manage' : 'Enter'}
               {(!isOpenedVaults || isInLiquidation) && <ArrowRightDoubleIcon />}

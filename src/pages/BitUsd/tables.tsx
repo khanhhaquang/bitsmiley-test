@@ -1,6 +1,8 @@
 import { ReactNode } from 'react'
 import { GetTokenReturnType } from 'wagmi/actions'
 
+import { LinkOutIcon } from '@/assets/icons'
+import { customChains } from '@/config/wagmi'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 
@@ -38,6 +40,23 @@ export const AvailableMintingPairsTable: TTable<IMintingPair, IVault> = [
     format: () => 'wBTC - bitUSD'
   },
   {
+    key: 'chainId',
+    title: 'Network',
+    format: (item) => (
+      <span className="flex items-center gap-2">
+        {item?.network}
+        <a
+          href={
+            customChains.find((v) => v.id === item?.chainId)?.blockExplorers
+              ?.default.url
+          }
+          target="_blank">
+          <LinkOutIcon width={13} height={13} />
+        </a>
+      </span>
+    )
+  },
+  {
     key: 'maxLTV',
     title: 'Max LTV',
     message: messages.maxLTV,
@@ -73,6 +92,23 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair, IVault> = [
     key: 'pairName',
     title: '',
     format: () => 'wBTC - bitUSD'
+  },
+  {
+    key: 'chainId',
+    title: 'Network',
+    format: (item) => (
+      <span className="flex items-center gap-2">
+        {item?.network}
+        <a
+          href={
+            customChains.find((v) => v.id === item?.chainId)?.blockExplorers
+              ?.default.url
+          }
+          target="_blank">
+          <LinkOutIcon width={13} height={13} />
+        </a>
+      </span>
+    )
   },
   {
     key: 'collateral',
