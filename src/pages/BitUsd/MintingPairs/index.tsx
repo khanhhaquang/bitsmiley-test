@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSwitchChain } from 'wagmi'
 
 import {
   ArrowDownDoubleIcon,
@@ -20,6 +21,7 @@ import {
   TableHeader
 } from '@/components/ui/table'
 import { bobTestnet } from '@/config/wagmi'
+import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
@@ -135,12 +137,14 @@ const MintingPairTableRow: React.FC<{
   table: TTable<IMintingPair, IVault>
 }> = ({ mintingPair, table, isOpenedVaults }) => {
   const navigate = useNavigate()
+  const disconnect = useDisconnectAccount()
+  const { vault } = useUserVault()
+  const { evmChainId, isConnected } = useUserInfo()
+  const { switchChain } = useSwitchChain()
+
   const [isOpen, setIsOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
-
-  const { vault } = useUserVault()
-  const { evmChainId } = useUserInfo()
 
   const isInLiquidation = useMemo(
     () =>
@@ -151,6 +155,22 @@ const MintingPairTableRow: React.FC<{
   )
 
   const handleEnterVault = () => {
+    if (evmChainId && isConnected && mintingPair.chainId !== evmChainId) {
+      switchChain(
+        { chainId: mintingPair.chainId },
+        {
+          onSuccess: () => {
+            navigate(`./vault/${mintingPair.chainId}`)
+          },
+          onError: () => {
+            disconnect()
+            console.error('Switching network failed')
+          }
+        }
+      )
+      return
+    }
+
     if (mintingPair.chainId !== evmChainId) {
       setIsConnectWalletModalOpen(true)
       return

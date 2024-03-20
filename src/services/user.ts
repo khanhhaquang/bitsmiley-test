@@ -34,9 +34,13 @@ export interface IMintingPair {
   vaultCeiling: string
   vaultFloor: string
 
-  collateralRatio?: string
-  collateralLocked?: string
+  liquidationPrice?: string
+  liquidated?: []
   totalDebt?: string
+  collateralLocked?: string
+  availableToMint?: string
+  availableToWithdraw?: string
+  healthFactor?: string
 }
 
 export enum FeatureEnabled {
