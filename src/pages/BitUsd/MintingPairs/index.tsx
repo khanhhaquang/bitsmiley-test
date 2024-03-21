@@ -176,7 +176,7 @@ const MintingPairTableRow: React.FC<{
 
   const isInLiquidationRisk = useMemo(
     // TODO confirm when to show this message
-    () => isOpenedVaults && healthFactor < 100,
+    () => isOpenedVaults && !!healthFactor && healthFactor < 100,
     [healthFactor, isOpenedVaults]
   )
 

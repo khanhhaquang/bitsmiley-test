@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -206,31 +206,12 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     [bitUsdBalance, vault?.debtBitUSD]
   )
 
-  const depositWbtcGreyOut = useMemo(
-    () => isMintFromBtc === false,
-    [isMintFromBtc]
-  )
-  const withdrawWbtcGreyOut = useMemo(
-    () => isMintFromBtc === true || withdrawWbtcDisabled,
-    [isMintFromBtc, withdrawWbtcDisabled]
-  )
-  const mintBitUsdGreyOut = useMemo(
-    () => isMintFromBtc === false || mintBitUsdDisabled,
-    [isMintFromBtc, mintBitUsdDisabled]
-  )
-  const repayBitUsdGreyOut = useMemo(
-    () => isMintFromBtc === true || repayBitUsdDisabled,
-    [isMintFromBtc, repayBitUsdDisabled]
-  )
-
   const handleInput = (
     type: 'depositBtc' | 'withdrawBtc' | 'mintBitUsd' | 'repayBitUsd',
     v?: string
   ) => {
     const value = v || ''
     if (type === 'depositBtc') {
-      changeFocusToDepositAndMint()
-
       setDepositBtc(value)
       setChangedCollateral(value)
       setChangedBitUsd(mintBitUsd)
@@ -240,24 +221,18 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     }
 
     if (type === 'withdrawBtc') {
-      changeFocusToWithdrawAndRepay()
-
       setWithdrawBtc(value)
       setChangedCollateral('-' + value)
       setChangedBitUsd('-' + repayBitUsd)
     }
 
     if (type === 'mintBitUsd') {
-      changeFocusToDepositAndMint()
-
       setMintBitUsd(value)
       setChangedCollateral(depositBtc)
       setChangedBitUsd(value)
     }
 
     if (type === 'repayBitUsd') {
-      changeFocusToWithdrawAndRepay()
-
       setRepayBitUsd(value)
       setChangedBitUsd('-' + value)
       setChangedCollateral('-' + withdrawBtc)
@@ -265,18 +240,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       setMaxVaultCollateral('')
       setMaxVaultBitUsd('-' + value)
     }
-  }
-
-  const changeFocusToDepositAndMint = () => {
-    setIsMintFromBtc(true)
-    setWithdrawBtc('')
-    setRepayBitUsd('')
-  }
-
-  const changeFocusToWithdrawAndRepay = () => {
-    setIsMintFromBtc(false)
-    setDepositBtc('')
-    setMintBitUsd('')
   }
 
   const handleNext = () => {
@@ -301,6 +264,18 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const [isLiquidatedModalOpen, setIsLiquidatedModalOpen] =
     useState(!!liquidated)
+
+  useEffect(() => {
+    if (isMintFromBtc === true) {
+      setWithdrawBtc('')
+      setRepayBitUsd('')
+    }
+
+    if (isMintFromBtc === false) {
+      setDepositBtc('')
+      setMintBitUsd('')
+    }
+  }, [isMintFromBtc])
 
   return (
     <div className="pb-12">
@@ -356,9 +331,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                 <div className="grid grid-cols-2 gap-x-3">
                   <NumberInput
                     value={depositBtc}
-                    onFocus={() => changeFocusToDepositAndMint()}
                     onInputChange={(v) => handleInput('depositBtc', v)}
-                    greyOut={depositWbtcGreyOut}
+                    onFocus={() => setIsMintFromBtc(true)}
+                    greyOut={isMintFromBtc === false}
                     disabled={depositWBtcDisabled}
                     title="deposit wbtc"
                     inputSuffix={`~${depositInUsd}$`}
@@ -368,10 +343,10 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   />
                   <NumberInput
                     value={withdrawBtc}
-                    onFocus={() => changeFocusToWithdrawAndRepay()}
                     onInputChange={(v) => handleInput('withdrawBtc', v)}
                     disabled={withdrawWbtcDisabled}
-                    greyOut={withdrawWbtcGreyOut}
+                    onFocus={() => setIsMintFromBtc(false)}
+                    greyOut={isMintFromBtc === true}
                     title="withdraw wbtc"
                     titleSuffix={
                       <span className="flex items-center gap-x-2">
@@ -385,12 +360,13 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     inputSuffix={
                       <InputSuffixActionButton
                         disabled={withdrawWbtcDisabled}
-                        onClick={() =>
+                        onClick={() => {
                           handleInput(
                             'withdrawBtc',
                             maxVault?.availableToWithdraw || ''
                           )
-                        }>
+                          setIsMintFromBtc(false)
+                        }}>
                         Max
                       </InputSuffixActionButton>
                     }
@@ -404,9 +380,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                   <NumberInput
                     value={mintBitUsd}
                     disabled={mintBitUsdDisabled}
-                    onFocus={() => changeFocusToDepositAndMint()}
+                    onFocus={() => setIsMintFromBtc(true)}
                     onInputChange={(v) => handleInput('mintBitUsd', v)}
-                    greyOut={mintBitUsdGreyOut}
+                    greyOut={isMintFromBtc === false}
                     title="mint bitUSD"
                     titleSuffix={
                       'Max Mint: ' +
@@ -415,22 +391,23 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     inputSuffix={
                       <InputSuffixActionButton
                         disabled={mintBitUsdDisabled}
-                        onClick={() =>
+                        onClick={() => {
                           handleInput(
                             'mintBitUsd',
                             maxVault?.availableToMint || ''
                           )
-                        }>
+                          setIsMintFromBtc(true)
+                        }}>
                         Max
                       </InputSuffixActionButton>
                     }
                   />
                   <NumberInput
                     value={repayBitUsd}
-                    onFocus={() => changeFocusToWithdrawAndRepay()}
                     disabled={repayBitUsdDisabled}
                     onInputChange={(v) => handleInput('repayBitUsd', v)}
-                    greyOut={repayBitUsdGreyOut}
+                    onFocus={() => setIsMintFromBtc(false)}
+                    greyOut={isMintFromBtc === true}
                     title="repay bitUSD"
                     titleSuffix={
                       'Available: ' + formatNumberWithSeparator(bitUsdBalance)
@@ -439,9 +416,10 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                       <div className="flex items-center gap-x-2">
                         {!!minRepay && (
                           <InputSuffixActionButton
-                            onClick={() =>
+                            onClick={() => {
                               handleInput('repayBitUsd', minRepay.toString())
-                            }
+                              setIsMintFromBtc(false)
+                            }}
                             disabled={repayBitUsdDisabled}>
                             Min
                           </InputSuffixActionButton>
@@ -449,9 +427,10 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                         <InputSuffixActionButton
                           disabled={repayBitUsdDisabled}
                           className="w-[92px]"
-                          onClick={() =>
+                          onClick={() => {
                             handleInput('repayBitUsd', vault?.debtBitUSD || '')
-                          }>
+                            setIsMintFromBtc(false)
+                          }}>
                           Repay all
                         </InputSuffixActionButton>
                       </div>
