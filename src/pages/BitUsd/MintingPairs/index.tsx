@@ -29,7 +29,6 @@ import { IMintingPair } from '@/services/user'
 import { cn } from '@/utils/cn'
 
 import { ActionButton } from '../components/ActionButton'
-import { NetworkIndicator } from '../components/NetworkIndicator'
 import { VaultTitleBlue, VaultTitleWhite } from '../components/VaultTitle'
 import {
   AvailableMintingPairsTable,
@@ -85,8 +84,6 @@ const MintingPairsTable: React.FC<{
             'relative w-full border border-white/20 px-7 pb-6 pt-4',
             isOpened && 'border-blue/50'
           )}>
-          {!isOpened && <NetworkIndicator className="absolute left-2 top-2" />}
-
           <Table className="w-full overflow-hidden font-ibmr">
             <TableHeader className="border-b border-b-white/20 text-sm text-white/70 [&_tr]:mb-0">
               <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
