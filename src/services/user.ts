@@ -24,15 +24,10 @@ export interface INft {
 }
 
 export interface IMintingPair {
-  availableToMint: string
-  availableToWithdraw: string
   borrowRate: string
   chainId: number
-  collateralLocked: string
-  healthFactor: string
   isOpenVault: boolean
   liquidationPenalty: string
-  liquidationPrice: string
   liquidity: string
   maxLTV: string
   network: string
@@ -40,7 +35,12 @@ export interface IMintingPair {
   vaultCeiling: string
   vaultFloor: string
 
-  liquidated: {
+  availableToMint?: string
+  availableToWithdraw?: string
+  collateralLocked?: string
+  healthFactor?: string
+  liquidationPrice?: string
+  liquidated?: {
     transactionHash: Address
     recipient: Address
     collateral: string

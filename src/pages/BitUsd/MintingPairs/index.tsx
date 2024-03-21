@@ -148,7 +148,7 @@ const MintingPairTableRow: React.FC<{
     () =>
       isOpenedVaults &&
       !!mintingPair?.healthFactor &&
-      Number(mintingPair.healthFactor) <= 100,
+      Number(mintingPair.healthFactor) * 100 <= 100,
     [isOpenedVaults, mintingPair.healthFactor]
   )
 
