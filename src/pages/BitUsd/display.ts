@@ -92,3 +92,13 @@ export const displayMintingPairValues = (
   chainId: !value?.chainId ? DEFAULT_TEXT : value.chainId,
   isOpenVault: !!value?.isOpenVault
 })
+
+export const getHealthFactorTextColor = (v?: number | string) => {
+  if (isNaN(Number(v)) || !v) return ''
+
+  const healthFactor = Number(v)
+
+  if (healthFactor >= 200) return 'text-green'
+  if (healthFactor >= 120 && healthFactor < 200) return 'text-yellow'
+  return 'text-warning'
+}

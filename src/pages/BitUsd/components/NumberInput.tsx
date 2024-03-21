@@ -30,7 +30,6 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   disabledMessage
 }) => {
   const [isFocus, setIsFocus] = useState(false)
-  const isGrey = greyOut && !isFocus
 
   const ref = useRef(null)
   const inputRef = useRef(null)
@@ -49,7 +48,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       <div
         className={cn(
           'relative border border-blue bg-black/50 px-3 py-1',
-          isGrey && 'bg-white/20',
+          greyOut && 'bg-white/20',
           disabled && 'bg-white/10'
         )}>
         <IMaskInput
@@ -57,13 +56,12 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           mask={Number}
           thousandsSeparator=","
           radix="."
+          min={0}
           scale={20}
           value={value}
-          unmask={false}
+          unmask="typed"
           inputRef={inputRef}
-          onAccept={(_, mask) => {
-            onInputChange?.(mask.unmaskedValue)
-          }}
+          onAccept={(_, mask) => onInputChange?.(mask.unmaskedValue)}
           disabled={disabled}
           onBlur={() => {
             setIsFocus(false)
@@ -74,11 +72,11 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             onFocus?.()
           }}
           placeholder={
-            disabled && disabledMessage ? '' : isGrey ? '--' : '0.00'
+            disabled && disabledMessage ? '' : greyOut ? '--' : '0.00'
           }
           className={cn(
             'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white bg-transparent outline-none',
-            isGrey && 'placeholder:text-white/50 text-white/20',
+            greyOut && 'placeholder:text-white/50 text-white/20',
             disabled && 'cursor-not-allowed'
           )}
         />

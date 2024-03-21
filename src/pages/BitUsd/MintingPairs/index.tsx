@@ -30,6 +30,7 @@ import { cn } from '@/utils/cn'
 
 import { ActionButton } from '../components/ActionButton'
 import { VaultTitleBlue, VaultTitleWhite } from '../components/VaultTitle'
+import { getHealthFactorTextColor } from '../display'
 import {
   AvailableMintingPairsTable,
   MyVaultOverviewTable,
@@ -48,7 +49,7 @@ const MintingPairs: React.FC = () => {
       ) : (
         <>
           <MintingPairsTable
-            isOpened
+            isOpenedVaults
             mintingPairs={openedMintingPairs}
             table={MyVaultsMintingPairsTable}
           />
@@ -65,14 +66,14 @@ const MintingPairs: React.FC = () => {
 const MintingPairsTable: React.FC<{
   mintingPairs?: IMintingPair[]
   table: TTable<IMintingPair>
-  isOpened?: boolean
-}> = ({ mintingPairs, isOpened, table }) => {
+  isOpenedVaults?: boolean
+}> = ({ mintingPairs, isOpenedVaults, table }) => {
   if (!mintingPairs?.length) return null
 
   return (
     <div className="w-full">
       <div className="mb-6">
-        {isOpened ? (
+        {isOpenedVaults ? (
           <VaultTitleBlue>My Vaults</VaultTitleBlue>
         ) : (
           <VaultTitleWhite>Available minting pairs</VaultTitleWhite>
@@ -82,7 +83,7 @@ const MintingPairsTable: React.FC<{
         <div
           className={cn(
             'relative w-full border border-white/20 px-7 pb-6 pt-4',
-            isOpened && 'border-blue/50'
+            isOpenedVaults && 'border-blue/50'
           )}>
           <Table className="w-full overflow-hidden font-ibmr">
             <TableHeader className="border-b border-b-white/20 text-sm text-white/70 [&_tr]:mb-0">
@@ -102,7 +103,7 @@ const MintingPairsTable: React.FC<{
                 <MintingPairTableRow
                   table={table}
                   key={mintingPair.chainId}
-                  isOpenedVaults={isOpened}
+                  isOpenedVaults={isOpenedVaults}
                   mintingPair={mintingPair}
                 />
               ))}
@@ -112,13 +113,13 @@ const MintingPairsTable: React.FC<{
           <RightAngleVaultIcon
             className={cn(
               'absolute bottom-1.5 left-1.5',
-              isOpened ? 'text-blue' : 'text-grey9'
+              isOpenedVaults ? 'text-blue' : 'text-grey9'
             )}
           />
           <RightAngleVaultIcon
             className={cn(
               'absolute bottom-1.5 right-1.5 -rotate-90',
-              isOpened ? 'text-blue' : 'text-grey9'
+              isOpenedVaults ? 'text-blue' : 'text-grey9'
             )}
           />
         </div>
@@ -140,14 +141,6 @@ const MintingPairTableRow: React.FC<{
   const [isOpen, setIsOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
-
-  const isInLiquidation = useMemo(
-    () =>
-      isOpenedVaults &&
-      !!mintingPair?.healthFactor &&
-      Number(mintingPair.healthFactor) * 100 <= 100,
-    [isOpenedVaults, mintingPair.healthFactor]
-  )
 
   const handleEnterVault = () => {
     if (evmChainId && isConnected && mintingPair.chainId !== evmChainId) {
@@ -176,12 +169,23 @@ const MintingPairTableRow: React.FC<{
   const liquidated = mintingPair.liquidated?.[0]
   const liquidatedDate = dayjs(liquidated?.timestamp).format('DD/MM/YYYY')
 
+  const healthFactor =
+    !isOpenedVaults || !mintingPair?.healthFactor
+      ? 0
+      : Number(mintingPair.healthFactor) * 100
+
+  const isInLiquidationRisk = useMemo(
+    // TODO confirm when to show this message
+    () => isOpenedVaults && healthFactor < 100,
+    [healthFactor, isOpenedVaults]
+  )
+
   const liquidationMessage = useMemo(() => {
     if (liquidated) return `This vault was liquidated on ${liquidatedDate}`
-    if (isInLiquidation)
+    if (isInLiquidationRisk)
       return 'This vault is at the risk of liquidation. Repay bitUSD or deposit wBTC to avoid liquidation'
     return ''
-  }, [isInLiquidation, liquidated, liquidatedDate])
+  }, [isInLiquidationRisk, liquidated, liquidatedDate])
 
   return (
     <>
@@ -203,10 +207,12 @@ const MintingPairTableRow: React.FC<{
           <ActionButton onClick={() => handleEnterVault()}>
             <span className="flex items-center gap-x-2">
               {isOpenedVaults ? 'Manage' : 'Enter'}
-              {(!isOpenedVaults || isInLiquidation) && <ArrowRightDoubleIcon />}
+              {(!isOpenedVaults || isInLiquidationRisk) && (
+                <ArrowRightDoubleIcon />
+              )}
             </span>
           </ActionButton>
-          {!isInLiquidation && isOpenedVaults && (
+          {!isInLiquidationRisk && isOpenedVaults && (
             <button className="group cursor-pointer hover:bg-white/10 active:bg-white/5">
               <ArrowDownDoubleIcon
                 onClick={() => setIsOpen((v) => !v)}
@@ -222,17 +228,21 @@ const MintingPairTableRow: React.FC<{
 
       {liquidationMessage && (
         <TableRow className="-mt-1.5">
-          <TableCell className="font-ibmr text-sm text-warning">
+          <TableCell
+            className={cn(
+              'font-ibmr text-sm',
+              getHealthFactorTextColor(healthFactor),
+              liquidated && 'text-warning'
+            )}>
             <span className="flex items-center gap-x-1">
               <ReturnUpIcon />
-              This vault is at the risk of liquidation. Repay bitUSD or deposit
-              wBTC to avoid liquidation
+              {liquidationMessage}
             </span>
           </TableCell>
         </TableRow>
       )}
 
-      {!isInLiquidation && isOpenedVaults && (
+      {!isInLiquidationRisk && isOpenedVaults && (
         <TableRow className="mt-1 w-full">
           <TableCell className="w-full">
             <Collapsible className="w-full" open={isOpen} asChild>

@@ -8,6 +8,7 @@ import { cn } from '@/utils/cn'
 
 import { RefreshButton } from './RefreshButton'
 
+import { getHealthFactorTextColor } from '../display'
 import { VaultInfoTable, VaultChangesInfoTable } from '../tables'
 
 type VaultInfoProps = {
@@ -35,32 +36,6 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
   const isVaultChanges = type === 'changes'
   const table = isVaultChanges ? VaultChangesInfoTable : VaultInfoTable
 
-  const isVaultHealthGreen =
-    !!vault?.healthFactor && Number(vault?.healthFactor) >= 200
-  const isVaultHealthYellow =
-    !!vault?.healthFactor &&
-    Number(vault?.healthFactor) >= 120 &&
-    Number(vault?.healthFactor) < 200
-  const isVaultHealthRed =
-    !!vault?.healthFactor && Number(vault?.healthFactor) < 120
-
-  const isChangedVaultHealthGreen =
-    isVaultChanges &&
-    hasChangedVault &&
-    !!changedVault?.healthFactor &&
-    Number(changedVault?.healthFactor) >= 200
-  const isChangedVaultHealthYellow =
-    isVaultChanges &&
-    hasChangedVault &&
-    !!changedVault?.healthFactor &&
-    Number(changedVault?.healthFactor) >= 120 &&
-    Number(changedVault?.healthFactor) < 200
-  const isChangedVaultHealthRed =
-    isVaultChanges &&
-    hasChangedVault &&
-    !!changedVault?.healthFactor &&
-    Number(changedVault?.healthFactor) < 120
-
   return (
     <div
       className={cn(
@@ -85,11 +60,7 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
               <span
                 className={
                   key === 'healthFactor'
-                    ? cn(
-                        isVaultHealthGreen && 'text-green',
-                        isVaultHealthYellow && 'text-yellow',
-                        isVaultHealthRed && 'text-warning'
-                      )
+                    ? cn(getHealthFactorTextColor(vault?.healthFactor))
                     : ''
                 }>
                 {format(vault, mintingPairs)}
@@ -101,9 +72,7 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
                     className={
                       key === 'healthFactor'
                         ? cn(
-                            isChangedVaultHealthGreen && 'text-green',
-                            isChangedVaultHealthYellow && 'text-yellow',
-                            isChangedVaultHealthRed && 'text-warning'
+                            getHealthFactorTextColor(changedVault?.healthFactor)
                           )
                         : ''
                     }>
