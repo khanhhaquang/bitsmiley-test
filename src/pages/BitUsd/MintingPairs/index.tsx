@@ -85,7 +85,7 @@ const MintingPairsTable: React.FC<{
             'relative w-full border border-white/20 px-7 pb-6 pt-4',
             isOpened && 'border-blue/50'
           )}>
-          <NetworkIndicator className="absolute left-2 top-2" />
+          {!isOpened && <NetworkIndicator className="absolute left-2 top-2" />}
 
           <Table className="w-full overflow-hidden font-ibmr">
             <TableHeader className="border-b border-b-white/20 text-sm text-white/70 [&_tr]:mb-0">

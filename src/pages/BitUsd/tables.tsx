@@ -42,6 +42,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'chainId',
     title: 'Network',
+    titleClassName: '!w-[100px]',
     format: (item) => (
       <span className="flex items-center gap-2">
         {item?.network}
