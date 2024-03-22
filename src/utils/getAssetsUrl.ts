@@ -5,19 +5,13 @@ export const getAssetUrl = (path: string) => {
 export const getFrameUrl = (
   frameName: string,
   picName: string | number,
-  format?: string
+  format: string = 'png'
 ) => {
-  return new URL(
-    `/src/assets/frames/${frameName}/${picName}.${format || 'png'}`,
-    import.meta.url
-  ).href
+  return getAssetUrl(`/src/assets/frames/${frameName}/${picName}.${format}`)
 }
 
-export const getIllustrationUrl = (name: string, format?: string) => {
-  return new URL(
-    `/src/assets/illustrations/${name}.${format || 'png'}`,
-    import.meta.url
-  ).href
+export const getIllustrationUrl = (name: string, format: string = 'png') => {
+  return getAssetUrl(`/src/assets/illustrations/${name}.${format}`)
 }
 
 export const openUrl = (url: string) => {
