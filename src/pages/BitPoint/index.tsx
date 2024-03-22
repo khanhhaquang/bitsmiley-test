@@ -87,13 +87,13 @@ const Invitation: React.FC = () => {
       <div className="relative w-[388px] border border-white/20 p-[1px]">
         <Image
           className="absolute left-[-394px] top-1/2 -translate-y-1/2"
-          src={getIllustrationUrl('join-team-left-dashes')}
+          src={getIllustrationUrl('bitpoint/join-team-left-dashes')}
           height={20}
           width={400}
         />
         <Image
           className="absolute right-[-394px] top-1/2 -translate-y-1/2"
-          src={getIllustrationUrl('join-team-right-dashes')}
+          src={getIllustrationUrl('bitpoint/join-team-right-dashes')}
           height={20}
           width={400}
         />
