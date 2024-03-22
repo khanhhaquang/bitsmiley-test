@@ -7,11 +7,15 @@ export const getFrameUrl = (
   picName: string | number,
   format: string = 'png'
 ) => {
-  return getAssetUrl(`/src/assets/frames/${frameName}/${picName}.${format}`)
+  return new URL(
+    `/src/assets/frames/${frameName}/${picName}.${format}`,
+    import.meta.url
+  ).href
 }
 
 export const getIllustrationUrl = (name: string, format: string = 'png') => {
-  return getAssetUrl(`/src/assets/illustrations/${name}.${format}`)
+  return new URL(`/src/assets/illustrations/${name}.${format}`, import.meta.url)
+    .href
 }
 
 export const openUrl = (url: string) => {

@@ -80,8 +80,8 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
         pathPatterns={bitUsdPathPatterns}
       />
       <NavigationButton
-        title="BITPOINT"
-        path="/testnet/bit-point"
+        // title="BITPOINT"
+        // path="/testnet/bit-point"
         className="top-[31.7%]"
         pathPatterns={bitPointPathPattern}
       />
