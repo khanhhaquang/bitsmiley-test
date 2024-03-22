@@ -1,7 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
-import { ArrowLeftThinIcon } from '@/assets/icons'
 import { Pagination } from '@/components/Pagination'
 import {
   Table,
@@ -14,6 +12,8 @@ import {
 import { usePagination } from '@/hooks/usePagination'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IPageParams, IUserPointHistory, TeamService } from '@/services/team'
+
+import { BitPointTitle } from './components/BitPointTitle'
 
 const BitPointHistory: React.FC = () => {
   const { address } = useUserInfo()
@@ -35,17 +35,10 @@ const BitPointHistory: React.FC = () => {
     pageSize: 10
   })
   return (
-    <div className="flex h-screen items-start justify-center gap-x-7 overflow-x-hidden py-[180px] text-white md:px-[120px] 2xl:px-[242px]">
+    <div className="size-full overflow-x-hidden py-10 text-white">
+      <BitPointTitle title="bitPoint History" className="mb-3" />
+
       <div className="flex w-full flex-col items-center gap-y-12">
-        <h1 className="relative w-full text-center font-ibmb text-2xl">
-          <Link
-            to="../"
-            className="absolute left-10 flex items-center gap-x-4 font-ppnb text-4xl">
-            <ArrowLeftThinIcon width={21} height={35} />
-            back
-          </Link>
-          bitPoint History
-        </h1>
         <Table className="mb-14 w-full font-ibmr">
           <TableHeader className="text-base">
             <TableRow className="border-dashed px-6 pb-6">

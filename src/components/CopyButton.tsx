@@ -39,7 +39,7 @@ export const CopyButton: React.FC<TProps> = ({ text, className }) => {
       }}>
       <CopyIcon
         className={cn(
-          'cursor-pointer text-green hover:text-green/70',
+          'cursor-pointer text-white hover:text-white/70',
           className
         )}
       />
