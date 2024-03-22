@@ -28,7 +28,8 @@ const colors = {
   red1: '#FF0000',
   pink: '#FF64AE',
   cyan: '#00FFD1',
-  warning: '#F00'
+  warning: '#F00',
+  error: '#F00'
 }
 
 /** @type {import('tailwindcss').Config} */
@@ -108,6 +109,8 @@ export default {
         bitUsdBg: 'url("/src/assets/illustrations/bitusd-bg.webp")',
         bitpointPointBg:
           'url("/src/assets/illustrations/bitpoint/your-point-bg.png")',
+        bitpointJoinTeamBg:
+          'url("/src/assets/illustrations/bitpoint/join-team-bg.png")',
         onchainLoading: 'url("/src/assets/illustrations/onchain-loading.png")',
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
         scoreboard: 'url("/src/assets/illustrations/scoreboard-mask.png")',
