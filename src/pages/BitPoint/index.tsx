@@ -74,7 +74,7 @@ const InputWithButton: React.FC<InputProps> = (props) => {
 
 const Loading: React.FC = () => {
   return (
-    <div className="flex h-screen w-screen items-center justify-center text-white">
+    <div className="flex size-full items-center justify-center text-white">
       loading...
     </div>
   )
@@ -83,7 +83,7 @@ const Loading: React.FC = () => {
 const Invitation: React.FC = () => {
   const { createTeam, isCreatingTeam } = useUserPoint()
   return (
-    <div className="flex h-screen w-screen items-center justify-center text-white">
+    <div className="z-10 flex size-full items-center justify-center text-white">
       <div className="relative w-[388px] border border-white/20 p-[1px]">
         <Image
           className="absolute left-[-394px] top-1/2 -translate-y-1/2"
@@ -97,17 +97,28 @@ const Invitation: React.FC = () => {
           height={20}
           width={400}
         />
-        <div className="flex flex-col items-center justify-center border border-white/20 bg-black/30 bg-bitpointJoinTeamBg bg-cover bg-no-repeat p-[42px]">
-          <h2 className="font-ibmb text-2xl uppercase">Join a team?</h2>
-          <h3 className="mb-3 mt-6 max-w-[330px] text-center font-ibmr text-sm">
-            Team invitation code:
-          </h3>
-          <InputWithButton />
-          <span className="my-3 font-ibmr text-sm">or</span>
-          <JoinTeamButton
-            text={isCreatingTeam ? 'Creating...' : 'Be my own captain'}
-            onClick={createTeam}
-          />
+        <div className="border border-white/20 p-[0.5px]">
+          <div className="relative overflow-hidden border-white/20 bg-black/30 p-[42px]">
+            <div className="relative z-10 flex flex-col items-center justify-center">
+              <h2 className="font-ibmb text-2xl uppercase">Join a team?</h2>
+              <h3 className="mb-3 mt-6 max-w-[330px] text-center font-ibmr text-sm">
+                Team invitation code:
+              </h3>
+              <InputWithButton />
+              <span className="my-3 font-ibmr text-sm">or</span>
+              <JoinTeamButton
+                text={isCreatingTeam ? 'Creating...' : 'Be my own captain'}
+                onClick={createTeam}
+              />
+            </div>
+
+            <Image
+              src={getIllustrationUrl('bitpoint/join-team-bg', 'webp')}
+              width={348}
+              height={348}
+              className="absolute -right-14 bottom-[-80px] z-0 rotate-[-26deg] opacity-30 mix-blend-screen"
+            />
+          </div>
         </div>
       </div>
     </div>

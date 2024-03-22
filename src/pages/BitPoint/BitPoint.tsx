@@ -9,7 +9,7 @@ const BitPoint: React.FC = () => {
   const { isCaptain } = useUserPoint()
 
   return (
-    <div className="flex h-screen w-screen items-start justify-center gap-x-7 overflow-x-hidden py-[180px]">
+    <div className="flex size-full items-start justify-center gap-x-7 overflow-x-hidden py-[180px]">
       {isCaptain ? (
         <>
           <CaptainScoreboard />
