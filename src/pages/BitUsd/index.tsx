@@ -1,5 +1,11 @@
 import { Suspense, useMemo, useState } from 'react'
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import {
+  matchPath,
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate
+} from 'react-router-dom'
 
 import { Image } from '@/components/Image'
 import { OnChainLoader } from '@/components/OnchainLoader'
@@ -24,18 +30,20 @@ const BitUsd: React.FC = () => {
 
   return (
     <div className="h-screen w-screen overflow-x-hidden bg-bitUsdBg bg-cover bg-center bg-no-repeat text-white">
-      {isLoading ? (
-        <OnChainLoader />
-      ) : (
-        <MachineContainer>
-          <ContentContainer>
-            <Suspense fallback="...">
-              <Outlet />
-            </Suspense>
-          </ContentContainer>
-          <BTCPrice />
-        </MachineContainer>
-      )}
+      <MachineContainer>
+        {isLoading ? (
+          <OnChainLoader />
+        ) : (
+          <>
+            <ContentContainer>
+              <Suspense fallback="...">
+                <Outlet />
+              </Suspense>
+            </ContentContainer>
+            <BTCPrice />
+          </>
+        )}
+      </MachineContainer>
     </div>
   )
 }
@@ -56,15 +64,26 @@ const BTCPrice: React.FC = () => {
 const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
+  const bitUsdPathPatterns = ['/testnet', '/testnet/vault/:chainId']
+  const bitPointPathPattern = [
+    '/testnet/bit-point',
+    '/testnet/bit-point/history'
+  ]
+
   return (
     <div className="relative -top-8 left-1/2 aspect-[1960/1273] w-[1280px] -translate-x-1/2 xl:w-[1960px] 3xl:w-full">
       {children}
 
-      <NavigationButton title="TESTNET" path="/bit-usd" />
+      <NavigationButton
+        title="TESTNET"
+        path="/testnet"
+        pathPatterns={bitUsdPathPatterns}
+      />
       <NavigationButton
         title="BITPOINT"
-        path="/bit-point"
+        path="/testnet/bit-point"
         className="top-[31.7%]"
+        pathPatterns={bitPointPathPattern}
       />
       <NavigationButton className="top-[38.2%]" />
       <NavigationButton className="top-[44.6%]" />
@@ -81,10 +100,12 @@ const NavigationButton: React.FC<{
   title?: string
   path?: string
   className?: string
-}> = ({ className, title, path }) => {
-  const location = useLocation()
-  const isActive = !!path && location.pathname.startsWith(path)
+  pathPatterns?: string[]
+}> = ({ className, title, path, pathPatterns }) => {
   const navigate = useNavigate()
+  const location = useLocation()
+  const isActive =
+    !!path && pathPatterns?.some((p) => !!matchPath(p, location.pathname))
 
   const [isHover, setIsHover] = useState(false)
   const [isPressed, setIsPressed] = useState(false)

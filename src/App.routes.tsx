@@ -3,9 +3,13 @@ import { Navigate, RouteObject, useRoutes } from 'react-router-dom'
 
 const Main = lazy(() => import('@/pages/Main'))
 
-const BitUsd = lazy(() => import('@/pages/BitUsd'))
+const MainBitUsd = lazy(() => import('@/pages/BitUsd'))
 const BitUsdVault = lazy(() => import('@/pages/BitUsd/Vault'))
-const BitUsdMintingPairs = lazy(() => import('@/pages/BitUsd/MintingPairs'))
+const BitUsd = lazy(() => import('@/pages/BitUsd/MintingPairs'))
+
+// const MainBitPoint = lazy(() => import('@/pages/BitPoint'))
+// const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
+// const BitPointHistory = lazy(() => import('@/pages/BitPoint/BitPointHistory'))
 
 const Routes = () => {
   const routes: RouteObject[] = [
@@ -15,35 +19,35 @@ const Routes = () => {
       element: <Main />
     },
     {
-      path: 'bit-usd',
-      id: 'bitUSD',
-      element: <BitUsd />,
+      path: 'testnet',
+      id: 'testNet',
+      element: <MainBitUsd />,
       children: [
         {
           index: true,
-          element: <BitUsdMintingPairs />
+          element: <BitUsd />
         },
         {
           path: 'vault/:chainId',
           element: <BitUsdVault />
         }
+        // {
+        //   path: 'bit-point',
+        //   id: 'bitPoint',
+        //   element: <MainBitPoint />,
+        //   children: [
+        //     {
+        //       index: true,
+        //       element: <BitPoint />
+        //     },
+        //     {
+        //       path: 'history',
+        //       element: <BitPointHistory />
+        //     }
+        //   ]
+        // }
       ]
     },
-    // {
-    //   path: 'bit-point',
-    //   id: 'bitPoint',
-    //   element: <MainBitPoint />,
-    //   children: [
-    //     {
-    //       index: true,
-    //       element: <BitPoint />
-    //     },
-    //     {
-    //       path: 'history',
-    //       element: <BitPointHistory />
-    //     }
-    //   ]
-    // },
     {
       path: '*',
       id: 'default',
