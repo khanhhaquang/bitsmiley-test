@@ -1,11 +1,13 @@
 import React, { Suspense, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 
+import { Image } from '@/components/Image'
 import { NotConnected } from '@/components/StakingMachine/BoxContent/NotConnected'
 import { Input, InputProps } from '@/components/ui/input'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserPoint } from '@/hooks/useUserPoint'
 import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 const JoinTeamButton: React.FC<{
   text: string
@@ -15,11 +17,13 @@ const JoinTeamButton: React.FC<{
 }> = ({ text, onClick, disabled, className }) => {
   return (
     <button
+      disabled={disabled}
       onClick={onClick}
       className={cn(
-        'block h-8 bg-white px-5 font-ibmr text-sm font-medium text-black',
-        !disabled && 'hover:cursor-pointer hover:font-bold active:bg-grey7',
-        disabled && 'bg-white/70 text-white/50 cursor-default',
+        'flex items-center text-center justify-center h-[32px] bg-white/10 px-4 font-ibmb text-sm font-sm text-white/70',
+        'border border-white/50 shadow-[0px_0px_5px_1px_rgba(255,255,255,0.12)] cursor-pointer',
+        !disabled && 'hover:font-bold hover:bg-white/40 active:bg-white/70',
+        disabled && 'bg-white/50 text-white/20 cursor-not-allowed',
         className
       )}>
       {text}
@@ -33,31 +37,36 @@ const InputWithButton: React.FC<InputProps> = (props) => {
 
   const { joinTeam, isJoiningTeam } = useUserPoint()
 
+  const handleSubmit = async () => {
+    const result = await joinTeam(value)
+    if (result.code !== 0) {
+      setIsInvalidCode(true)
+    }
+  }
+
   return (
     <div>
-      <div className="flex items-center">
+      <div className="flex h-[30px] items-center">
         <Input
           {...props}
-          className="min-w-[243px] border-r-0"
+          className="h-full min-w-[150px] border-r-0"
           value={value}
-          onChange={(e) => setValue(e.target.value.trim())}
+          onChange={(e) => {
+            setIsInvalidCode(false)
+            setValue(e.target.value.trim())
+          }}
         />
         <JoinTeamButton
-          className="flex w-[100px] shrink-0 items-center justify-center px-0"
-          text={isJoiningTeam ? 'Joinning...' : 'Confirm'}
+          className="h-full w-[100px] shrink-0 px-0"
+          text={isJoiningTeam ? 'Joining...' : 'Confirm'}
           disabled={!value}
-          onClick={async () => {
-            const result = await joinTeam(value)
-            if (result.code !== 0) {
-              setIsInvalidCode(true)
-            }
-          }}
+          onClick={handleSubmit}
         />
       </div>
       {isInvalidCode && !isJoiningTeam && (
-        <div className="mt-2 text-center text-warning">
+        <p className="mt-2 text-center font-ibmr text-sm text-error">
           Invalid invitation code
-        </div>
+        </p>
       )}
     </div>
   )
@@ -74,18 +83,32 @@ const Loading: React.FC = () => {
 const Invitation: React.FC = () => {
   const { createTeam, isCreatingTeam } = useUserPoint()
   return (
-    <div className="flex h-screen w-screen items-center justify-center border-white text-white">
-      <div className="flex flex-col items-center justify-center border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat p-[42px]">
-        <div className="font-ppnb text-5xl">Join a team?</div>
-        <div className="mb-3 mt-12 max-w-[330px] text-center font-ibmr text-sm">
-          Input invitation code:
-        </div>
-        <InputWithButton />
-        <div className="my-6 font-ibmr text-sm">or</div>
-        <JoinTeamButton
-          text={isCreatingTeam ? 'Creating...' : 'Be my own captain'}
-          onClick={createTeam}
+    <div className="flex h-screen w-screen items-center justify-center text-white">
+      <div className="relative w-[388px] border border-white/20 p-[1px]">
+        <Image
+          className="absolute left-[-394px] top-1/2 -translate-y-1/2"
+          src={getIllustrationUrl('bitpoint/join-team-left-dashes')}
+          height={20}
+          width={400}
         />
+        <Image
+          className="absolute right-[-394px] top-1/2 -translate-y-1/2"
+          src={getIllustrationUrl('bitpoint/join-team-right-dashes')}
+          height={20}
+          width={400}
+        />
+        <div className="flex flex-col items-center justify-center border border-white/20 bg-black/30 bg-bitpointJoinTeamBg bg-cover bg-no-repeat p-[42px]">
+          <h2 className="font-ibmb text-2xl uppercase">Join a team?</h2>
+          <h3 className="mb-3 mt-6 max-w-[330px] text-center font-ibmr text-sm">
+            Team invitation code:
+          </h3>
+          <InputWithButton />
+          <span className="my-3 font-ibmr text-sm">or</span>
+          <JoinTeamButton
+            text={isCreatingTeam ? 'Creating...' : 'Be my own captain'}
+            onClick={createTeam}
+          />
+        </div>
       </div>
     </div>
   )

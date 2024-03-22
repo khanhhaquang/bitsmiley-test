@@ -29,6 +29,21 @@ const Routes = () => {
         }
       ]
     },
+    // {
+    //   path: 'bit-point',
+    //   id: 'bitPoint',
+    //   element: <MainBitPoint />,
+    //   children: [
+    //     {
+    //       index: true,
+    //       element: <BitPoint />
+    //     },
+    //     {
+    //       path: 'history',
+    //       element: <BitPointHistory />
+    //     }
+    //   ]
+    // },
     {
       path: '*',
       id: 'default',
