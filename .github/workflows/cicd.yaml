@@ -6,7 +6,7 @@ on:
       - "develop"
     tags:
       - "force-cicd-*"
-      - "test-*"
+      - "predev-*"
       - "release-*"
 
 env:
