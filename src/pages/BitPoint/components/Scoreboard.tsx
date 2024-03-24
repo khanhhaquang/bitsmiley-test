@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
-import { SmileyIcon, Smiley3Icon, ScoreBoardIcon } from '@/assets/icons'
+import { InputIndicatorIcon } from '@/assets/icons'
+import { Pagination } from '@/components/Pagination'
 import {
   Table,
   TableBody,
@@ -13,10 +14,10 @@ import { usePagination } from '@/hooks/usePagination'
 import { IIndividualRank, ITeamRank, TeamService } from '@/services/team'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
+import { formatNumberWithSeparator } from '@/utils/number'
 
+import { BitPointBoardContainer } from './BitPointBoardContainer'
 import { SearchInput } from './SearchInput'
-
-import { Pagination } from '../../../components/Pagination'
 
 enum ScoreTab {
   Team = 'team',
@@ -52,80 +53,87 @@ export const ScoreBoard: React.FC = () => {
   }
 
   return (
-    <div className="relative w-[497px] shrink-0 border border-white/20 bg-black text-white">
-      <div className="absolute inset-0 z-0 bg-scoreboard bg-cover bg-no-repeat" />
-      <div className="absolute inset-0 z-0 bg-grey8 mix-blend-hard-light" />
-
-      <div className="relative z-10 text-white">
-        <div className="flex items-center gap-x-1 px-7 pt-5">
-          <ScoreBoardIcon />
-          <span className="font-ppnb text-2xl text-white/50">Scoreboard</span>
-        </div>
-
-        <div className="mx-auto mt-10 w-[360px] pb-6 font-ibmr text-sm">
-          <div className="mb-5 flex items-center gap-x-6">
-            <span
-              className={cn(
-                'flex items-center gap-x-1 text-white/70 cursor-pointer',
-                isTeam && 'font-ibmb text-blue cursor-default',
-                !isTeam && 'hover:text-white/50'
-              )}
-              onClick={() => handleTabChange(ScoreTab.Team)}>
-              <Smiley3Icon />
-              <span>Team rank</span>
-            </span>
-            <span
-              className={cn(
-                'flex items-center gap-x-1 text-white/70 cursor-pointer',
-                !isTeam && 'font-ibmb text-blue cursor-default',
-                isTeam && 'hover:text-white/50'
-              )}
-              onClick={() => handleTabChange(ScoreTab.Individual)}>
-              <SmileyIcon />
-              <span>Individual rank</span>
-            </span>
-          </div>
-
-          <SearchInput onChange={setSearchValue} />
-
-          <Table className="mb-9">
-            <TableHeader className="text-blue [&_tr]:border-blue/50">
-              <TableRow>
-                <TableHead>Rank</TableHead>
-                <TableHead>{isTeam ? 'Team' : 'User'} name</TableHead>
-                <TableHead>bitPoint</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentPageData?.map(([data, rank]) => (
-                <TableRow key={data.id}>
-                  <TableCell className="font-medium">#{rank}</TableCell>
-                  <TableCell>
-                    {displayAddress(
-                      isTeam
-                        ? data.captainAddress
-                        : (data as IIndividualRank).address,
-                      3,
-                      3
-                    )}
-                  </TableCell>
-                  <TableCell>{data.totalPoint}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          <Pagination
-            hasNextPage={hasNextPage}
-            onClickNext={fetchNextPage}
-            totalPagesNum={totalPagesNum}
-            currentPageNum={currentPageNum}
-            hasPreviousPage={hasPreviousPage}
-            onClickPrevious={fetchPreviousPage}
-            setCurrentPageNum={setCurrentPageNum}
+    <BitPointBoardContainer
+      title="ScoreBoard"
+      titleClassName="bg-white/50"
+      containerClassName="bg-black/30 border-white/50">
+      <div className="flex items-center gap-x-2">
+        <span
+          className={cn(
+            'flex items-center gap-x-1 text-white/50 text-sm bg-white/10 cursor-pointer px-2 py-1',
+            isTeam && 'font-ibmb text-black cursor-default bg-white/50',
+            !isTeam && 'hover:bg-white/20'
+          )}
+          onClick={() => handleTabChange(ScoreTab.Team)}>
+          <InputIndicatorIcon
+            className={cn('transition-all', isTeam && 'rotate-90')}
           />
-        </div>
+          <span>Team rank</span>
+        </span>
+        <span
+          className={cn(
+            'flex items-center gap-x-1 text-white/50 text-sm bg-white/10 cursor-pointer px-2 py-1',
+            !isTeam && 'font-ibmb text-black cursor-default bg-white/50',
+            isTeam && 'hover:bg-white/20'
+          )}
+          onClick={() => handleTabChange(ScoreTab.Individual)}>
+          <InputIndicatorIcon
+            className={cn('transition-all', !isTeam && 'rotate-90')}
+          />
+          <span>Individual</span>
+        </span>
       </div>
-    </div>
+
+      <div>
+        <SearchInput onChange={setSearchValue} />
+        <Table className="font-ibmr text-xs">
+          <TableHeader className="mb-0 text-white/50 [&_tr]:mb-0 [&_tr]:border-white/20">
+            <TableRow className="[&_th]:px-3 [&_th]:py-1">
+              <TableHead>Rank</TableHead>
+              <TableHead className="translate-x-1">
+                {isTeam ? 'Team name' : 'User address'}
+              </TableHead>
+              <TableHead>bitPoint</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentPageData?.map(([data, rank], index) => (
+              <TableRow
+                key={data.id}
+                className={cn(
+                  '[&_td]:px-3 [&_td]:py-1 [&_td]:text-center',
+                  index % 2 !== 0 && 'bg-white/5'
+                )}>
+                <TableCell className="flex w-[80px] items-center justify-start">
+                  #{rank}
+                </TableCell>
+                <TableCell>
+                  {displayAddress(
+                    isTeam
+                      ? (data as ITeamRank).teamName
+                      : (data as IIndividualRank).address,
+                    3,
+                    3
+                  )}
+                </TableCell>
+                <TableCell className="flex w-[100px] items-center justify-end">
+                  {formatNumberWithSeparator(data.totalPoint || 0)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <Pagination
+        hasNextPage={hasNextPage}
+        onClickNext={fetchNextPage}
+        totalPagesNum={totalPagesNum}
+        currentPageNum={currentPageNum}
+        hasPreviousPage={hasPreviousPage}
+        onClickPrevious={fetchPreviousPage}
+        setCurrentPageNum={setCurrentPageNum}
+      />
+    </BitPointBoardContainer>
   )
 }

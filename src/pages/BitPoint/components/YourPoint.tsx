@@ -1,98 +1,105 @@
 import { Link } from 'react-router-dom'
 
-import {
-  BoostIcon,
-  HistoryPointIcon,
-  YourPointHeaderIcon
-} from '@/assets/icons'
+import { HistoryPointIcon } from '@/assets/icons'
+import { Image } from '@/components/Image'
+import { InfoIndicator } from '@/components/InfoIndicator'
 import { useUserPoint } from '@/hooks/useUserPoint'
-import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { formatNumberWithSeparator } from '@/utils/number'
 
-type YourPointProps = {
-  className?: string
-}
+import { BitPointBoardContainer } from './BitPointBoardContainer'
 
-export const YourPoint: React.FC<YourPointProps> = ({ className }) => {
+export const YourPoint: React.FC = () => {
   const { userPoint } = useUserPoint()
+  const { totalPoint, yesterdayPoint, rank, userTotal, teamAddition, bitDisc } =
+    userPoint || {}
 
   return (
-    <div
-      className={cn(
-        'border border-blue5 shrink-0 relative w-[497px] bg-black overflow-hidden',
-        'py-5 px-6',
-        className
-      )}>
-      <div className="absolute inset-0 z-0 bg-bitpointPointBg bg-cover bg-no-repeat" />
-      <div className="absolute inset-0 z-0 bg-blue4 mix-blend-hard-light" />
-      <div className="relative z-10 flex flex-col">
-        <h2 className="mb-6 flex items-center gap-1 font-ppnb text-2xl text-blue">
-          <YourPointHeaderIcon />
-          Your bitPoint
-        </h2>
-
-        <div className="flex justify-between">
-          <p className="flex flex-col items-start">
-            <span className="font-ibmr text-sm text-white/70">Total</span>
-            <span className="font-ppnb text-6xl text-white">
-              {userPoint?.totalPoint}
-            </span>
-          </p>
-
-          <p className="relative flex min-w-[121px] flex-col items-start">
-            <span className="font-ibmr text-sm text-white/70">Rank</span>
-            <span className="font-ppnb text-6xl text-white">
-              {userPoint?.rank}
-              <span className="text-2xl text-white/50">
-                /{userPoint?.userTotal}
-              </span>
-            </span>
-          </p>
+    <BitPointBoardContainer
+      title="Your bitPoint"
+      titleClassName="bg-blue"
+      containerClassName="border-blue/60">
+      <div className="flex flex-col gap-y-4">
+        <div className="flex items-center gap-x-2 text-sm text-blue">
+          <div className="h-[1px] flex-1 bg-blue" />
+          <div className="font-ibmb">Total</div>
+          <div className="h-[1px] flex-1 bg-blue" />
         </div>
-
-        <p className="flex items-center gap-x-3 text-green">
-          <span className="font-ibmb text-2xl">
-            +{userPoint?.yesterdayPoint}
-          </span>
-          <span className="w-20 font-ibmr text-xs">from yesterday</span>
-        </p>
-
-        <div className="mb-4 mt-5 h-[1px] w-full bg-[rgba(38,72,239,0.60)]" />
-
-        <div className="flex justify-between">
-          <div className="flex flex-col items-start gap-y-2">
-            <span className="flex items-center gap-1 font-ibmr text-sm text-white/70">
-              <BoostIcon />
-              Boost
-            </span>
-            <div className="flex gap-x-4">
-              <div className="relative flex w-[96px] flex-col items-start justify-between gap-y-5 rounded-sm bg-yourPointStats px-3 py-1.5">
-                <span className="relative font-ibmr text-sm text-white">
-                  Team ⓘ
-                </span>
-                <span className="relative font-ppnb text-2xl text-green">
-                  +{userPoint?.teamAddition}%
-                </span>
-              </div>
-
-              <div className="relative flex w-[106px] flex-col items-start justify-between gap-y-5 rounded-sm bg-yourPointStats px-3 py-1.5">
-                <span className="relative font-ibmr text-sm text-white">
-                  bitDisk ⓘ
-                </span>
-                <span className="relative font-ppnb text-2xl text-green">
-                  +{userPoint?.bitDisc}%
-                </span>
-              </div>
-            </div>
+        <div className="flex flex-col items-center justify-center gap-y-2 font-smb text-lg">
+          <div>{formatNumberWithSeparator(totalPoint || 0)}</div>
+          <div className="font-ibmb text-xs text-green">
+            +{formatNumberWithSeparator(yesterdayPoint || 0)} from yesterday
           </div>
-
-          <p className="relative flex flex-col items-center gap-y-[18px]">
-            <span className="font-ibmr text-sm text-white/70">History</span>
-            <Link className="text-white" to="./history">
-              <HistoryPointIcon />
-            </Link>
-          </p>
         </div>
       </div>
-    </div>
+
+      <div className="flex flex-col gap-y-4">
+        <div className="flex items-center gap-x-2 text-sm text-blue">
+          <div className="h-[1px] flex-1 bg-blue" />
+          <div className="font-ibmb">Rank</div>
+          <div className="h-[1px] flex-1 bg-blue" />
+        </div>
+        <div className="flex items-end justify-center font-smb">
+          <span className="text-lg">
+            {formatNumberWithSeparator(rank || 0)}/
+          </span>
+          <span className="text-[8px] text-white/50">
+            {formatNumberWithSeparator(userTotal || 0)}
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <div className="h-[1px] w-full bg-blue" />
+        <div className="flex items-start justify-between">
+          <div className="flex gap-x-2 pt-2.5">
+            <span>
+              <div className="relative flex flex-col gap-y-0.5 bg-blue p-1 pr-4 font-ibmr text-sm font-bold text-black">
+                <span className="relative z-10 font-ibmb">Boost</span>
+                <span className="relative z-10">
+                  Team <InfoIndicator message="team" />
+                </span>
+
+                <Image
+                  className="absolute left-0 top-0 size-full"
+                  src={getIllustrationUrl('bitpoint-yourteam-boost-bg')}
+                />
+              </div>
+              <div className="w-full bg-blue/20 px-1.5 py-0.5 font-ibmr font-bold text-blue">
+                +{teamAddition}%
+              </div>
+            </span>
+
+            <span>
+              <div className="relative flex flex-col gap-y-0.5 bg-blue p-1 pr-4 font-ibmr text-sm font-bold text-black">
+                <span className="relative z-10 font-ibmb">Boost</span>
+                <span className="relative z-10">
+                  bitDisk <InfoIndicator message="bitDisk" />
+                </span>
+
+                <Image
+                  className="absolute left-0 top-0 size-full"
+                  src={getIllustrationUrl('bitpoint-yourteam-boost-bg')}
+                />
+              </div>
+              <div className="w-full bg-blue/20 px-1.5 py-0.5 font-ibmr font-bold text-blue">
+                +{bitDisc}%
+              </div>
+            </span>
+          </div>
+
+          <div className="border-l border-blue pb-2.5 pt-2">
+            <div className="group flex h-full flex-col items-center gap-y-1 px-0.5 py-1 pl-[7px] text-sm text-blue">
+              <div>History</div>
+              <Link
+                to="./history"
+                className="group-hover:text-blue1 group-active:text-blue/60">
+                <HistoryPointIcon />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </BitPointBoardContainer>
   )
 }

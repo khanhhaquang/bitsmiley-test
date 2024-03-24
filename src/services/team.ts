@@ -29,6 +29,7 @@ export type TPageable = {
 
 export interface ITeamRank {
   id?: number
+  teamName?: string
   invitationCode?: string | null
   yesterdayPoint?: string
   captainAddress?: Address
@@ -124,27 +125,24 @@ export const TeamService = {
   getTeamRank: {
     key: 'team.getTeamRank',
     call: (params: IPageParams) =>
-      axiosInstance.post<IResponse<IRank<[ITeamRank, number]>>>(
+      axiosInstance.get<IResponse<IRank<[ITeamRank, number]>>>(
         '/rank/getTeamRank',
-        null,
         { params }
       )
   },
   getUserPointRank: {
     key: 'team.getUserPointRank',
     call: (params: IPageParams) =>
-      axiosInstance.post<IResponse<IRank<[IIndividualRank, number]>>>(
+      axiosInstance.get<IResponse<IRank<[IIndividualRank, number]>>>(
         '/rank/getUserPointRank',
-        null,
         { params }
       )
   },
   getMyTeamMembers: {
     key: 'team.getMyTeamMembers',
     call: (params: IPageParams, address: Address) =>
-      axiosInstance.post<IResponse<IRank<ITeamMember>>>(
+      axiosInstance.get<IResponse<IRank<ITeamMember>>>(
         '/team/getMyTeamMembers',
-        null,
         { params: { address, ...params } }
       )
   },

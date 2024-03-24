@@ -42,7 +42,7 @@ const EnterAppButton: React.FC = () => {
       className="group absolute top-[calc(100%+27px)] size-full cursor-pointer "
       onClick={() => {
         if (isHome) {
-          navigate('/testnet')
+          navigate('/app')
         } else {
           navigate('/')
         }

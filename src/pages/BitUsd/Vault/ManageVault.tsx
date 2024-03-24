@@ -471,7 +471,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
               <ActionButton
                 className="h-9 shrink-0"
                 onClick={() => navigate(-1)}>
-                <span className="flex items-center gap-x-2">
+                <span className="flex items-center gap-x-2 text-white">
                   <ChevronLeftIcon />
                   Back
                 </span>

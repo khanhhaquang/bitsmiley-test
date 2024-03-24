@@ -67,7 +67,7 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
               </span>
               {hasChangedVault && (
                 <>
-                  <ChevronRightIcon width={5} />
+                  <ChevronRightIcon width={5} className="text-white" />
                   <span
                     className={
                       key === 'healthFactor'

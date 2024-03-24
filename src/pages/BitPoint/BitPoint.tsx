@@ -1,7 +1,6 @@
 import { useUserPoint } from '@/hooks/useUserPoint'
 
 import { BitPointTitle } from './components/BitPointTitle'
-import { CaptainScoreboard } from './components/CaptainScoreboard'
 import { CaptionInvitationCode } from './components/InvitationCode'
 import { ScoreBoard } from './components/Scoreboard'
 import { YourPoint } from './components/YourPoint'
@@ -18,7 +17,7 @@ const BitPoint: React.FC = () => {
           <CaptionInvitationCode />
           <div className="flex items-start gap-x-6">
             <div className="flex flex-col gap-y-5">
-              <CaptainScoreboard />
+              <YourTeam />
               <YourPoint />
             </div>
             <ScoreBoard />
@@ -29,8 +28,8 @@ const BitPoint: React.FC = () => {
           <BitPointTitle title="Earn bitPoint" />
           <div className="flex items-start gap-x-6">
             <div className="flex flex-col gap-y-4">
-              <YourPoint />
               <YourTeam />
+              <YourPoint />
             </div>
             <ScoreBoard />
           </div>

@@ -99,7 +99,9 @@ export default {
         'connectwallet-button-hover': '6px 6px 0px 0px #2648EF',
         'take-bitdisc-button-hover': '3px 3px 0px 0px #2648EF',
         'whitepaper-button': '6px 6px 0px 0px #172B8F',
-        'stake-now-button': '4px 4px 0px 0px rgba(0, 0, 0, 0.30)'
+        'stake-now-button': '4px 4px 0px 0px rgba(0, 0, 0, 0.30)',
+        'bitpoint-history-back-button':
+          '0px 0px 5px 1px rgba(255, 255, 255, 0.06)'
       },
       backgroundImage: {
         bitUsdInputHeaderBg:
@@ -111,7 +113,6 @@ export default {
           'url("/src/assets/illustrations/bitpoint/your-point-bg.png")',
         onchainLoading: 'url("/src/assets/illustrations/onchain-loading.png")',
         loading: 'url("/src/assets/illustrations/loading-bg.png")',
-        scoreboard: 'url("/src/assets/illustrations/scoreboard-mask.png")',
         mobile: 'url("/src/assets/illustrations/mobile-bg.png")',
         'connect-modal': 'url("/src/assets/illustrations/connect-bg.png")',
         'mint-success-modal':

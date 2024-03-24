@@ -2,6 +2,7 @@ import React, { Suspense, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
+import { OnChainLoader } from '@/components/OnchainLoader'
 import { NotConnected } from '@/components/StakingMachine/BoxContent/NotConnected'
 import { Input, InputProps } from '@/components/ui/input'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -72,14 +73,6 @@ const InputWithButton: React.FC<InputProps> = (props) => {
   )
 }
 
-const Loading: React.FC = () => {
-  return (
-    <div className="flex size-full items-center justify-center text-white">
-      loading...
-    </div>
-  )
-}
-
 const Invitation: React.FC = () => {
   const { createTeam, isCreatingTeam } = useUserPoint()
   return (
@@ -87,13 +80,13 @@ const Invitation: React.FC = () => {
       <div className="relative w-[388px] border border-white/20 p-[1px]">
         <Image
           className="absolute left-[-394px] top-1/2 -translate-y-1/2"
-          src={getIllustrationUrl('bitpoint/join-team-left-dashes')}
+          src={getIllustrationUrl('join-team-left-dashes')}
           height={20}
           width={400}
         />
         <Image
           className="absolute right-[-394px] top-1/2 -translate-y-1/2"
-          src={getIllustrationUrl('bitpoint/join-team-right-dashes')}
+          src={getIllustrationUrl('join-team-right-dashes')}
           height={20}
           width={400}
         />
@@ -113,7 +106,7 @@ const Invitation: React.FC = () => {
             </div>
 
             <Image
-              src={getIllustrationUrl('bitpoint/join-team-bg', 'webp')}
+              src={getIllustrationUrl('join-team-bg', 'webp')}
               width={348}
               height={348}
               className="absolute -right-14 bottom-[-80px] z-0 rotate-[-26deg] opacity-30 mix-blend-screen"
@@ -130,7 +123,7 @@ const MainBitPoint: React.FC = () => {
   const { isJoined, isLoading: isLoadingUserPoint } = useUserPoint()
 
   if (!isConnected) return <NotConnected />
-  if (isLoadingUserPoint) return <Loading />
+  if (isLoadingUserPoint) return <OnChainLoader />
   if (!isJoined) return <Invitation />
 
   return (

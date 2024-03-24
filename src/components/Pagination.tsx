@@ -23,7 +23,7 @@ export const Pagination: React.FC<{
   if (!totalPagesNum || !currentPageNum) return null
 
   const renderNumberItem = (num: number) => {
-    const activeNumCls = cn('text-blue font-ibmb', activeNumClassName)
+    const activeNumCls = cn('text-white font-ibmb', activeNumClassName)
     return (
       <div
         key={num}
@@ -72,26 +72,28 @@ export const Pagination: React.FC<{
   }
 
   return (
-    <div className="flex items-center justify-center">
-      <div
+    <div className="flex items-center justify-center text-xs">
+      <button
         onClick={onClickPrevious}
         className={cn(
-          'mr-3 flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm bg-white/20 hover:bg-white/50',
-          !hasPreviousPage && 'cursor-not-allowed bg-white/10 hover:bg-white/10'
+          'mr-2 flex size-6 cursor-pointer items-center justify-center',
+          !hasPreviousPage ? 'cursor-not-allowed' : 'hover:text-white/70'
         )}>
         <ChevronLeftIcon />
+      </button>
+
+      <div className="flex items-center gap-x-2 text-white/70">
+        {renderNumbers()}
       </div>
 
-      <div className="flex items-center gap-x-2">{renderNumbers()}</div>
-
-      <div
+      <button
         onClick={onClickNext}
         className={cn(
-          'ml-3 flex h-6 w-6 cursor-pointer items-center justify-center rounded-sm bg-white/20 hover:bg-white/50',
-          !hasNextPage && 'cursor-not-allowed bg-white/10 hover:bg-white/10'
+          'ml-2 flex size-6 cursor-pointer items-center justify-center',
+          !hasNextPage ? 'cursor-not-allowed' : 'hover:text-white/70'
         )}>
         <ChevronRightIcon />
-      </div>
+      </button>
     </div>
   )
 }

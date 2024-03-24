@@ -216,7 +216,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           />
           <div className="flex w-full items-center gap-x-4">
             <ActionButton className="h-9 shrink-0" onClick={() => navigate(-1)}>
-              <span className="flex items-center gap-x-2">
+              <span className="flex items-center gap-x-2 text-white">
                 <ChevronLeftIcon />
                 Back
               </span>

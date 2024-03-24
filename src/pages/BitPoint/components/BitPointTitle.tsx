@@ -13,14 +13,14 @@ export const BitPointTitle: React.FC<{ title: string; className?: string }> = ({
         className
       )}>
       <Image
-        src={getIllustrationUrl('bitpoint/join-team-left-dashes')}
+        src={getIllustrationUrl('join-team-left-dashes')}
         className="w-full flex-1 shrink-0"
       />
       <span className="text-nowrap font-smb text-2xl [text-shadow:-2px_0_0_rgba(255,255,255,0.45)]">
         {title}
       </span>
       <Image
-        src={getIllustrationUrl('bitpoint/join-team-right-dashes')}
+        src={getIllustrationUrl('join-team-right-dashes')}
         className="w-full flex-1 shrink-0"
       />
     </div>

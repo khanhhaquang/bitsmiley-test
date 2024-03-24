@@ -1,5 +1,8 @@
+import dayjs from 'dayjs'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
+import { ChevronLeftIcon } from '@/assets/icons'
 import { Pagination } from '@/components/Pagination'
 import {
   Table,
@@ -12,10 +15,15 @@ import {
 import { usePagination } from '@/hooks/usePagination'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IPageParams, IUserPointHistory, TeamService } from '@/services/team'
+import { cn } from '@/utils/cn'
+import { formatNumberWithSeparator } from '@/utils/number'
 
 import { BitPointTitle } from './components/BitPointTitle'
 
+const TABLE_PLACE_HOLDER = 'place_holder'
+
 const BitPointHistory: React.FC = () => {
+  const navigate = useNavigate()
   const { address } = useUserInfo()
   const {
     currentPageData,
@@ -34,18 +42,39 @@ const BitPointHistory: React.FC = () => {
           TeamService.getUserPointHistory.call(params, address),
     pageSize: 10
   })
+
+  const currentPageLength = currentPageData?.length || 0
+  const filledTableRows = currentPageLength < 10 ? 10 - currentPageLength : 0
+
+  const currenPage = [
+    ...(currentPageData || []),
+    ...Array(filledTableRows)
+      .fill(1)
+      .map((_, index) => ({
+        id: currentPageLength + index,
+        address: TABLE_PLACE_HOLDER,
+        bitDiscBoost: TABLE_PLACE_HOLDER,
+        liquidity: TABLE_PLACE_HOLDER,
+        mintBitUSD: TABLE_PLACE_HOLDER,
+        stake: TABLE_PLACE_HOLDER,
+        teamBoost: TABLE_PLACE_HOLDER,
+        totalPoint: TABLE_PLACE_HOLDER,
+        updateTime: TABLE_PLACE_HOLDER
+      }))
+  ]
+
   return (
     <div className="size-full overflow-x-hidden py-10 text-white">
       <BitPointTitle title="bitPoint History" className="mb-3" />
 
-      <div className="flex w-full flex-col items-center gap-y-12">
-        <Table className="mb-14 w-full font-ibmr">
-          <TableHeader className="text-base">
-            <TableRow className="border-dashed px-6 pb-6">
+      <div className="flex w-full flex-col items-center gap-y-3">
+        <Table className="w-full font-ibmr text-xs">
+          <TableHeader className="[&_tr]:mb-3">
+            <TableRow className="border-b border-white/20 px-3 py-4 text-white/50">
               <TableHead>bitPoint Sources</TableHead>
               <TableHead>Mint bitUSD</TableHead>
               <TableHead>Stake</TableHead>
-              <TableHead>Liquidity ⓘ</TableHead>
+              <TableHead>Liquidity</TableHead>
               <TableHead>Team boost</TableHead>
               <TableHead>bitDisc boost</TableHead>
               <TableHead>Total</TableHead>
@@ -53,31 +82,65 @@ const BitPointHistory: React.FC = () => {
           </TableHeader>
 
           <TableBody>
-            {currentPageData?.map((v) => (
-              <TableRow key={v.id} className="p-6">
-                <TableCell>{v.updateTime.toString()}</TableCell>
-                <TableCell>{v.mintBitUSD}</TableCell>
-                <TableCell>{v.stake}</TableCell>
-                <TableCell>{v.liquidity}</TableCell>
-                <TableCell>{v.teamBoost}</TableCell>
-                <TableCell>{v.bitDiscBoost}</TableCell>
-                <TableCell>{v.totalPoint}</TableCell>
+            {currenPage?.map((v, index) => (
+              <TableRow
+                key={v.id}
+                className={cn(
+                  'px-3 py-2 min-h-10',
+                  index % 2 !== 0 && 'bg-white/5'
+                )}>
+                <TableCell>
+                  {v.updateTime !== TABLE_PLACE_HOLDER &&
+                    dayjs(v.updateTime).format('MM/DD/YYYY')}
+                </TableCell>
+                <TableCell>
+                  {v.mintBitUSD !== TABLE_PLACE_HOLDER &&
+                    `+${formatNumberWithSeparator(v.mintBitUSD)}`}
+                </TableCell>
+                <TableCell>
+                  {v.stake !== TABLE_PLACE_HOLDER &&
+                    `+${formatNumberWithSeparator(v.stake)}`}
+                </TableCell>
+                <TableCell>
+                  {v.liquidity !== TABLE_PLACE_HOLDER &&
+                    `+${formatNumberWithSeparator(v.liquidity)}`}
+                </TableCell>
+                <TableCell>
+                  {v.teamBoost !== TABLE_PLACE_HOLDER && `+${v.teamBoost}%`}
+                </TableCell>
+                <TableCell>
+                  {v.bitDiscBoost !== TABLE_PLACE_HOLDER &&
+                    `+${v.bitDiscBoost}%`}
+                </TableCell>
+                <TableCell>
+                  {v.totalPoint !== TABLE_PLACE_HOLDER &&
+                    formatNumberWithSeparator(v.totalPoint)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
 
-        <Pagination
-          hasNextPage={hasNextPage}
-          onClickNext={fetchNextPage}
-          totalPagesNum={totalPagesNum}
-          currentPageNum={currentPageNum}
-          hasPreviousPage={hasPreviousPage}
-          onClickPrevious={fetchPreviousPage}
-          setCurrentPageNum={setCurrentPageNum}
-        />
+        <div className="flex w-full items-center justify-between">
+          <button
+            className="flex cursor-pointer items-center justify-center gap-x-2 border border-white/20 bg-white/5 px-4 py-1 font-ibmb text-sm text-white/70 shadow-bitpoint-history-back-button hover:text-white/50"
+            onClick={() => navigate(-1)}>
+            <ChevronLeftIcon />
+            Back
+          </button>
 
-        <div className="mt-5 w-full border-b border-dashed" />
+          {Number(totalPagesNum) > 1 && (
+            <Pagination
+              hasNextPage={hasNextPage}
+              onClickNext={fetchNextPage}
+              totalPagesNum={totalPagesNum}
+              currentPageNum={currentPageNum}
+              hasPreviousPage={hasPreviousPage}
+              onClickPrevious={fetchPreviousPage}
+              setCurrentPageNum={setCurrentPageNum}
+            />
+          )}
+        </div>
       </div>
     </div>
   )
