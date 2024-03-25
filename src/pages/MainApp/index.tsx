@@ -3,6 +3,7 @@ import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
@@ -110,13 +111,31 @@ const NavigationButton: React.FC<{
 }
 
 const MainApp = () => {
+  const { isConnected, isLoading } = useUserInfo()
+
+  const renderContent = () => {
+    if (!isConnected) {
+      return (
+        <div className="flex size-full items-center justify-center text-2xl">
+          Connect wallet first
+        </div>
+      )
+    }
+
+    return isLoading ? (
+      <div className="flex size-full items-center justify-center text-2xl">
+        Loading...
+      </div>
+    ) : (
+      <Outlet />
+    )
+  }
+
   return (
     <div className="h-screen w-screen overflow-hidden bg-bitUsdBg bg-cover bg-center bg-no-repeat text-white">
       <MachineContainer>
         <ContentContainer>
-          <Suspense fallback="...">
-            <Outlet />
-          </Suspense>
+          <Suspense fallback="...">{renderContent()}</Suspense>
         </ContentContainer>
         <BTCPrice />
       </MachineContainer>

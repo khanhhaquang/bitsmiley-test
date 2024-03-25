@@ -1,25 +1,19 @@
 import { Suspense } from 'react'
-import { Navigate, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
-import { OnChainLoader } from '@/components/OnchainLoader'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { FeatureEnabled } from '@/services/user'
 
 const BitUsd: React.FC = () => {
-  const { isConnected, enabledFeatures, isLoading } = useUserInfo()
-  const isBitUsdEnabled =
-    !!enabledFeatures && enabledFeatures?.AlphaNet === FeatureEnabled.ENABLED
+  const { enabledFeatures } = useUserInfo()
 
-  if (
-    (!isLoading && !isConnected) ||
-    (!isLoading && isConnected && !isBitUsdEnabled)
-  ) {
-    return <Navigate to="/" replace />
-  }
+  if (!enabledFeatures?.AlphaNet)
+    return (
+      <div className="flex size-full items-center justify-center text-2xl text-error">
+        Not available
+      </div>
+    )
 
-  return isLoading ? (
-    <OnChainLoader />
-  ) : (
+  return (
     <Suspense fallback="...">
       <Outlet />
     </Suspense>
