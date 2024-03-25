@@ -11,6 +11,7 @@ import { formatNumberWithSeparator } from '@/utils/number'
 const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
+  const { enabledFeatures } = useUserInfo()
   const bitUsdPathPatterns = ['/app/testnet', '/app/testnet/vault/:chainId']
   const bitPointPathPattern = ['/app/bit-point', '/app/bit-point/history']
 
@@ -20,14 +21,14 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
 
       <NavigationButton
         title="TESTNET"
-        path="/app/testnet"
         pathPatterns={bitUsdPathPatterns}
+        path={enabledFeatures?.AlphaNet ? '/app/testnet' : ''}
       />
       <NavigationButton
         title="BITPOINT"
-        path="/app/bit-point"
         className="top-[31.7%]"
         pathPatterns={bitPointPathPattern}
+        path={enabledFeatures?.BitPoint ? '/app/bit-point' : ''}
       />
       <NavigationButton className="top-[38.2%]" />
       <NavigationButton className="top-[44.6%]" />
@@ -103,7 +104,7 @@ const NavigationButton: React.FC<{
       <span
         className={cn(
           'min-h-[9.75px] xl:min-h-[15px] text-[6.5px] font-smb xl:text-[10px] text-black/50 [text-shadow:1.5px_0_0_#A5A5A5]',
-          (isActive || isHover || isPressed) && 'text-blue'
+          !!path && (isActive || isHover || isPressed) && 'text-blue'
         )}>
         {title}
       </span>

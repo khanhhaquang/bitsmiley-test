@@ -72,14 +72,14 @@ const BitPointHistory: React.FC = () => {
       <div className="mx-auto flex w-4/5 flex-col items-center gap-y-5">
         <Table className="w-full font-ibmr text-xs">
           <TableHeader className="[&_tr]:mb-3">
-            <TableRow className="border-b border-white/20 px-3 py-4 text-white/50">
+            <TableRow className="border-b border-white/20 px-3 py-2 text-white/50 [&_th]:p-0">
               <TableHead>bitPoint Sources</TableHead>
               <TableHead>Mint bitUSD</TableHead>
               <TableHead className="w-16">Stake</TableHead>
               <TableHead>Liquidity</TableHead>
               <TableHead>Team boost</TableHead>
               <TableHead>bitDisc boost</TableHead>
-              <TableHead className="w-[72px]">Total</TableHead>
+              <TableHead className="w-[72px] text-right">Total</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -114,7 +114,7 @@ const BitPointHistory: React.FC = () => {
                   {v.bitDiscBoost !== TABLE_PLACE_HOLDER &&
                     `+${v.bitDiscBoost}%`}
                 </TableCell>
-                <TableCell className="w-[72px]">
+                <TableCell className="w-[72px] text-right">
                   {v.totalPoint !== TABLE_PLACE_HOLDER &&
                     formatNumberWithSeparator(v.totalPoint)}
                 </TableCell>
