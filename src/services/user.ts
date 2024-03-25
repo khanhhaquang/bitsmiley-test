@@ -51,14 +51,10 @@ export interface IMintingPair {
   }[]
 }
 
-export enum FeatureEnabled {
-  ENABLED = 'enable',
-  DISABLED = 'disable'
-}
 export interface IFeaturesEnabled {
-  Staking: FeatureEnabled
-  AlphaNet: FeatureEnabled
-  BitPoint: FeatureEnabled
+  Staking: boolean
+  AlphaNet: boolean
+  BitPoint: boolean
 }
 
 export const UserService = {

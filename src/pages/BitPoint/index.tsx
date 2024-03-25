@@ -6,7 +6,6 @@ import { OnChainLoader } from '@/components/OnchainLoader'
 import { Input, InputProps } from '@/components/ui/input'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserPoint } from '@/hooks/useUserPoint'
-import { FeatureEnabled } from '@/services/user'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
@@ -123,7 +122,7 @@ const MainBitPoint: React.FC = () => {
 
   const { isJoined, isLoading: isLoadingUserPoint } = useUserPoint()
 
-  if (enabledFeatures?.BitPoint === FeatureEnabled.DISABLED)
+  if (!enabledFeatures?.BitPoint)
     return (
       <div className="flex size-full items-center justify-center text-2xl text-error">
         Not available
