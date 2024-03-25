@@ -359,7 +359,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     }
                     inputSuffix={
                       <InputSuffixActionButton
-                        disabled={withdrawWbtcDisabled}
+                        disabled={
+                          withdrawWbtcDisabled || isMintFromBtc === true
+                        }
                         onClick={() => {
                           handleInput(
                             'withdrawBtc',
@@ -390,7 +392,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     }
                     inputSuffix={
                       <InputSuffixActionButton
-                        disabled={mintBitUsdDisabled}
+                        disabled={mintBitUsdDisabled || isMintFromBtc === false}
                         onClick={() => {
                           handleInput(
                             'mintBitUsd',
@@ -420,12 +422,16 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                               handleInput('repayBitUsd', minRepay.toString())
                               setIsMintFromBtc(false)
                             }}
-                            disabled={repayBitUsdDisabled}>
+                            disabled={
+                              repayBitUsdDisabled || isMintFromBtc === true
+                            }>
                             Min
                           </InputSuffixActionButton>
                         )}
                         <InputSuffixActionButton
-                          disabled={repayBitUsdDisabled}
+                          disabled={
+                            repayBitUsdDisabled || isMintFromBtc === true
+                          }
                           className="w-[92px]"
                           onClick={() => {
                             handleInput('repayBitUsd', vault?.debtBitUSD || '')

@@ -22,7 +22,6 @@ import {
   TableHeader
 } from '@/components/ui/table'
 import { bobTestnet } from '@/config/wagmi'
-import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { IMintingPair } from '@/services/user'
@@ -134,7 +133,6 @@ const MintingPairTableRow: React.FC<{
   table: TTable<IMintingPair>
 }> = ({ mintingPair, table, isOpenedVaults }) => {
   const navigate = useNavigate()
-  const disconnect = useDisconnectAccount()
   const { evmChainId, isConnected } = useUserInfo()
   const { switchChain } = useSwitchChain()
 
@@ -151,7 +149,6 @@ const MintingPairTableRow: React.FC<{
             navigate(`./vault/${mintingPair.chainId}`)
           },
           onError: () => {
-            disconnect()
             console.error('Switching network failed')
           }
         }

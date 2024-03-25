@@ -111,7 +111,7 @@ const NavigationButton: React.FC<{
 
 const MainApp = () => {
   return (
-    <div className="h-screen w-screen overflow-x-hidden bg-bitUsdBg bg-cover bg-center bg-no-repeat text-white">
+    <div className="h-screen w-screen overflow-hidden bg-bitUsdBg bg-cover bg-center bg-no-repeat text-white">
       <MachineContainer>
         <ContentContainer>
           <Suspense fallback="...">
