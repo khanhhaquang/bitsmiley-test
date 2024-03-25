@@ -21,14 +21,16 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
 
       <NavigationButton
         title="TESTNET"
+        path="/app/testnet"
         pathPatterns={bitUsdPathPatterns}
-        path={enabledFeatures?.AlphaNet ? '/app/testnet' : ''}
+        disabled={!enabledFeatures?.AlphaNet}
       />
       <NavigationButton
         title="BITPOINT"
+        path="/app/bit-point"
         className="top-[31.7%]"
+        disabled={!enabledFeatures?.BitPoint}
         pathPatterns={bitPointPathPattern}
-        path={enabledFeatures?.BitPoint ? '/app/bit-point' : ''}
       />
       <NavigationButton className="top-[38.2%]" />
       <NavigationButton className="top-[44.6%]" />
@@ -67,11 +69,12 @@ const BTCPrice = () => {
 }
 
 const NavigationButton: React.FC<{
-  title?: string
   path?: string
+  title?: string
+  disabled?: boolean
   className?: string
   pathPatterns?: string[]
-}> = ({ className, title, path, pathPatterns }) => {
+}> = ({ className, disabled, title, path, pathPatterns }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const isActive =
@@ -80,31 +83,34 @@ const NavigationButton: React.FC<{
   const [isHover, setIsHover] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
 
+  const isDisabled = !path || !!disabled
+
   const imageUrl = useMemo(() => {
-    if (!path) return 'bitusd-button-normal'
+    if (isDisabled) return 'bitusd-button-normal'
 
     if (isActive) return 'bitusd-button-active'
     if (isPressed) return 'bitusd-button-pressed'
     if (isHover) return 'bitusd-button-hover'
     return 'bitusd-button-normal'
-  }, [isActive, isHover, isPressed, path])
+  }, [isActive, isDisabled, isHover, isPressed])
 
   return (
     <button
+      disabled={disabled}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       onMouseDown={() => setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
-      onClick={() => path && !isActive && navigate(path)}
+      onClick={() => !isDisabled && !isActive && navigate(path)}
       className={cn(
         'absolute right-[18.42%] top-[25%] z-10 flex w-[4.6%] flex-col items-start gap-y-0.5 xl:gap-y-1',
-        path && !isActive ? 'cursor-pointer' : 'cursor-default',
+        !isDisabled && !isActive ? 'cursor-pointer' : 'cursor-default',
         className
       )}>
       <span
         className={cn(
           'min-h-[9.75px] xl:min-h-[15px] text-[6.5px] font-smb xl:text-[10px] text-black/50 [text-shadow:1.5px_0_0_#A5A5A5]',
-          !!path && (isActive || isHover || isPressed) && 'text-blue'
+          !isDisabled && (isActive || isHover || isPressed) && 'text-blue'
         )}>
         {title}
       </span>
