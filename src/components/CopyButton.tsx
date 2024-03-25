@@ -1,6 +1,11 @@
 import { useState } from 'react'
 
 import { CopyIcon } from '@/assets/icons'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 import { cn } from '@/utils/cn'
 import { copyToClipboard } from '@/utils/copy'
 
@@ -32,17 +37,22 @@ export const CopyButton: React.FC<TProps> = ({ text, className }) => {
   if (!text) return null
 
   return (
-    <button
-      onClick={(e) => {
-        e.stopPropagation()
-        handleCopy()
-      }}>
-      <CopyIcon
-        className={cn(
-          'cursor-pointer text-white hover:text-white/70',
-          className
-        )}
-      />
-    </button>
+    <Tooltip delayDuration={100} open={copied}>
+      <TooltipTrigger className="z-10 cursor-pointer">
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleCopy()
+          }}>
+          <CopyIcon
+            className={cn(
+              'cursor-pointer text-white hover:text-white/70 size-4',
+              className
+            )}
+          />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>Copied!</TooltipContent>
+    </Tooltip>
   )
 }

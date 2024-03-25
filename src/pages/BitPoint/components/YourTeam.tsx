@@ -40,6 +40,33 @@ export const YourTeam: React.FC = () => {
       title="Your Team"
       titleClassName="bg-green/60"
       containerClassName="border-green/50">
+      <div className="flex flex-col gap-y-4">
+        <div className="flex items-center gap-x-2 text-sm text-green/70">
+          <div className="h-[1px] flex-1 bg-green/60" />
+          <div className="font-ibmb">Team bitPoint</div>
+          <div className="h-[1px] flex-1 bg-green/60" />
+        </div>
+        <div className="flex items-center justify-center font-smb text-lg">
+          {formatNumberWithSeparator(totalPoint || 0)}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-y-4">
+        <div className="flex items-center gap-x-2 text-sm text-green/70">
+          <div className="h-[1px] flex-1 bg-green/60" />
+          <div className="font-ibmb">Rank</div>
+          <div className="h-[1px] flex-1 bg-green/60" />
+        </div>
+        <div className="flex items-end justify-center font-smb">
+          <span className="text-lg">
+            {formatNumberWithSeparator(rank || 0)}/
+          </span>
+          <span className="text-[8px] text-white/50">
+            {formatNumberWithSeparator(teamTotal || 0)}
+          </span>
+        </div>
+      </div>
+
       {!!level && (
         <div className="flex flex-col gap-y-4">
           <div className="flex items-center gap-x-2 text-sm text-green/70">
@@ -59,33 +86,6 @@ export const YourTeam: React.FC = () => {
           </div>
         </div>
       )}
-
-      <div className="flex flex-col gap-y-4">
-        <div className="flex items-center gap-x-2 text-sm text-green/70">
-          <div className="h-[1px] flex-1 bg-green/60" />
-          <div className="font-ibmb">Rank</div>
-          <div className="h-[1px] flex-1 bg-green/60" />
-        </div>
-        <div className="flex items-end justify-center font-smb">
-          <span className="text-lg">
-            {formatNumberWithSeparator(rank || 0)}/
-          </span>
-          <span className="text-[8px] text-white/50">
-            {formatNumberWithSeparator(teamTotal || 0)}
-          </span>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-y-4">
-        <div className="flex items-center gap-x-2 text-sm text-green/70">
-          <div className="h-[1px] flex-1 bg-green/60" />
-          <div className="font-ibmb">Team bitPoint</div>
-          <div className="h-[1px] flex-1 bg-green/60" />
-        </div>
-        <div className="flex items-center justify-center font-smb text-lg">
-          {formatNumberWithSeparator(totalPoint || 0)}
-        </div>
-      </div>
 
       {isCaptain ? (
         <CheckTeamMates />
@@ -152,11 +152,15 @@ const CheckTeamMates: React.FC = () => {
       <CollapsibleContent className="mt-3">
         <SearchInput onChange={setSearchValue} />
 
-        <Table className="font-ibmr text-xs">
-          <TableHeader className="mb-0 text-white/50 [&_tr]:mb-0 [&_tr]:border-white/20">
-            <TableRow className="[&_th]:px-3 [&_th]:py-1">
-              <TableHead>Member address</TableHead>
-              <TableHead>bitPoint</TableHead>
+        <Table className="mb-3 font-ibmr text-xs">
+          <TableHeader className="mb-0 text-white/50 [&_tr]:mb-0 [&_tr]:border-white/20 [&_tr]:px-3 [&_tr]:py-1">
+            <TableRow>
+              <TableHead className="w-20 whitespace-nowrap py-0 pr-[50px]">
+                Member address
+              </TableHead>
+              <TableHead className="w-[100px] py-0 pl-[42px]">
+                bitPoint
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -164,19 +168,20 @@ const CheckTeamMates: React.FC = () => {
               <TableRow
                 key={item.id}
                 className={cn(
-                  '[&_td]:px-3 [&_td]:py-1 [&_td]:text-center',
+                  '[&_td]:px-3 [&_td]:pt-1 [&_td]:pb-1.5 [&_td]:text-center',
                   index % 2 !== 0 && 'bg-white/5'
                 )}>
-                <TableCell>
+                <TableCell className="flex w-20 items-center justify-start pr-[57px]">
                   {displayAddress(item.memberAddress, 3, 3)}
                 </TableCell>
-                <TableCell className="flex w-[100px] items-center justify-end">
+                <TableCell className="flex w-[100px] items-center justify-end pl-14">
                   {formatNumberWithSeparator(item.totalPoint || 0)}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+
         <Pagination
           hasNextPage={hasNextPage}
           onClickNext={fetchNextPage}

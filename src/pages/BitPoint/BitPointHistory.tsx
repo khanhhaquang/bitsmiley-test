@@ -21,6 +21,7 @@ import { formatNumberWithSeparator } from '@/utils/number'
 import { BitPointTitle } from './components/BitPointTitle'
 
 const TABLE_PLACE_HOLDER = 'place_holder'
+const PAGE_SIZE = 6
 
 const BitPointHistory: React.FC = () => {
   const navigate = useNavigate()
@@ -40,11 +41,12 @@ const BitPointHistory: React.FC = () => {
       ? undefined
       : (params: IPageParams) =>
           TeamService.getUserPointHistory.call(params, address),
-    pageSize: 10
+    pageSize: PAGE_SIZE
   })
 
   const currentPageLength = currentPageData?.length || 0
-  const filledTableRows = currentPageLength < 10 ? 10 - currentPageLength : 0
+  const filledTableRows =
+    currentPageLength < PAGE_SIZE ? PAGE_SIZE - currentPageLength : 0
 
   const currenPage = [
     ...(currentPageData || []),
@@ -65,19 +67,19 @@ const BitPointHistory: React.FC = () => {
 
   return (
     <div className="size-full overflow-x-hidden py-10 text-white">
-      <BitPointTitle title="bitPoint History" className="mb-3" />
+      <BitPointTitle title="bitPoint History" className="mb-5" />
 
-      <div className="flex w-full flex-col items-center gap-y-3">
+      <div className="mx-auto flex w-4/5 flex-col items-center gap-y-5">
         <Table className="w-full font-ibmr text-xs">
           <TableHeader className="[&_tr]:mb-3">
             <TableRow className="border-b border-white/20 px-3 py-4 text-white/50">
               <TableHead>bitPoint Sources</TableHead>
               <TableHead>Mint bitUSD</TableHead>
-              <TableHead>Stake</TableHead>
+              <TableHead className="w-16">Stake</TableHead>
               <TableHead>Liquidity</TableHead>
               <TableHead>Team boost</TableHead>
               <TableHead>bitDisc boost</TableHead>
-              <TableHead>Total</TableHead>
+              <TableHead className="w-[72px]">Total</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -89,30 +91,30 @@ const BitPointHistory: React.FC = () => {
                   'px-3 py-2 min-h-10',
                   index % 2 !== 0 && 'bg-white/5'
                 )}>
-                <TableCell>
+                <TableCell className="w-[116px]">
                   {v.updateTime !== TABLE_PLACE_HOLDER &&
                     dayjs(v.updateTime).format('MM/DD/YYYY')}
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-[80px]">
                   {v.mintBitUSD !== TABLE_PLACE_HOLDER &&
                     `+${formatNumberWithSeparator(v.mintBitUSD)}`}
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-16">
                   {v.stake !== TABLE_PLACE_HOLDER &&
                     `+${formatNumberWithSeparator(v.stake)}`}
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-16">
                   {v.liquidity !== TABLE_PLACE_HOLDER &&
                     `+${formatNumberWithSeparator(v.liquidity)}`}
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-[72px]">
                   {v.teamBoost !== TABLE_PLACE_HOLDER && `+${v.teamBoost}%`}
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-[94px]">
                   {v.bitDiscBoost !== TABLE_PLACE_HOLDER &&
                     `+${v.bitDiscBoost}%`}
                 </TableCell>
-                <TableCell>
+                <TableCell className="w-[72px]">
                   {v.totalPoint !== TABLE_PLACE_HOLDER &&
                     formatNumberWithSeparator(v.totalPoint)}
                 </TableCell>

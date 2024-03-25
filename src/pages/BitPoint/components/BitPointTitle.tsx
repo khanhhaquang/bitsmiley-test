@@ -9,7 +9,7 @@ export const BitPointTitle: React.FC<{ title: string; className?: string }> = ({
   return (
     <div
       className={cn(
-        'mb-20 flex w-full items-center justify-center gap-x-1.5',
+        'mb-8 flex w-full items-center justify-center gap-x-1.5',
         className
       )}>
       <Image

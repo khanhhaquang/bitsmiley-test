@@ -88,7 +88,7 @@ export const YourPoint: React.FC = () => {
             </span>
           </div>
 
-          <div className="border-l border-blue pb-2.5 pt-2">
+          <div className="border-l border-blue px-2 pb-2.5 pt-1">
             <div className="group flex h-full flex-col items-center gap-y-1 px-0.5 py-1 pl-[7px] text-sm text-blue">
               <div>History</div>
               <Link

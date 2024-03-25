@@ -9,7 +9,7 @@ export const CaptionInvitationCode: React.FC = () => {
   if (!invitationCode) return null
 
   return (
-    <div className="mb-9 flex items-center gap-x-2 text-xs text-white/70">
+    <div className="mb-[18px] flex items-center gap-x-2 text-xs text-white/70">
       <span>
         Your invitation code:{' '}
         <span className="text-white">{invitationCode}</span>{' '}

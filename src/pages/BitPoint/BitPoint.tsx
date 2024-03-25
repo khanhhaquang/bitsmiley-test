@@ -13,7 +13,7 @@ const BitPoint: React.FC = () => {
     <div className="flex size-full flex-col items-center overflow-x-hidden py-10">
       {isCaptain ? (
         <>
-          <BitPointTitle title="Hello captain" className="mb-8" />
+          <BitPointTitle title="Hello captain" className="mb-4" />
           <CaptionInvitationCode />
           <div className="flex items-start gap-x-6">
             <div className="flex flex-col gap-y-5">
@@ -28,8 +28,8 @@ const BitPoint: React.FC = () => {
           <BitPointTitle title="Earn bitPoint" />
           <div className="flex items-start gap-x-6">
             <div className="flex flex-col gap-y-4">
-              <YourTeam />
               <YourPoint />
+              <YourTeam />
             </div>
             <ScoreBoard />
           </div>
