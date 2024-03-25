@@ -3,10 +3,10 @@ import { Outlet } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
 import { OnChainLoader } from '@/components/OnchainLoader'
-import { NotConnected } from '@/components/StakingMachine/BoxContent/NotConnected'
 import { Input, InputProps } from '@/components/ui/input'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserPoint } from '@/hooks/useUserPoint'
+import { FeatureEnabled } from '@/services/user'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
@@ -119,10 +119,17 @@ const Invitation: React.FC = () => {
 }
 
 const MainBitPoint: React.FC = () => {
-  const { isConnected } = useUserInfo()
+  const { enabledFeatures } = useUserInfo()
+
   const { isJoined, isLoading: isLoadingUserPoint } = useUserPoint()
 
-  if (!isConnected) return <NotConnected />
+  if (enabledFeatures?.BitPoint === FeatureEnabled.DISABLED)
+    return (
+      <div className="flex size-full items-center justify-center text-2xl text-error">
+        Not available
+      </div>
+    )
+
   if (isLoadingUserPoint) return <OnChainLoader />
   if (!isJoined) return <Invitation />
 

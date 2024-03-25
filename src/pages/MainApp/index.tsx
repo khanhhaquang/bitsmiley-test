@@ -1,16 +1,9 @@
 import { Suspense, useMemo, useState } from 'react'
-import {
-  matchPath,
-  Navigate,
-  Outlet,
-  useLocation,
-  useNavigate
-} from 'react-router-dom'
+import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { FeatureEnabled } from '@/services/user'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
@@ -118,25 +111,31 @@ const NavigationButton: React.FC<{
 }
 
 const MainApp = () => {
-  const { isConnected, enabledFeatures, isLoading } = useUserInfo()
-  const isEnabled = enabledFeatures?.AlphaNet === FeatureEnabled.ENABLED
+  const { isConnected, isLoading } = useUserInfo()
 
-  if (
-    (!isLoading && !isConnected) ||
-    (!isLoading && isConnected && !isEnabled)
-  ) {
-    return <Navigate to="/" replace />
+  const renderContent = () => {
+    if (!isConnected) {
+      return (
+        <div className="flex size-full items-center justify-center text-2xl">
+          Connect wallet first
+        </div>
+      )
+    }
+
+    return isLoading ? (
+      <div className="flex size-full items-center justify-center text-2xl">
+        Loading...
+      </div>
+    ) : (
+      <Outlet />
+    )
   }
-
-  if (isLoading) return <div>...</div>
 
   return (
     <div className="h-screen w-screen overflow-hidden bg-bitUsdBg bg-cover bg-center bg-no-repeat text-white">
       <MachineContainer>
         <ContentContainer>
-          <Suspense fallback="...">
-            <Outlet />
-          </Suspense>
+          <Suspense fallback="...">{renderContent()}</Suspense>
         </ContentContainer>
         <BTCPrice />
       </MachineContainer>
