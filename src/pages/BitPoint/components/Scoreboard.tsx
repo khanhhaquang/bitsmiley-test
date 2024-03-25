@@ -62,7 +62,7 @@ export const ScoreBoard: React.FC = () => {
       titleMessage="scoreboard"
       titleClassName="bg-white/50 mb-4"
       containerClassName="bg-black/30 border-white/50 w-[396px]">
-      <div className="flex h-full flex-col gap-y-2">
+      <div className="flex h-full flex-col gap-y-[13px]">
         <div className="flex items-center gap-x-2">
           <span
             className={cn(

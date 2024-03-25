@@ -33,7 +33,7 @@ export const YourPoint: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-y-4">
+      <div className="flex flex-col gap-y-4 pb-3">
         <div className="flex items-center gap-x-2 text-sm text-blue">
           <div className="h-[1px] flex-1 bg-blue" />
           <div className="font-ibmb">Rank</div>

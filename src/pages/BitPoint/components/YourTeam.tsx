@@ -67,30 +67,34 @@ export const YourTeam: React.FC = () => {
         </div>
       </div>
 
-      {!!level && (
-        <div className="flex flex-col gap-y-4">
-          <div className="flex items-center gap-x-2 text-sm text-green/70">
-            <div className="h-[1px] flex-1 bg-green/60" />
-            <div className="font-ibmb">
-              Level <InfoIndicator message="Level" />
-            </div>
-            <div className="h-[1px] flex-1 bg-green/60" />
+      <div className="flex flex-col gap-y-4 pb-3">
+        <div className="flex items-center gap-x-2 text-sm text-green/70">
+          <div className="h-[1px] flex-1 bg-green/60" />
+          <div className="font-ibmb">
+            Level <InfoIndicator message="Level" />
           </div>
-
-          <div className="flex items-center justify-center gap-x-2">
-            {Array(level)
-              .fill(1)
-              .map((_, index) => (
-                <StarIcon key={index} />
-              ))}
-          </div>
+          <div className="h-[1px] flex-1 bg-green/60" />
         </div>
-      )}
+
+        <div className="flex items-center justify-center gap-x-2">
+          {Array(5)
+            .fill(1)
+            .map((_, index) => (
+              <StarIcon
+                key={index}
+                className={cn(
+                  'text-white/10',
+                  index < (level || 0) && 'text-pink'
+                )}
+              />
+            ))}
+        </div>
+      </div>
 
       {isCaptain ? (
         <CheckTeamMates />
       ) : (
-        <div className="flex items-center justify-between bg-green/60 px-2 py-1.5 font-ibmr text-sm text-black">
+        <div className="flex h-8 items-center justify-between bg-green/60 px-2 py-1.5 font-ibmr text-sm text-black">
           <span>
             Team name: <span>{teamName}</span>
           </span>

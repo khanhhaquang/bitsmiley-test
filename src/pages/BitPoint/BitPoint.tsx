@@ -1,3 +1,5 @@
+import { OnChainLoader } from '@/components/OnchainLoader'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserPoint } from '@/hooks/useUserPoint'
 
 import { BitPointTitle } from './components/BitPointTitle'
@@ -7,7 +9,17 @@ import { YourPoint } from './components/YourPoint'
 import { YourTeam } from './components/YourTeam'
 
 const BitPoint: React.FC = () => {
-  const { isCaptain } = useUserPoint()
+  const { enabledFeatures } = useUserInfo()
+  const { isCaptain, isLoading } = useUserPoint()
+
+  if (!enabledFeatures?.BitPoint)
+    return (
+      <div className="flex size-full items-center justify-center text-2xl text-error">
+        Not available
+      </div>
+    )
+
+  if (isLoading) return <OnChainLoader />
 
   return (
     <div className="flex size-full flex-col items-center overflow-x-hidden py-10">
@@ -16,7 +28,7 @@ const BitPoint: React.FC = () => {
           <BitPointTitle title="Hello captain" className="mb-4" />
           <CaptionInvitationCode />
           <div className="flex items-start gap-x-6">
-            <div className="flex flex-col gap-y-5">
+            <div className="flex flex-col gap-y-6">
               <YourTeam />
               <YourPoint />
             </div>
@@ -27,7 +39,7 @@ const BitPoint: React.FC = () => {
         <>
           <BitPointTitle title="Earn bitPoint" />
           <div className="flex items-start gap-x-6">
-            <div className="flex flex-col gap-y-4">
+            <div className="flex flex-col gap-y-6">
               <YourPoint />
               <YourTeam />
             </div>

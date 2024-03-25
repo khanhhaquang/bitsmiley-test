@@ -21,7 +21,7 @@ import { formatNumberWithSeparator } from '@/utils/number'
 import { BitPointTitle } from './components/BitPointTitle'
 
 const TABLE_PLACE_HOLDER = 'place_holder'
-const PAGE_SIZE = 6
+const PAGE_SIZE = 8
 
 const BitPointHistory: React.FC = () => {
   const navigate = useNavigate()
@@ -88,7 +88,7 @@ const BitPointHistory: React.FC = () => {
               <TableRow
                 key={v.id}
                 className={cn(
-                  'px-3 py-2 min-h-10',
+                  'px-3 py-2 min-h-[30px] [&_td]:py-0',
                   index % 2 !== 0 && 'bg-white/5'
                 )}>
                 <TableCell className="w-[116px]">
