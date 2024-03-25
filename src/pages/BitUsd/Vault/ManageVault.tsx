@@ -31,7 +31,7 @@ import { NumberInput } from '../components/NumberInput'
 import { Processing, ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayVaultValues } from '../display'
+import { displayMintingPairValues, displayVaultValues } from '../display'
 import { ManageVaultHeaderInfoTable } from '../tables'
 
 export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
@@ -198,8 +198,10 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     [maxVault?.availableToWithdraw]
   )
   const mintBitUsdDisabled = useMemo(
-    () => Number(maxVault?.availableToMint) <= 0,
-    [maxVault?.availableToMint]
+    () =>
+      Number(maxVault?.availableToMint) <= 0 ||
+      Number(maxVault?.availableToMint) < Number(mintingPair?.vaultFloor),
+    [maxVault?.availableToMint, mintingPair?.vaultFloor]
   )
   const repayBitUsdDisabled = useMemo(
     () => bitUsdBalance <= 0 || Number(vault?.debtBitUSD) <= 0,
@@ -386,6 +388,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                     onInputChange={(v) => handleInput('mintBitUsd', v)}
                     greyOut={isMintFromBtc === false}
                     title="mint bitUSD"
+                    disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
+                      displayMintingPairValues(mintingPair).vaultFloor
+                    } bitUSD`}
                     titleSuffix={
                       'Max Mint: ' +
                       displayVaultValues(maxVault, false).availableToMint

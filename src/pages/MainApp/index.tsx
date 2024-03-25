@@ -44,7 +44,9 @@ const ContentContainer: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   return (
-    <div className="scrollbar-none absolute left-[24%] top-[24%] z-50 size-full h-[40%] w-[51.2%] overflow-y-auto overflow-x-hidden overscroll-contain">
+    <div
+      id="machine-content-container"
+      className="scrollbar-none absolute left-[24%] top-[24%] z-50 size-full h-[40%] w-[51.2%] overflow-y-auto overflow-x-hidden overscroll-contain">
       {children}
     </div>
   )

@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 
+import { OnChainLoader } from '@/components/OnchainLoader'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 
 import { ManageVault } from './ManageVault'
@@ -7,9 +8,11 @@ import { OpenVault } from './OpenVault'
 
 const Vault: React.FC = () => {
   const { chainId } = useParams()
-  const { isMyVault } = useUserMintingPairs(chainId)
+  const { isMyVault, isLoading } = useUserMintingPairs(chainId)
 
   if (!chainId) return null
+
+  if (isLoading) return <OnChainLoader />
 
   return (
     <div className="relative size-full pt-9">

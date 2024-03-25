@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 
 import {
   ProcessingInfoModalTitleIcon,
@@ -23,6 +23,24 @@ type ProcessingProps = {
 export const ProcessingModal: React.FC<
   Omit<ProcessingProps, 'isModal'> & { open: boolean }
 > = ({ open, ...rest }) => {
+  useEffect(() => {
+    if (open) {
+      document
+        .querySelector('#machine-content-container')
+        ?.classList.add('no-scroll')
+    } else {
+      document
+        .querySelector('#machine-content-container')
+        ?.classList.remove('no-scroll')
+    }
+
+    return () => {
+      document
+        .querySelector('#machine-content-container')
+        ?.classList.remove('no-scroll')
+    }
+  }, [open])
+
   if (!open) return null
 
   return (
