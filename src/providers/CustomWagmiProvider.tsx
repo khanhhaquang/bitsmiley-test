@@ -4,14 +4,10 @@ import {
   UnisatConnector
 } from '@particle-network/btc-connectkit'
 import { ReactNode, useMemo, useState } from 'react'
+import { Transport } from 'viem'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 
-import {
-  bobTestnet,
-  customChains,
-  merlinMainnet,
-  merlinTestnet
-} from '@/config/wagmi'
+import { bobTestnet, customChains } from '@/config/wagmi'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import LoadingResourcesPage from '@/pages/LoadingResources'
@@ -36,14 +32,17 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
     if (supportedChains.length === 0) return undefined
 
     const [initialChains, ...restChains] = supportedChains
+    const transports = supportedChains.reduce<Record<number, Transport>>(
+      (acc, c) => ({
+        ...acc,
+        [c.id]: http()
+      }),
+      {}
+    )
 
     return createConfig({
       chains: [initialChains, ...restChains],
-      transports: {
-        [merlinTestnet.id]: http(),
-        [merlinMainnet.id]: http(),
-        [bobTestnet.id]: http()
-      }
+      transports
     })
   }, [supportedChains])
 
