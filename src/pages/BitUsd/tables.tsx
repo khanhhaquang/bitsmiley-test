@@ -21,7 +21,7 @@ export type TTokenSymbols = {
   to?: GetTokenReturnType
 }
 
-const messages = {
+export const messages = {
   healthFactor: 'If drops below 100.0%, the vault will be liquidated.',
   stabilityFee: 'Interest rate charged to the bitUSD minted.',
   maxLTV: 'MAX Loan to Value ratio.',
