@@ -31,7 +31,22 @@
   },
   {
     "inputs": [],
+    "name": "NotEnoughToCoverFee",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "NotOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "Overflow",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "UnknownParameter",
     "type": "error"
   },
   {
@@ -95,6 +110,12 @@
       },
       {
         "indexed": false,
+        "internalType": "bytes32",
+        "name": "collateralId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "collateral",
         "type": "uint256"
@@ -110,18 +131,6 @@
         "internalType": "address",
         "name": "liquidator",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "penalty",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
       }
     ],
     "name": "Liquidated",
@@ -133,58 +142,20 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "user",
+        "name": "who",
         "type": "address"
       },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "vault",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "int256",
-        "name": "collateral",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
-        "internalType": "int256",
-        "name": "bitUSD",
-        "type": "int256"
-      }
-    ],
-    "name": "Mint",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
       {
         "indexed": false,
         "internalType": "string",
         "name": "what",
         "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "collateralId",
+        "type": "bytes32"
       },
       {
         "indexed": false,
@@ -219,31 +190,75 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
       },
       {
-        "indexed": false,
-        "internalType": "address",
-        "name": "vault",
-        "type": "address"
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "previousAdminRole",
+        "type": "bytes32"
       },
       {
-        "indexed": false,
-        "internalType": "int256",
-        "name": "collateral",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
-        "internalType": "int256",
-        "name": "bitUSD",
-        "type": "int256"
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "newAdminRole",
+        "type": "bytes32"
       }
     ],
-    "name": "Repay",
+    "name": "RoleAdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleGranted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
+    "name": "RoleRevoked",
     "type": "event"
   },
   {
@@ -283,6 +298,12 @@
       },
       {
         "indexed": false,
+        "internalType": "bytes32",
+        "name": "collateralId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
         "internalType": "address",
         "name": "vault",
         "type": "address"
@@ -292,8 +313,45 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "collateralId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "vault",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "collateral",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "bitUSD",
+        "type": "int256"
+      }
+    ],
+    "name": "VaultPosChanged",
+    "type": "event"
+  },
+  {
     "inputs": [],
-    "name": "BTC_COLLATERAL_ID",
+    "name": "BITSMILEY_ADMIN",
     "outputs": [
       {
         "internalType": "bytes32",
@@ -306,12 +364,12 @@
   },
   {
     "inputs": [],
-    "name": "PENALTY_BASE",
+    "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "bytes32",
         "name": "",
-        "type": "uint256"
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -331,6 +389,178 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "feeBeneficiary",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "feeToken",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_collateralId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getLiquidationFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "int256",
+        "name": "_collateral",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "_bitUSD",
+        "type": "int256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_protectionSafety",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVaultChange",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "liquidationPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "healthFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "debtBitUSD",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lockedCollateral",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "availableToWithdraw",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "availableToMint",
+            "type": "int256"
+          }
+        ],
+        "internalType": "struct VaultChange",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "grantRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "hasRole",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -338,14 +568,24 @@
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "_liquidationPenalty",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "_beneficiary",
+        "type": "address"
       },
       {
         "internalType": "address",
-        "name": "_penaltyRecipient",
+        "name": "_stabilityFee",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_feeBeneficiary",
+        "type": "address"
+      },
+      {
+        "internalType": "address[]",
+        "name": "_bitSmileyAdmin",
+        "type": "address[]"
       }
     ],
     "name": "initialize",
@@ -361,19 +601,19 @@
         "type": "address"
       }
     ],
-    "name": "liquidateVaultBTC",
+    "name": "liquidate",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "liquidationPenalty",
+    "name": "liquidationBeneficiary",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -397,20 +637,18 @@
         "type": "int256"
       }
     ],
-    "name": "mintFromBTC",
+    "name": "mint",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "openVault",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_collateralId",
+        "type": "bytes32"
+      },
       {
         "internalType": "int256",
         "name": "_bitUSD",
@@ -422,22 +660,9 @@
         "type": "int256"
       }
     ],
-    "name": "openVaultAndMintFromBTC",
+    "name": "openVault",
     "outputs": [],
     "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -452,11 +677,23 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "vault",
         "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "collateralId",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -467,19 +704,6 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "penaltyRecipient",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -499,8 +723,19 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "renounceOwnership",
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "renounceRole",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -523,7 +758,7 @@
         "type": "int256"
       }
     ],
-    "name": "repayToBTC",
+    "name": "repay",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -531,38 +766,110 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "int256",
+        "name": "_collateral",
+        "type": "int256"
+      }
+    ],
+    "name": "repayAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_what",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "_addr",
+        "type": "address"
+      }
+    ],
+    "name": "setAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_collateralId",
+        "type": "bytes32"
+      },
+      {
         "internalType": "uint256",
-        "name": "_penalty",
+        "name": "_fee",
         "type": "uint256"
       }
     ],
-    "name": "setPenalty",
+    "name": "setLiquidationFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "stabilityFee",
+    "outputs": [
       {
-        "internalType": "address",
-        "name": "_recipient",
+        "internalType": "contract IStabilityFee",
+        "name": "",
         "type": "address"
       }
     ],
-    "name": "setPenaltyRecipient",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
       }
     ],
-    "name": "transferOwnership",
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "unpause",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -606,6 +913,25 @@
         "internalType": "contract IVaultManager",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "vaultMinted",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
       }
     ],
     "stateMutability": "view",
