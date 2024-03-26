@@ -21,7 +21,7 @@ export type TTokenSymbols = {
   to?: GetTokenReturnType
 }
 
-const messages = {
+export const messages = {
   healthFactor: 'If drops below 100.0%, the vault will be liquidated.',
   stabilityFee: 'Interest rate charged to the bitUSD minted.',
   maxLTV: 'MAX Loan to Value ratio.',
@@ -245,5 +245,31 @@ export const VaultInfoTable: TTable<IVault, IMintingPair> = [
     message: messages.liquidationFee,
     format: (_, mintingPair) =>
       displayMintingPairValues(mintingPair).liquidationPenalty
+  }
+]
+
+export const VaultHeaderColumns: TTable<IMintingPair> = [
+  {
+    key: 'network',
+    title: 'Network',
+    format: (item) => displayMintingPairValues(item).network
+  },
+  {
+    key: 'stabilityFee',
+    title: 'Stability Fee',
+    message: messages.stabilityFee,
+    format: () => '0%'
+  },
+  {
+    key: 'Liquidation Fee',
+    title: 'liquidationFee',
+    message: messages.liquidationFee,
+    format: (item) => displayMintingPairValues(item).liquidationPenalty
+  },
+  {
+    key: 'vaultFloor',
+    title: 'Vault Floor',
+    message: messages.stabilityFee,
+    format: (item) => displayMintingPairValues(item).vaultFloor
   }
 ]

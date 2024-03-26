@@ -36,15 +36,15 @@ export const NumberInput: React.FC<NumberInputProps> = ({
 
   return (
     <div className="flex flex-col gap-y-1">
-      <div className="relative flex items-center justify-between overflow-hidden bg-blue px-2 py-1.5 text-xs text-black">
+      <div className="relative flex items-center justify-between overflow-hidden bg-blue px-2 py-1.5 text-xs text-white">
         <div className="absolute inset-0 bg-bitUsdInputHeaderBg" />
         <span className="relative flex items-center gap-x-1 font-smb [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)]">
-          <InputIndicatorIcon
-            className={cn('hidden text-black', isFocus && 'block')}
-          />
+          <InputIndicatorIcon className={cn('hidden', isFocus && 'block')} />
           {title}
         </span>
-        <span className="relative font-ibmr font-bold">{titleSuffix}</span>
+        <span className="relative font-ibmr font-bold text-white/70">
+          {titleSuffix}
+        </span>
       </div>
 
       <div

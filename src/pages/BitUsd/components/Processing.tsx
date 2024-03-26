@@ -9,6 +9,7 @@ import { cn } from '@/utils/cn'
 import { ActionButton } from './ActionButton'
 
 type ProcessingProps = {
+  className?: string
   title?: string
   message: ReactNode
   isModal?: boolean
@@ -59,6 +60,7 @@ export const Processing: React.FC<ProcessingProps> = ({
   onClickActionButton,
   titleClassName,
   actionButtonClassName,
+  className,
   link
 }) => {
   const borderColorClassName = useMemo(() => {
@@ -86,7 +88,8 @@ export const Processing: React.FC<ProcessingProps> = ({
     <div
       className={cn(
         'flex w-full flex-col items-center justify-center bg-black',
-        isModal && 'w-[400px]'
+        isModal && 'w-[400px]',
+        className
       )}>
       <div
         className={cn(

@@ -14,12 +14,15 @@ import { TransactionStatus } from '@/types/common'
 import { IVault } from '@/types/vault'
 import { formatNumberAsCompact } from '@/utils/number'
 
+import VaultHeader from './component/VaultHeader'
+
 import {
   ActionButton,
-  InputSuffixActionButton
+  InputSuffixActionButton,
+  SubmitButton
 } from '../components/ActionButton'
 import { NumberInput } from '../components/NumberInput'
-import { Processing, ProcessingModal } from '../components/Processing'
+import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayMintingPairValues, formatBitUsd } from '../display'
@@ -168,69 +171,77 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           )
         }
       />
+      <ProcessingModal
+        open={isApproving}
+        message="Waiting for approval from wallet"
+      />
 
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
+      <VaultHeader mintingPair={mintingPair} />
 
-      {isApproving ? (
-        <div className="mx-auto mt-40 flex w-[400px]">
-          <Processing message="Waiting for approval from wallet" />
-        </div>
-      ) : (
-        <div className="mx-auto mt-11 flex w-[400px] flex-col gap-y-4">
-          <NumberInput
-            value={deposit}
-            onInputChange={(v) => handleInput(v, setDeposit)}
-            greyOut={depositDisabled}
-            disabled={depositDisabled}
-            title="DEPOSIT WBTC"
-            titleSuffix={`Balance: ${formatNumberAsCompact(wbtcBalance)}`}
-            inputSuffix={
-              <div className="flex h-full items-center gap-x-1.5 py-1">
-                {'~' + depositInUsd + '$'}
-              </div>
-            }
-          />
-          <NumberInput
-            value={mint}
-            onInputChange={(v) => handleInput(v, setMint)}
-            disabled={mintDisabled}
-            greyOut={mintDisabled}
-            disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
-              displayMintingPairValues(mintingPair).vaultFloor
-            } bitUSD`}
-            title="Mint bitUSD"
-            titleSuffix={`Max Mint: ${formatBitUsd(maxMint, false, true)}`}
-            inputSuffix={
-              <InputSuffixActionButton
-                onClick={() => setMint(maxMint.toString() || '')}>
-                Max
-              </InputSuffixActionButton>
-            }
-          />
-          <VaultInfo
-            vault={vaultInfo}
-            mintingPairs={mintingPair}
-            borderSvg={
-              <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full" />
-            }
-          />
-          <div className="flex w-full items-center gap-x-4">
-            <ActionButton className="h-9 shrink-0" onClick={() => navigate(-1)}>
-              <span className="flex items-center gap-x-2 text-white">
-                <ChevronLeftIcon />
-                Back
-              </span>
-            </ActionButton>
+      <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
+        <NumberInput
+          value={deposit}
+          onInputChange={(v) => handleInput(v, setDeposit)}
+          greyOut={depositDisabled}
+          disabled={depositDisabled}
+          title="DEPOSIT WBTC"
+          titleSuffix={`Balance: ${formatNumberAsCompact(wbtcBalance)}`}
+          inputSuffix={
+            <div className="flex h-full items-center gap-x-1.5 py-1">
+              {'~' + depositInUsd + '$'}
+            </div>
+          }
+        />
+        <NumberInput
+          value={mint}
+          onInputChange={(v) => handleInput(v, setMint)}
+          disabled={mintDisabled}
+          greyOut={mintDisabled}
+          disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
+            displayMintingPairValues(mintingPair).vaultFloor
+          } bitUSD`}
+          title="Mint bitUSD"
+          titleSuffix={`Max Mint: ${formatBitUsd(maxMint, false, true)}`}
+          inputSuffix={
+            <InputSuffixActionButton
+              onClick={() => setMint(maxMint.toString() || '')}>
+              Max
+            </InputSuffixActionButton>
+          }
+        />
+        <VaultInfo
+          vault={vaultInfo}
+          mintingPairs={mintingPair}
+          borderSvg={
+            <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full text-white" />
+          }
+        />
+        <div className="flex w-full items-center gap-x-4">
+          <ActionButton className="h-9 shrink-0" onClick={() => navigate(-1)}>
+            <span className="flex items-center gap-x-2 text-white">
+              <ChevronLeftIcon />
+              Back
+            </span>
+          </ActionButton>
 
+          {isApproved ? (
+            <SubmitButton
+              onClick={handleNext}
+              className="h-9 w-full flex-1"
+              disabled={isNextButtonDisabled}>
+              Open vault
+            </SubmitButton>
+          ) : (
             <ActionButton
               onClick={handleNext}
               className="h-9 w-full flex-1"
               disabled={isNextButtonDisabled}>
-              {isApproved ? 'Next' : 'Give permission to use BTC'}
+              Give permission to use BTC
             </ActionButton>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

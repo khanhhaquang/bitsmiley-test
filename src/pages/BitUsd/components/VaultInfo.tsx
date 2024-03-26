@@ -85,7 +85,7 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
         </div>
       </div>
 
-      <div className="absolute -top-1.5 left-1/2 z-10 -translate-x-1/2 font-smb text-xs text-blue [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)]">
+      <div className="absolute -top-2.5 left-1/2 z-10 -translate-x-1/2 font-ibmr text-sm uppercase text-white [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)]">
         {isVaultChanges ? (
           <span className="flex items-center gap-x-2">
             Vault Changes <RefreshButton />
