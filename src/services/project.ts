@@ -8,9 +8,9 @@ export interface IContractAddresses {
   BitUSDL2: Address
   VaultManager: Address
   WBTC: Address
-  l2nft: Address
   oracle: Address
-  staking: Address
+  staking: Address | null
+  l2nft: Address | null
 }
 export interface INetworkInfo {
   network: string

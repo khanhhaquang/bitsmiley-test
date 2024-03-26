@@ -42,8 +42,25 @@ export const bobTestnet = {
   testnet: true
 } as const satisfies Chain
 
+export const bSquaredTestnet = {
+  id: 1102,
+  name: 'B² Testnet',
+  nativeCurrency: { name: 'tBTC', symbol: 'tBTC', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://haven-rpc.bsquared.network'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'B² Scan',
+      url: 'https://haven-explorer.bsquared.network/'
+    }
+  },
+  testnet: true
+} as const satisfies Chain
+
 export const customChains = [
   merlinTestnet,
   merlinMainnet,
-  bobTestnet
+  bobTestnet,
+  bSquaredTestnet
 ] as Chain[]
