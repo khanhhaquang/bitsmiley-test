@@ -214,7 +214,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           vault={vaultInfo}
           mintingPairs={mintingPair}
           borderSvg={
-            <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full" />
+            <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full text-white" />
           }
         />
         <div className="flex w-full items-center gap-x-4">
