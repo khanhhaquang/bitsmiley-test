@@ -12,10 +12,11 @@ import { copyToClipboard } from '@/utils/copy'
 type TProps = {
   text?: string | null
   className?: string
+  children?: React.ReactNode
 }
 
 let timer: NodeJS.Timeout
-export const CopyButton: React.FC<TProps> = ({ text, className }) => {
+export const CopyButton: React.FC<TProps> = ({ text, className, children }) => {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -38,21 +39,24 @@ export const CopyButton: React.FC<TProps> = ({ text, className }) => {
 
   return (
     <Tooltip delayDuration={100} open={copied}>
-      <TooltipTrigger className="z-10 cursor-pointer">
+      <TooltipTrigger className="z-10 w-full cursor-pointer">
         <button
+          className={className}
           onClick={(e) => {
             e.stopPropagation()
             handleCopy()
           }}>
-          <CopyIcon
-            className={cn(
-              'cursor-pointer text-white hover:text-white/70 size-4',
-              className
-            )}
-          />
+          {children || (
+            <CopyIcon
+              className={cn(
+                'cursor-pointer text-white hover:text-white/70 size-4',
+                className
+              )}
+            />
+          )}
         </button>
       </TooltipTrigger>
-      <TooltipContent>Copied!</TooltipContent>
+      <TooltipContent className="px-3 py-1.5 text-sm">Copied</TooltipContent>
     </Tooltip>
   )
 }

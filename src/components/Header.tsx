@@ -7,7 +7,7 @@ import { ConnectWallet } from './ConnectWallet'
 
 export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
   return (
-    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-12 text-white md:px-[120px]">
+    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-12 text-white">
       <Link to="/">
         <HeaderIcon />
       </Link>
@@ -32,7 +32,7 @@ const EnterAppButton: React.FC = () => {
 
   return (
     <div
-      className="group absolute top-[calc(100%+27px)] size-full cursor-pointer "
+      className="group absolute top-[calc(100%+12px)] size-full cursor-pointer"
       onClick={() => {
         if (!isMainApp) {
           navigate('/app')
