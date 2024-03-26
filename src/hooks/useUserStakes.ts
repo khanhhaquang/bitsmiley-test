@@ -17,12 +17,16 @@ export const useUserStakes = () => {
   const { address } = useUserInfo()
   const transactions = useSelector(getTransactions)
 
+  const stakingAddress = contractAddresses?.staking
+    ? contractAddresses?.staking
+    : undefined
+
   const {
     data: userStakes,
     isLoading: isFetchingUserStakes,
     refetch: refetchUserStakes
   } = useReadStakingContractGetUserStakes({
-    address: contractAddresses?.staking,
+    address: stakingAddress,
     args: address && [address]
   })
 
@@ -31,17 +35,17 @@ export const useUserStakes = () => {
     isLoading: isFetchingIsStakingEnded,
     refetch: refetchStakingState
   } = useReadStakingContractStakingEnded({
-    address: contractAddresses?.staking
+    address: stakingAddress
   })
 
   const { data: perAddressLimit, isLoading: isFetchingPerAddressLimit } =
     useReadStakingContractPerAddressLimit({
-      address: contractAddresses?.staking
+      address: stakingAddress
     })
 
   const { data: stakeRewards, refetch: refetchStakesReward } =
     useReadStakingContractGetStakeRewards({
-      address: contractAddresses?.staking,
+      address: stakingAddress,
       args: address && [address]
     })
 
