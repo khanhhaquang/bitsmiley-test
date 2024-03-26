@@ -247,3 +247,29 @@ export const VaultInfoTable: TTable<IVault, IMintingPair> = [
       displayMintingPairValues(mintingPair).liquidationPenalty
   }
 ]
+
+export const VaultHeaderColumns: TTable<IMintingPair> = [
+  {
+    key: 'network',
+    title: 'Network',
+    format: (item) => displayMintingPairValues(item).network
+  },
+  {
+    key: 'stabilityFee',
+    title: 'Stability Fee',
+    message: messages.stabilityFee,
+    format: () => '0%'
+  },
+  {
+    key: 'Liquidation Fee',
+    title: 'liquidationFee',
+    message: messages.liquidationFee,
+    format: (item) => displayMintingPairValues(item).liquidationPenalty
+  },
+  {
+    key: 'vaultFloor',
+    title: 'Vault Floor',
+    message: messages.stabilityFee,
+    format: (item) => displayMintingPairValues(item).vaultFloor
+  }
+]
