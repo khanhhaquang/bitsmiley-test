@@ -86,69 +86,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     repayToBtcTxId
   } = useManageVault()
 
-  const isApproving =
-    approvalTxnStatus === TransactionStatus.Signing ||
-    approvalTxnStatus === TransactionStatus.Processing
-
-  const isNotApproved = isMintFromBtc
-    ? depositBtc && wBtcAllowance < Number(depositBtc)
-    : repayBitUsd && bitUsdAllowance < Number(repayBitUsd)
-
-  const isTransactionStatusIdle = useMemo(() => {
-    if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Idle
-    return repayToBtcTxnStatus === TransactionStatus.Idle
-  }, [isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
-
-  const isTransactionStatusSigning = useMemo(() => {
-    if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Signing
-    return repayToBtcTxnStatus === TransactionStatus.Signing
-  }, [isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
-
-  const getProcessingTypeFromTxnStatus = useCallback(
-    (status: TransactionStatus) => {
-      switch (status) {
-        case TransactionStatus.Success:
-          return 'success'
-        case TransactionStatus.Failed:
-          return 'error'
-        default:
-          return 'info'
-      }
-    },
-    []
-  )
-  const processingType = useMemo(
-    () =>
-      getProcessingTypeFromTxnStatus(
-        isMintFromBtc ? mintFromBtcTxnStatus : repayToBtcTxnStatus
-      ),
-    [
-      getProcessingTypeFromTxnStatus,
-      isMintFromBtc,
-      mintFromBtcTxnStatus,
-      repayToBtcTxnStatus
-    ]
-  )
-
-  const txnLink = useMemo(() => {
-    if (!!blockExplorerUrl && isMintFromBtc && mintFromBtcTxId)
-      return `${blockExplorerUrl}/tx/${mintFromBtcTxId}`
-    if (!!blockExplorerUrl && !isMintFromBtc && repayToBtcTxId)
-      return `${blockExplorerUrl}/tx/${repayToBtcTxId}`
-    return ''
-  }, [blockExplorerUrl, isMintFromBtc, mintFromBtcTxId, repayToBtcTxId])
-
-  const processingMessage = useMemo(() => {
-    switch (processingType) {
-      case 'success':
-        return 'Your vault change is completed.'
-      case 'error':
-        return 'The transaction has failed.'
-      default:
-        return 'Your transaction is getting processed on-chain.'
-    }
-  }, [processingType])
-
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
   }, [depositBtc, wbtcPrice])
@@ -274,11 +211,78 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const [isLiquidatedWarningOpen, setIsLiquidatedWarningOpen] =
     useState(!!liquidated)
 
-  const processingModal = useMemo(() => {
-    if (isTransactionStatusSigning || isApproving)
-      <ProcessingModal message="Waiting for wallet signature" />
+  const isApproving =
+    approvalTxnStatus === TransactionStatus.Signing ||
+    approvalTxnStatus === TransactionStatus.Processing
 
-    if (!isTransactionStatusIdle && !isTransactionStatusSigning)
+  const noInputValues =
+    !depositBtc && !mintBitUsd && !withdrawBtc && !repayBitUsd
+  const isNotApproved = isMintFromBtc
+    ? !!depositBtc && wBtcAllowance < Number(depositBtc)
+    : !!repayBitUsd && bitUsdAllowance < Number(repayBitUsd)
+
+  const isTransactionStatusIdle = useMemo(() => {
+    if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Idle
+    return repayToBtcTxnStatus === TransactionStatus.Idle
+  }, [isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
+
+  const isTransactionStatusSigning = useMemo(() => {
+    if (isApproving) return true
+    if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Signing
+    return repayToBtcTxnStatus === TransactionStatus.Signing
+  }, [isApproving, isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
+
+  const getProcessingTypeFromTxnStatus = useCallback(
+    (status: TransactionStatus) => {
+      switch (status) {
+        case TransactionStatus.Success:
+          return 'success'
+        case TransactionStatus.Failed:
+          return 'error'
+        default:
+          return 'info'
+      }
+    },
+    []
+  )
+
+  const processingType = useMemo(
+    () =>
+      getProcessingTypeFromTxnStatus(
+        isMintFromBtc ? mintFromBtcTxnStatus : repayToBtcTxnStatus
+      ),
+    [
+      getProcessingTypeFromTxnStatus,
+      isMintFromBtc,
+      mintFromBtcTxnStatus,
+      repayToBtcTxnStatus
+    ]
+  )
+
+  const txnLink = useMemo(() => {
+    if (!!blockExplorerUrl && isMintFromBtc && mintFromBtcTxId)
+      return `${blockExplorerUrl}/tx/${mintFromBtcTxId}`
+    if (!!blockExplorerUrl && !isMintFromBtc && repayToBtcTxId)
+      return `${blockExplorerUrl}/tx/${repayToBtcTxId}`
+    return ''
+  }, [blockExplorerUrl, isMintFromBtc, mintFromBtcTxId, repayToBtcTxId])
+
+  const processingMessage = useMemo(() => {
+    switch (processingType) {
+      case 'success':
+        return 'Your vault change is completed.'
+      case 'error':
+        return 'The transaction has failed.'
+      default:
+        return 'Your transaction is getting processed on-chain.'
+    }
+  }, [processingType])
+
+  const processingModal = useMemo(() => {
+    if (isTransactionStatusSigning)
+      return <ProcessingModal message="Waiting for wallet signature" />
+
+    if (!isTransactionStatusIdle)
       return (
         <ProcessingModal
           actionButtonClassName="w-[300px]"
@@ -295,7 +299,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       )
     return null
   }, [
-    isApproving,
     isTransactionStatusIdle,
     isTransactionStatusSigning,
     navigate,
@@ -477,17 +480,19 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           </div>
         </div>
 
-        <VaultInfo
-          type="manage"
-          vault={vault}
-          changedVault={changedVault}
-          hasChangedVault={hasChangedVault}
-          className="mx-auto aspect-[451/192] w-[451px]"
-          innerClassName="gap-x-[70px] pl-7 text-white/70"
-          borderSvg={
-            <VaultChangesBorderIcon className="absolute inset-0 z-0 w-full" />
-          }
-        />
+        {hasChangedVault && (
+          <VaultInfo
+            type="manage"
+            vault={vault}
+            changedVault={changedVault}
+            hasChangedVault={hasChangedVault}
+            className="mx-auto aspect-[451/192] w-[451px]"
+            innerClassName="gap-x-[70px] pl-7 text-white/70"
+            borderSvg={
+              <VaultChangesBorderIcon className="absolute inset-0 z-0 w-full" />
+            }
+          />
+        )}
 
         {isTransactionStatusIdle && (
           <div className="mx-auto mt-6 flex w-[451px] items-center gap-x-4">
@@ -500,14 +505,25 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
               </span>
             </ActionButton>
 
-            <SubmitButton
-              onClick={handleNext}
-              disabled={nextButtonDisabled}
-              className="h-9 w-full flex-1">
-              {isNotApproved
-                ? `Give permission to use ${isMintFromBtc ? 'wBTC' : 'bitUSD'}`
-                : 'Next'}
-            </SubmitButton>
+            {isNotApproved || noInputValues ? (
+              <ActionButton
+                onClick={handleNext}
+                disabled={nextButtonDisabled}
+                className="h-9 w-full flex-1">
+                {isNotApproved
+                  ? `Give permission to use ${
+                      isMintFromBtc ? 'wBTC' : 'bitUSD'
+                    }`
+                  : 'Next'}
+              </ActionButton>
+            ) : (
+              <SubmitButton
+                onClick={handleNext}
+                disabled={nextButtonDisabled}
+                className="h-9 w-full flex-1">
+                Confirm vault changes
+              </SubmitButton>
+            )}
           </div>
         )}
       </div>

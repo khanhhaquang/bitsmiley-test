@@ -15,6 +15,7 @@ export type NumberInputProps = {
   onBlur?: () => void
   onInputChange?: (v?: string) => void
   disabledMessage?: string
+  message?: ReactNode
 }
 
 export const NumberInput: React.FC<NumberInputProps> = ({
@@ -27,7 +28,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   onFocus,
   onBlur,
   onInputChange,
-  disabledMessage
+  disabledMessage,
+  message
 }) => {
   const [isFocus, setIsFocus] = useState(false)
 
@@ -99,6 +101,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           )}
         />
       </div>
+
+      <div className="font-ibmr text-xs font-bold">{message}</div>
     </div>
   )
 }
