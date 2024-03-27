@@ -88,7 +88,7 @@ export const Processing: React.FC<ProcessingProps> = ({
     <div
       className={cn(
         'flex w-full flex-col items-center justify-center bg-black',
-        isModal && 'w-[400px]',
+        isModal && 'w-[424px]',
         className
       )}>
       <div
@@ -119,15 +119,15 @@ export const Processing: React.FC<ProcessingProps> = ({
 
       <div
         className={cn(
-          'flex w-full flex-col items-center justify-center gap-y-6 border border-t-0 border-blue bg-black px-10 py-9 text-center font-ibmr text-sm text-white',
+          'flex w-full flex-col items-center justify-center gap-y-6 border border-t-0 border-blue bg-black px-3 py-6 text-center font-ibmr text-sm text-white',
           borderColorClassName
         )}>
         <p>
           {message}
           {!!link && (
-            <span>
+            <div>
               {' '}
-              You can check it on-chain{' '}
+              You can check it here{' '}
               <span
                 className={cn(
                   'cursor-pointer',
@@ -135,11 +135,11 @@ export const Processing: React.FC<ProcessingProps> = ({
                 )}>
                 [
                 <a href={link} target="_blank" className="hover:underline">
-                  Click here
+                  here
                 </a>
                 ]
               </span>
-            </span>
+            </div>
           )}
         </p>
 

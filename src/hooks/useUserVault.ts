@@ -3,8 +3,10 @@ import { useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 
 import { commonParam } from '@/config/settings'
-import { useReadBitSmileyOwners } from '@/contracts/BitSmiley'
-import { useReadVaultGetVaultChange } from '@/contracts/Vault'
+import {
+  useReadBitSmileyOwners,
+  useReadBitSmileyGetVaultChange
+} from '@/contracts/BitSmiley'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
@@ -17,7 +19,6 @@ export const useUserVault = () => {
   const contractAddresses = useContractAddresses()
 
   const bitSmileyAddress = contractAddresses?.BitSmiley
-  const vaultManagerAddress = contractAddresses?.VaultManager
 
   const {
     data: vaultAddress,
@@ -25,7 +26,8 @@ export const useUserVault = () => {
     isFetching: isFetchingVaultAddress
   } = useReadBitSmileyOwners({
     address: bitSmileyAddress,
-    args: address && [address]
+    args: address && [address],
+    query: { select: (res) => res?.[0] }
   })
 
   const query = {
@@ -55,10 +57,9 @@ export const useUserVault = () => {
     refetch: refetchVault,
     isFetching: isFetchingVault,
     ...rest
-  } = useReadVaultGetVaultChange({
-    address: vaultManagerAddress,
+  } = useReadBitSmileyGetVaultChange({
+    address: bitSmileyAddress,
     args: vaultAddress && [
-      commonParam.BTC,
       vaultAddress,
       parseEther('0'),
       parseEther('0'),
@@ -79,12 +80,11 @@ export const useUserVault = () => {
     data: changedVault,
     refetch: refetchChangedVault,
     isFetching: isFetchingChangedVault
-  } = useReadVaultGetVaultChange({
-    address: vaultManagerAddress,
+  } = useReadBitSmileyGetVaultChange({
+    address: bitSmileyAddress,
     args:
       vaultAddress && hasChangedVault
         ? [
-            commonParam.BTC,
             vaultAddress,
             parseEther(debouncedChangedCollateral),
             parseEther(debouncedChangedBitUsd),
@@ -104,11 +104,10 @@ export const useUserVault = () => {
     data: maxVault,
     refetch: refetchMaxVault,
     isFetching: isFetchingMaxVault
-  } = useReadVaultGetVaultChange({
-    address: vaultManagerAddress,
+  } = useReadBitSmileyGetVaultChange({
+    address: bitSmileyAddress,
     args: vaultAddress
       ? [
-          commonParam.BTC,
           vaultAddress,
           parseEther(debouncedMaxVaultCollateral),
           parseEther(debouncedMaxVaultBitUsd),

@@ -171,6 +171,64 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
     title: 'Liquidation Fee',
     message: messages.liquidationFee,
     format: (item) => displayMintingPairValues(item).liquidationPenalty
+  },
+  {
+    key: 'vaultFloor',
+    title: 'Vault Floor',
+    message: messages.vaultFloor,
+    format: (item) => displayMintingPairValues(item).vaultFloor
+  }
+]
+
+export const ManageVaultVaultInfoTable: TTable<IMintingPair> = [
+  {
+    key: 'liquidationPrice',
+    title: 'Liquidation Price',
+    message: messages.liquidationPrice,
+    format: (item) => displayMintingPairValues(item).liquidationPrice
+  },
+  {
+    key: 'totalDebt',
+    title: 'Total Debt',
+    message: messages.totalDebt,
+    format: (item) => displayMintingPairValues(item).totalDebt
+  },
+  {
+    key: 'healthFactor',
+    title: 'Health Factor',
+    message: messages.healthFactor,
+    format: (item) => displayMintingPairValues(item).healthFactor
+  },
+  {
+    key: 'mintedBitUSD',
+    title: 'Minted bitUSD',
+    format: () => 123
+  },
+  {
+    key: 'collateral',
+    title: 'Collateral',
+    format: (item) => displayMintingPairValues(item).collateralLocked
+  },
+  {
+    key: 'availableToMint',
+    title: 'Available to Mint',
+    format: (item) => displayMintingPairValues(item).availableToMint
+  },
+  {
+    key: 'availableToWithdraw',
+    title: 'Available To Withdraw',
+    format: (item) => displayMintingPairValues(item).availableToWithdraw
+  },
+  {
+    key: 'borrowRate',
+    title: 'Stability Fee',
+    message: messages.stabilityFee,
+    format: () => (
+      <span className="flex items-center gap-x-1">
+        <span className="line-through">13%</span>
+        <span>0%</span>
+      </span>
+    )
   }
 ]
 

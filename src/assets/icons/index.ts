@@ -1,5 +1,6 @@
 import ArrowDownDoubleIcon from './arrow-down-double.svg'
 import ArrowDownIcon from './arrow-down.svg'
+import ArrowLeftDoubleIcon from './arrow-left-double.svg'
 import ArrowLeftThinIcon from './arrow-left-thin.svg'
 import ArrowLeftIcon from './arrow-left.svg'
 import ArrowRightDoubleIcon from './arrow-right-double.svg'
@@ -21,6 +22,7 @@ import CopyIcon from './copy.svg'
 import CopyrightIcon from './copyright.svg'
 import CrownYellowIcon from './crown-yellow.svg'
 import CrownIcon from './crown.svg'
+import DolloarIcon from './dollar.svg'
 import DotIcon from './dot.svg'
 import FailIcon from './fail.svg'
 import GoldCoinIcon from './gold-coin.svg'
@@ -38,6 +40,7 @@ import MintingPairsTitleLeftIcon from './minting-pairs-title-left.svg'
 import MintingPairsTitleRightIcon from './minting-pairs-title-right.svg'
 import MyVaultsPairsTitleLeftIcon from './my-vaults-pairs-title-left.svg'
 import MyVaultsPairsTitleRightIcon from './my-vaults-pairs-title-right.svg'
+import OrIcon from './or.svg'
 import OvalCoinBlueIcon from './oval-coin-blue.svg'
 import OvalCoinGoldIcon from './oval-coin-gold.svg'
 import OvalCoinGreyIcon from './oval-coin-grey.svg'
@@ -58,11 +61,17 @@ import StarIcon from './start.svg'
 import SuccessIcon from './success.svg'
 import VaultChangesBorderIcon from './vault-changes-border.svg'
 import VaultInfoBorderIcon from './vault-info-border.svg'
+import ManageVaultInfoTitleIcon from './vault-info-title.svg'
+import VaultInfoIcon from './vault-info.svg'
 import WarningOutline from './warning-outline.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
 
 export {
+  ManageVaultInfoTitleIcon,
   BitUsdIcon,
+  OrIcon,
+  DolloarIcon,
+  VaultInfoIcon,
   DotIcon,
   CoinIcon,
   CloseIcon,
@@ -123,5 +132,6 @@ export {
   BitCoinIcon,
   ManageVaultSectionTitleIcon,
   ReturnUpIcon,
-  RefreshIcon
+  RefreshIcon,
+  ArrowLeftDoubleIcon
 }

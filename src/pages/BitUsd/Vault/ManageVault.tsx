@@ -3,10 +3,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
+  ArrowLeftDoubleIcon,
   BitCoinIcon,
-  ChevronLeftIcon,
+  DolloarIcon,
+  ManageVaultInfoTitleIcon,
   ManageVaultSectionTitleIcon,
-  VaultChangesBorderIcon
+  OrIcon,
+  VaultChangesBorderIcon,
+  VaultInfoIcon
 } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
@@ -18,6 +22,7 @@ import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { IMintingPair } from '@/services/user'
 import { TransactionStatus } from '@/types/common'
+import { cn } from '@/utils/cn'
 import {
   formatNumberAsCompact,
   formatNumberWithSeparator
@@ -25,14 +30,19 @@ import {
 
 import {
   ActionButton,
-  InputSuffixActionButton
+  InputSuffixActionButton,
+  SubmitButton
 } from '../components/ActionButton'
 import { NumberInput } from '../components/NumberInput'
-import { Processing, ProcessingModal } from '../components/Processing'
+import { ProcessingModal } from '../components/Processing'
+import { RefreshButton } from '../components/RefreshButton'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayMintingPairValues, displayVaultValues } from '../display'
-import { ManageVaultHeaderInfoTable } from '../tables'
+import {
+  ManageVaultHeaderInfoTable,
+  ManageVaultVaultInfoTable
+} from '../tables'
 
 export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
@@ -135,7 +145,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       case 'error':
         return 'The transaction has failed.'
       default:
-        return 'The transaction is getting processed.'
+        return 'Your transaction is getting processed on-chain.'
     }
   }, [processingType])
 
@@ -283,7 +293,21 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     <div className="pb-12">
       <ProcessingModal
         message="Waiting for wallet signature"
-        open={isTransactionStatusSigning}
+        open={isTransactionStatusSigning || isApproving}
+      />
+
+      <ProcessingModal
+        open={!isTransactionStatusIdle && !isTransactionStatusSigning}
+        actionButtonClassName="w-[300px]"
+        type={processingType}
+        onClickActionButton={async () => {
+          await refetchMintingPairs()
+          refreshVaultValues()
+          navigate(-1)
+        }}
+        actionButtonText={processingType !== 'info' ? 'Ok' : ''}
+        message={processingMessage}
+        link={txnLink}
       />
 
       {!!liquidated && (
@@ -320,201 +344,232 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation mintingPair={mintingPair} />
 
-      {isApproving ? (
-        <div className="mx-auto mt-40 flex w-[400px]">
-          <Processing message="Waiting for approval from wallet" />
-        </div>
-      ) : (
-        <div className="mx-auto mt-10 flex w-[652px] flex-col gap-y-6">
-          {isTransactionStatusIdle ? (
-            <>
-              <div className="flex flex-col gap-y-3">
-                <ManageVaultSectionTitle title="BTC" />
-                <div className="grid grid-cols-2 gap-x-3">
-                  <NumberInput
-                    value={depositBtc}
-                    onInputChange={(v) => handleInput('depositBtc', v)}
-                    onFocus={() => setIsMintFromBtc(true)}
-                    greyOut={isMintFromBtc === false}
-                    disabled={depositWBtcDisabled}
-                    title="deposit wbtc"
-                    inputSuffix={`~${depositInUsd}$`}
-                    titleSuffix={
-                      'Available: ' + formatNumberAsCompact(wbtcBalance)
-                    }
-                  />
-                  <NumberInput
-                    value={withdrawBtc}
-                    onInputChange={(v) => handleInput('withdrawBtc', v)}
-                    disabled={withdrawWbtcDisabled}
-                    onFocus={() => setIsMintFromBtc(false)}
-                    greyOut={isMintFromBtc === true}
-                    title="withdraw wbtc"
-                    titleSuffix={
-                      <span className="flex items-center gap-x-2">
-                        Max:{' '}
-                        {
-                          displayVaultValues(maxVault, false)
-                            .availableToWithdraw
-                        }
-                      </span>
-                    }
-                    inputSuffix={
-                      <InputSuffixActionButton
-                        disabled={
-                          withdrawWbtcDisabled || isMintFromBtc === true
-                        }
-                        onClick={() => {
-                          handleInput(
-                            'withdrawBtc',
-                            maxVault?.availableToWithdraw || ''
-                          )
-                          setIsMintFromBtc(false)
-                        }}>
-                        Max
-                      </InputSuffixActionButton>
-                    }
-                  />
-                </div>
-              </div>
+      <div className="mx-auto mt-10 flex w-[709px] flex-col">
+        <VaultInfoSection className="mb-12" mintingPair={mintingPair} />
 
-              <div className="flex flex-col gap-y-3">
-                <ManageVaultSectionTitle title="bitUSD" />
-                <div className="grid grid-cols-2 gap-x-3">
-                  <NumberInput
-                    value={mintBitUsd}
-                    disabled={mintBitUsdDisabled}
-                    onFocus={() => setIsMintFromBtc(true)}
-                    onInputChange={(v) => handleInput('mintBitUsd', v)}
-                    greyOut={isMintFromBtc === false}
-                    title="mint bitUSD"
-                    disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
-                      displayMintingPairValues(mintingPair).vaultFloor
-                    } bitUSD`}
-                    titleSuffix={
-                      'Max Mint: ' +
-                      displayVaultValues(maxVault, false).availableToMint
-                    }
-                    inputSuffix={
-                      <InputSuffixActionButton
-                        disabled={mintBitUsdDisabled || isMintFromBtc === false}
-                        onClick={() => {
-                          handleInput(
-                            'mintBitUsd',
-                            maxVault?.availableToMint || ''
-                          )
-                          setIsMintFromBtc(true)
-                        }}>
-                        Max
-                      </InputSuffixActionButton>
-                    }
-                  />
-                  <NumberInput
-                    value={repayBitUsd}
-                    disabled={repayBitUsdDisabled}
-                    onInputChange={(v) => handleInput('repayBitUsd', v)}
-                    onFocus={() => setIsMintFromBtc(false)}
-                    greyOut={isMintFromBtc === true}
-                    title="repay bitUSD"
-                    titleSuffix={
-                      'Available: ' + formatNumberWithSeparator(bitUsdBalance)
-                    }
-                    inputSuffix={
-                      <div className="flex items-center gap-x-2">
-                        {!!minRepay && (
-                          <InputSuffixActionButton
-                            onClick={() => {
-                              handleInput('repayBitUsd', minRepay.toString())
-                              setIsMintFromBtc(false)
-                            }}
-                            disabled={
-                              repayBitUsdDisabled || isMintFromBtc === true
-                            }>
-                            Min
-                          </InputSuffixActionButton>
-                        )}
-                        <InputSuffixActionButton
-                          disabled={
-                            repayBitUsdDisabled || isMintFromBtc === true
-                          }
-                          className="w-[92px]"
-                          onClick={() => {
-                            handleInput('repayBitUsd', vault?.debtBitUSD || '')
-                            setIsMintFromBtc(false)
-                          }}>
-                          Repay all
-                        </InputSuffixActionButton>
-                      </div>
-                    }
-                  />
-                </div>
-              </div>
-            </>
-          ) : (
-            <Processing
-              actionButtonClassName="w-[300px]"
-              type={processingType}
-              onClickActionButton={async () => {
-                await refetchMintingPairs()
-                refreshVaultValues()
-                navigate(-1)
-              }}
-              actionButtonText={processingType !== 'info' ? 'Ok' : ''}
-              message={processingMessage}
-              link={txnLink}
+        <div className="mb-6 grid grid-cols-2 gap-x-12">
+          <div className="overflow-hidden">
+            <ManageVaultSectionTitle
+              title="manage"
+              className="mb-6 gap-x-0"
+              subTitle="btc"
+              icon={<BitCoinIcon className="shrink-0" width={27} height={29} />}
             />
-          )}
-
-          <VaultInfo
-            type="manage"
-            vault={vault}
-            changedVault={changedVault}
-            hasChangedVault={hasChangedVault}
-            className="aspect-[652/196]"
-            innerClassName="gap-x-20"
-            borderSvg={
-              <VaultChangesBorderIcon className="absolute inset-0 z-0 w-full" />
-            }
-          />
-
-          {isTransactionStatusIdle && (
-            <div className="flex w-full items-center gap-x-4">
-              <ActionButton
-                className="h-9 shrink-0"
-                onClick={() => navigate(-1)}>
-                <span className="flex items-center gap-x-2 text-white">
-                  <ChevronLeftIcon />
-                  Back
-                </span>
-              </ActionButton>
-
-              <ActionButton
-                onClick={handleNext}
-                disabled={nextButtonDisabled}
-                className="h-9 w-full flex-1">
-                {isNotApproved
-                  ? `Give permission to use ${
-                      isMintFromBtc ? 'wBTC' : 'bitUSD'
-                    }`
-                  : 'Next'}
-              </ActionButton>
+            <NumberInput
+              value={depositBtc}
+              onInputChange={(v) => handleInput('depositBtc', v)}
+              onFocus={() => setIsMintFromBtc(true)}
+              greyOut={isMintFromBtc === false}
+              disabled={depositWBtcDisabled}
+              title="deposit wbtc"
+              inputSuffix={`~${depositInUsd}$`}
+              titleSuffix={'Available: ' + formatNumberAsCompact(wbtcBalance)}
+            />
+            <div className="my-3 flex items-center justify-center gap-x-2">
+              <div className="h-[1px] flex-1 bg-white/20" />
+              <OrIcon />
+              <div className="h-[1px] flex-1 bg-white/20" />
             </div>
-          )}
+
+            <NumberInput
+              value={withdrawBtc}
+              onInputChange={(v) => handleInput('withdrawBtc', v)}
+              disabled={withdrawWbtcDisabled}
+              onFocus={() => setIsMintFromBtc(false)}
+              greyOut={isMintFromBtc === true}
+              title="withdraw wbtc"
+              titleSuffix={
+                <span className="flex items-center gap-x-2">
+                  Max: {displayVaultValues(maxVault, false).availableToWithdraw}
+                </span>
+              }
+              inputSuffix={
+                <InputSuffixActionButton
+                  disabled={withdrawWbtcDisabled || isMintFromBtc === true}
+                  onClick={() => {
+                    handleInput(
+                      'withdrawBtc',
+                      maxVault?.availableToWithdraw || ''
+                    )
+                    setIsMintFromBtc(false)
+                  }}>
+                  Max
+                </InputSuffixActionButton>
+              }
+            />
+          </div>
+
+          <div className="overflow-hidden">
+            <ManageVaultSectionTitle
+              title="manage"
+              className="mb-6 gap-x-0"
+              subTitle="bitUsd"
+              icon={<DolloarIcon className="shrink-0" width={27} height={29} />}
+            />
+            <NumberInput
+              value={mintBitUsd}
+              disabled={mintBitUsdDisabled}
+              onFocus={() => setIsMintFromBtc(true)}
+              onInputChange={(v) => handleInput('mintBitUsd', v)}
+              greyOut={isMintFromBtc === false}
+              title="mint bitUSD"
+              disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
+                displayMintingPairValues(mintingPair).vaultFloor
+              } bitUSD`}
+              titleSuffix={
+                'Max Mint: ' +
+                displayVaultValues(maxVault, false).availableToMint
+              }
+              inputSuffix={
+                <InputSuffixActionButton
+                  disabled={mintBitUsdDisabled || isMintFromBtc === false}
+                  onClick={() => {
+                    handleInput('mintBitUsd', maxVault?.availableToMint || '')
+                    setIsMintFromBtc(true)
+                  }}>
+                  Max
+                </InputSuffixActionButton>
+              }
+            />
+            <div className="my-3 flex items-center justify-center gap-x-2">
+              <div className="h-[1px] flex-1 bg-white/20" />
+              <OrIcon />
+              <div className="h-[1px] flex-1 bg-white/20" />
+            </div>
+            <NumberInput
+              value={repayBitUsd}
+              disabled={repayBitUsdDisabled}
+              onInputChange={(v) => handleInput('repayBitUsd', v)}
+              onFocus={() => setIsMintFromBtc(false)}
+              greyOut={isMintFromBtc === true}
+              title="repay bitUSD"
+              titleSuffix={
+                'Available: ' + formatNumberWithSeparator(bitUsdBalance)
+              }
+              inputSuffix={
+                <div className="flex items-center gap-x-2">
+                  {!!minRepay && (
+                    <InputSuffixActionButton
+                      onClick={() => {
+                        handleInput('repayBitUsd', minRepay.toString())
+                        setIsMintFromBtc(false)
+                      }}
+                      disabled={repayBitUsdDisabled || isMintFromBtc === true}>
+                      Min
+                    </InputSuffixActionButton>
+                  )}
+                  <InputSuffixActionButton
+                    disabled={repayBitUsdDisabled || isMintFromBtc === true}
+                    className="w-[92px]"
+                    onClick={() => {
+                      handleInput('repayBitUsd', vault?.debtBitUSD || '')
+                      setIsMintFromBtc(false)
+                    }}>
+                    Repay all
+                  </InputSuffixActionButton>
+                </div>
+              }
+            />
+          </div>
         </div>
-      )}
+
+        <VaultInfo
+          type="manage"
+          vault={vault}
+          changedVault={changedVault}
+          hasChangedVault={hasChangedVault}
+          className="mx-auto aspect-[451/192] w-[451px]"
+          innerClassName="gap-x-[70px] pl-7 text-white/70"
+          borderSvg={
+            <VaultChangesBorderIcon className="absolute inset-0 z-0 w-full" />
+          }
+        />
+
+        {isTransactionStatusIdle && (
+          <div className="mx-auto mt-6 flex w-[451px] items-center gap-x-4">
+            <ActionButton
+              className="h-9 shrink-0 bg-white/5"
+              onClick={() => navigate(-1)}>
+              <span className="flex items-center gap-x-2 text-white/70">
+                <ArrowLeftDoubleIcon />
+                Back
+              </span>
+            </ActionButton>
+
+            <SubmitButton
+              onClick={handleNext}
+              disabled={nextButtonDisabled}
+              className="h-9 w-full flex-1">
+              {isNotApproved
+                ? `Give permission to use ${isMintFromBtc ? 'wBTC' : 'bitUSD'}`
+                : 'Next'}
+            </SubmitButton>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
-const ManageVaultSectionTitle: React.FC<{ title: string }> = ({ title }) => {
+const VaultInfoSection: React.FC<{
+  className?: string
+  mintingPair?: IMintingPair
+}> = ({ className, mintingPair }) => {
   return (
-    <div className="flex items-center gap-x-2">
-      <BitCoinIcon />
-      <div className="font-smb text-xs text-blue">
-        <div>MANAGE</div>
-        <div>{title}</div>
+    <div className={cn('flex flex-col gap-y-6', className)}>
+      <ManageVaultSectionTitle
+        type="info"
+        title="Vault"
+        subTitle="info"
+        icon={<VaultInfoIcon width={27} height={29} />}
+      />
+
+      <div className="grid grid-cols-2 gap-x-6 gap-y-0.5">
+        {ManageVaultVaultInfoTable.map(({ key, title, format }) => (
+          <div
+            key={key}
+            className="flex items-center border-t border-white/20 p-[1px] font-ibmr text-sm text-white/70">
+            <div className="h-6 w-[200px] border-r border-white/20 bg-white/5 px-1">
+              {title}
+            </div>
+            <div className="py-1 pl-2 pr-1 font-bold text-white">
+              {format(mintingPair)}
+            </div>
+          </div>
+        ))}
       </div>
-      <ManageVaultSectionTitleIcon />
+    </div>
+  )
+}
+
+const ManageVaultSectionTitle: React.FC<{
+  type?: 'info' | 'manage'
+  icon: React.ReactNode
+  title: string
+  subTitle: string
+  className?: string
+}> = ({ type = 'manage', icon, title, subTitle, className }) => {
+  return (
+    <div className={cn('flex items-center gap-x-2 text-white', className)}>
+      <div className="flex shrink-0 items-center gap-x-2 font-smb text-xs">
+        {icon}
+        <div>
+          <div>{title}</div>
+          <div>{subTitle}</div>
+        </div>
+      </div>
+      <div className="relative w-full">
+        {type === 'info' ? (
+          <>
+            <ManageVaultInfoTitleIcon className="w-full flex-1" />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5">
+              <RefreshButton />
+            </div>
+          </>
+        ) : (
+          <ManageVaultSectionTitleIcon className="w-full flex-1" />
+        )}
+      </div>
     </div>
   )
 }
@@ -522,8 +577,17 @@ const ManageVaultSectionTitle: React.FC<{ title: string }> = ({ title }) => {
 const ManageVaultHeaderInformation: React.FC<{
   mintingPair?: IMintingPair
 }> = ({ mintingPair }) => {
+  const navigate = useNavigate()
+
   return (
     <div className="mt-6 flex items-center justify-center gap-x-9 font-ibmr text-sm text-white/70">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex cursor-pointer items-center justify-center gap-x-1 font-ibmb text-sm hover:text-white active:text-white/50">
+        <ArrowLeftDoubleIcon width={13} height={10} />
+        Back
+      </button>
+
       {ManageVaultHeaderInfoTable.map(({ key, title, message, format }) => (
         <div key={key} className="flex items-center gap-x-1">
           <span>

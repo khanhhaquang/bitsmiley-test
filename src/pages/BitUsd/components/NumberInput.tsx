@@ -50,8 +50,8 @@ export const NumberInput: React.FC<NumberInputProps> = ({
       <div
         className={cn(
           'relative border border-blue bg-black/50 px-3 py-1',
-          greyOut && 'bg-white/20',
-          disabled && 'bg-white/10'
+          greyOut && 'bg-white/10',
+          disabled && 'bg-white/20 border-white/20'
         )}>
         <IMaskInput
           ref={ref}
@@ -74,11 +74,11 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             onFocus?.()
           }}
           placeholder={
-            disabled && disabledMessage ? '' : greyOut ? '--' : '0.00'
+            disabled && disabledMessage ? '' : disabled ? '--' : '0.00'
           }
           className={cn(
             'size-full border-0 p-0 font-ibmb text-base text-white/70 placeholder:text-white/20 focus:text-white bg-transparent outline-none',
-            greyOut && 'placeholder:text-white/50 text-white/20',
+            greyOut && 'placeholder:text-white/20 text-white/20',
             disabled && 'cursor-not-allowed'
           )}
         />
@@ -92,7 +92,12 @@ export const NumberInput: React.FC<NumberInputProps> = ({
             {disabledMessage}
           </div>
         )}
-        <div className="absolute left-0 top-0 h-full w-[7px] bg-blue" />
+        <div
+          className={cn(
+            'absolute left-0 top-0 h-full w-[7px] bg-blue',
+            disabled && 'bg-white/20'
+          )}
+        />
       </div>
     </div>
   )
