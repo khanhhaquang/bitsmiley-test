@@ -69,13 +69,10 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
                 <>
                   <ChevronRightIcon width={5} className="text-white" />
                   <span
-                    className={
-                      key === 'healthFactor'
-                        ? cn(
-                            getHealthFactorTextColor(changedVault?.healthFactor)
-                          )
-                        : ''
-                    }>
+                    className={cn({
+                      [getHealthFactorTextColor(changedVault?.healthFactor)]:
+                        key === 'healthFactor'
+                    })}>
                     {format(changedVault, mintingPairs)}
                   </span>
                 </>

@@ -42,7 +42,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           <InputIndicatorIcon className={cn('hidden', isFocus && 'block')} />
           {title}
         </span>
-        <span className="relative font-ibmr font-bold text-white/70">
+        <span className="relative flex items-center font-ibmr font-bold text-white/70">
           {titleSuffix}
         </span>
       </div>

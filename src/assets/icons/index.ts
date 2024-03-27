@@ -8,6 +8,7 @@ import AsteriskIcon from './asterisk.svg'
 import BitGold from './bit-gold.svg'
 import BitJadeBlack from './bit-jade-black.svg'
 import BitJade from './bit-jade.svg'
+import BitUsdIcon from './bit-usd.svg'
 import BitCoinIcon from './bitcoin.svg'
 import BitDiscBlackIcon from './bitDiskBlack.svg'
 import BoostIcon from './boost.svg'
@@ -61,6 +62,7 @@ import WarningOutline from './warning-outline.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
 
 export {
+  BitUsdIcon,
   DotIcon,
   CoinIcon,
   CloseIcon,
