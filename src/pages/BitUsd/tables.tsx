@@ -1,17 +1,26 @@
 import { ReactNode } from 'react'
 import { GetTokenReturnType } from 'wagmi/actions'
 
-import { BitUsdIcon, LinkOutIcon } from '@/assets/icons'
+import { BitUsdIcon } from '@/assets/icons'
+import { Image } from '@/components/Image'
+import { chainsIconUrl } from '@/config/chain'
 import { customChains } from '@/config/wagmi'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
+import { cn } from '@/utils/cn'
 
-import { displayMintingPairValues, displayVaultValues } from './display'
+import {
+  DEFAULT_TEXT,
+  displayMintingPairValues,
+  displayVaultValues
+} from './display'
 
 export type TTable<T, P = unknown> = {
   key: string
-  title: string
+  title?: string
+  formatTitle?: (chainId?: string | number) => ReactNode
   message?: string
+  className?: string
   titleClassName?: string
   format: (item?: T, item2?: P) => ReactNode
 }[]
@@ -30,42 +39,43 @@ export const messages = {
   totalDebt: 'bitUSD minted plus the interest.',
   liquidationFee: 'The fee charged to liquidators.',
   liquidationPrice:
-    'Collateral price below which your vault will be liquidated.'
+    'Collateral price below which your vault will be liquidated.',
+  // TODO confirm message
+  totalBitUSD: 'totalBitUSD',
+  // TODO confirm message
+  collateral: 'collateral'
 }
 
 export const AvailableMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'pairName',
-    title: '',
+    formatTitle: (chainId) =>
+      !chainId ? (
+        DEFAULT_TEXT
+      ) : (
+        <div
+          className={cn(
+            'flex items-center justify-start gap-x-0.5 text-nowrap'
+          )}>
+          <Image src={chainsIconUrl[chainId]} width={15} height={15} />
+          {customChains.find((c) => c.id.toString() === chainId)?.name}
+        </div>
+      ),
     format: () => 'wBTC - bitUSD'
-  },
-  {
-    key: 'chainId',
-    title: 'Network',
-    titleClassName: '!w-[100px]',
-    format: (item) => (
-      <span className="flex items-center gap-2">
-        {item?.network}
-        <a
-          href={
-            customChains.find((v) => v.id === item?.chainId)?.blockExplorers
-              ?.default.url
-          }
-          target="_blank">
-          <LinkOutIcon width={13} height={13} />
-        </a>
-      </span>
-    )
   },
   {
     key: 'maxLTV',
     title: 'Max LTV',
+    titleClassName: '!w-[70px] text-nowrap',
+    className: '!w-[70px] text-nowrap',
     message: messages.maxLTV,
     format: (item) => displayMintingPairValues(item).maxLTV
   },
   {
     key: 'borrowRate',
     title: 'Stability Fee',
+    titleClassName: '!w-[78px]',
+    className: '!w-[78px]',
     message: messages.stabilityFee,
     format: () => (
       <span className="flex items-center gap-x-1">
@@ -77,14 +87,27 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'vaultFloor',
     title: 'Vault Floor',
+    titleClassName: '!w-[99px] text-nowrap',
+    className: '!w-[99px] text-nowrap',
     message: messages.vaultFloor,
     format: (item) => displayMintingPairValues(item, false).vaultFloor
   },
   {
     key: 'vaultCeiling',
     title: 'Vault Ceiling',
+    titleClassName: 'w-[113px] text-nowrap',
+    className: 'w-[113px] text-nowrap',
     message: messages.vaultCeiling,
     format: (item) => displayMintingPairValues(item, false).vaultCeiling
+  },
+  {
+    key: 'totalBitUsdAvailable',
+    title: 'Total bitUSD Available',
+    titleClassName: '!w-[111px]',
+    className: '!w-[111px]',
+    message: messages.totalBitUSD,
+    // TODO confirm format
+    format: () => '62,131'
   }
 ]
 
@@ -95,57 +118,35 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
     format: () => 'wBTC - bitUSD'
   },
   {
-    key: 'chainId',
-    title: 'Network',
-    format: (item) => (
-      <span className="flex items-center gap-2">
-        {item?.network}
-        <a
-          href={
-            customChains.find((v) => v.id === item?.chainId)?.blockExplorers
-              ?.default.url
-          }
-          target="_blank">
-          <LinkOutIcon width={13} height={13} />
-        </a>
-      </span>
-    )
-  },
-  {
     key: 'collateral',
     title: 'Collateral',
+    className: '!w-[100px]',
+    titleClassName: '!w-[100px]',
+    message: messages.collateral,
     format: (item) => displayMintingPairValues(item).collateralLocked
   },
   {
     key: 'totalDebt',
     title: 'Total Debt',
+    className: '!w-[92px]',
+    titleClassName: '!w-[92px] text-nowrap',
     message: messages.totalDebt,
     format: (item) => displayMintingPairValues(item).totalDebt
   },
   {
-    key: 'healthFactor',
-    title: 'Health Factor',
-    message: messages.healthFactor,
-    format: (item) => displayMintingPairValues(item).healthFactor
-  }
-]
-
-export const MyVaultOverviewTable: TTable<IMintingPair> = [
-  {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
-    message: messages.liquidationPrice,
+    className: '!w-[123px]',
+    titleClassName: '!w-[123px] text-nowrap',
     format: (item) => displayMintingPairValues(item).liquidationPrice
   },
   {
-    key: 'availableToWithdraw',
-    title: 'Available To Withdraw',
-    format: (item) => displayMintingPairValues(item).availableToWithdraw
-  },
-  {
-    key: 'availableToMint',
-    title: 'Available To Mint',
-    format: (item) => displayMintingPairValues(item).availableToMint
+    key: 'healthFactor',
+    title: 'Health Factor',
+    className: '!w-[113px]',
+    titleClassName: '!w-[113px] text-nowrap',
+    message: messages.healthFactor,
+    format: (item) => displayMintingPairValues(item).healthFactor
   }
 ]
 
@@ -234,17 +235,6 @@ export const ManageVaultVaultInfoTable: TTable<IMintingPair> = [
 
 export const VaultChangesInfoTable: TTable<IVault> = [
   {
-    key: 'collateralLocked',
-    title: 'Collateral Locked',
-    format: (item) => displayVaultValues(item).lockedCollateral
-  },
-  {
-    key: 'totalDebt',
-    title: 'Total Debt',
-    message: messages.totalDebt,
-    format: (vault) => displayVaultValues(vault).debtBitUSD
-  },
-  {
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
@@ -255,6 +245,17 @@ export const VaultChangesInfoTable: TTable<IVault> = [
     title: 'Liquidation Price',
     message: messages.liquidationPrice,
     format: (item) => displayVaultValues(item).liquidationPrice
+  },
+  {
+    key: 'collateralLocked',
+    title: 'Collateral Locked',
+    format: (item) => displayVaultValues(item).lockedCollateral
+  },
+  {
+    key: 'totalDebt',
+    title: 'Total Debt',
+    message: messages.totalDebt,
+    format: (vault) => displayVaultValues(vault).debtBitUSD
   },
   {
     key: 'availableToMint',
