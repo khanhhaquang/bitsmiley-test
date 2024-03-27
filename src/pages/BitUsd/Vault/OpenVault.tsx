@@ -16,7 +16,6 @@ import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { TransactionStatus } from '@/types/common'
 import { IVault } from '@/types/vault'
-import { formatNumberAsCompact } from '@/utils/number'
 
 import VaultHeader from './component/VaultHeader'
 
@@ -29,7 +28,7 @@ import { NumberInput } from '../components/NumberInput'
 import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayMintingPairValues, formatBitUsd } from '../display'
+import { displayMintingPairValues, formatBitUsd, formatWBtc } from '../display'
 
 export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
@@ -191,7 +190,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           greyOut={depositDisabled}
           disabled={depositDisabled}
           title="DEPOSIT WBTC"
-          titleSuffix={`Available: ${formatNumberAsCompact(wbtcBalance)} wBTC`}
+          titleSuffix={`Available: ${formatWBtc(wbtcBalance, true, true)}`}
           inputSuffix={
             <div className="flex h-full items-center gap-x-1.5 py-1">
               {'~' + depositInUsd + '$'}
