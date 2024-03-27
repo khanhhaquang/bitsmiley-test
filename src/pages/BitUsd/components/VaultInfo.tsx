@@ -9,10 +9,10 @@ import { cn } from '@/utils/cn'
 import { RefreshButton } from './RefreshButton'
 
 import { getHealthFactorTextColor } from '../display'
-import { VaultInfoTable, VaultChangesInfoTable } from '../tables'
+import { VaultOpenInfoTable, VaultChangesInfoTable } from '../tables'
 
 type VaultInfoProps = {
-  type?: 'info' | 'changes'
+  type?: 'open' | 'manage'
   vault?: IVault
   changedVault?: IVault
   hasChangedVault?: boolean
@@ -24,7 +24,7 @@ type VaultInfoProps = {
 }
 
 export const VaultInfo: React.FC<VaultInfoProps> = ({
-  type = 'info',
+  type = 'open',
   mintingPairs,
   vault,
   changedVault,
@@ -33,21 +33,21 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
   className,
   innerClassName
 }) => {
-  const isVaultChanges = type === 'changes'
-  const table = isVaultChanges ? VaultChangesInfoTable : VaultInfoTable
+  const isOpenVault = type === 'open'
+  const table = isOpenVault ? VaultOpenInfoTable : VaultChangesInfoTable
 
   return (
     <div
       className={cn(
-        'relative aspect-[400/157] w-full flex items-center justify-center',
+        'relative min-h-fit w-full flex items-center justify-center h-fit',
         className
       )}>
       <div
         className={cn(
-          'relative z-20 flex items-center gap-x-8 text-nowrap px-7 py-4 font-ibmr text-sm text-white/70',
+          'relative z-20 w-full flex justify-start px-5 py-4 items-center gap-x-8 text-nowrap font-ibmr text-sm text-white',
           innerClassName
         )}>
-        <div className="flex flex-col gap-y-1.5">
+        <div className="flex flex-col gap-y-2">
           {table.map(({ key, title, message }) => (
             <div className="flex items-center gap-x-2" key={key}>
               {title} <InfoIndicator message={message} />
@@ -86,7 +86,7 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
       </div>
 
       <div className="absolute -top-2.5 left-1/2 z-10 -translate-x-1/2 font-ibmr text-sm uppercase text-white [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)]">
-        {isVaultChanges ? (
+        {!isOpenVault ? (
           <span className="flex items-center gap-x-2">
             Vault Changes <RefreshButton />
           </span>

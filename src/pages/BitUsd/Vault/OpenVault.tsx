@@ -106,6 +106,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const vaultInfo: IVault = useMemo(
     () => ({
+      liquidationPrice: mintingPair?.liquidationPrice,
       debtBitUSD: mint,
       lockedCollateral: deposit,
       healthFactor: !mint
@@ -115,7 +116,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             100
           ).toString()
     }),
-    [deposit, mint, wbtcPrice]
+    [deposit, mint, mintingPair?.liquidationPrice, wbtcPrice]
   )
 
   useEffect(() => {
@@ -186,7 +187,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           greyOut={depositDisabled}
           disabled={depositDisabled}
           title="DEPOSIT WBTC"
-          titleSuffix={`Balance: ${formatNumberAsCompact(wbtcBalance)}`}
+          titleSuffix={`Available: ${formatNumberAsCompact(wbtcBalance)} wBTC`}
           inputSuffix={
             <div className="flex h-full items-center gap-x-1.5 py-1">
               {'~' + depositInUsd + '$'}
@@ -202,7 +203,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             displayMintingPairValues(mintingPair).vaultFloor
           } bitUSD`}
           title="Mint bitUSD"
-          titleSuffix={`Max Mint: ${formatBitUsd(maxMint, false, true)}`}
+          titleSuffix={`Max mint: ${formatBitUsd(maxMint, false, true)}`}
           inputSuffix={
             <InputSuffixActionButton
               onClick={() => setMint(maxMint.toString() || '')}>
@@ -214,7 +215,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           vault={vaultInfo}
           mintingPairs={mintingPair}
           borderSvg={
-            <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full text-white" />
+            <VaultInfoBorderIcon className="absolute inset-0 z-0 text-white" />
           }
         />
         <div className="flex w-full items-center gap-x-4">

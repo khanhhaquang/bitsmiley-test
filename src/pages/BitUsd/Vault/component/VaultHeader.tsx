@@ -11,7 +11,7 @@ const VaultHeader: React.FC<{
   return (
     <div
       className={cn(
-        'flex justify-evenly mt-5 font-ibmr text-xs text-white/70 gap-x-9',
+        'w-full flex justify-center mt-5 font-ibmr text-xs text-white/70 gap-x-9',
         className
       )}>
       {VaultHeaderColumns.map(({ key, title, message, format }) => (
