@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 import { GetTokenReturnType } from 'wagmi/actions'
 
-import { BitUsdIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { chainsIconUrl } from '@/config/chain'
 import { customChains } from '@/config/wagmi'
@@ -291,14 +290,7 @@ export const VaultOpenInfoTable: TTable<IVault, IMintingPair> = [
     key: 'debtBitUSD',
     title: 'Vault Debt',
     message: messages.totalDebt,
-    format: (vault) => (
-      <span className="flex items-center gap-x-1">
-        {displayVaultValues(vault, false).debtBitUSD}{' '}
-        {!!vault?.debtBitUSD && (
-          <BitUsdIcon width={9.5} height={11} className="text-yellow2" />
-        )}
-      </span>
-    )
+    format: (vault) => displayVaultValues(vault).debtBitUSD
   }
 ]
 

@@ -1,3 +1,4 @@
+import { BitUsdIcon } from '@/assets/icons'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 import {
@@ -6,7 +7,9 @@ import {
 } from '@/utils/number'
 
 const WBTC_UNIT = ' wBTC'
-const BITUSD_UNIT = '$'
+const BITUSD_UNIT = (
+  <BitUsdIcon width={9.5} height={11} className="text-yellow2" />
+)
 const PERCENTAGE_UNIT = '%'
 const DOLLAR_UNIT = '$' // bitUsd
 
@@ -17,10 +20,14 @@ export const formatBitUsd = (
   withUnit: boolean = true,
   compact: boolean = false
 ) =>
-  !v
-    ? DEFAULT_TEXT
-    : `${withUnit ? BITUSD_UNIT : ''}` +
-      `${compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}`
+  !v ? (
+    DEFAULT_TEXT
+  ) : (
+    <span className="flex items-center gap-x-1">
+      {compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}
+      {withUnit && BITUSD_UNIT}
+    </span>
+  )
 
 export const formatWBtc = (
   v?: string | number,

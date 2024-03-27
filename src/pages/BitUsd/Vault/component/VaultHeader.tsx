@@ -15,7 +15,7 @@ const VaultHeader: React.FC<{
         className
       )}>
       {VaultHeaderColumns.map(({ key, title, message, format }) => (
-        <span key={key}>
+        <span key={key} className="flex items-center gap-x-1">
           {title} <InfoIndicator message={message} />: {format(mintingPair)}
         </span>
       ))}

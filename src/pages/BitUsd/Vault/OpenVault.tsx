@@ -1,11 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import {
-  BitUsdIcon,
-  ChevronLeftIcon,
-  VaultInfoBorderIcon
-} from '@/assets/icons'
+import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { commonParam } from '@/config/settings'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
@@ -228,12 +224,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             displayMintingPairValues(mintingPair).vaultFloor
           } bitUSD`}
           title="Mint bitUSD"
-          titleSuffix={
-            <>
-              Max mint: {formatBitUsd(maxMint, false, true)}{' '}
-              <BitUsdIcon width={9.5} height={11} />
-            </>
-          }
+          titleSuffix={<>Max mint: ${formatBitUsd(maxMint, true, true)}</>}
           inputSuffix={
             <InputSuffixActionButton
               onClick={() => setMint(maxMint.toString() || '')}>
