@@ -94,6 +94,7 @@ const MintingPairsTable: React.FC<{
         <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
           {Object.entries(mintingPairs).map(([chainId, pairs], index) => (
             <Table
+              key={index}
               className={cn(
                 'w-full overflow-hidden font-ibmr text-xs',
                 index !== 0 && !isOpenedVaults && 'border-t border-white/10'

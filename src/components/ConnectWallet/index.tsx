@@ -79,7 +79,6 @@ export const ConnectWallet: React.FC<{
             handlePress()
           }
         }}
-        onClick={() => handlePress()}
         style={style}
         className={cn(
           'relative bg-white cursor-pointer text-center text-black px-5 py-2 font-bold whitespace-nowrap text-sm h-[34px] w-[158px]',
