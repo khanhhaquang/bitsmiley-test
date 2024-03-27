@@ -6,7 +6,6 @@ import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
-import { getHealthFactorTextColor } from '../display'
 import { VaultOpenInfoTable, VaultChangesInfoTable } from '../tables'
 
 type VaultInfoProps = {
@@ -53,26 +52,15 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
           ))}
         </div>
         <div className="flex flex-col gap-y-3">
-          {table.map(({ key, format }) => (
-            <div key={key} className="flex items-center gap-x-2">
-              <span
-                className={
-                  key === 'healthFactor'
-                    ? cn(getHealthFactorTextColor(vault?.healthFactor))
-                    : ''
-                }>
-                {format(vault, mintingPairs)}
-              </span>
+          {table.map(({ key, format, className }) => (
+            <div
+              key={key}
+              className={cn('flex items-center gap-x-2', className)}>
+              <span>{format(vault, mintingPairs)}</span>
               {hasChangedVault && (
                 <>
                   <ChevronRightIcon width={5} className="text-white" />
-                  <span
-                    className={cn({
-                      [getHealthFactorTextColor(changedVault?.healthFactor)]:
-                        key === 'healthFactor'
-                    })}>
-                    {format(changedVault, mintingPairs)}
-                  </span>
+                  <span>{format(changedVault, mintingPairs)}</span>
                 </>
               )}
             </div>

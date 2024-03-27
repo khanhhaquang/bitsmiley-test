@@ -510,11 +510,14 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                 onClick={handleNext}
                 disabled={nextButtonDisabled}
                 className="h-9 w-full flex-1">
-                {isNotApproved
-                  ? `Give permission to use ${
-                      isMintFromBtc ? 'wBTC' : 'bitUSD'
-                    }`
-                  : 'Next'}
+                {isNotApproved ? (
+                  <span className="flex items-center">
+                    Give permission to use {isMintFromBtc ? 'wBTC' : 'bitUSD'}{' '}
+                    <InfoIndicator message="give permission" />
+                  </span>
+                ) : (
+                  'Next'
+                )}
               </ActionButton>
             ) : (
               <SubmitButton

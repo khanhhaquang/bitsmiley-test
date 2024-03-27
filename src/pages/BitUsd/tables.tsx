@@ -11,7 +11,8 @@ import { cn } from '@/utils/cn'
 import {
   DEFAULT_TEXT,
   displayMintingPairValues,
-  displayVaultValues
+  displayVaultValues,
+  getHealthFactorTextColor
 } from './display'
 
 export type TTable<T, P = unknown> = {
@@ -197,7 +198,12 @@ export const ManageVaultVaultInfoTable: TTable<IMintingPair> = [
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    format: (item) => displayMintingPairValues(item).healthFactor
+    format: (item) => (
+      <span
+        className={getHealthFactorTextColor(Number(item?.healthFactor) * 100)}>
+        {displayMintingPairValues(item).healthFactor}
+      </span>
+    )
   },
   {
     key: 'mintedBitUSD',
@@ -237,7 +243,11 @@ export const VaultChangesInfoTable: TTable<IVault> = [
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    format: (item) => displayVaultValues(item).healthFactor
+    format: (item) => (
+      <span className={getHealthFactorTextColor(item?.healthFactor)}>
+        {displayVaultValues(item).healthFactor}
+      </span>
+    )
   },
   {
     key: 'liquidationPrice',
@@ -254,6 +264,7 @@ export const VaultChangesInfoTable: TTable<IVault> = [
     key: 'totalDebt',
     title: 'Total Debt',
     message: messages.totalDebt,
+    className: 'text-white',
     format: (vault) => displayVaultValues(vault).debtBitUSD
   },
   {
@@ -273,7 +284,11 @@ export const VaultOpenInfoTable: TTable<IVault, IMintingPair> = [
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    format: (vault) => displayVaultValues(vault).healthFactor
+    format: (item) => (
+      <span className={getHealthFactorTextColor(item?.healthFactor)}>
+        {displayVaultValues(item).healthFactor}
+      </span>
+    )
   },
   {
     key: 'liquidationPrice',

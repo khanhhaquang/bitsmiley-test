@@ -74,6 +74,7 @@ export const ConnectWallet: React.FC<{
     <>
       <div
         tabIndex={0}
+        onClick={handlePress}
         onKeyUp={(e) => {
           if (e.code === 'Enter') {
             handlePress()
