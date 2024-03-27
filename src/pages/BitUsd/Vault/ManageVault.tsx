@@ -466,7 +466,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           )}
 
           <VaultInfo
-            type="changes"
+            type="manage"
             vault={vault}
             changedVault={changedVault}
             hasChangedVault={hasChangedVault}

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { GetTokenReturnType } from 'wagmi/actions'
 
-import { LinkOutIcon } from '@/assets/icons'
+import { BitUsdIcon, LinkOutIcon } from '@/assets/icons'
 import { customChains } from '@/config/wagmi'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
@@ -210,18 +210,7 @@ export const VaultChangesInfoTable: TTable<IVault> = [
   }
 ]
 
-export const VaultInfoTable: TTable<IVault, IMintingPair> = [
-  {
-    key: 'collateralLocked',
-    title: 'Collateral Locked',
-    format: (vault) => displayVaultValues(vault).lockedCollateral
-  },
-  {
-    key: 'debtBitUSD',
-    title: 'Total Debt',
-    message: messages.totalDebt,
-    format: (vault) => displayVaultValues(vault).debtBitUSD
-  },
+export const VaultOpenInfoTable: TTable<IVault, IMintingPair> = [
   {
     key: 'healthFactor',
     title: 'Health Factor',
@@ -229,22 +218,28 @@ export const VaultInfoTable: TTable<IVault, IMintingPair> = [
     format: (vault) => displayVaultValues(vault).healthFactor
   },
   {
-    key: 'stabilityFee',
-    title: 'Stability Fee',
-    message: messages.stabilityFee,
-    format: () => (
-      <span className="flex items-center gap-x-1">
-        <span className="line-through">13%</span>
-        <span>0%</span>
-      </span>
-    )
+    key: 'liquidationPrice',
+    title: 'Liquidation Price',
+    message: messages.liquidationPrice,
+    format: (vault) => displayVaultValues(vault).liquidationPrice
   },
   {
-    key: 'liquidationFee',
-    title: 'Liquidation Fee',
-    message: messages.liquidationFee,
-    format: (_, mintingPair) =>
-      displayMintingPairValues(mintingPair).liquidationPenalty
+    key: 'collateralLocked',
+    title: 'Collateral Locked',
+    format: (vault) => displayVaultValues(vault).lockedCollateral
+  },
+  {
+    key: 'debtBitUSD',
+    title: 'Vault Debt',
+    message: messages.totalDebt,
+    format: (vault) => (
+      <span className="flex items-center gap-x-1">
+        {displayVaultValues(vault, false).debtBitUSD}{' '}
+        {!!vault?.debtBitUSD && (
+          <BitUsdIcon width={9.5} height={11} className="text-yellow2" />
+        )}
+      </span>
+    )
   }
 ]
 

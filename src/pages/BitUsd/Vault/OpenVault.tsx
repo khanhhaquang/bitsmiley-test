@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
+import {
+  BitUsdIcon,
+  ChevronLeftIcon,
+  VaultInfoBorderIcon
+} from '@/assets/icons'
 import { commonParam } from '@/config/settings'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
@@ -12,7 +16,6 @@ import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { TransactionStatus } from '@/types/common'
 import { IVault } from '@/types/vault'
-import { formatNumberAsCompact } from '@/utils/number'
 
 import VaultHeader from './component/VaultHeader'
 
@@ -25,7 +28,7 @@ import { NumberInput } from '../components/NumberInput'
 import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayMintingPairValues, formatBitUsd } from '../display'
+import { displayMintingPairValues, formatBitUsd, formatWBtc } from '../display'
 
 export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
@@ -106,6 +109,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const vaultInfo: IVault = useMemo(
     () => ({
+      liquidationPrice: mintingPair?.liquidationPrice,
       debtBitUSD: mint,
       lockedCollateral: deposit,
       healthFactor: !mint
@@ -115,7 +119,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             100
           ).toString()
     }),
-    [deposit, mint, wbtcPrice]
+    [deposit, mint, mintingPair?.liquidationPrice, wbtcPrice]
   )
 
   useEffect(() => {
@@ -186,7 +190,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           greyOut={depositDisabled}
           disabled={depositDisabled}
           title="DEPOSIT WBTC"
-          titleSuffix={`Balance: ${formatNumberAsCompact(wbtcBalance)}`}
+          titleSuffix={`Available: ${formatWBtc(wbtcBalance, true, true)}`}
           inputSuffix={
             <div className="flex h-full items-center gap-x-1.5 py-1">
               {'~' + depositInUsd + '$'}
@@ -202,7 +206,12 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             displayMintingPairValues(mintingPair).vaultFloor
           } bitUSD`}
           title="Mint bitUSD"
-          titleSuffix={`Max Mint: ${formatBitUsd(maxMint, false, true)}`}
+          titleSuffix={
+            <>
+              Max mint: {formatBitUsd(maxMint, false, true)}{' '}
+              <BitUsdIcon width={9.5} height={11} />
+            </>
+          }
           inputSuffix={
             <InputSuffixActionButton
               onClick={() => setMint(maxMint.toString() || '')}>
@@ -214,7 +223,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           vault={vaultInfo}
           mintingPairs={mintingPair}
           borderSvg={
-            <VaultInfoBorderIcon className="absolute inset-0 z-0 w-full text-white" />
+            <VaultInfoBorderIcon className="absolute inset-0 z-0 text-white" />
           }
         />
         <div className="flex w-full items-center gap-x-4">
