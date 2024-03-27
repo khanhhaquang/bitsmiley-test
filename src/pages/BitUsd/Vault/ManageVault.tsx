@@ -1,10 +1,10 @@
-import dayjs from 'dayjs'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
   ArrowLeftDoubleIcon,
   BitCoinIcon,
+  CloseIcon,
   DolloarIcon,
   ManageVaultInfoTitleIcon,
   ManageVaultSectionTitleIcon,
@@ -271,10 +271,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   }
 
   const liquidated = mintingPair?.liquidated?.[0]
-  const liquidatedHash = liquidated?.transactionHash
-  const liquidatedDate = dayjs(liquidated?.timestamp).format('DD/MM/YYYY')
-
-  const [isLiquidatedModalOpen, setIsLiquidatedModalOpen] =
+  const [isLiquidatedWarningOpen, setIsLiquidatedWarningOpen] =
     useState(!!liquidated)
 
   useEffect(() => {
@@ -310,41 +307,34 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
         link={txnLink}
       />
 
-      {!!liquidated && (
-        <ProcessingModal
-          title="liquidated"
-          titleClassName="text-warning"
-          message={
-            <div className="flex flex-col items-center gap-y-9">
-              <div>
-                This vault was liquidated on {liquidatedDate}. You may check the
-                transaction{' '}
-                <span className="flex cursor-pointer items-center justify-center text-green">
-                  [
-                  <a
-                    className="hover:underline"
-                    target="_blank"
-                    href={`${blockExplorerUrl}/tx/${liquidatedHash}`}>
-                    here
-                  </a>
-                  ]
-                </span>
-              </div>
-              <ActionButton
-                className="w-[165px]"
-                onClick={() => setIsLiquidatedModalOpen(false)}>
-                Enter vault
-              </ActionButton>
-            </div>
-          }
-          open={isLiquidatedModalOpen}
-        />
-      )}
-
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation mintingPair={mintingPair} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
+        {!!liquidated && isLiquidatedWarningOpen && (
+          <div className="mb-6 flex items-center justify-between border border-yellow bg-white/5 px-3 py-1.5 font-ibmr text-sm text-yellow">
+            <span>
+              This vault was liquidated at block height:{' '}
+              {liquidated?.blockNumber}{' '}
+              <span className="group cursor-pointer font-ibmb text-green">
+                [
+                <a
+                  target="_blank"
+                  href={`${blockExplorerUrl}/tx/${liquidated?.transactionHash}`}
+                  className="group-hover:underline">
+                  Check on-chain
+                </a>
+                ]
+              </span>
+            </span>
+            <button
+              className="cursor-pointer text-white hover:text-white/50"
+              onClick={() => setIsLiquidatedWarningOpen(false)}>
+              <CloseIcon width={10} height={10} />
+            </button>
+          </div>
+        )}
+
         <VaultInfoSection className="mb-12" mintingPair={mintingPair} />
 
         <div className="mb-6 grid grid-cols-2 gap-x-12">
@@ -525,10 +515,15 @@ const VaultInfoSection: React.FC<{
       />
 
       <div className="grid grid-cols-2 gap-x-6 gap-y-0.5">
-        {ManageVaultVaultInfoTable.map(({ key, title, format }) => (
+        {ManageVaultVaultInfoTable.map(({ key, title, format }, index) => (
           <div
             key={key}
-            className="flex items-center border-t border-white/20 p-[1px] font-ibmr text-sm text-white/70">
+            className={cn(
+              'flex items-center border-t border-white/20 p-[1px] font-ibmr text-sm text-white/70',
+              (index === ManageVaultVaultInfoTable.length - 1 ||
+                index === ManageVaultVaultInfoTable.length - 2) &&
+                'border-b'
+            )}>
             <div className="h-6 w-[200px] border-r border-white/20 bg-white/5 px-1">
               {title}
             </div>
