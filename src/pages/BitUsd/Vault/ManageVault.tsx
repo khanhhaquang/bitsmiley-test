@@ -274,7 +274,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const [isLiquidatedWarningOpen, setIsLiquidatedWarningOpen] =
     useState(!!liquidated)
 
-  const renderModals = useMemo(() => {
+  const processingModal = useMemo(() => {
     if (isTransactionStatusSigning || isApproving)
       <ProcessingModal message="Waiting for wallet signature" />
 
@@ -320,7 +320,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   return (
     <div className="pb-12">
-      {renderModals}
+      {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation mintingPair={mintingPair} />
 

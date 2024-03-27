@@ -122,7 +122,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     [deposit, mint, mintingPair?.liquidationPrice, wbtcPrice]
   )
 
-  const renderModal = useMemo(() => {
+  const processingModal = useMemo(() => {
     if (isApproving)
       return <ProcessingModal message="Waiting for approval from wallet..." />
 
@@ -200,7 +200,7 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   return (
     <div className="pb-12">
-      {renderModal}
+      {processingModal}
 
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader mintingPair={mintingPair} />
