@@ -22,7 +22,7 @@ import CopyIcon from './copy.svg'
 import CopyrightIcon from './copyright.svg'
 import CrownYellowIcon from './crown-yellow.svg'
 import CrownIcon from './crown.svg'
-import DolloarIcon from './dollar.svg'
+import DollarIcon from './dollar.svg'
 import DotIcon from './dot.svg'
 import FailIcon from './fail.svg'
 import GoldCoinIcon from './gold-coin.svg'
@@ -70,7 +70,7 @@ export {
   ManageVaultInfoTitleIcon,
   BitUsdIcon,
   OrIcon,
-  DolloarIcon,
+  DollarIcon,
   VaultInfoIcon,
   DotIcon,
   CoinIcon,

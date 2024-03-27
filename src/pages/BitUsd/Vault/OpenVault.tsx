@@ -122,63 +122,85 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     [deposit, mint, mintingPair?.liquidationPrice, wbtcPrice]
   )
 
+  const processingModal = useMemo(() => {
+    if (isApproving)
+      return <ProcessingModal message="Waiting for approval from wallet..." />
+
+    switch (openVaultTxnStatus) {
+      case TransactionStatus.Signing:
+        return <ProcessingModal message="Waiting for wallet signature..." />
+
+      case TransactionStatus.Processing:
+        return (
+          <ProcessingModal
+            message="Your transaction is getting processed on-chain."
+            link={
+              !!blockExplorerUrl && !!openVaultTxId
+                ? `${blockExplorerUrl}/tx/${openVaultTxId}`
+                : ''
+            }
+          />
+        )
+      case TransactionStatus.Success:
+        return (
+          <ProcessingModal
+            type="success"
+            actionButtonText="Ok"
+            onClickActionButton={() => {
+              refetchMintingPairs()
+              refreshVaultValues()
+              navigate(-1)
+            }}
+            message="You have successfully created a vault. Now you can see it in the
+        Testnet main page"
+          />
+        )
+
+      case TransactionStatus.Failed:
+        return (
+          <ProcessingModal
+            type="error"
+            actionButtonText="Ok"
+            onClickActionButton={() =>
+              setOpenVaultTxnStatus(TransactionStatus.Idle)
+            }
+            message={
+              !blockExplorerUrl || !openVaultTxId ? (
+                <span>This transaction has failed.</span>
+              ) : (
+                <span>
+                  The transaction has failed. You can check it on-chain{' '}
+                  <a
+                    className="cursor-pointer text-green hover:underline"
+                    href={`${blockExplorerUrl}/tx/${openVaultTxId}`}>
+                    here
+                  </a>
+                </span>
+              )
+            }
+          />
+        )
+      default:
+        return null
+    }
+  }, [
+    blockExplorerUrl,
+    isApproving,
+    openVaultTxId,
+    openVaultTxnStatus,
+    navigate,
+    refetchMintingPairs,
+    refreshVaultValues,
+    setOpenVaultTxnStatus
+  ])
+
   useEffect(() => {
     if (mintDisabled) setMint('')
   }, [mintDisabled])
 
   return (
     <div className="pb-12">
-      <ProcessingModal
-        message="Waiting for wallet signature"
-        open={openVaultTxnStatus === TransactionStatus.Signing}
-      />
-      <ProcessingModal
-        open={openVaultTxnStatus === TransactionStatus.Processing}
-        message="Your transaction is getting processed."
-        link={
-          !!blockExplorerUrl && !!openVaultTxId
-            ? `${blockExplorerUrl}/tx/${openVaultTxId}`
-            : ''
-        }
-      />
-      <ProcessingModal
-        type="success"
-        actionButtonText="Ok"
-        open={openVaultTxnStatus === TransactionStatus.Success}
-        onClickActionButton={async () => {
-          await refetchMintingPairs()
-          refreshVaultValues()
-          navigate(-1)
-        }}
-        message="You have successfully created a vault. Now you can see it in the
-        Testnet main page"
-      />
-      <ProcessingModal
-        type="error"
-        actionButtonText="Ok"
-        onClickActionButton={() =>
-          setOpenVaultTxnStatus(TransactionStatus.Idle)
-        }
-        open={openVaultTxnStatus === TransactionStatus.Failed}
-        message={
-          !blockExplorerUrl || !openVaultTxId ? (
-            <span>This transaction has failed.</span>
-          ) : (
-            <span>
-              The transaction has failed. You can check it on-chain{' '}
-              <a
-                className="cursor-pointer text-green hover:underline"
-                href={`${blockExplorerUrl}/tx/${openVaultTxId}`}>
-                here
-              </a>
-            </span>
-          )
-        }
-      />
-      <ProcessingModal
-        open={isApproving}
-        message="Waiting for approval from wallet"
-      />
+      {processingModal}
 
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader mintingPair={mintingPair} />

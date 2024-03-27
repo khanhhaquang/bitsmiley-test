@@ -5,7 +5,7 @@ import {
   ArrowLeftDoubleIcon,
   BitCoinIcon,
   CloseIcon,
-  DolloarIcon,
+  DollarIcon,
   ManageVaultInfoTitleIcon,
   ManageVaultSectionTitleIcon,
   OrIcon,
@@ -274,6 +274,38 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const [isLiquidatedWarningOpen, setIsLiquidatedWarningOpen] =
     useState(!!liquidated)
 
+  const processingModal = useMemo(() => {
+    if (isTransactionStatusSigning || isApproving)
+      <ProcessingModal message="Waiting for wallet signature" />
+
+    if (!isTransactionStatusIdle && !isTransactionStatusSigning)
+      return (
+        <ProcessingModal
+          actionButtonClassName="w-[300px]"
+          type={processingType}
+          onClickActionButton={async () => {
+            await refetchMintingPairs()
+            refreshVaultValues()
+            navigate(-1)
+          }}
+          actionButtonText={processingType !== 'info' ? 'Ok' : ''}
+          message={processingMessage}
+          link={txnLink}
+        />
+      )
+    return null
+  }, [
+    isApproving,
+    isTransactionStatusIdle,
+    isTransactionStatusSigning,
+    navigate,
+    processingMessage,
+    processingType,
+    refetchMintingPairs,
+    refreshVaultValues,
+    txnLink
+  ])
+
   useEffect(() => {
     if (isMintFromBtc === true) {
       setWithdrawBtc('')
@@ -288,25 +320,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   return (
     <div className="pb-12">
-      <ProcessingModal
-        message="Waiting for wallet signature"
-        open={isTransactionStatusSigning || isApproving}
-      />
-
-      <ProcessingModal
-        open={!isTransactionStatusIdle && !isTransactionStatusSigning}
-        actionButtonClassName="w-[300px]"
-        type={processingType}
-        onClickActionButton={async () => {
-          await refetchMintingPairs()
-          refreshVaultValues()
-          navigate(-1)
-        }}
-        actionButtonText={processingType !== 'info' ? 'Ok' : ''}
-        message={processingMessage}
-        link={txnLink}
-      />
-
+      {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation mintingPair={mintingPair} />
 
@@ -394,7 +408,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
               title="manage"
               className="mb-6 gap-x-0"
               subTitle="bitUsd"
-              icon={<DolloarIcon className="shrink-0" width={27} height={29} />}
+              icon={<DollarIcon className="shrink-0" width={27} height={29} />}
             />
             <NumberInput
               value={mintBitUsd}

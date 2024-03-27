@@ -92,7 +92,7 @@ a {
     pointer;
 }
 .no-scroll {
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 /* Chrome, Safari and Opera */

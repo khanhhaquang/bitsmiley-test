@@ -55,6 +55,15 @@ export const ConnectWallet: React.FC<{
     chain: evmChain
   } = useAccount()
 
+  const handlePress = () => {
+    if (!isEvmConnected) {
+      setIsConnectWalletModalOpen(true)
+    }
+    if (isEvmConnected && !isDropdownOpen) {
+      setIsDropdownOpen(true)
+    }
+  }
+
   useEffect(() => {
     if (!evmChain && !!evmAddress) {
       setIsNetworkError(true)
@@ -63,18 +72,17 @@ export const ConnectWallet: React.FC<{
 
   return (
     <>
-      <button
-        onClick={() => {
-          if (!isEvmConnected) {
-            setIsConnectWalletModalOpen(true)
-          }
-          if (isEvmConnected && !isDropdownOpen) {
-            setIsDropdownOpen(true)
+      <div
+        tabIndex={0}
+        onKeyUp={(e) => {
+          if (e.code === 'Enter') {
+            handlePress()
           }
         }}
+        onClick={() => handlePress()}
         style={style}
         className={cn(
-          'relative bg-white cursor-pointer text-black px-5 py-2 font-bold whitespace-nowrap text-[15px] w-[158px]',
+          'relative bg-white cursor-pointer text-center text-black px-5 py-2 font-bold whitespace-nowrap text-sm h-[34px] w-[158px]',
           !isDropdownOpen && 'hover:bg-blue3',
           !isEvmConnected && 'active:bg-blue',
           className
@@ -110,7 +118,7 @@ export const ConnectWallet: React.FC<{
             Logout
           </button>
         </div>
-      </button>
+      </div>
 
       <WrongNetworkModal
         isOpen={isNetworkError}
