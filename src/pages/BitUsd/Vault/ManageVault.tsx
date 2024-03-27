@@ -277,40 +277,27 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const [isLiquidatedModalOpen, setIsLiquidatedModalOpen] =
     useState(!!liquidated)
 
-  useEffect(() => {
-    if (isMintFromBtc === true) {
-      setWithdrawBtc('')
-      setRepayBitUsd('')
-    }
+  const renderModal = useMemo(() => {
+    if (isTransactionStatusSigning || isApproving)
+      return <ProcessingModal message="Waiting for wallet signature" />
 
-    if (isMintFromBtc === false) {
-      setDepositBtc('')
-      setMintBitUsd('')
-    }
-  }, [isMintFromBtc])
-
-  return (
-    <div className="pb-12">
-      <ProcessingModal
-        message="Waiting for wallet signature"
-        open={isTransactionStatusSigning || isApproving}
-      />
-
-      <ProcessingModal
-        open={!isTransactionStatusIdle && !isTransactionStatusSigning}
-        actionButtonClassName="w-[300px]"
-        type={processingType}
-        onClickActionButton={async () => {
-          await refetchMintingPairs()
-          refreshVaultValues()
-          navigate(-1)
-        }}
-        actionButtonText={processingType !== 'info' ? 'Ok' : ''}
-        message={processingMessage}
-        link={txnLink}
-      />
-
-      {!!liquidated && (
+    if (!isTransactionStatusIdle && !isTransactionStatusSigning)
+      return (
+        <ProcessingModal
+          actionButtonClassName="w-[300px]"
+          type={processingType}
+          onClickActionButton={async () => {
+            await refetchMintingPairs()
+            refreshVaultValues()
+            navigate(-1)
+          }}
+          actionButtonText={processingType !== 'info' ? 'Ok' : ''}
+          message={processingMessage}
+          link={txnLink}
+        />
+      )
+    if (isLiquidatedModalOpen)
+      return (
         <ProcessingModal
           title="liquidated"
           titleClassName="text-warning"
@@ -337,10 +324,41 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
               </ActionButton>
             </div>
           }
-          open={isLiquidatedModalOpen}
         />
-      )}
+      )
 
+    return null
+  }, [
+    blockExplorerUrl,
+    isApproving,
+    isLiquidatedModalOpen,
+    isTransactionStatusIdle,
+    isTransactionStatusSigning,
+    liquidatedDate,
+    liquidatedHash,
+    navigate,
+    processingMessage,
+    processingType,
+    refetchMintingPairs,
+    refreshVaultValues,
+    txnLink
+  ])
+
+  useEffect(() => {
+    if (isMintFromBtc === true) {
+      setWithdrawBtc('')
+      setRepayBitUsd('')
+    }
+
+    if (isMintFromBtc === false) {
+      setDepositBtc('')
+      setMintBitUsd('')
+    }
+  }, [isMintFromBtc])
+
+  return (
+    <div className="pb-12">
+      {renderModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation mintingPair={mintingPair} />
 
