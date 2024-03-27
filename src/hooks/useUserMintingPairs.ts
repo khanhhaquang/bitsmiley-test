@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { UserService } from '@/services/user'
+import { IMintingPair, UserService } from '@/services/user'
 
 export const useUserMintingPairs = (chainId?: number | string) => {
   const { address } = useUserInfo()
@@ -19,15 +19,40 @@ export const useUserMintingPairs = (chainId?: number | string) => {
     select: (res) => res?.data
   })
 
-  const availableMintingPairs = mintingPairs?.filter(
-    (item) => !item.isOpenVault
-  )
-  const openedMintingPairs = mintingPairs?.filter((item) => item.isOpenVault)
+  const availableMintingPairs = mintingPairs
+    ?.filter((item) => !item.isOpenVault)
+    .reduce<Record<string, IMintingPair[]>>(
+      (pre, curr) => ({
+        ...pre,
+        [curr.chainId]: pre?.[curr.chainId]
+          ? pre[curr.chainId].push(curr)
+          : [curr]
+      }),
+      {}
+    )
+
+  const openedMintingPairs = mintingPairs
+    ?.filter((item) => item.isOpenVault)
+    .reduce<Record<string, IMintingPair[]>>(
+      (pre, curr) => ({
+        ...pre,
+        [curr.chainId]: pre?.[curr.chainId]
+          ? pre[curr.chainId].push(curr)
+          : [curr]
+      }),
+      {}
+    )
+
+  const hasOpenedMintingPairs = !!mintingPairs?.filter(
+    (item) => item.isOpenVault
+  ).length
 
   const isMyVault = useMemo(() => {
     if (!chainId) return false
-    return !!openedMintingPairs?.find((p) => p.chainId === Number(chainId))
-  }, [chainId, openedMintingPairs])
+    return !!mintingPairs
+      ?.filter((item) => item.isOpenVault)
+      ?.find((p) => p.chainId === Number(chainId))
+  }, [chainId, mintingPairs])
 
   const mintingPair = useMemo(
     () => mintingPairs?.find((p) => p.chainId === Number(chainId)),
@@ -37,6 +62,7 @@ export const useUserMintingPairs = (chainId?: number | string) => {
   return {
     availableMintingPairs,
     openedMintingPairs,
+    hasOpenedMintingPairs,
     mintingPair,
     isLoading,
     isMyVault,
