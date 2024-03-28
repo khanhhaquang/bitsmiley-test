@@ -4,13 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeftDoubleIcon,
   BitCoinIcon,
-  CloseIcon,
   DollarIcon,
-  ManageVaultInfoTitleIcon,
-  ManageVaultSectionTitleIcon,
   OrIcon,
-  VaultChangesBorderIcon,
-  VaultInfoIcon
+  VaultChangesBorderIcon
 } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
@@ -20,14 +16,18 @@ import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
-import { IMintingPair } from '@/services/user'
 import { TransactionStatus } from '@/types/common'
-import { IVault } from '@/types/vault'
-import { cn } from '@/utils/cn'
 import {
   formatNumberAsCompact,
   formatNumberWithSeparator
 } from '@/utils/number'
+
+import { LiquidatedWarning } from './component/LiquidatedWarning'
+import { ManageVaultHeaderInformation } from './component/ManageVaultHeaderInformation'
+import {
+  ManageVaultInfoSection,
+  ManageVaultSectionTitle
+} from './component/ManageVaultInfoSection'
 
 import {
   ActionButton,
@@ -36,14 +36,9 @@ import {
 } from '../components/ActionButton'
 import { NumberInput } from '../components/NumberInput'
 import { ProcessingModal } from '../components/Processing'
-import { RefreshButton } from '../components/RefreshButton'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayMintingPairValues, displayVaultValues } from '../display'
-import {
-  ManageVaultHeaderInfoTable,
-  ManageVaultVaultInfoTable
-} from '../tables'
 
 export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const navigate = useNavigate()
@@ -361,31 +356,13 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
       <ManageVaultHeaderInformation mintingPair={mintingPair} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
-        {!!liquidated && isLiquidatedWarningOpen && (
-          <div className="mb-6 flex items-center justify-between border border-yellow bg-white/5 px-3 py-1.5 font-ibmr text-sm text-yellow">
-            <span>
-              This vault was liquidated at block height:{' '}
-              {liquidated?.blockNumber}{' '}
-              <span className="group cursor-pointer font-ibmb text-green">
-                [
-                <a
-                  target="_blank"
-                  href={`${blockExplorerUrl}/tx/${liquidated?.transactionHash}`}
-                  className="group-hover:underline">
-                  Check on-chain
-                </a>
-                ]
-              </span>
-            </span>
-            <button
-              className="cursor-pointer text-white hover:text-white/50"
-              onClick={() => setIsLiquidatedWarningOpen(false)}>
-              <CloseIcon width={10} height={10} />
-            </button>
-          </div>
-        )}
+        <LiquidatedWarning
+          mintingPair={mintingPair}
+          open={isLiquidatedWarningOpen}
+          onClose={() => setIsLiquidatedWarningOpen(false)}
+        />
 
-        <VaultInfoSection className="mb-12" vault={vault} />
+        <ManageVaultInfoSection className="mb-12" vault={vault} />
 
         <div className="mb-6 grid grid-cols-2 gap-x-12">
           <div className="overflow-hidden">
@@ -564,100 +541,6 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           </div>
         )}
       </div>
-    </div>
-  )
-}
-
-const VaultInfoSection: React.FC<{
-  className?: string
-  vault?: IVault
-}> = ({ className, vault }) => {
-  return (
-    <div className={cn('flex flex-col gap-y-6', className)}>
-      <ManageVaultSectionTitle
-        type="info"
-        title="Vault"
-        subTitle="info"
-        icon={<VaultInfoIcon width={27} height={29} />}
-      />
-
-      <div className="grid grid-cols-2 gap-x-6 gap-y-0.5">
-        {ManageVaultVaultInfoTable.map(({ key, title, format }, index) => (
-          <div
-            key={key}
-            className={cn(
-              'flex items-center border-t border-white/20 p-[1px] font-ibmr text-sm text-white/70',
-              (index === ManageVaultVaultInfoTable.length - 1 ||
-                index === ManageVaultVaultInfoTable.length - 2) &&
-                'border-b'
-            )}>
-            <div className="h-6 w-[200px] border-r border-white/20 bg-white/5 px-1">
-              {title}
-            </div>
-            <div className="py-1 pl-2 pr-1 font-bold text-white">
-              {format(vault)}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-const ManageVaultSectionTitle: React.FC<{
-  type?: 'info' | 'manage'
-  icon: React.ReactNode
-  title: string
-  subTitle: string
-  className?: string
-}> = ({ type = 'manage', icon, title, subTitle, className }) => {
-  return (
-    <div className={cn('flex items-center gap-x-2 text-white', className)}>
-      <div className="flex shrink-0 items-center gap-x-2 font-smb text-xs">
-        {icon}
-        <div>
-          <div>{title}</div>
-          <div>{subTitle}</div>
-        </div>
-      </div>
-      <div className="relative w-full">
-        {type === 'info' ? (
-          <>
-            <ManageVaultInfoTitleIcon className="w-full flex-1" />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5">
-              <RefreshButton />
-            </div>
-          </>
-        ) : (
-          <ManageVaultSectionTitleIcon className="w-full flex-1" />
-        )}
-      </div>
-    </div>
-  )
-}
-
-const ManageVaultHeaderInformation: React.FC<{
-  mintingPair?: IMintingPair
-}> = ({ mintingPair }) => {
-  const navigate = useNavigate()
-
-  return (
-    <div className="mt-6 flex items-center justify-center gap-x-9 font-ibmr text-sm text-white/70">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex cursor-pointer items-center justify-center gap-x-1 font-ibmb text-sm hover:text-white active:text-white/50">
-        <ArrowLeftDoubleIcon width={13} height={10} />
-        Back
-      </button>
-
-      {ManageVaultHeaderInfoTable.map(({ key, title, message, format }) => (
-        <div key={key} className="flex items-center gap-x-1">
-          <span>
-            {title} <InfoIndicator message={message} />:
-          </span>
-          <span>{format(mintingPair)}</span>
-        </div>
-      ))}
     </div>
   )
 }
