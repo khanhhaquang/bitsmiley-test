@@ -58,9 +58,26 @@ export const bSquaredTestnet = {
   testnet: true
 } as const satisfies Chain
 
+export const botanixTestnet = {
+  id: 3636,
+  name: 'Botanix Testnet',
+  nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://node.botanixlabs.dev'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Botanix Scan',
+      url: 'https://blockscout.botanixlabs.dev/'
+    }
+  },
+  testnet: true
+} as const satisfies Chain
+
 export const customChains = [
   merlinTestnet,
   merlinMainnet,
   bobTestnet,
-  bSquaredTestnet
+  bSquaredTestnet,
+  botanixTestnet
 ] as Chain[]
