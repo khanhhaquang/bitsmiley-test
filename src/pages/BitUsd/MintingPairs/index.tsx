@@ -179,11 +179,11 @@ const MintingPairTableRow: React.FC<{
   const healthFactor =
     !isOpenedVaults || !mintingPair?.healthFactor
       ? 0
-      : Number(mintingPair.healthFactor) * 100
+      : Number(mintingPair.healthFactor) * 10
 
   const isInLiquidationRisk = useMemo(
     // TODO confirm when to show this message
-    () => isOpenedVaults && !!healthFactor && healthFactor < 100,
+    () => isOpenedVaults && !!healthFactor && healthFactor < 200,
     [healthFactor, isOpenedVaults]
   )
 

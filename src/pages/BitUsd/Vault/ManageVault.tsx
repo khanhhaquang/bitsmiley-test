@@ -356,7 +356,7 @@ export const ManageVault: React.FC<{
   }, [isMintFromBtc])
 
   return (
-    <div className="pb-12">
+    <div className="size-full overflow-y-auto pb-12">
       {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation mintingPair={mintingPair} />

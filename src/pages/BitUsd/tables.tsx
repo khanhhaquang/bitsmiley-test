@@ -182,8 +182,7 @@ export const ManageVaultVaultInfoTable: TTable<IVault> = [
     title: 'Health Factor',
     message: messages.healthFactor,
     format: (vault) => (
-      <span
-        className={getHealthFactorTextColor(Number(vault?.healthFactor) * 100)}>
+      <span className={getHealthFactorTextColor(vault?.healthFactor)}>
         {displayVaultValues(vault).healthFactor}
       </span>
     )

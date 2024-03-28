@@ -93,7 +93,7 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
             Number(mintingPair?.collateral.vaultMaxDebt),
             Number(deposit) *
               wbtcPrice *
-              (Number(mintingPair?.collateral?.safetyFactor) * 10 ** 8)
+              (Number(mintingPair?.collateral?.safetyFactor) * 10 ** 9)
           ),
     [
       deposit,
@@ -224,7 +224,7 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
   }, [mintDisabled])
 
   return (
-    <div className="pb-12">
+    <div className="size-full overflow-y-auto pb-12">
       {processingModal}
 
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>

@@ -15,7 +15,7 @@ const Vault: React.FC = () => {
   if (isLoading) return <OnChainLoader />
 
   return (
-    <div className="relative size-full pt-9">
+    <div className="relative size-full overflow-hidden pt-9">
       {isMyVault ? (
         <ManageVault chainId={chainId} collateralId={collateralId} />
       ) : (
