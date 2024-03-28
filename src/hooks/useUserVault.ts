@@ -17,6 +17,7 @@ export const useUserVault = () => {
   const contractAddresses = useContractAddresses()
 
   const bitSmileyAddress = contractAddresses?.BitSmiley
+  const bitSmileyQueryAddress = contractAddresses?.BitSmileyQuery || undefined
 
   const {
     data: vaultAddress,
@@ -57,7 +58,7 @@ export const useUserVault = () => {
     isFetching: isFetchingVault,
     ...rest
   } = useReadBitSmileyQueryGetVaultDetail({
-    address: bitSmileyAddress,
+    address: bitSmileyQueryAddress,
     args: vaultAddress && [
       vaultAddress,
       parseEther('0'),
@@ -80,7 +81,7 @@ export const useUserVault = () => {
     refetch: refetchChangedVault,
     isFetching: isFetchingChangedVault
   } = useReadBitSmileyQueryGetVaultDetail({
-    address: bitSmileyAddress,
+    address: bitSmileyQueryAddress,
     args:
       vaultAddress && hasChangedVault
         ? [
@@ -104,7 +105,7 @@ export const useUserVault = () => {
     refetch: refetchMaxVault,
     isFetching: isFetchingMaxVault
   } = useReadBitSmileyQueryGetVaultDetail({
-    address: bitSmileyAddress,
+    address: bitSmileyQueryAddress,
     args: vaultAddress
       ? [
           vaultAddress,
