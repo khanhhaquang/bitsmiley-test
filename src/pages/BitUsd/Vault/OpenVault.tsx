@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Address, formatEther, parseEther } from 'viem'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
-import { useReadBitSmileyQueryTryOpenVault } from '@/contracts/BitSmileyQuery'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
@@ -31,7 +29,12 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
   collateralId
 }) => {
   const navigate = useNavigate()
-  const { refreshVaultValues } = useUserVault()
+  const {
+    refreshVaultValues,
+    tryOpenVaultInfo,
+    setTryOpenVaultBitUsd,
+    setTryOpenVaultCollateral
+  } = useUserVault()
   const { mintingPair, refetch: refetchMintingPairs } = useUserMintingPairs(
     chainId,
     collateralId
@@ -59,32 +62,6 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
     approvalTxnStatus === TransactionStatus.Processing
   const isApproved = Number(wBtcAllowance) >= Number(deposit)
 
-  const contractAddress = useContractAddresses()
-  const bitSmileyQueryAddress = contractAddress?.bitSmileyQuery || undefined
-
-  const { data: vaultInfo } = useReadBitSmileyQueryTryOpenVault({
-    address: bitSmileyQueryAddress,
-    args: [collateralId as Address, parseEther(deposit), parseEther(mint)],
-    query: {
-      select: (res) => ({
-        debtBitUSD: mint,
-        lockedCollateral: deposit,
-        healthFactor: !res?.healthFactor
-          ? ''
-          : (Number(res?.healthFactor) / 100).toString(),
-        liquidationPrice: !res?.liquidationPrice
-          ? ''
-          : formatEther(res.liquidationPrice),
-        availableToWithdraw: !res?.availableToWithdraw
-          ? ''
-          : formatEther(res.availableToWithdraw),
-        availableToMint: !res?.availableToMint
-          ? ''
-          : formatEther(res?.availableToMint)
-      })
-    }
-  })
-
   const maxMint = useMemo(
     () =>
       !deposit
@@ -93,7 +70,7 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
             Number(mintingPair?.collateral.vaultMaxDebt),
             Number(deposit) *
               wbtcPrice *
-              (Number(mintingPair?.collateral?.safetyFactor) * 10 ** 9)
+              (Number(mintingPair?.collateral?.safetyFactor) * 10 ** 8)
           ),
     [
       deposit,
@@ -108,7 +85,8 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
     if (!deposit) return true
 
     if (Number(deposit) > wbtcBalance) return true
-    if (mint && Number(mint) > Number(vaultInfo?.availableToMint)) return true
+    if (mint && Number(mint) > Number(tryOpenVaultInfo?.availableToMint))
+      return true
     if (mint && Number(mint) < Number(mintingPair?.collateral?.vaultMinDebt))
       return true
     return false
@@ -116,7 +94,7 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
     deposit,
     mint,
     mintingPair?.collateral?.vaultMinDebt,
-    vaultInfo?.availableToMint,
+    tryOpenVaultInfo?.availableToMint,
     wbtcBalance
   ])
 
@@ -223,6 +201,16 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
     if (mintDisabled) setMint('')
   }, [mintDisabled])
 
+  useEffect(() => {
+    setTryOpenVaultBitUsd(mint)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mint])
+
+  useEffect(() => {
+    setTryOpenVaultCollateral(deposit)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deposit])
+
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
@@ -270,7 +258,7 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
           }
         />
         <VaultInfo
-          vault={vaultInfo}
+          vault={tryOpenVaultInfo}
           mintingPairs={mintingPair}
           borderSvg={
             <VaultInfoBorderIcon className="absolute inset-0 z-0 text-white" />

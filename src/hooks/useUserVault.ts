@@ -1,9 +1,13 @@
 import { keepPreviousData } from '@tanstack/react-query'
 import { useState } from 'react'
-import { formatEther, parseEther } from 'viem'
+import { useParams } from 'react-router-dom'
+import { Address, formatEther, parseEther } from 'viem'
 
 import { useReadBitSmileyOwners } from '@/contracts/BitSmiley'
-import { useReadBitSmileyQueryGetVaultDetail } from '@/contracts/BitSmileyQuery'
+import {
+  useReadBitSmileyQueryGetVaultDetail,
+  useReadBitSmileyQueryTryOpenVault
+} from '@/contracts/BitSmileyQuery'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
@@ -29,7 +33,7 @@ export const useUserVault = () => {
 
   const query = {
     placeholderData: keepPreviousData,
-    select: (res?: IVaultFromChain): IVault => ({
+    select: (res?: Partial<IVaultFromChain>): IVault => ({
       liquidationPrice: !res?.liquidationPrice
         ? ''
         : formatEther(res.liquidationPrice),
@@ -109,6 +113,25 @@ export const useUserVault = () => {
     query
   })
 
+  const { collateralId } = useParams()
+  const [tryOpenVaultBitUsd, setTryOpenVaultBitUsd] = useState('')
+  const [tryOpenVaultCollateral, setTryOpenVaultCollateral] = useState('')
+
+  const debouncedTryOpenVaultBitUsd = useDebounce(tryOpenVaultBitUsd)
+  const debouncedTryOpenVaultCollateral = useDebounce(tryOpenVaultCollateral)
+
+  const { data: tryOpenVaultInfo } = useReadBitSmileyQueryTryOpenVault({
+    address: bitSmileyQueryAddress,
+    args: collateralId
+      ? [
+          collateralId as Address,
+          parseEther(debouncedTryOpenVaultCollateral),
+          parseEther(debouncedTryOpenVaultBitUsd)
+        ]
+      : undefined,
+    query
+  })
+
   const {
     refetchAllowance: refetchWbtcAllowance,
     isFetching: isFetchingWbtcAllowance
@@ -167,6 +190,10 @@ export const useUserVault = () => {
     isFetchingMaxVault,
     isFetchingVaultAddress,
     refreshVaultValues,
-    isRefreshingVaultValues
+    isRefreshingVaultValues,
+
+    tryOpenVaultInfo,
+    setTryOpenVaultBitUsd,
+    setTryOpenVaultCollateral
   }
 }
