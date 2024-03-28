@@ -339,44 +339,6 @@ export const bitSmileyAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_vault', internalType: 'address', type: 'address' },
-      { name: '_collateral', internalType: 'int256', type: 'int256' },
-      { name: '_bitUSD', internalType: 'int256', type: 'int256' },
-      { name: '_protectionSafety', internalType: 'uint256', type: 'uint256' }
-    ],
-    name: 'getVaultChange',
-    outputs: [
-      {
-        name: '',
-        internalType: 'struct VaultChange',
-        type: 'tuple',
-        components: [
-          {
-            name: 'liquidationPrice',
-            internalType: 'uint256',
-            type: 'uint256'
-          },
-          { name: 'healthFactor', internalType: 'uint256', type: 'uint256' },
-          { name: 'debtBitUSD', internalType: 'uint256', type: 'uint256' },
-          {
-            name: 'lockedCollateral',
-            internalType: 'uint256',
-            type: 'uint256'
-          },
-          {
-            name: 'availableToWithdraw',
-            internalType: 'int256',
-            type: 'int256'
-          },
-          { name: 'availableToMint', internalType: 'int256', type: 'int256' }
-        ]
-      }
-    ],
-    stateMutability: 'view'
-  },
-  {
-    type: 'function',
-    inputs: [
       { name: 'role', internalType: 'bytes32', type: 'bytes32' },
       { name: 'account', internalType: 'address', type: 'address' }
     ],
@@ -447,10 +409,7 @@ export const bitSmileyAbi = [
     type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
     name: 'owners',
-    outputs: [
-      { name: 'vault', internalType: 'address', type: 'address' },
-      { name: 'collateralId', internalType: 'bytes32', type: 'bytes32' }
-    ],
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view'
   },
   {
@@ -488,7 +447,7 @@ export const bitSmileyAbi = [
     type: 'function',
     inputs: [
       { name: '_vault', internalType: 'address', type: 'address' },
-      { name: '_bitUSD', internalType: 'int256', type: 'int256' },
+      { name: '_debt', internalType: 'int256', type: 'int256' },
       { name: '_collateral', internalType: 'int256', type: 'int256' }
     ],
     name: 'repay',
@@ -597,7 +556,10 @@ export const bitSmileyAbi = [
     type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
     name: 'vaults',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    outputs: [
+      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: 'collateralId', internalType: 'bytes32', type: 'bytes32' }
+    ],
     stateMutability: 'view'
   }
 ] as const
@@ -671,15 +633,6 @@ export const useReadBitSmileyGetLiquidationFee =
 export const useReadBitSmileyGetRoleAdmin = /*#__PURE__*/ createUseReadContract(
   { abi: bitSmileyAbi, functionName: 'getRoleAdmin' }
 )
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"getVaultChange"`
- */
-export const useReadBitSmileyGetVaultChange =
-  /*#__PURE__*/ createUseReadContract({
-    abi: bitSmileyAbi,
-    functionName: 'getVaultChange'
-  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"hasRole"`

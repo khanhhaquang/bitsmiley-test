@@ -3,10 +3,8 @@ import { useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 
 import { commonParam } from '@/config/settings'
-import {
-  useReadBitSmileyOwners,
-  useReadBitSmileyGetVaultChange
-} from '@/contracts/BitSmiley'
+import { useReadBitSmileyOwners } from '@/contracts/BitSmiley'
+import { useReadBitSmileyQueryGetVaultDetail } from '@/contracts/BitSmileyQuery'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
@@ -26,8 +24,7 @@ export const useUserVault = () => {
     isFetching: isFetchingVaultAddress
   } = useReadBitSmileyOwners({
     address: bitSmileyAddress,
-    args: address && [address],
-    query: { select: (res) => res?.[0] }
+    args: address && [address]
   })
 
   const query = {
@@ -39,7 +36,8 @@ export const useUserVault = () => {
       healthFactor: !res?.healthFactor
         ? ''
         : ((Number(res.healthFactor) / 1000) * 100).toString(),
-      debtBitUSD: !res?.debtBitUSD ? '' : formatEther(res.debtBitUSD),
+      debtBitUSD: !res?.debt ? '' : formatEther(res.debt),
+      fee: !res?.fee ? '' : formatEther(res.fee),
       lockedCollateral: !res?.lockedCollateral
         ? ''
         : formatEther(res.lockedCollateral),
@@ -57,7 +55,7 @@ export const useUserVault = () => {
     refetch: refetchVault,
     isFetching: isFetchingVault,
     ...rest
-  } = useReadBitSmileyGetVaultChange({
+  } = useReadBitSmileyQueryGetVaultDetail({
     address: bitSmileyAddress,
     args: vaultAddress && [
       vaultAddress,
@@ -80,7 +78,7 @@ export const useUserVault = () => {
     data: changedVault,
     refetch: refetchChangedVault,
     isFetching: isFetchingChangedVault
-  } = useReadBitSmileyGetVaultChange({
+  } = useReadBitSmileyQueryGetVaultDetail({
     address: bitSmileyAddress,
     args:
       vaultAddress && hasChangedVault
@@ -104,7 +102,7 @@ export const useUserVault = () => {
     data: maxVault,
     refetch: refetchMaxVault,
     isFetching: isFetchingMaxVault
-  } = useReadBitSmileyGetVaultChange({
+  } = useReadBitSmileyQueryGetVaultDetail({
     address: bitSmileyAddress,
     args: vaultAddress
       ? [

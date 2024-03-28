@@ -10,7 +10,7 @@ export const CaptionInvitationCode: React.FC = () => {
 
   return (
     <div className="mb-[18px] flex items-center gap-x-2 text-xs text-white/70">
-      <span>
+      <span className="text-nowrap">
         Your invitation code:{' '}
         <span className="text-white">{invitationCode}</span>{' '}
       </span>

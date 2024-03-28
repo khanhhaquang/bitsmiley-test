@@ -11,6 +11,7 @@ export interface IContractAddresses {
   oracle: Address
   staking: Address | null
   l2nft: Address | null
+  BitSmileyQuery: Address | null
 }
 export interface INetworkInfo {
   network: string

@@ -10,7 +10,9 @@ export type IVault = {
 export type IVaultFromChain = {
   liquidationPrice: bigint
   healthFactor: bigint
-  debtBitUSD: bigint
+  debt: bigint
+  fee: bigint
+  mintedBitUSD: bigint
   lockedCollateral: bigint
   availableToWithdraw: bigint
   availableToMint: bigint

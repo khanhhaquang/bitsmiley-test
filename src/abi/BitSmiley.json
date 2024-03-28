@@ -455,72 +455,6 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_vault",
-        "type": "address"
-      },
-      {
-        "internalType": "int256",
-        "name": "_collateral",
-        "type": "int256"
-      },
-      {
-        "internalType": "int256",
-        "name": "_bitUSD",
-        "type": "int256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_protectionSafety",
-        "type": "uint256"
-      }
-    ],
-    "name": "getVaultChange",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "liquidationPrice",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "healthFactor",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "debtBitUSD",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "lockedCollateral",
-            "type": "uint256"
-          },
-          {
-            "internalType": "int256",
-            "name": "availableToWithdraw",
-            "type": "int256"
-          },
-          {
-            "internalType": "int256",
-            "name": "availableToMint",
-            "type": "int256"
-          }
-        ],
-        "internalType": "struct VaultChange",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "role",
         "type": "bytes32"
@@ -677,13 +611,8 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "vault",
+        "name": "",
         "type": "address"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "collateralId",
-        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -749,7 +678,7 @@
       },
       {
         "internalType": "int256",
-        "name": "_bitUSD",
+        "name": "_debt",
         "type": "int256"
       },
       {
@@ -949,8 +878,13 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "",
+        "name": "owner",
         "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "collateralId",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",

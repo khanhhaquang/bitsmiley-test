@@ -123,6 +123,14 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     if (Number(repayBitUsd) >= 0 && Number(minRepay) > Number(repayBitUsd))
       return true
 
+    if (
+      !!vault?.debtBitUSD &&
+      !!vault?.fee &&
+      !!repayBitUsd &&
+      Number(repayBitUsd) < Number(vault?.fee)
+    )
+      return true
+
     return (
       Number(maxToWithdraw) >= 0 && Number(withdrawBtc) > Number(maxToWithdraw)
     )
@@ -203,7 +211,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     if (isMintFromBtc) {
       mintFromBtc(depositBtc, mintBitUsd)
     } else {
-      repayToBtc(withdrawBtc, repayBitUsd)
+      repayToBtc(withdrawBtc, repayBitUsd, vault?.debtBitUSD)
     }
   }
 
@@ -308,6 +316,30 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     refreshVaultValues,
     txnLink
   ])
+
+  const repayInputMessage = useMemo(() => {
+    if (
+      !!vault?.debtBitUSD &&
+      !!vault?.fee &&
+      !!repayBitUsd &&
+      Number(repayBitUsd) < Number(vault?.fee)
+    )
+      return (
+        <span className="text-warning">
+          Min repay must exceed stability fee
+        </span>
+      )
+
+    if (!!repayBitUsd && Number(repayBitUsd) > Number(bitUsdBalance)) {
+      return (
+        <span className="text-white">
+          *Available bitUSD doesn’t cover the debts
+        </span>
+      )
+    }
+
+    return null
+  }, [bitUsdBalance, repayBitUsd, vault?.debtBitUSD, vault?.fee])
 
   useEffect(() => {
     if (isMintFromBtc === true) {
@@ -446,6 +478,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
             <NumberInput
               value={repayBitUsd}
               disabled={repayBitUsdDisabled}
+              message={repayInputMessage}
               onInputChange={(v) => handleInput('repayBitUsd', v)}
               onFocus={() => setIsMintFromBtc(false)}
               greyOut={isMintFromBtc === true}

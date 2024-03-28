@@ -1,0 +1,335 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_bitsmiley",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_vaultManager",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_stabilityFee",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "NotCaller",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "prev",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "curr",
+        "type": "address"
+      }
+    ],
+    "name": "CallerUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "who",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "collateralId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "maxLTV",
+        "type": "uint256"
+      }
+    ],
+    "name": "CollateralConfigUpdated",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "bitsmiley",
+    "outputs": [
+      {
+        "internalType": "contract BitSmileyLike",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "caller",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "name": "collateralConfig",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxLTV",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_vault",
+        "type": "address"
+      },
+      {
+        "internalType": "int256",
+        "name": "_collateral",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "_bitUSD",
+        "type": "int256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_protectionSafety",
+        "type": "uint256"
+      }
+    ],
+    "name": "getVaultDetail",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "liquidationPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "healthFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "debt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "fee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "mintedBitUSD",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lockedCollateral",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "availableToWithdraw",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "availableToMint",
+            "type": "int256"
+          }
+        ],
+        "internalType": "struct VaultDetail",
+        "name": "detail",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "listCollaterals",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxLTV",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationFeeRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stabilityFeeRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "collateralId",
+            "type": "bytes32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "safetyFactor",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalDebt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalLocked",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "vaultMaxDebt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "vaultMinDebt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "maxDebt",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CollateralType",
+            "name": "collateral",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct Collateral[]",
+        "name": "collateralInfos",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_collateralId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxLTV",
+        "type": "uint256"
+      }
+    ],
+    "name": "setCollateralConfig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stabilityFee",
+    "outputs": [
+      {
+        "internalType": "contract StabilityFeeLike",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vaultManager",
+    "outputs": [
+      {
+        "internalType": "contract VaultManagerLike",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

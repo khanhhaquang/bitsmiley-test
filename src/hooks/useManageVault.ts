@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Hash, isHash, parseEther } from 'viem'
+import { Address, Hash, isHash, parseEther } from 'viem'
 import {
   useConfig,
   useWaitForTransactionReceipt,
@@ -132,8 +132,12 @@ export const useManageVault = () => {
       const txnId = await writeContractAsync({
         abi: bitSmileyAbi,
         address: bitSmileyAddress,
-        functionName: 'openVaultAndMintFromBTC',
-        args: [parseEther(mint), parseEther(deposit)]
+        functionName: 'openVault',
+        args: [
+          '0x10c95d39e8a42b19e261ec71e5dd406d926ee91fde976736ec3004b59165ec42',
+          parseEther(mint),
+          parseEther(deposit)
+        ]
       })
 
       setOpenVaultTxId(txnId)
@@ -183,7 +187,7 @@ export const useManageVault = () => {
       const txnId = await writeContractAsync({
         abi: bitSmileyAbi,
         address: bitSmileyAddress,
-        functionName: 'mintFromBTC',
+        functionName: 'mint',
         args: [vaultAddress, parseEther(mintBitUsd), parseEther(depositBtc)]
       })
 
@@ -219,8 +223,18 @@ export const useManageVault = () => {
     }
   }, [refetchBitUsdAllowance, refetchBitUsdBalance, repayResultStatus])
 
-  const repayToBtc = async (withdrawBtc: string, repayBitUsd: string) => {
-    if (!bitSmileyAddress || !address || (!withdrawBtc && !repayBitUsd)) return
+  const repayToBtc = async (
+    withdrawBtc: string,
+    repayBitUsd: string,
+    debtBitUSD?: string
+  ) => {
+    if (
+      !bitSmileyAddress ||
+      !address ||
+      !debtBitUSD ||
+      (!withdrawBtc && !repayBitUsd)
+    )
+      return
 
     try {
       setRepayToBtcTxnStatus(TransactionStatus.Signing)
@@ -231,12 +245,24 @@ export const useManageVault = () => {
         args: [address]
       })
 
-      const txnId = await writeContractAsync({
-        abi: bitSmileyAbi,
-        address: bitSmileyAddress,
-        functionName: 'repayToBTC',
-        args: [vaultAddress, parseEther(repayBitUsd), parseEther(withdrawBtc)]
-      })
+      const isRepayAll = debtBitUSD === repayBitUsd
+
+      let txnId: Address
+      if (isRepayAll) {
+        txnId = await writeContractAsync({
+          abi: bitSmileyAbi,
+          address: bitSmileyAddress,
+          functionName: 'repayAll',
+          args: [vaultAddress, parseEther(withdrawBtc)]
+        })
+      } else {
+        txnId = await writeContractAsync({
+          abi: bitSmileyAbi,
+          address: bitSmileyAddress,
+          functionName: 'repay',
+          args: [vaultAddress, parseEther(repayBitUsd), parseEther(withdrawBtc)]
+        })
+      }
 
       setRepayToBtcTxId(txnId)
       setRepayToBtcTxnStatus(TransactionStatus.Processing)
