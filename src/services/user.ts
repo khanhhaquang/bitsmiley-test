@@ -23,7 +23,7 @@ export interface INft {
   updateTime: Date
 }
 
-export interface IMintingPairOpenedInfo {
+export interface IMintingPairCommonInfo {
   name: string
   network: string
   chainId: number
@@ -31,8 +31,8 @@ export interface IMintingPairOpenedInfo {
   collateralId: Address
 }
 
-export interface IMintingPair extends IMintingPairOpenedInfo {
-  // from getVaultInfo
+export interface IMintingPair extends IMintingPairCommonInfo {
+  // from getAllVaultInfo decoded
   collateral: {
     maxDebt: string
     safetyFactor: string
@@ -45,8 +45,9 @@ export interface IMintingPair extends IMintingPairOpenedInfo {
   collateralId: Address
   liquidationFeeRate: string
   maxLTV: string
+  stabilityFeeRate: string
 
-  // from backend
+  // from backend (opened vault)
   fee?: string
   availableToMint?: string
   liquidationPrice?: string

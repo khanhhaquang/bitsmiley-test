@@ -67,11 +67,21 @@ export const useUserMintingPairs = (
         collateralId: c.collateralId,
         liquidationFeeRate: !c.liquidationFeeRate
           ? ''
-          : formatEther(c.liquidationFeeRate),
-        maxLTV: !c.maxLTV ? '' : formatEther(c.maxLTV),
+          : (
+              Number(formatEther(c.liquidationFeeRate)) *
+              10 ** 12 *
+              100
+            ).toString(),
+        maxLTV: !c.maxLTV
+          ? ''
+          : (Number(formatEther(c.maxLTV)) * 10 ** 9).toString(),
         stabilityFeeRate: !c.stabilityFeeRate
           ? ''
-          : formatEther(c.stabilityFeeRate),
+          : (
+              Number(formatEther(c.stabilityFeeRate)) *
+              10 ** 12 *
+              100
+            ).toString(),
         collateral: {
           tokenAddress: c.collateral.tokenAddress,
           maxDebt: !c.collateral.maxDebt

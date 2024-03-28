@@ -359,7 +359,7 @@ export const ManageVault: React.FC<{
     <div className="pb-12">
       {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
-      <ManageVaultHeaderInformation vault={vault} mintingPair={mintingPair} />
+      <ManageVaultHeaderInformation mintingPair={mintingPair} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
         <LiquidatedWarning

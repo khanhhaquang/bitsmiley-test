@@ -61,7 +61,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
           {customChains.find((c) => c.id.toString() === chainId)?.name}
         </div>
       ),
-    format: () => 'wBTC - bitUSD'
+    format: (item) => item?.name
   },
   {
     key: 'maxLTV',
@@ -77,7 +77,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[78px]',
     className: '!w-[78px]',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).fee
+    format: (item) => displayMintingPairValues(item).collateralStabilityFeeRate
   },
   {
     key: 'vaultFloor',
@@ -95,15 +95,6 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     message: messages.vaultCeiling,
     format: (item) =>
       displayMintingPairValues(item, false).collateralVaultCeiling
-  },
-  {
-    key: 'totalBitUsdAvailable',
-    title: 'Total bitUSD Available',
-    titleClassName: '!w-[111px]',
-    className: '!w-[111px]',
-    message: messages.totalBitUSD,
-    // TODO confirm format
-    format: () => '--'
   }
 ]
 
@@ -111,7 +102,7 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
   {
     key: 'pairName',
     title: '',
-    format: () => 'wBTC - bitUSD'
+    format: (item) => item?.name
   },
   {
     key: 'collateral',
@@ -146,7 +137,7 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
   }
 ]
 
-export const ManageVaultHeaderInfoTable: TTable<IMintingPair, IVault> = [
+export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
   {
     key: 'network',
     title: 'Network',
@@ -156,7 +147,7 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair, IVault> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (_, vault) => displayVaultValues(vault).fee
+    format: (item) => displayMintingPairValues(item).collateralStabilityFeeRate
   },
   {
     key: 'liquidationPenalty',
@@ -306,7 +297,7 @@ export const VaultHeaderColumns: TTable<IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).fee
+    format: (item) => displayMintingPairValues(item).collateralStabilityFeeRate
   },
   {
     key: 'Liquidation Fee',
@@ -318,7 +309,7 @@ export const VaultHeaderColumns: TTable<IMintingPair> = [
   {
     key: 'vaultFloor',
     title: 'Vault Floor',
-    message: messages.stabilityFee,
+    message: messages.vaultFloor,
     format: (item) => displayMintingPairValues(item).collateralVaultFloor
   }
 ]

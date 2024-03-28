@@ -69,7 +69,9 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
       select: (res) => ({
         debtBitUSD: mint,
         lockedCollateral: deposit,
-        healthFactor: !res?.healthFactor ? '' : formatEther(res?.healthFactor),
+        healthFactor: !res?.healthFactor
+          ? ''
+          : (Number(res?.healthFactor) / 100).toString(),
         liquidationPrice: !res?.liquidationPrice
           ? ''
           : formatEther(res.liquidationPrice),
@@ -82,6 +84,25 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
       })
     }
   })
+
+  const maxMint = useMemo(
+    () =>
+      !deposit
+        ? Number(mintingPair?.collateral.vaultMinDebt)
+        : Math.min(
+            Number(mintingPair?.collateral.vaultMaxDebt),
+            Number(deposit) *
+              wbtcPrice *
+              (Number(mintingPair?.collateral?.safetyFactor) * 10 ** 8)
+          ),
+    [
+      deposit,
+      mintingPair?.collateral?.safetyFactor,
+      mintingPair?.collateral.vaultMaxDebt,
+      mintingPair?.collateral.vaultMinDebt,
+      wbtcPrice
+    ]
+  )
 
   const isNextButtonDisabled = useMemo(() => {
     if (!deposit) return true
@@ -105,11 +126,10 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
 
   const mintDisabled = useMemo(() => {
     return (
-      !!mintingPair?.collateral?.vaultMinDebt &&
-      Number(vaultInfo?.availableToMint) <
-        Number(mintingPair?.collateral?.vaultMinDebt)
+      !!mintingPair?.collateral.vaultMinDebt &&
+      Number(maxMint) < Number(mintingPair?.collateral.vaultMinDebt)
     )
-  }, [mintingPair?.collateral?.vaultMinDebt, vaultInfo?.availableToMint])
+  }, [maxMint, mintingPair?.collateral.vaultMinDebt])
 
   const handleNext = () => {
     if (!isApproved) {
@@ -238,13 +258,13 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
           }
           title="Mint bitUSD"
           titleSuffix={
-            <>
-              Max mint: {formatBitUsd(vaultInfo?.availableToMint, true, true)}
-            </>
+            <span className="flex items-center gap-x-2">
+              Max mint: {formatBitUsd(maxMint, true, true)}
+            </span>
           }
           inputSuffix={
             <InputSuffixActionButton
-              onClick={() => setMint(vaultInfo?.availableToMint || '')}>
+              onClick={() => setMint(maxMint.toString())}>
               Max
             </InputSuffixActionButton>
           }

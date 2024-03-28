@@ -21,7 +21,7 @@ import {
   TableHeader
 } from '@/components/ui/table'
 import { chainsIconUrl } from '@/config/chain'
-import { bobTestnet } from '@/config/wagmi'
+import { bobTestnet, botanixTestnet } from '@/config/wagmi'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { IMintingPair } from '@/services/user'
@@ -198,7 +198,10 @@ const MintingPairTableRow: React.FC<{
     <>
       <SelectWalletModal
         expectedChainId={mintingPair.chainId}
-        hideParticle={mintingPair.chainId === bobTestnet.id} //TODO: CHECKING FOR MAINNET WHEN IT'S AVAILABLE
+        hideParticle={
+          mintingPair.chainId === bobTestnet.id ||
+          mintingPair.chainId === botanixTestnet.id
+        } //TODO: CHECKING FOR MAINNET WHEN IT'S AVAILABLE
         isOpen={isConnectWalletModalOpen}
         onClose={() => setIsConnectWalletModalOpen(false)}
       />
