@@ -181,49 +181,49 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
   }
 ]
 
-export const ManageVaultVaultInfoTable: TTable<IMintingPair> = [
+export const ManageVaultVaultInfoTable: TTable<IVault> = [
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
     message: messages.liquidationPrice,
-    format: (item) => displayMintingPairValues(item).liquidationPrice
+    format: (vault) => displayVaultValues(vault).liquidationPrice
   },
   {
     key: 'totalDebt',
     title: 'Total Debt',
     message: messages.totalDebt,
-    format: (item) => displayMintingPairValues(item).totalDebt
+    format: (vault) => displayVaultValues(vault).debtBitUSD
   },
   {
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    format: (item) => (
+    format: (vault) => (
       <span
-        className={getHealthFactorTextColor(Number(item?.healthFactor) * 100)}>
-        {displayMintingPairValues(item).healthFactor}
+        className={getHealthFactorTextColor(Number(vault?.healthFactor) * 100)}>
+        {displayVaultValues(vault).healthFactor}
       </span>
     )
   },
   {
     key: 'mintedBitUSD',
     title: 'Minted bitUSD',
-    format: () => 123
+    format: (vault) => displayVaultValues(vault).mintedBitUSD
   },
   {
     key: 'collateral',
     title: 'Collateral',
-    format: (item) => displayMintingPairValues(item).collateralLocked
+    format: (vault) => displayVaultValues(vault).lockedCollateral
   },
   {
     key: 'availableToMint',
     title: 'Available to Mint',
-    format: (item) => displayMintingPairValues(item).availableToMint
+    format: (vault) => displayVaultValues(vault).availableToMint
   },
   {
     key: 'availableToWithdraw',
     title: 'Available To Withdraw',
-    format: (item) => displayMintingPairValues(item).availableToWithdraw
+    format: (vault) => displayVaultValues(vault).availableToWithdraw
   },
   {
     key: 'borrowRate',

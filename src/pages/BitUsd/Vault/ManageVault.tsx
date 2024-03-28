@@ -22,6 +22,7 @@ import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { IMintingPair } from '@/services/user'
 import { TransactionStatus } from '@/types/common'
+import { IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 import {
   formatNumberAsCompact,
@@ -384,7 +385,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           </div>
         )}
 
-        <VaultInfoSection className="mb-12" mintingPair={mintingPair} />
+        <VaultInfoSection className="mb-12" vault={vault} />
 
         <div className="mb-6 grid grid-cols-2 gap-x-12">
           <div className="overflow-hidden">
@@ -569,8 +570,8 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
 const VaultInfoSection: React.FC<{
   className?: string
-  mintingPair?: IMintingPair
-}> = ({ className, mintingPair }) => {
+  vault?: IVault
+}> = ({ className, vault }) => {
   return (
     <div className={cn('flex flex-col gap-y-6', className)}>
       <ManageVaultSectionTitle
@@ -594,7 +595,7 @@ const VaultInfoSection: React.FC<{
               {title}
             </div>
             <div className="py-1 pl-2 pr-1 font-bold text-white">
-              {format(mintingPair)}
+              {format(vault)}
             </div>
           </div>
         ))}

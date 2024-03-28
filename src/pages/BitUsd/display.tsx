@@ -65,6 +65,8 @@ export const displayVaultValues = (
   vault?: IVault,
   withUnit: boolean = true
 ) => ({
+  fee: formatBitUsd(vault?.fee, withUnit),
+  mintedBitUSD: formatBitUsd(vault?.mintedBitUSD, withUnit),
   liquidationPrice: formatMoney(vault?.liquidationPrice, withUnit),
   healthFactor: formatPercentage(vault?.healthFactor, withUnit),
   debtBitUSD: formatBitUsd(vault?.debtBitUSD, withUnit),

@@ -2,6 +2,8 @@ export type IVault = {
   liquidationPrice?: string
   healthFactor?: string
   debtBitUSD?: string
+  fee?: string
+  mintedBitUSD?: string
   lockedCollateral?: string
   availableToWithdraw?: string
   availableToMint?: string

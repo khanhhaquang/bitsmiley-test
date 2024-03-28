@@ -10,7 +10,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IVaultFromChain } from '@/types/vault'
+import { IVault, IVaultFromChain } from '@/types/vault'
 
 export const useUserVault = () => {
   const { address } = useUserInfo()
@@ -29,7 +29,7 @@ export const useUserVault = () => {
 
   const query = {
     placeholderData: keepPreviousData,
-    select: (res?: IVaultFromChain) => ({
+    select: (res?: IVaultFromChain): IVault => ({
       liquidationPrice: !res?.liquidationPrice
         ? ''
         : formatEther(res.liquidationPrice),
@@ -38,6 +38,7 @@ export const useUserVault = () => {
         : ((Number(res.healthFactor) / 1000) * 100).toString(),
       debtBitUSD: !res?.debt ? '' : formatEther(res.debt),
       fee: !res?.fee ? '' : formatEther(res.fee),
+      mintedBitUSD: !res?.mintedBitUSD ? '' : formatEther(res?.mintedBitUSD),
       lockedCollateral: !res?.lockedCollateral
         ? ''
         : formatEther(res.lockedCollateral),
