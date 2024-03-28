@@ -11,10 +11,10 @@ import { bitSmileyAbi } from '@/contracts/BitSmiley'
 import { bitUsdAbi } from '@/contracts/BitUsd'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
+import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { TransactionStatus } from '@/types/common'
-
-import { useTokenBalance } from './useTokenBalance'
+import { formartNumberAsCeil } from '@/utils/number'
 
 export const useManageVault = () => {
   const config = useConfig()
@@ -245,7 +245,8 @@ export const useManageVault = () => {
         args: [address]
       })
 
-      const isRepayAll = debtBitUSD === repayBitUsd
+      const ceiledRepayBitUsd = formartNumberAsCeil(repayBitUsd)
+      const isRepayAll = ceiledRepayBitUsd >= debtBitUSD
 
       let txnId: Address
       if (isRepayAll) {
@@ -260,7 +261,11 @@ export const useManageVault = () => {
           abi: bitSmileyAbi,
           address: bitSmileyAddress,
           functionName: 'repay',
-          args: [vaultAddress, parseEther(repayBitUsd), parseEther(withdrawBtc)]
+          args: [
+            vaultAddress,
+            parseEther(ceiledRepayBitUsd),
+            parseEther(withdrawBtc)
+          ]
         })
       }
 
