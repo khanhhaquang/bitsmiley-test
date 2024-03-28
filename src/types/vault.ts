@@ -1,4 +1,6 @@
-export type IVault = {
+import { Address } from 'viem'
+
+export interface IVault {
   liquidationPrice?: string
   healthFactor?: string
   debtBitUSD?: string
@@ -9,7 +11,7 @@ export type IVault = {
   availableToMint?: string
 }
 
-export type IVaultFromChain = {
+export interface IVaultFromChain {
   liquidationPrice: bigint
   healthFactor: bigint
   debt: bigint
@@ -18,4 +20,20 @@ export type IVaultFromChain = {
   lockedCollateral: bigint
   availableToWithdraw: bigint
   availableToMint: bigint
+}
+export interface ICollateralFromChain {
+  collateral: {
+    maxDebt: bigint
+    safetyFactor: bigint
+    tokenAddress: Address
+    totalDebt: bigint
+    totalLocked: bigint
+    vaultMaxDebt: bigint
+    vaultMinDebt: bigint
+  }
+  collateralId: Address
+  liquidationFeeRate: bigint
+  maxLTV: bigint
+  name: string
+  stabilityFeeRate: bigint
 }

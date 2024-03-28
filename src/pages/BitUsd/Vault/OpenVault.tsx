@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Address, formatEther, parseEther } from 'viem'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
-import { commonParam } from '@/config/settings'
+import { useReadBitSmileyQueryTryOpenVault } from '@/contracts/BitSmileyQuery'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
@@ -11,7 +12,6 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { TransactionStatus } from '@/types/common'
-import { IVault } from '@/types/vault'
 
 import VaultHeader from './component/VaultHeader'
 
@@ -26,11 +26,16 @@ import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayMintingPairValues, formatBitUsd, formatWBtc } from '../display'
 
-export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
+export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
+  chainId,
+  collateralId
+}) => {
   const navigate = useNavigate()
   const { refreshVaultValues } = useUserVault()
-  const { mintingPair, refetch: refetchMintingPairs } =
-    useUserMintingPairs(chainId)
+  const { mintingPair, refetch: refetchMintingPairs } = useUserMintingPairs(
+    chainId,
+    collateralId
+  )
   const { blockExplorerUrl } = useUserInfo()
   const contractAddresses = useContractAddresses()
   const { balance: wbtcBalance } = useTokenBalance(contractAddresses?.WBTC)
@@ -54,27 +59,45 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     approvalTxnStatus === TransactionStatus.Processing
   const isApproved = Number(wBtcAllowance) >= Number(deposit)
 
-  const maxMint = useMemo(
-    () =>
-      !deposit
-        ? Number(mintingPair?.vaultCeiling)
-        : Math.min(
-            Number(mintingPair?.vaultCeiling),
-            Number(deposit) *
-              wbtcPrice *
-              (Number(commonParam.safeRate) / 10 ** 9)
-          ),
-    [deposit, mintingPair?.vaultCeiling, wbtcPrice]
-  )
+  const contractAddress = useContractAddresses()
+  const bitSmileyQueryAddress = contractAddress?.bitSmileyQuery || undefined
+
+  const { data: vaultInfo } = useReadBitSmileyQueryTryOpenVault({
+    address: bitSmileyQueryAddress,
+    args: [collateralId as Address, parseEther(deposit), parseEther(mint)],
+    query: {
+      select: (res) => ({
+        debtBitUSD: mint,
+        lockedCollateral: deposit,
+        healthFactor: !res?.healthFactor ? '' : formatEther(res?.healthFactor),
+        liquidationPrice: !res?.liquidationPrice
+          ? ''
+          : formatEther(res.liquidationPrice),
+        availableToWithdraw: !res?.availableToWithdraw
+          ? ''
+          : formatEther(res.availableToWithdraw),
+        availableToMint: !res?.availableToMint
+          ? ''
+          : formatEther(res?.availableToMint)
+      })
+    }
+  })
 
   const isNextButtonDisabled = useMemo(() => {
     if (!deposit) return true
 
     if (Number(deposit) > wbtcBalance) return true
-    if (mint && Number(mint) > Number(maxMint)) return true
-    if (mint && Number(mint) < Number(mintingPair?.vaultFloor)) return true
+    if (mint && Number(mint) > Number(vaultInfo?.availableToMint)) return true
+    if (mint && Number(mint) < Number(mintingPair?.collateral?.vaultMinDebt))
+      return true
     return false
-  }, [deposit, maxMint, mint, mintingPair?.vaultFloor, wbtcBalance])
+  }, [
+    deposit,
+    mint,
+    mintingPair?.collateral?.vaultMinDebt,
+    vaultInfo?.availableToMint,
+    wbtcBalance
+  ])
 
   const depositDisabled = useMemo(() => {
     if (wbtcBalance <= 0) return true
@@ -82,16 +105,17 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
 
   const mintDisabled = useMemo(() => {
     return (
-      !!mintingPair?.vaultFloor &&
-      Number(maxMint) < Number(mintingPair?.vaultFloor)
+      !!mintingPair?.collateral?.vaultMinDebt &&
+      Number(vaultInfo?.availableToMint) <
+        Number(mintingPair?.collateral?.vaultMinDebt)
     )
-  }, [maxMint, mintingPair?.vaultFloor])
+  }, [mintingPair?.collateral?.vaultMinDebt, vaultInfo?.availableToMint])
 
   const handleNext = () => {
     if (!isApproved) {
       approvalVault('wBTC', deposit)
     } else {
-      openVault(deposit, mint)
+      openVault(deposit, mint, collateralId)
     }
   }
 
@@ -102,21 +126,6 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(deposit)).toFixed(2)
   }, [deposit, wbtcPrice])
-
-  const vaultInfo: IVault = useMemo(
-    () => ({
-      liquidationPrice: mintingPair?.liquidationPrice,
-      debtBitUSD: mint,
-      lockedCollateral: deposit,
-      healthFactor: !mint
-        ? ''
-        : (
-            ((wbtcPrice * Number(deposit) * 0.75) / Number(mint)) *
-            100
-          ).toString()
-    }),
-    [deposit, mint, mintingPair?.liquidationPrice, wbtcPrice]
-  )
 
   const processingModal = useMemo(() => {
     if (isApproving)
@@ -220,14 +229,22 @@ export const OpenVault: React.FC<{ chainId: string }> = ({ chainId }) => {
           onInputChange={(v) => handleInput(v, setMint)}
           disabled={mintDisabled}
           greyOut={mintDisabled}
-          disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
-            displayMintingPairValues(mintingPair).vaultFloor
-          } bitUSD`}
+          disabledMessage={
+            <span>
+              Max bitUSD you can mint doesn't reach vault floor:{' '}
+              {displayMintingPairValues(mintingPair).collateralVaultFloor}{' '}
+              bitUSD
+            </span>
+          }
           title="Mint bitUSD"
-          titleSuffix={<>Max mint: ${formatBitUsd(maxMint, true, true)}</>}
+          titleSuffix={
+            <>
+              Max mint: {formatBitUsd(vaultInfo?.availableToMint, true, true)}
+            </>
+          }
           inputSuffix={
             <InputSuffixActionButton
-              onClick={() => setMint(maxMint.toString() || '')}>
+              onClick={() => setMint(vaultInfo?.availableToMint || '')}>
               Max
             </InputSuffixActionButton>
           }

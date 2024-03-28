@@ -90,8 +90,7 @@ export const bitSmileyQueryAbi = [
     inputs: [
       { name: '_vault', internalType: 'address', type: 'address' },
       { name: '_collateral', internalType: 'int256', type: 'int256' },
-      { name: '_bitUSD', internalType: 'int256', type: 'int256' },
-      { name: '_protectionSafety', internalType: 'uint256', type: 'uint256' }
+      { name: '_bitUSD', internalType: 'int256', type: 'int256' }
     ],
     name: 'getVaultDetail',
     outputs: [
@@ -205,6 +204,37 @@ export const bitSmileyQueryAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_collateral', internalType: 'uint256', type: 'uint256' },
+      { name: '_bitUSD', internalType: 'uint256', type: 'uint256' }
+    ],
+    name: 'tryOpenVault',
+    outputs: [
+      {
+        name: 'openVault',
+        internalType: 'struct OpenVault',
+        type: 'tuple',
+        components: [
+          { name: 'healthFactor', internalType: 'uint256', type: 'uint256' },
+          {
+            name: 'liquidationPrice',
+            internalType: 'uint256',
+            type: 'uint256'
+          },
+          {
+            name: 'availableToWithdraw',
+            internalType: 'int256',
+            type: 'int256'
+          },
+          { name: 'availableToMint', internalType: 'int256', type: 'int256' }
+        ]
+      }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'vaultManager',
     outputs: [
@@ -276,6 +306,15 @@ export const useReadBitSmileyQueryStabilityFee =
   /*#__PURE__*/ createUseReadContract({
     abi: bitSmileyQueryAbi,
     functionName: 'stabilityFee'
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyQueryAbi}__ and `functionName` set to `"tryOpenVault"`
+ */
+export const useReadBitSmileyQueryTryOpenVault =
+  /*#__PURE__*/ createUseReadContract({
+    abi: bitSmileyQueryAbi,
+    functionName: 'tryOpenVault'
   })
 
 /**

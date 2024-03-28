@@ -116,10 +116,10 @@ const MintingPairsTable: React.FC<{
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pairs.map((mintingPair) => (
+                {pairs.map((mintingPair, index) => (
                   <MintingPairTableRow
+                    key={index}
                     table={table}
-                    key={mintingPair.chainId}
                     isOpenedVaults={isOpenedVaults}
                     mintingPair={mintingPair}
                   />
@@ -154,7 +154,9 @@ const MintingPairTableRow: React.FC<{
         { chainId: mintingPair.chainId },
         {
           onSuccess: () => {
-            navigate(`./vault/${mintingPair.chainId}`)
+            navigate(
+              `./vault/${mintingPair.chainId}/${mintingPair.collateralId}`
+            )
           },
           onError: () => {
             console.error('Switching network failed')
@@ -168,7 +170,7 @@ const MintingPairTableRow: React.FC<{
       setIsConnectWalletModalOpen(true)
       return
     }
-    navigate(`./vault/${mintingPair.chainId}`)
+    navigate(`./vault/${mintingPair.chainId}/${mintingPair.collateralId}`)
   }
 
   const liquidated = mintingPair.liquidated?.[0]
@@ -200,9 +202,7 @@ const MintingPairTableRow: React.FC<{
         isOpen={isConnectWalletModalOpen}
         onClose={() => setIsConnectWalletModalOpen(false)}
       />
-      <TableRow
-        key={mintingPair.chainId}
-        className="py-3 [&_td]:w-[120px] [&_td]:p-0">
+      <TableRow className="py-3 [&_td]:w-[120px] [&_td]:p-0">
         {table.map(({ key, format, className }) => (
           <TableCell key={key} className={cn('text-nowrap', className)}>
             {format(mintingPair)}

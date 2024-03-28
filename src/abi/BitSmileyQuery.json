@@ -141,11 +141,6 @@
         "internalType": "int256",
         "name": "_bitUSD",
         "type": "int256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_protectionSafety",
-        "type": "uint256"
       }
     ],
     "name": "getVaultDetail",
@@ -314,6 +309,57 @@
         "internalType": "contract StabilityFeeLike",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_collateralId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_collateral",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_bitUSD",
+        "type": "uint256"
+      }
+    ],
+    "name": "tryOpenVault",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "healthFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "availableToWithdraw",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "availableToMint",
+            "type": "int256"
+          }
+        ],
+        "internalType": "struct OpenVault",
+        "name": "openVault",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

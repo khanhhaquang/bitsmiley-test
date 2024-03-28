@@ -2,7 +2,6 @@ import { keepPreviousData } from '@tanstack/react-query'
 import { useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 
-import { commonParam } from '@/config/settings'
 import { useReadBitSmileyOwners } from '@/contracts/BitSmiley'
 import { useReadBitSmileyQueryGetVaultDetail } from '@/contracts/BitSmileyQuery'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
@@ -17,7 +16,7 @@ export const useUserVault = () => {
   const contractAddresses = useContractAddresses()
 
   const bitSmileyAddress = contractAddresses?.BitSmiley
-  const bitSmileyQueryAddress = contractAddresses?.BitSmileyQuery || undefined
+  const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery || undefined
 
   const {
     data: vaultAddress,
@@ -59,12 +58,7 @@ export const useUserVault = () => {
     ...rest
   } = useReadBitSmileyQueryGetVaultDetail({
     address: bitSmileyQueryAddress,
-    args: vaultAddress && [
-      vaultAddress,
-      parseEther('0'),
-      parseEther('0'),
-      commonParam.safeRate
-    ],
+    args: vaultAddress && [vaultAddress, parseEther('0'), parseEther('0')],
     query
   })
 
@@ -87,8 +81,7 @@ export const useUserVault = () => {
         ? [
             vaultAddress,
             parseEther(debouncedChangedCollateral),
-            parseEther(debouncedChangedBitUsd),
-            commonParam.safeRate
+            parseEther(debouncedChangedBitUsd)
           ]
         : undefined,
     query
@@ -110,8 +103,7 @@ export const useUserVault = () => {
       ? [
           vaultAddress,
           parseEther(debouncedMaxVaultCollateral),
-          parseEther(debouncedMaxVaultBitUsd),
-          commonParam.safeRate
+          parseEther(debouncedMaxVaultBitUsd)
         ]
       : undefined,
     query

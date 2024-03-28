@@ -122,7 +122,11 @@ export const useManageVault = () => {
     }
   }, [openVaultTxnResultStatus, refetchWBtcAllowance, refetchWBtcBalance])
 
-  const openVault = async (deposit: string, mint: string) => {
+  const openVault = async (
+    deposit: string,
+    mint: string,
+    collateralId: string
+  ) => {
     const totalNum = Number(mint) + Number(deposit)
 
     if (!bitSmileyAddress || !totalNum) return
@@ -133,11 +137,7 @@ export const useManageVault = () => {
         abi: bitSmileyAbi,
         address: bitSmileyAddress,
         functionName: 'openVault',
-        args: [
-          '0x10c95d39e8a42b19e261ec71e5dd406d926ee91fde976736ec3004b59165ec42',
-          parseEther(mint),
-          parseEther(deposit)
-        ]
+        args: [collateralId as Address, parseEther(mint), parseEther(deposit)]
       })
 
       setOpenVaultTxId(txnId)

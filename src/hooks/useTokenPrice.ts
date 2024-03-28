@@ -1,16 +1,17 @@
-import { Hash, formatEther } from 'viem'
+import { useParams } from 'react-router-dom'
+import { Address, formatEther } from 'viem'
 
-import { commonParam } from '@/config/settings'
 import { useReadOracleGetPrice } from '@/contracts/Oracle'
 
 import { useContractAddresses } from './useContractAddresses'
 
-export const useTokenPrice = (tokenId: Hash = commonParam.BTC) => {
+export const useTokenPrice = () => {
+  const { collateralId } = useParams()
   const contractAddresses = useContractAddresses()
 
   const { data } = useReadOracleGetPrice({
     address: contractAddresses?.oracle,
-    args: [tokenId],
+    args: (collateralId as Address) && [collateralId as Address],
     query: {
       refetchInterval: 5 * 1000
     }

@@ -38,13 +38,18 @@ import { NumberInput } from '../components/NumberInput'
 import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayMintingPairValues, displayVaultValues } from '../display'
+import { displayVaultValues } from '../display'
 
-export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
+export const ManageVault: React.FC<{
+  chainId: string
+  collateralId: string
+}> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
   const { blockExplorerUrl } = useUserInfo()
-  const { mintingPair, refetch: refetchMintingPairs } =
-    useUserMintingPairs(chainId)
+  const { mintingPair, refetch: refetchMintingPairs } = useUserMintingPairs(
+    chainId,
+    collateralId
+  )
   const {
     vault,
     changedVault,
@@ -90,7 +95,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     if (!repayBitUsd || !vault || !mintingPair) return 0
 
     const debt = Number(vault.debtBitUSD)
-    const floor = Number(mintingPair.vaultFloor)
+    const floor = Number(mintingPair?.collateral?.vaultMinDebt)
     const repay = Number(repayBitUsd)
     const remain = debt - repay
 
@@ -151,8 +156,9 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
   const mintBitUsdDisabled = useMemo(
     () =>
       Number(maxVault?.availableToMint) <= 0 ||
-      Number(maxVault?.availableToMint) < Number(mintingPair?.vaultFloor),
-    [maxVault?.availableToMint, mintingPair?.vaultFloor]
+      Number(maxVault?.availableToMint) <
+        Number(mintingPair?.collateral.vaultMinDebt),
+    [maxVault?.availableToMint, mintingPair?.collateral.vaultMinDebt]
   )
   const repayBitUsdDisabled = useMemo(
     () => bitUsdBalance <= 0 || Number(vault?.debtBitUSD) <= 0,
@@ -353,7 +359,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
     <div className="pb-12">
       {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
-      <ManageVaultHeaderInformation mintingPair={mintingPair} />
+      <ManageVaultHeaderInformation vault={vault} mintingPair={mintingPair} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
         <LiquidatedWarning
@@ -430,12 +436,14 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
               onInputChange={(v) => handleInput('mintBitUsd', v)}
               greyOut={isMintFromBtc === false}
               title="mint bitUSD"
-              disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${
-                displayMintingPairValues(mintingPair).vaultFloor
-              } bitUSD`}
+              disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${formatNumberAsCompact(
+                mintingPair?.collateral.vaultMinDebt || ''
+              )} bitUSD`}
               titleSuffix={
-                'Max Mint: ' +
-                displayVaultValues(maxVault, false).availableToMint
+                <span className="flex items-center gap-x-2">
+                  Max Mint:
+                  {displayVaultValues(maxVault, false).availableToMint}
+                </span>
               }
               inputSuffix={
                 <InputSuffixActionButton
@@ -522,7 +530,7 @@ export const ManageVault: React.FC<{ chainId: string }> = ({ chainId }) => {
                 disabled={nextButtonDisabled}
                 className="h-9 w-full flex-1">
                 {isNotApproved ? (
-                  <span className="flex items-center">
+                  <span className="flex items-center justify-center gap-x-2">
                     Give permission to use {isMintFromBtc ? 'wBTC' : 'bitUSD'}{' '}
                     <InfoIndicator message="give permission" />
                   </span>

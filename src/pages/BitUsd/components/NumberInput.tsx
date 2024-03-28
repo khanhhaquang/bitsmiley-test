@@ -14,7 +14,7 @@ export type NumberInputProps = {
   onFocus?: () => void
   onBlur?: () => void
   onInputChange?: (v?: string) => void
-  disabledMessage?: string
+  disabledMessage?: ReactNode
   message?: ReactNode
 }
 

@@ -69,7 +69,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[70px] text-nowrap',
     className: '!w-[70px] text-nowrap',
     message: messages.maxLTV,
-    format: (item) => displayMintingPairValues(item).maxLTV
+    format: (item) => displayMintingPairValues(item).collateralMaxLTV
   },
   {
     key: 'borrowRate',
@@ -77,12 +77,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[78px]',
     className: '!w-[78px]',
     message: messages.stabilityFee,
-    format: () => (
-      <span className="flex items-center gap-x-1">
-        <span className="line-through">13%</span>
-        <span>0%</span>
-      </span>
-    )
+    format: (item) => displayMintingPairValues(item).fee
   },
   {
     key: 'vaultFloor',
@@ -90,7 +85,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[99px] text-nowrap',
     className: '!w-[99px] text-nowrap',
     message: messages.vaultFloor,
-    format: (item) => displayMintingPairValues(item, false).vaultFloor
+    format: (item) => displayMintingPairValues(item, false).collateralVaultFloor
   },
   {
     key: 'vaultCeiling',
@@ -98,7 +93,8 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: 'w-[113px] text-nowrap',
     className: 'w-[113px] text-nowrap',
     message: messages.vaultCeiling,
-    format: (item) => displayMintingPairValues(item, false).vaultCeiling
+    format: (item) =>
+      displayMintingPairValues(item, false).collateralVaultCeiling
   },
   {
     key: 'totalBitUsdAvailable',
@@ -107,7 +103,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     className: '!w-[111px]',
     message: messages.totalBitUSD,
     // TODO confirm format
-    format: () => '62,131'
+    format: () => '--'
   }
 ]
 
@@ -123,7 +119,7 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
     className: '!w-[100px]',
     titleClassName: '!w-[100px]',
     message: messages.collateral,
-    format: (item) => displayMintingPairValues(item).collateralLocked
+    format: (item) => displayMintingPairValues(item).lockedCollateral
   },
   {
     key: 'totalDebt',
@@ -150,7 +146,7 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
   }
 ]
 
-export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
+export const ManageVaultHeaderInfoTable: TTable<IMintingPair, IVault> = [
   {
     key: 'network',
     title: 'Network',
@@ -160,24 +156,20 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: () => (
-      <span className="flex items-center gap-x-1">
-        <span className="line-through">13%</span>
-        <span>0%</span>
-      </span>
-    )
+    format: (_, vault) => displayVaultValues(vault).fee
   },
   {
     key: 'liquidationPenalty',
     title: 'Liquidation Fee',
     message: messages.liquidationFee,
-    format: (item) => displayMintingPairValues(item).liquidationPenalty
+    format: (item) =>
+      displayMintingPairValues(item).collateralLiquidationFeeRate
   },
   {
     key: 'vaultFloor',
     title: 'Vault Floor',
     message: messages.vaultFloor,
-    format: (item) => displayMintingPairValues(item).vaultFloor
+    format: (item) => displayMintingPairValues(item).collateralVaultFloor
   }
 ]
 
@@ -226,15 +218,10 @@ export const ManageVaultVaultInfoTable: TTable<IVault> = [
     format: (vault) => displayVaultValues(vault).availableToWithdraw
   },
   {
-    key: 'borrowRate',
+    key: 'fee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: () => (
-      <span className="flex items-center gap-x-1">
-        <span className="line-through">13%</span>
-        <span>0%</span>
-      </span>
-    )
+    format: (vault) => displayVaultValues(vault).fee
   }
 ]
 
@@ -319,18 +306,19 @@ export const VaultHeaderColumns: TTable<IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: () => '0%'
+    format: (item) => displayMintingPairValues(item).fee
   },
   {
     key: 'Liquidation Fee',
     title: 'liquidationFee',
     message: messages.liquidationFee,
-    format: (item) => displayMintingPairValues(item).liquidationPenalty
+    format: (item) =>
+      displayMintingPairValues(item).collateralLiquidationFeeRate
   },
   {
     key: 'vaultFloor',
     title: 'Vault Floor',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).vaultFloor
+    format: (item) => displayMintingPairValues(item).collateralVaultFloor
   }
 ]
