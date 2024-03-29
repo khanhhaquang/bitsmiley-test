@@ -74,10 +74,15 @@ export const botanixTestnet = {
   testnet: true
 } as const satisfies Chain
 
+//TODO: PARTICLE DOES NOT SUPPORT BOB/BOTANIX YET
+export const chainsNotSupportedByParticle: number[] = [
+  botanixTestnet.id,
+  bobTestnet.id
+]
+
 export const customChains = [
   merlinTestnet,
   merlinMainnet,
   bobTestnet,
-  bSquaredTestnet,
-  botanixTestnet
+  bSquaredTestnet
 ] as Chain[]

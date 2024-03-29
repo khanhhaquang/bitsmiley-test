@@ -7,7 +7,7 @@ import { ReactNode, useMemo, useState } from 'react'
 import { Transport } from 'viem'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 
-import { bobTestnet, botanixTestnet, customChains } from '@/config/wagmi'
+import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import LoadingResourcesPage from '@/pages/LoadingResources'
@@ -67,9 +67,8 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
           accountContracts: {
             BTC: [
               {
-                //TODO: PARTICLE DOES NOT SUPPORT BOB/BOTANIX YET
                 chainIds: supportedChainIds.filter(
-                  (v) => v !== bobTestnet.id && v !== botanixTestnet.id
+                  (v) => !chainsNotSupportedByParticle.includes(v)
                 ),
                 version: '1.0.0'
               }

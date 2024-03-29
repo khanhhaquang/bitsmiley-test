@@ -164,15 +164,13 @@ export const useUserMintingPairs = (
     if (!chainId || !collateralId) return false
     return !!mintingPairs
       ?.filter((item) => item.isOpenVault)
-      ?.find(
-        (p) => p.chainId === Number(chainId) && p.collateralId === collateralId
-      )
+      ?.find((p) => p.chainId === chainId && p.collateralId === collateralId)
   }, [chainId, collateralId, mintingPairs])
 
   const mintingPair = useMemo(
     () =>
       mintingPairs?.find(
-        (p) => p.chainId === Number(chainId) && p.collateralId === collateralId
+        (p) => p.chainId === chainId && p.collateralId === collateralId
       ),
     [chainId, collateralId, mintingPairs]
   )
