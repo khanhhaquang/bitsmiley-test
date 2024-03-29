@@ -12,7 +12,10 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
   const { enabledFeatures } = useUserInfo()
-  const bitUsdPathPatterns = ['/app/testnet', '/app/testnet/vault/:chainId']
+  const bitUsdPathPatterns = [
+    '/app/testnet',
+    '/app/testnet/vault/:chainId/:collateralId'
+  ]
   const bitPointPathPattern = ['/app/bit-point', '/app/bit-point/history']
 
   return (
