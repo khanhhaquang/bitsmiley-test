@@ -3,7 +3,6 @@ import {
   ManageVaultSectionTitleIcon,
   VaultInfoIcon
 } from '@/assets/icons'
-import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
@@ -11,10 +10,9 @@ import { RefreshButton } from '../../components/RefreshButton'
 import { ManageVaultVaultInfoTable } from '../../tables'
 
 export const ManageVaultInfoSection: React.FC<{
-  className?: string
-  mintingPair?: IMintingPair
   vault?: IVault
-}> = ({ className, vault, mintingPair }) => {
+  className?: string
+}> = ({ className, vault }) => {
   return (
     <div className={cn('flex flex-col gap-y-6', className)}>
       <ManageVaultSectionTitle
@@ -38,7 +36,7 @@ export const ManageVaultInfoSection: React.FC<{
               {title}
             </div>
             <div className="py-1 pl-2 pr-1 font-bold text-white">
-              {format(vault, mintingPair)}
+              {format(vault)}
             </div>
           </div>
         ))}

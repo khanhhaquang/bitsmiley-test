@@ -70,11 +70,7 @@ export const useUserMintingPairs = (
         collateralId: c.collateralId,
         liquidationFeeRate: !c.liquidationFeeRate
           ? ''
-          : (
-              Number(formatEther(c.liquidationFeeRate)) *
-              10 ** 12 *
-              100
-            ).toString(),
+          : (Number(formatEther(c.liquidationFeeRate)) * 10 ** 6).toString(),
         maxLTV: !c.maxLTV
           ? ''
           : (Number(formatEther(c.maxLTV)) * 10 ** 9).toString(),
@@ -111,7 +107,7 @@ export const useUserMintingPairs = (
         liquidationPrice: !i.liquidationPrice
           ? ''
           : formatEther(BigInt(i.liquidationPrice)),
-        healthFactor: (Number(i.healthFactor) / 1000).toString(),
+        healthFactor: (Number(i.healthFactor) / 100).toString(),
         availableToWithdraw: !i.availableToWithdraw
           ? ''
           : formatEther(BigInt(i.availableToWithdraw)),

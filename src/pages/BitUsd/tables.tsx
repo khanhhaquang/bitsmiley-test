@@ -164,7 +164,7 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
   }
 ]
 
-export const ManageVaultVaultInfoTable: TTable<IVault, IMintingPair> = [
+export const ManageVaultVaultInfoTable: TTable<IVault> = [
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
@@ -211,8 +211,7 @@ export const ManageVaultVaultInfoTable: TTable<IVault, IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (_, mintingPair) =>
-      displayMintingPairValues(mintingPair).collateralStabilityFee
+    format: (vault) => displayVaultValues(vault).fee
   }
 ]
 
