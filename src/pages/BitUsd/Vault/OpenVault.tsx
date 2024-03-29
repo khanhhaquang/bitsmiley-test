@@ -62,25 +62,6 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
     approvalTxnStatus === TransactionStatus.Processing
   const isApproved = Number(wBtcAllowance) >= Number(deposit)
 
-  const maxMint = useMemo(
-    () =>
-      !deposit
-        ? Number(mintingPair?.collateral.vaultMinDebt)
-        : Math.min(
-            Number(mintingPair?.collateral.vaultMaxDebt),
-            Number(deposit) *
-              wbtcPrice *
-              (Number(mintingPair?.collateral?.safetyFactor) * 10 ** 8)
-          ),
-    [
-      deposit,
-      mintingPair?.collateral?.safetyFactor,
-      mintingPair?.collateral.vaultMaxDebt,
-      mintingPair?.collateral.vaultMinDebt,
-      wbtcPrice
-    ]
-  )
-
   const isNextButtonDisabled = useMemo(() => {
     if (!deposit) return true
 
@@ -105,9 +86,10 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
   const mintDisabled = useMemo(() => {
     return (
       !!mintingPair?.collateral.vaultMinDebt &&
-      Number(maxMint) < Number(mintingPair?.collateral.vaultMinDebt)
+      Number(tryOpenVaultInfo?.availableToMint) <
+        Number(mintingPair?.collateral.vaultMinDebt)
     )
-  }, [maxMint, mintingPair?.collateral.vaultMinDebt])
+  }, [mintingPair?.collateral.vaultMinDebt, tryOpenVaultInfo?.availableToMint])
 
   const handleNext = () => {
     if (!isApproved) {
@@ -247,12 +229,13 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
           title="Mint bitUSD"
           titleSuffix={
             <span className="flex items-center gap-x-2">
-              Max mint: {formatBitUsd(maxMint, true, true)}
+              Max mint:{' '}
+              {formatBitUsd(tryOpenVaultInfo?.availableToMint, true, true)}
             </span>
           }
           inputSuffix={
             <InputSuffixActionButton
-              onClick={() => setMint(maxMint.toString())}>
+              onClick={() => setMint(tryOpenVaultInfo?.availableToMint || '')}>
               Max
             </InputSuffixActionButton>
           }
