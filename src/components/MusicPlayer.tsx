@@ -1,4 +1,3 @@
-import { useScrollPosition } from '@/hooks/useScrollPosition'
 import {
   forwardRef,
   useCallback,
@@ -6,6 +5,8 @@ import {
   useImperativeHandle,
   useMemo
 } from 'react'
+
+import { useScrollPosition } from '@/hooks/useScrollPosition'
 
 export type MusicPlayerRef = {
   playMusic: () => void

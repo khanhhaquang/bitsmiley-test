@@ -1,12 +1,9 @@
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
+import { Hash } from 'viem'
 
-import accountActions from '@/store/account/actions'
+import { IProject } from '@/services/project'
 import commonActions from '@/store/common/actions'
-import addressStatusActions from '@/store/addressStatus/actions'
-import { IAccountInfo, LoginTypeEnum } from '@/types/common'
-import { AddressStauts } from '@/types/status'
-import { INft } from '@/services/user'
 
 export const useStoreActions = () => {
   const dispatch = useDispatch()
@@ -16,29 +13,8 @@ export const useStoreActions = () => {
     [dispatch]
   )
 
-  const setAccountInfo = useCallback(
-    (payload: IAccountInfo) =>
-      dispatch(accountActions.SET_ACCOUNT_INFO(payload)),
-    [dispatch]
-  )
-  const setLoginType = useCallback(
-    (payload: LoginTypeEnum) =>
-      dispatch(accountActions.SET_LOGIN_TYPE(payload)),
-    [dispatch]
-  )
-  const setTxId = useCallback(
-    (payload: string | undefined) =>
-      dispatch(accountActions.SET_TX_ID(payload)),
-    [dispatch]
-  )
-  const setInscriptionId = useCallback(
-    (payload: string | undefined) =>
-      dispatch(accountActions.SET_INSCRIPTION_ID(payload)),
-    [dispatch]
-  )
-  const setIsCreatingOrder = useCallback(
-    (payload: boolean) =>
-      dispatch(accountActions.SET_IS_CREATING_ORDER(payload)),
+  const setNetworkError = useCallback(
+    (payload: boolean) => dispatch(commonActions.SET_NETWORK_ERROR(payload)),
     [dispatch]
   )
   const setCurrentTypewritterSeq = useCallback(
@@ -46,35 +22,30 @@ export const useStoreActions = () => {
       dispatch(commonActions.SET_CURRENT_TYPEWRITTER_SEQ(payload)),
     [dispatch]
   )
-  const setUserNfts = useCallback(
-    (payload: INft[]) => dispatch(accountActions.SET_USER_NFTS(payload)),
+  const addTransaction = useCallback(
+    (payload: Hash) => dispatch(commonActions.ADD_TRANSACTION(payload)),
     [dispatch]
   )
-  const setAddressStatus = useCallback(
-    (payload: AddressStauts) =>
-      dispatch(addressStatusActions.SET_ADDRESS_STATUS(payload)),
+  const addTransactions = useCallback(
+    (payload: Hash[]) => dispatch(commonActions.ADD_TRANSACTIONS(payload)),
     [dispatch]
   )
-  const setIsOpenHistory = useCallback(
-    (payload: boolean) => dispatch(commonActions.SET_IS_OPEN_HISTORY(payload)),
+  const removeTransaction = useCallback(
+    (payload: string) => dispatch(commonActions.REMOVE_TRANSACTION(payload)),
     [dispatch]
   )
-  const setNetworkError = useCallback(
-    (payload: boolean) => dispatch(commonActions.SET_NETWORK_ERROR(payload)),
+  const setProjectInfo = useCallback(
+    (payload: IProject) => dispatch(commonActions.SET_PROJECT_INFO(payload)),
     [dispatch]
   )
 
   return {
-    setTxId,
-    setUserNfts,
-    setIsOpenHistory,
-    setLoginType,
     resetStorage,
-    setAccountInfo,
-    setInscriptionId,
-    setAddressStatus,
-    setIsCreatingOrder,
     setNetworkError,
-    setCurrentTypewritterSeq
+    setCurrentTypewritterSeq,
+    addTransaction,
+    addTransactions,
+    removeTransaction,
+    setProjectInfo
   }
 }

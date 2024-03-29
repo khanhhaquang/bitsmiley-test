@@ -1,8 +1,9 @@
 import axios, { AxiosInstance, AxiosStatic } from 'axios'
 import axiosRetry from 'axios-retry'
-import store from '@/store/rootReducer'
+
 import { DOMAIN_URL } from '@/config/settings'
 import commonActions from '@/store/common/actions'
+import store from '@/store/rootReducer'
 
 const axiosInstance = axios.create({
   baseURL: DOMAIN_URL.API,

@@ -1,24 +1,55 @@
-import { useSelector } from 'react-redux'
-import { getAccountInfo, getIsConnected } from '@/store/account/reducer'
+import { useBTCProvider } from '@particle-network/btc-connectkit'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
+
+import { customChains } from '@/config/wagmi'
+import { UserService } from '@/services/user'
 
 export const useUserInfo = () => {
-  const isConnected = useSelector(getIsConnected)
-  const { address } = useSelector(getAccountInfo)
-  // const { data } = useQuery(
-  //   [UserService.getHasActivatedInvitation.key, address],
-  //   () => UserService.getHasActivatedInvitation.call(address),
-  //   { enabled: !!address }
-  // )
+  const { accounts: btcAccounts } = useBTCProvider()
+  const {
+    address: evmAddress,
+    chainId: evmChainId,
+    isConnected: isEvmConnected,
+    isConnecting,
+    isReconnecting
+  } = useAccount()
 
-  // const isWhitelist = data?.data?.data
-  const isWhitelist = false
-  const isFetchedUserInfo = useMemo(() => {
-    if (address) {
-      return typeof isWhitelist === 'boolean'
-    }
-    return true
-  }, [address, isWhitelist])
+  const addressForDisplay = (btcAccounts[0] as Address) || evmAddress
 
-  return { address, isConnected, isWhitelist, isLoading: !isFetchedUserInfo }
+  const { data: enabledFeatures, isLoading: isLoadingEnabledFeatures } =
+    useQuery({
+      queryKey: [UserService.getEnabledFeatures.key, addressForDisplay],
+      queryFn: () =>
+        !addressForDisplay
+          ? null
+          : UserService.getEnabledFeatures.call(addressForDisplay),
+      enabled: !!addressForDisplay,
+      select: (res) => res?.data
+    })
+
+  const evmChain = useMemo(
+    () => customChains.find((c) => c.id === evmChainId),
+    [evmChainId]
+  )
+
+  const blockExplorerUrl = useMemo(
+    () => evmChain?.blockExplorers?.default.url,
+    [evmChain]
+  )
+
+  const isLoading = isConnecting || isReconnecting || isLoadingEnabledFeatures
+
+  return {
+    isConnected: isEvmConnected,
+    address: evmAddress,
+    addressForDisplay,
+    enabledFeatures,
+    blockExplorerUrl,
+    evmChain,
+    evmChainId,
+    isLoading
+  }
 }

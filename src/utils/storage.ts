@@ -13,21 +13,10 @@ const deleteLocalStorage = (key: string) => {
 }
 
 const clearStorage = () => {
-  localStorage.clear()
+  const persistKeys = [LOCAL_STORAGE_KEYS.PLAY_MUSIC]
+  Object.values(LOCAL_STORAGE_KEYS)
+    .filter((key) => !persistKeys.includes(key))
+    .forEach((key) => localStorage.removeItem(key))
 }
 
-const clearLoginType = () => {
-  deleteLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
-}
-const clearConfirmedMinted = () => {
-  deleteLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED)
-}
-
-export {
-  clearStorage,
-  setLocalStorage,
-  deleteLocalStorage,
-  getLocalStorage,
-  clearLoginType,
-  clearConfirmedMinted
-}
+export { clearStorage, setLocalStorage, deleteLocalStorage, getLocalStorage }

@@ -1,5 +1,7 @@
+import { Address, Hash } from 'viem'
+
 import { axiosInstance } from '@/config/axios'
-import { IReseponse } from '@/types/common'
+import { IResponse } from '@/types/common'
 
 export enum InvalidReasonEnum {
   NotStarted = 'minting not started yet',
@@ -8,34 +10,104 @@ export enum InvalidReasonEnum {
   PublicMaxCountReached = 'max number of inscriptions in public sale round already inscribed',
   NotWhitelisted = 'address not whitelisted for inscription'
 }
-
-export interface INftsData {
-  count?: number
-  nfts?: INft[]
+export interface INft {
+  blockNumber: number
+  id: number
+  mintOwner: Address
+  mintTime: Date
+  mintTxHash: Hash
+  nftStatus: number
+  owner: Address
+  tokenID: number
+  txHash: Hash
+  updateTime: Date
 }
 
-export interface INft {
-  txid?: string
-  nft_id?: string
-  address?: string
-  inscription_id?: string
-  invalid_reason?: InvalidReasonEnum | null
+export interface IMintingPairCommonInfo {
+  name: string
+  network: string
+  chainId: number
+  isOpenVault: boolean
+  collateralId: Address
+}
+
+export interface IMintingPair extends IMintingPairCommonInfo {
+  // from getAllVaultInfo decoded
+  collateral: {
+    maxDebt: string
+    safetyFactor: string
+    tokenAddress: Address
+    totalDebt: string
+    totalLocked: string
+    vaultMaxDebt: string
+    vaultMinDebt: string
+  }
+  collateralId: Address
+  liquidationFeeRate: string
+  maxLTV: string
+  stabilityFeeRate: string
+
+  // from backend (opened vault)
+  fee?: string
+  availableToMint?: string
+  liquidationPrice?: string
+  healthFactor?: string
+  availableToWithdraw?: string
+  vaultAddress?: string
+  debt?: string
+  mintedBitUSD?: string
+  lockedCollateral?: string
+  liquidated?: {
+    transactionHash: Address
+    recipient: Address
+    collateral: string
+    bitUSD: string
+    penalty: string
+    blockNumber: number
+    timestamp: number
+  }[]
+}
+
+interface IVaultParams {
+  name: string[]
+  network: string
+}
+
+export interface IFeaturesEnabled {
+  Staking: boolean
+  AlphaNet: boolean
+  BitPoint: boolean
 }
 
 export const UserService = {
-  getHasActivatedInvitation: {
-    key: 'user.getHasActivatedInvitation',
-    call: (address: string) =>
-      axiosInstance.post<IReseponse<boolean>>(
-        `/user/hasActivatedInvitation?address=${address}`
-      )
-  },
-
   getNFTs: {
     key: 'user.getNFTs',
-    call: (address: string) =>
-      axiosInstance.post<IReseponse<INftsData>>(
-        `/user/getNFTs?address=${address}&pageNumber=0`
-      )
+    call: (address: Address): Promise<IResponse<INft[]>> =>
+      axiosInstance.get(`/l2nft/getNFT/${address}`).then((res) => res.data)
+  },
+  getMintingPairs: {
+    key: 'user.getMintingPairs',
+    call: (
+      address: Address,
+      vaults: IVaultParams[]
+    ): Promise<IResponse<IMintingPair[]>> =>
+      axiosInstance
+        .post('/user/v2/getMintingPairsInfo', {
+          address,
+          vault: vaults
+        })
+        .then((res) => res.data)
+  },
+  getEnabledFeatures: {
+    key: 'project.getEnabledFeatures',
+    call: (address: Address): Promise<IResponse<IFeaturesEnabled>> =>
+      axiosInstance
+        .get(`/bsInfo/v2/getFunctionalModuleInfo/${address}`)
+        .then((res) => res.data)
+  },
+  getAllVaultInfo: {
+    key: 'user.getAllVaultInfo',
+    call: (): Promise<IResponse<Array<Record<string, Address>>>> =>
+      axiosInstance.get('/user/getAllVaultInfo').then((res) => res.data)
   }
 }

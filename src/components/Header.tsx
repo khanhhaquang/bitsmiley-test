@@ -1,31 +1,57 @@
-import { HeaderIcon } from '@/assets/icons'
-import { useWindowSize } from '@/hooks/useWindowSize'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+
+import { HeaderIcon, RightAngleThin } from '@/assets/icons'
+import { cn } from '@/utils/cn'
+
 import { ConnectWallet } from './ConnectWallet'
 
 export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
-  const { width } = useWindowSize()
   return (
-    <div
-      className="absolute left-0 top-[50px] z-50 flex w-screen origin-top items-start justify-between text-white"
-      style={{
-        padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-      }}>
-      <HeaderIcon
-        onClick={() => window.location.reload()}
-        className="origin-top-left cursor-pointer"
-        style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-        }}
-      />
+    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-12 text-white">
+      <Link to="/">
+        <HeaderIcon />
+      </Link>
 
       {!!wallet && (
-        <ConnectWallet
-          className="origin-top-right"
-          style={{
-            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-          }}
-        />
+        <div className="flex items-center gap-x-9">
+          <div className="relative">
+            <ConnectWallet />
+            <EnterAppButton />
+          </div>
+        </div>
       )}
+    </div>
+  )
+}
+
+const EnterAppButton: React.FC = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const isMainApp = location.pathname.startsWith('/app')
+
+  return (
+    <div
+      className="group absolute top-[calc(100%+12px)] size-full cursor-pointer"
+      onClick={() => {
+        if (!isMainApp) {
+          navigate('/app')
+        } else {
+          navigate('/')
+        }
+      }}>
+      <div
+        className={cn(
+          'relative flex size-full items-center justify-center whitespace-nowrap bg-green/10 uppercase text-green group-hover:bg-green/30 group-hover:font-bold group-hover:text-opacity-70 group-active:bg-green/10',
+          isMainApp &&
+            'text-white bg-black/30 group-hover:bg-black/50 mix-blend-difference'
+        )}>
+        <span>{isMainApp ? 'Home' : 'Enter APP'}</span>
+        <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
+        <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
+        <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
+        <RightAngleThin className="absolute bottom-[-1px] left-[-1px] -rotate-90" />
+      </div>
     </div>
   )
 }
