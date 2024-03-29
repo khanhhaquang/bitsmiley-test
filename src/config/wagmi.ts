@@ -27,16 +27,16 @@ export const merlinMainnet = {
 } as const satisfies Chain
 
 export const bobTestnet = {
-  id: 111,
+  id: 606808,
   name: 'BOB Testnet',
   nativeCurrency: { name: 'Sepolia ETH', symbol: 'SepETH', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://testnet.rpc.gobob.xyz/'] }
+    default: { http: ['https://sepolia-dencun.rpc.gobob.xyz/'] }
   },
   blockExplorers: {
     default: {
       name: 'BOB Scan',
-      url: 'https://testnet-explorer.gobob.xyz/'
+      url: 'https://sepolia-dencun.explorer.gobob.xyz/'
     }
   },
   testnet: true
