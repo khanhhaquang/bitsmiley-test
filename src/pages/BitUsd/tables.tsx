@@ -256,14 +256,14 @@ export const VaultChangesInfoTable: TTable<IVault> = [
   }
 ]
 
-export const VaultOpenInfoTable: TTable<IVault, IMintingPair> = [
+export const VaultOpenInfoTable: TTable<IVault> = [
   {
     key: 'healthFactor',
     title: 'Health Factor',
     message: messages.healthFactor,
-    format: (item) => (
-      <span className={getHealthFactorTextColor(item?.healthFactor)}>
-        {displayVaultValues(item).healthFactor}
+    format: (vault) => (
+      <span className={getHealthFactorTextColor(vault?.healthFactor)}>
+        {displayVaultValues(vault).healthFactor}
       </span>
     )
   },

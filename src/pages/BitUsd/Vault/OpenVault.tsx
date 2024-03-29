@@ -66,7 +66,7 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
     if (!deposit) return true
 
     if (Number(deposit) > wbtcBalance) return true
-    if (mint && Number(mint) > Number(tryOpenVaultInfo?.availableToMint))
+    if (mint && Number(mint) > Number(mintingPair?.collateral?.vaultMaxDebt))
       return true
     if (mint && Number(mint) < Number(mintingPair?.collateral?.vaultMinDebt))
       return true
@@ -74,8 +74,8 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
   }, [
     deposit,
     mint,
+    mintingPair?.collateral?.vaultMaxDebt,
     mintingPair?.collateral?.vaultMinDebt,
-    tryOpenVaultInfo?.availableToMint,
     wbtcBalance
   ])
 
@@ -86,6 +86,7 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
   const mintDisabled = useMemo(() => {
     return (
       !!mintingPair?.collateral.vaultMinDebt &&
+      !!tryOpenVaultInfo?.availableToMint &&
       Number(tryOpenVaultInfo?.availableToMint) <
         Number(mintingPair?.collateral.vaultMinDebt)
     )
@@ -241,7 +242,11 @@ export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
           }
         />
         <VaultInfo
-          vault={tryOpenVaultInfo}
+          vault={{
+            ...tryOpenVaultInfo,
+            debtBitUSD: mint,
+            lockedCollateral: deposit
+          }}
           mintingPairs={mintingPair}
           borderSvg={
             <VaultInfoBorderIcon className="absolute inset-0 z-0 text-white" />
