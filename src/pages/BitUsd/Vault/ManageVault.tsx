@@ -127,7 +127,7 @@ export const ManageVault: React.FC<{
     if (
       !!vault?.debtBitUSD &&
       !!vault?.fee &&
-      !!repayBitUsd &&
+      (!!repayBitUsd || !!withdrawBtc) &&
       Number(repayBitUsd) < Number(vault?.fee)
     )
       return true
@@ -297,8 +297,8 @@ export const ManageVault: React.FC<{
         <ProcessingModal
           actionButtonClassName="w-[300px]"
           type={processingType}
-          onClickActionButton={async () => {
-            await refetchMintingPairs()
+          onClickActionButton={() => {
+            refetchMintingPairs()
             refreshVaultValues()
             navigate(-1)
           }}
@@ -325,12 +325,13 @@ export const ManageVault: React.FC<{
       !!vault?.fee &&
       !!repayBitUsd &&
       Number(repayBitUsd) < Number(vault?.fee)
-    )
+    ) {
       return (
         <span className="text-warning">
           Min repay must exceed stability fee
         </span>
       )
+    }
 
     if (!!repayBitUsd && Number(repayBitUsd) > Number(bitUsdBalance)) {
       return (
@@ -342,6 +343,12 @@ export const ManageVault: React.FC<{
 
     return null
   }, [bitUsdBalance, repayBitUsd, vault?.debtBitUSD, vault?.fee])
+
+  useEffect(() => {
+    if (withdrawBtc && !repayBitUsd && !!vault?.fee) {
+      setRepayBitUsd(vault?.fee || '')
+    }
+  }, [repayBitUsd, vault?.fee, withdrawBtc])
 
   useEffect(() => {
     if (isMintFromBtc === true) {
