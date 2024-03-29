@@ -145,19 +145,20 @@ export const useUserMintingPairs = (
     }
   })
 
-  const availableMintingPairs = groupBy(
-    mintingPairs?.filter((item) => !item.isOpenVault),
-    'chainId'
+  const availableMintingPairs = useMemo(
+    () => groupBy(mintingPairs?.filter((item) => !item.isOpenVault), 'chainId'),
+    [mintingPairs]
   )
 
-  const openedMintingPairs = groupBy(
-    mintingPairs?.filter((item) => item.isOpenVault),
-    'chainId'
+  const openedMintingPairs = useMemo(
+    () => groupBy(mintingPairs?.filter((item) => item.isOpenVault), 'chainId'),
+    [mintingPairs]
   )
 
-  const hasOpenedMintingPairs = !!mintingPairs?.filter(
-    (item) => item.isOpenVault
-  ).length
+  const hasOpenedMintingPairs = useMemo(
+    () => !!mintingPairs?.filter((item) => item.isOpenVault).length,
+    [mintingPairs]
+  )
 
   const isMyVault = useMemo(() => {
     if (!chainId || !collateralId) return false
