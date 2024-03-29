@@ -41,7 +41,7 @@ import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayVaultValues } from '../display'
 
 export const ManageVault: React.FC<{
-  chainId: string
+  chainId: number
   collateralId: string
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()

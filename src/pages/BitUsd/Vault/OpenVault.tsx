@@ -24,7 +24,7 @@ import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayMintingPairValues, formatBitUsd, formatWBtc } from '../display'
 
-export const OpenVault: React.FC<{ chainId: string; collateralId: string }> = ({
+export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   chainId,
   collateralId
 }) => {

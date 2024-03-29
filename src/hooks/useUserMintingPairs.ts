@@ -9,7 +9,7 @@ import { IMintingPair, UserService } from '@/services/user'
 import { ICollateralFromChain } from '@/types/vault'
 
 export const useUserMintingPairs = (
-  chainId?: number | string,
+  chainId?: number,
   collateralId?: string
 ) => {
   const { address } = useUserInfo()
