@@ -114,6 +114,10 @@ export const ManageVault: React.FC<{
 
       if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
 
+      const minToMint = Number(mintingPair?.collateral.vaultMinDebt)
+
+      if (minToMint && Number(changedVault?.debtBitUSD) < minToMint) return true
+
       return Number(maxToMint) >= 0 && Number(mintBitUsd) > Number(maxToMint)
     }
 
@@ -137,11 +141,13 @@ export const ManageVault: React.FC<{
     )
   }, [
     bitUsdBalance,
+    changedVault?.debtBitUSD,
     depositBtc,
     isMintFromBtc,
     maxVault,
     minRepay,
     mintBitUsd,
+    mintingPair?.collateral.vaultMinDebt,
     repayBitUsd,
     vault,
     wbtcBalance,
@@ -154,11 +160,8 @@ export const ManageVault: React.FC<{
     [maxVault?.availableToWithdraw]
   )
   const mintBitUsdDisabled = useMemo(
-    () =>
-      Number(maxVault?.availableToMint) <= 0 ||
-      Number(maxVault?.availableToMint) <
-        Number(mintingPair?.collateral.vaultMinDebt),
-    [maxVault?.availableToMint, mintingPair?.collateral.vaultMinDebt]
+    () => Number(maxVault?.availableToMint) <= 0,
+    [maxVault?.availableToMint]
   )
   const repayBitUsdDisabled = useMemo(
     () => bitUsdBalance <= 0 || Number(vault?.debtBitUSD) <= 0,
@@ -443,9 +446,6 @@ export const ManageVault: React.FC<{
               onInputChange={(v) => handleInput('mintBitUsd', v)}
               greyOut={isMintFromBtc === false}
               title="mint bitUSD"
-              disabledMessage={`Max bitUSD you can mint doesn't reach vault floor: ${formatNumberAsCompact(
-                mintingPair?.collateral.vaultMinDebt || ''
-              )} bitUSD`}
               titleSuffix={
                 <span className="flex items-center gap-x-2">
                   Max Mint:
