@@ -77,7 +77,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[78px]',
     className: '!w-[78px]',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).collateralStabilityFeeRate
+    format: (item) => displayMintingPairValues(item).collateralStabilityFee
   },
   {
     key: 'vaultFloor',
@@ -147,7 +147,7 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).collateralStabilityFeeRate
+    format: (item) => displayMintingPairValues(item).collateralStabilityFee
   },
   {
     key: 'liquidationPenalty',
@@ -164,7 +164,7 @@ export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
   }
 ]
 
-export const ManageVaultVaultInfoTable: TTable<IVault> = [
+export const ManageVaultVaultInfoTable: TTable<IVault, IMintingPair> = [
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
@@ -208,10 +208,11 @@ export const ManageVaultVaultInfoTable: TTable<IVault> = [
     format: (vault) => displayVaultValues(vault).availableToWithdraw
   },
   {
-    key: 'fee',
+    key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (vault) => displayVaultValues(vault).fee
+    format: (_, mintingPair) =>
+      displayMintingPairValues(mintingPair).collateralStabilityFee
   }
 ]
 
@@ -296,7 +297,7 @@ export const VaultHeaderColumns: TTable<IMintingPair> = [
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).collateralStabilityFeeRate
+    format: (item) => displayMintingPairValues(item).collateralStabilityFee
   },
   {
     key: 'Liquidation Fee',

@@ -1,18 +1,21 @@
 import { useQuery } from '@tanstack/react-query'
 import groupBy from 'lodash/groupBy'
 import { useMemo } from 'react'
-import { decodeFunctionResult, formatEther } from 'viem'
+import { decodeFunctionResult, formatEther, parseEther } from 'viem'
 
 import bitSmileyQuery from '@/abi/BitSmileyQuery.json'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IMintingPair, UserService } from '@/services/user'
 import { ICollateralFromChain } from '@/types/vault'
 
+import { useProjectInfo } from './useProjectInfo'
+
 export const useUserMintingPairs = (
   chainId?: number,
   collateralId?: string
 ) => {
   const { address } = useUserInfo()
+  const { projectInfo } = useProjectInfo()
 
   const { data: allCollaterals } = useQuery({
     queryKey: [UserService.getAllVaultInfo.key],
@@ -75,13 +78,7 @@ export const useUserMintingPairs = (
         maxLTV: !c.maxLTV
           ? ''
           : (Number(formatEther(c.maxLTV)) * 10 ** 9).toString(),
-        stabilityFeeRate: !c.stabilityFeeRate
-          ? ''
-          : (
-              Number(formatEther(c.stabilityFeeRate)) *
-              10 ** 12 *
-              100
-            ).toString(),
+        stabilityFeeRate: c.stabilityFeeRate,
         collateral: {
           tokenAddress: c.collateral.tokenAddress,
           maxDebt: !c.collateral.maxDebt
@@ -127,14 +124,24 @@ export const useUserMintingPairs = (
           : formatEther(BigInt(i.lockedCollateral))
       }))
 
-      return formattedMintingPairs?.map((c) => ({
+      const allMintingPairs = formattedMintingPairs?.map((c) => ({
         ...c,
         ...formattedCollaterals?.find(
           (i) =>
             i.collateralId.toLowerCase() ===
               `0x${c.collateralId}`.toLowerCase() && i.network === c.network
         )
-      })) as IMintingPair[]
+      }))
+
+      const mintingPairsWithStabilityFee = allMintingPairs?.map((m) => ({
+        ...m,
+        stabilityFee: getStabilityFee(
+          m.stabilityFeeRate,
+          projectInfo?.web3Info.find((i) => i.chainId === m.chainId)?.blockTime
+        )
+      })) as IMintingPair[] | undefined
+
+      return mintingPairsWithStabilityFee
     }
   })
 
@@ -178,4 +185,17 @@ export const useUserMintingPairs = (
     isMyVault,
     ...rest
   }
+}
+
+function getStabilityFee(
+  stabilityFeeRate?: bigint,
+  blockTime?: number
+): number {
+  if (!stabilityFeeRate || !blockTime) return 0
+
+  const blocks = (365 * 24 * 3600) / blockTime
+  return (
+    Number(BigInt(blocks) * stabilityFeeRate * BigInt('1000000')) /
+    Number(parseEther('1'))
+  )
 }

@@ -17,6 +17,8 @@ export interface INetworkInfo {
   network: string
   chainId: number
   contract: IContractAddresses
+  blockTime: number
+  bridgeURL: string
 }
 export interface IProject {
   nowTime: string

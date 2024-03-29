@@ -84,8 +84,8 @@ export const displayMintingPairValues = (
     Number(value?.liquidationFeeRate) * 100,
     withUnit
   ),
-  collateralStabilityFeeRate: formatPercentage(
-    Number(value?.stabilityFeeRate) * 100,
+  collateralStabilityFee: formatPercentage(
+    Number(value?.stabilityFee) * 100,
     withUnit
   ),
   collateralVaultCeiling: formatBitUsd(

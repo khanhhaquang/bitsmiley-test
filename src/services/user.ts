@@ -45,7 +45,10 @@ export interface IMintingPair extends IMintingPairCommonInfo {
   collateralId: Address
   liquidationFeeRate: string
   maxLTV: string
-  stabilityFeeRate: string
+  stabilityFeeRate: bigint
+
+  // computed
+  stabilityFee: number
 
   // from backend (opened vault)
   fee?: string
