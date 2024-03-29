@@ -23,23 +23,43 @@ export interface INft {
   updateTime: Date
 }
 
-export interface IMintingPair {
-  borrowRate: string
+export interface IMintingPairCommonInfo {
+  name: string
+  network: string
   chainId: number
   isOpenVault: boolean
-  liquidationPenalty: string
-  liquidity: string
-  maxLTV: string
-  network: string
-  totalDebt: string
-  vaultCeiling: string
-  vaultFloor: string
+  collateralId: Address
+}
 
+export interface IMintingPair extends IMintingPairCommonInfo {
+  // from getAllVaultInfo decoded
+  collateral: {
+    maxDebt: string
+    safetyFactor: string
+    tokenAddress: Address
+    totalDebt: string
+    totalLocked: string
+    vaultMaxDebt: string
+    vaultMinDebt: string
+  }
+  collateralId: Address
+  liquidationFeeRate: string
+  maxLTV: string
+  stabilityFeeRate: bigint
+
+  // computed
+  stabilityFee: number
+
+  // from backend (opened vault)
+  fee?: string
   availableToMint?: string
-  availableToWithdraw?: string
-  collateralLocked?: string
-  healthFactor?: string
   liquidationPrice?: string
+  healthFactor?: string
+  availableToWithdraw?: string
+  vaultAddress?: string
+  debt?: string
+  mintedBitUSD?: string
+  lockedCollateral?: string
   liquidated?: {
     transactionHash: Address
     recipient: Address
@@ -49,6 +69,11 @@ export interface IMintingPair {
     blockNumber: number
     timestamp: number
   }[]
+}
+
+interface IVaultParams {
+  name: string[]
+  network: string
 }
 
 export interface IFeaturesEnabled {
@@ -65,9 +90,15 @@ export const UserService = {
   },
   getMintingPairs: {
     key: 'user.getMintingPairs',
-    call: (address: Address): Promise<IResponse<IMintingPair[]>> =>
+    call: (
+      address: Address,
+      vaults: IVaultParams[]
+    ): Promise<IResponse<IMintingPair[]>> =>
       axiosInstance
-        .get(`user/getMintingPairsInfo/${address}`)
+        .post('/user/v2/getMintingPairsInfo', {
+          address,
+          vault: vaults
+        })
         .then((res) => res.data)
   },
   getEnabledFeatures: {
@@ -76,5 +107,10 @@ export const UserService = {
       axiosInstance
         .get(`/bsInfo/v2/getFunctionalModuleInfo/${address}`)
         .then((res) => res.data)
+  },
+  getAllVaultInfo: {
+    key: 'user.getAllVaultInfo',
+    call: (): Promise<IResponse<Array<Record<string, Address>>>> =>
+      axiosInstance.get('/user/getAllVaultInfo').then((res) => res.data)
   }
 }

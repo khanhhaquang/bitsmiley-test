@@ -6,7 +6,7 @@ on:
       - "develop"
     tags:
       - "force-cicd-*"
-      - "test-*"
+      - "predev-*"
       - "release-*"
 
 env:
@@ -14,7 +14,7 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
   S3_BUCKET: 439863938209-static-websites
   DEPLOY_DEVELOP: develop
-  DEPLOY_TEST: ^test-.*$
+  DEPLOY_PRE_DEV: ^predev-.*$
   DEPLOY_MAIN: ^release-.*$
 
 jobs:
@@ -53,9 +53,10 @@ jobs:
               echo "IS_DEPLOY=true" >> "$GITHUB_ENV"
               echo "IS_DEPLOY_DEVELOP=true" >> "$GITHUB_ENV"
               S3_SUBPATH=$S3_SUBPATH/develop
-          elif [[ $REF_TYPE == "tag" && $CURRENT_ENV =~ $DEPLOY_TEST ]]; then
+          elif [[ $REF_TYPE == "tag" && $CURRENT_ENV =~ $DEPLOY_PRE_DEV ]]; then
               echo "IS_DEPLOY=true" >> "$GITHUB_ENV"
-              S3_SUBPATH=$S3_SUBPATH/test
+              echo "IS_DEPLOY_PRE_DEV=true" >> "$GITHUB_ENV"
+              S3_SUBPATH=$S3_SUBPATH/predev
           elif [[ $REF_TYPE == "tag" && $CURRENT_ENV =~ $DEPLOY_MAIN ]]; then
               echo "IS_DEPLOY=true" >> "$GITHUB_ENV"
               echo "IS_DEPLOY_MAIN=true" >> "$GITHUB_ENV"
@@ -70,6 +71,17 @@ jobs:
       #     npm ci
 
       #     npm run build
+
+      - name: Deploy to S3 predev
+        if: env.IS_DEPLOY_PRE_DEV == 'true'
+        run: |
+          npm ci
+
+          npm run build:dev
+
+          aws s3 sync ./dist s3://$S3_BUCKET/$S3_SUBPATH/ --delete
+
+          # aws cloudfront create-invalidation --distribution-id EA1V5QWQJDZTR --paths "/*"
 
       - name: Deploy to S3 dev
         if: env.IS_DEPLOY_DEVELOP == 'true'

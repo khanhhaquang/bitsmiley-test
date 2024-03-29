@@ -11,11 +11,14 @@ export interface IContractAddresses {
   oracle: Address
   staking: Address | null
   l2nft: Address | null
+  bitSmileyQuery: Address | null
 }
 export interface INetworkInfo {
   network: string
   chainId: number
   contract: IContractAddresses
+  blockTime: number
+  bridgeURL: string
 }
 export interface IProject {
   nowTime: string

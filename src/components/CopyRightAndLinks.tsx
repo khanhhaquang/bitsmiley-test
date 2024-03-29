@@ -10,8 +10,9 @@ import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
 
 export const CopyRightAndLinks: React.FC<{
+  className?: string
   musicControl?: boolean
-}> = ({ musicControl = true }) => {
+}> = ({ musicControl = true, className }) => {
   const musicPlayerRef = useRef<MusicPlayerRef>(null)
   const [isPlayingMusic, setIsPlayingMusic] = useState(false)
 
@@ -34,13 +35,21 @@ export const CopyRightAndLinks: React.FC<{
     if (musicControl && !localDisablePlayMusic) {
       playMusic()
     }
+
+    if (!musicControl || localDisablePlayMusic) {
+      stopMusic()
+    }
   }, [musicControl])
 
   return (
     <>
       <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
-      <div className="pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white mix-blend-difference md:px-[120px]">
-        <div className="flex items-start gap-x-1.5">
+      <div
+        className={cn(
+          'pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white px-12 font-bold',
+          className
+        )}>
+        <div className="flex items-center gap-x-1.5">
           <CopyrightIcon />
           <span className="cursor-default">bitSmiley team 2024</span>
         </div>

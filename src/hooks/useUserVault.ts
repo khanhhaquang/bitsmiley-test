@@ -1,23 +1,26 @@
 import { keepPreviousData } from '@tanstack/react-query'
 import { useState } from 'react'
-import { formatEther, parseEther } from 'viem'
+import { useParams } from 'react-router-dom'
+import { Address, formatEther, parseEther } from 'viem'
 
-import { commonParam } from '@/config/settings'
 import { useReadBitSmileyOwners } from '@/contracts/BitSmiley'
-import { useReadVaultGetVaultChange } from '@/contracts/Vault'
+import {
+  useReadBitSmileyQueryGetVaultDetail,
+  useReadBitSmileyQueryTryOpenVault
+} from '@/contracts/BitSmileyQuery'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IVaultFromChain } from '@/types/vault'
+import { IVault, IVaultFromChain } from '@/types/vault'
 
 export const useUserVault = () => {
   const { address } = useUserInfo()
   const contractAddresses = useContractAddresses()
 
   const bitSmileyAddress = contractAddresses?.BitSmiley
-  const vaultManagerAddress = contractAddresses?.VaultManager
+  const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery || undefined
 
   const {
     data: vaultAddress,
@@ -30,14 +33,16 @@ export const useUserVault = () => {
 
   const query = {
     placeholderData: keepPreviousData,
-    select: (res?: IVaultFromChain) => ({
+    select: (res?: Partial<IVaultFromChain>): IVault => ({
       liquidationPrice: !res?.liquidationPrice
         ? ''
         : formatEther(res.liquidationPrice),
       healthFactor: !res?.healthFactor
         ? ''
-        : ((Number(res.healthFactor) / 1000) * 100).toString(),
-      debtBitUSD: !res?.debtBitUSD ? '' : formatEther(res.debtBitUSD),
+        : (Number(res.healthFactor) / 100).toString(),
+      debtBitUSD: !res?.debt ? '' : formatEther(res.debt),
+      fee: !res?.fee ? '' : formatEther(res.fee),
+      mintedBitUSD: !res?.mintedBitUSD ? '' : formatEther(res?.mintedBitUSD),
       lockedCollateral: !res?.lockedCollateral
         ? ''
         : formatEther(res.lockedCollateral),
@@ -55,15 +60,9 @@ export const useUserVault = () => {
     refetch: refetchVault,
     isFetching: isFetchingVault,
     ...rest
-  } = useReadVaultGetVaultChange({
-    address: vaultManagerAddress,
-    args: vaultAddress && [
-      commonParam.BTC,
-      vaultAddress,
-      parseEther('0'),
-      parseEther('0'),
-      commonParam.safeRate
-    ],
+  } = useReadBitSmileyQueryGetVaultDetail({
+    address: bitSmileyQueryAddress,
+    args: vaultAddress && [vaultAddress, parseEther('0'), parseEther('0')],
     query
   })
 
@@ -79,16 +78,14 @@ export const useUserVault = () => {
     data: changedVault,
     refetch: refetchChangedVault,
     isFetching: isFetchingChangedVault
-  } = useReadVaultGetVaultChange({
-    address: vaultManagerAddress,
+  } = useReadBitSmileyQueryGetVaultDetail({
+    address: bitSmileyQueryAddress,
     args:
       vaultAddress && hasChangedVault
         ? [
-            commonParam.BTC,
             vaultAddress,
             parseEther(debouncedChangedCollateral),
-            parseEther(debouncedChangedBitUsd),
-            commonParam.safeRate
+            parseEther(debouncedChangedBitUsd)
           ]
         : undefined,
     query
@@ -104,15 +101,32 @@ export const useUserVault = () => {
     data: maxVault,
     refetch: refetchMaxVault,
     isFetching: isFetchingMaxVault
-  } = useReadVaultGetVaultChange({
-    address: vaultManagerAddress,
+  } = useReadBitSmileyQueryGetVaultDetail({
+    address: bitSmileyQueryAddress,
     args: vaultAddress
       ? [
-          commonParam.BTC,
           vaultAddress,
           parseEther(debouncedMaxVaultCollateral),
-          parseEther(debouncedMaxVaultBitUsd),
-          commonParam.safeRate
+          parseEther(debouncedMaxVaultBitUsd)
+        ]
+      : undefined,
+    query
+  })
+
+  const { collateralId } = useParams()
+  const [tryOpenVaultBitUsd, setTryOpenVaultBitUsd] = useState('')
+  const [tryOpenVaultCollateral, setTryOpenVaultCollateral] = useState('')
+
+  const debouncedTryOpenVaultBitUsd = useDebounce(tryOpenVaultBitUsd)
+  const debouncedTryOpenVaultCollateral = useDebounce(tryOpenVaultCollateral)
+
+  const { data: tryOpenVaultInfo } = useReadBitSmileyQueryTryOpenVault({
+    address: bitSmileyQueryAddress,
+    args: collateralId
+      ? [
+          collateralId as Address,
+          parseEther(debouncedTryOpenVaultCollateral),
+          parseEther(debouncedTryOpenVaultBitUsd)
         ]
       : undefined,
     query
@@ -176,6 +190,10 @@ export const useUserVault = () => {
     isFetchingMaxVault,
     isFetchingVaultAddress,
     refreshVaultValues,
-    isRefreshingVaultValues
+    isRefreshingVaultValues,
+
+    tryOpenVaultInfo,
+    setTryOpenVaultBitUsd,
+    setTryOpenVaultCollateral
   }
 }

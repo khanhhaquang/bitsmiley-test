@@ -1,3 +1,4 @@
+import { BitUsdIcon } from '@/assets/icons'
 import { IMintingPair } from '@/services/user'
 import { IVault } from '@/types/vault'
 import {
@@ -6,21 +7,27 @@ import {
 } from '@/utils/number'
 
 const WBTC_UNIT = ' wBTC'
-const BITUSD_UNIT = '$'
+const BITUSD_UNIT = (
+  <BitUsdIcon width={9.5} height={11} className="text-yellow2" />
+)
 const PERCENTAGE_UNIT = '%'
 const DOLLAR_UNIT = '$' // bitUsd
 
-export const DEFAULT_TEXT = '-'
+export const DEFAULT_TEXT = '--'
 
 export const formatBitUsd = (
   v?: string | number,
   withUnit: boolean = true,
   compact: boolean = false
 ) =>
-  !v
-    ? DEFAULT_TEXT
-    : `${withUnit ? BITUSD_UNIT : ''}` +
-      `${compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}`
+  !v ? (
+    DEFAULT_TEXT
+  ) : (
+    <span className="flex items-center gap-x-1">
+      {compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}
+      {withUnit && BITUSD_UNIT}
+    </span>
+  )
 
 export const formatWBtc = (
   v?: string | number,
@@ -58,6 +65,8 @@ export const displayVaultValues = (
   vault?: IVault,
   withUnit: boolean = true
 ) => ({
+  fee: formatBitUsd(vault?.fee, withUnit),
+  mintedBitUSD: formatBitUsd(vault?.mintedBitUSD, withUnit),
   liquidationPrice: formatMoney(vault?.liquidationPrice, withUnit),
   healthFactor: formatPercentage(vault?.healthFactor, withUnit),
   debtBitUSD: formatBitUsd(vault?.debtBitUSD, withUnit),
@@ -70,26 +79,47 @@ export const displayMintingPairValues = (
   value?: IMintingPair,
   withUnit: boolean = true
 ) => ({
-  maxLTV: formatPercentage(Number(value?.maxLTV) * 100, withUnit),
-  borrowRate: !Number(value?.borrowRate)
-    ? '0%'
-    : formatPercentage(Number(value?.borrowRate) * 100, withUnit),
-  liquidationPenalty: formatPercentage(
-    Number(value?.liquidationPenalty) * 100,
+  collateralMaxLTV: formatPercentage(Number(value?.maxLTV) * 100, withUnit),
+  collateralLiquidationFeeRate: formatPercentage(
+    Number(value?.liquidationFeeRate) * 100,
     withUnit
   ),
+  collateralStabilityFee: formatPercentage(
+    Number(value?.stabilityFee) * 100,
+    withUnit
+  ),
+  collateralVaultCeiling: formatBitUsd(
+    value?.collateral?.vaultMaxDebt,
+    withUnit,
+    true
+  ),
+  collateralVaultFloor: formatBitUsd(
+    value?.collateral?.vaultMinDebt,
+    withUnit,
+    true
+  ),
+  collateralCollateralLocked: formatWBtc(
+    value?.collateral?.totalLocked,
+    withUnit,
+    true
+  ),
+  collateralTotalDebt: formatBitUsd(
+    value?.collateral?.totalDebt,
+    withUnit,
+    true
+  ),
+
+  fee: formatBitUsd(value?.fee, withUnit),
+  lockedCollateral: formatWBtc(value?.lockedCollateral, withUnit, true),
   liquidationPrice: formatMoney(value?.liquidationPrice, withUnit),
-  healthFactor: formatPercentage(Number(value?.healthFactor) * 100, withUnit),
-  liquidity: formatBitUsd(value?.liquidity, withUnit, true),
-  vaultCeiling: formatBitUsd(value?.vaultCeiling, withUnit, true),
-  vaultFloor: formatBitUsd(value?.vaultFloor, withUnit, true),
-  collateralLocked: formatWBtc(value?.collateralLocked, withUnit, true),
-  totalDebt: formatBitUsd(value?.totalDebt, withUnit, true),
+  healthFactor: formatPercentage(Number(value?.healthFactor) * 10, withUnit),
+  totalDebt: formatBitUsd(value?.debt, withUnit, true),
   availableToWithdraw: formatWBtc(value?.availableToWithdraw, withUnit),
   availableToMint: formatBitUsd(value?.availableToMint, withUnit),
 
   network: !value?.network ? DEFAULT_TEXT : value.network,
   chainId: !value?.chainId ? DEFAULT_TEXT : value.chainId,
+  vaultAddress: !value?.vaultAddress ? DEFAULT_TEXT : value?.vaultAddress,
   isOpenVault: !!value?.isOpenVault
 })
 

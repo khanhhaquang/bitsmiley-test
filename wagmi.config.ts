@@ -3,6 +3,7 @@ import { react } from '@wagmi/cli/plugins'
 import { Abi, erc721Abi } from 'viem'
 
 import bitSmileyAbi from './src/abi/BitSmiley.json'
+import bitSmileyQueryAbi from './src/abi/BitSmileyQuery.json'
 import bitUsdAbi from './src/abi/BitUsd.json'
 import bitUsdL2Abi from './src/abi/BitUsdL2.json'
 import oracleAbi from './src/abi/Oracle.json'
@@ -46,6 +47,16 @@ export default defineConfig([
       {
         name: 'BitSmiley',
         abi: bitSmileyAbi as Abi
+      }
+    ],
+    plugins: [react()]
+  },
+  {
+    out: 'src/contracts/BitSmileyQuery.ts',
+    contracts: [
+      {
+        name: 'BitSmileyQuery',
+        abi: bitSmileyQueryAbi as Abi
       }
     ],
     plugins: [react()]

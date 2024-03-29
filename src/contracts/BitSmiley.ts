@@ -15,7 +15,10 @@ export const bitSmileyAbi = [
   { type: 'error', inputs: [], name: 'InvalidAmount' },
   { type: 'error', inputs: [], name: 'InvalidPenalty' },
   { type: 'error', inputs: [], name: 'MsgValueIncorrect' },
+  { type: 'error', inputs: [], name: 'NotEnoughToCoverFee' },
   { type: 'error', inputs: [], name: 'NotOwner' },
+  { type: 'error', inputs: [], name: 'Overflow' },
+  { type: 'error', inputs: [], name: 'UnknownParameter' },
   { type: 'error', inputs: [], name: 'VaultNotRegistered' },
   {
     type: 'event',
@@ -68,6 +71,12 @@ export const bitSmileyAbi = [
         indexed: false
       },
       {
+        name: 'collateralId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false
+      },
+      {
         name: 'collateral',
         internalType: 'uint256',
         type: 'uint256',
@@ -84,18 +93,6 @@ export const bitSmileyAbi = [
         internalType: 'address',
         type: 'address',
         indexed: false
-      },
-      {
-        name: 'penalty',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false
-      },
-      {
-        name: 'recipient',
-        internalType: 'address',
-        type: 'address',
-        indexed: false
       }
     ],
     name: 'Liquidated'
@@ -104,57 +101,14 @@ export const bitSmileyAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
-      {
-        name: 'user',
-        internalType: 'address',
-        type: 'address',
-        indexed: false
-      },
-      {
-        name: 'vault',
-        internalType: 'address',
-        type: 'address',
-        indexed: false
-      },
-      {
-        name: 'collateral',
-        internalType: 'int256',
-        type: 'int256',
-        indexed: false
-      },
-      {
-        name: 'bitUSD',
-        internalType: 'int256',
-        type: 'int256',
-        indexed: false
-      }
-    ],
-    name: 'Mint'
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: 'previousOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true
-      },
-      {
-        name: 'newOwner',
-        internalType: 'address',
-        type: 'address',
-        indexed: true
-      }
-    ],
-    name: 'OwnershipTransferred'
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
+      { name: 'who', internalType: 'address', type: 'address', indexed: false },
       { name: 'what', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'collateralId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false
+      },
       {
         name: 'previous',
         internalType: 'uint256',
@@ -187,32 +141,61 @@ export const bitSmileyAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
       {
-        name: 'user',
-        internalType: 'address',
-        type: 'address',
-        indexed: false
+        name: 'previousAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true
       },
       {
-        name: 'vault',
-        internalType: 'address',
-        type: 'address',
-        indexed: false
-      },
-      {
-        name: 'collateral',
-        internalType: 'int256',
-        type: 'int256',
-        indexed: false
-      },
-      {
-        name: 'bitUSD',
-        internalType: 'int256',
-        type: 'int256',
-        indexed: false
+        name: 'newAdminRole',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: true
       }
     ],
-    name: 'Repay'
+    name: 'RoleAdminChanged'
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true
+      }
+    ],
+    name: 'RoleGranted'
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32', indexed: true },
+      {
+        name: 'account',
+        internalType: 'address',
+        type: 'address',
+        indexed: true
+      },
+      {
+        name: 'sender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true
+      }
+    ],
+    name: 'RoleRevoked'
   },
   {
     type: 'event',
@@ -251,6 +234,12 @@ export const bitSmileyAbi = [
         indexed: false
       },
       {
+        name: 'collateralId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false
+      },
+      {
         name: 'vault',
         internalType: 'address',
         type: 'address',
@@ -260,17 +249,54 @@ export const bitSmileyAbi = [
     name: 'VaultOpened'
   },
   {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'user',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
+        name: 'collateralId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false
+      },
+      {
+        name: 'vault',
+        internalType: 'address',
+        type: 'address',
+        indexed: false
+      },
+      {
+        name: 'collateral',
+        internalType: 'int256',
+        type: 'int256',
+        indexed: false
+      },
+      {
+        name: 'bitUSD',
+        internalType: 'int256',
+        type: 'int256',
+        indexed: false
+      }
+    ],
+    name: 'VaultPosChanged'
+  },
+  {
     type: 'function',
     inputs: [],
-    name: 'BTC_COLLATERAL_ID',
+    name: 'BITSMILEY_ADMIN',
     outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view'
   },
   {
     type: 'function',
     inputs: [],
-    name: 'PENALTY_BASE',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'DEFAULT_ADMIN_ROLE',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
     stateMutability: 'view'
   },
   {
@@ -282,10 +308,62 @@ export const bitSmileyAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'feeBeneficiary',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'feeToken',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' }
+    ],
+    name: 'getLiquidationFee',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'role', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getRoleAdmin',
+    outputs: [{ name: '', internalType: 'bytes32', type: 'bytes32' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' }
+    ],
+    name: 'grantRole',
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' }
+    ],
+    name: 'hasRole',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '_vaultManager', internalType: 'address', type: 'address' },
-      { name: '_liquidationPenalty', internalType: 'uint256', type: 'uint256' },
-      { name: '_penaltyRecipient', internalType: 'address', type: 'address' }
+      { name: '_beneficiary', internalType: 'address', type: 'address' },
+      { name: '_stabilityFee', internalType: 'address', type: 'address' },
+      { name: '_feeBeneficiary', internalType: 'address', type: 'address' },
+      { name: '_bitSmileyAdmin', internalType: 'address[]', type: 'address[]' }
     ],
     name: 'initialize',
     outputs: [],
@@ -294,15 +372,15 @@ export const bitSmileyAbi = [
   {
     type: 'function',
     inputs: [{ name: '_vault', internalType: 'address', type: 'address' }],
-    name: 'liquidateVaultBTC',
+    name: 'liquidate',
     outputs: [],
-    stateMutability: 'payable'
+    stateMutability: 'nonpayable'
   },
   {
     type: 'function',
     inputs: [],
-    name: 'liquidationPenalty',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'liquidationBeneficiary',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view'
   },
   {
@@ -312,33 +390,20 @@ export const bitSmileyAbi = [
       { name: '_bitUSD', internalType: 'int256', type: 'int256' },
       { name: '_collateral', internalType: 'int256', type: 'int256' }
     ],
-    name: 'mintFromBTC',
+    name: 'mint',
     outputs: [],
     stateMutability: 'payable'
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'openVault',
-    outputs: [],
-    stateMutability: 'nonpayable'
   },
   {
     type: 'function',
     inputs: [
+      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
       { name: '_bitUSD', internalType: 'int256', type: 'int256' },
       { name: '_collateral', internalType: 'int256', type: 'int256' }
     ],
-    name: 'openVaultAndMintFromBTC',
+    name: 'openVault',
     outputs: [],
     stateMutability: 'payable'
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'owner',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view'
   },
   {
     type: 'function',
@@ -350,15 +415,15 @@ export const bitSmileyAbi = [
   {
     type: 'function',
     inputs: [],
-    name: 'paused',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view'
+    name: 'pause',
+    outputs: [],
+    stateMutability: 'nonpayable'
   },
   {
     type: 'function',
     inputs: [],
-    name: 'penaltyRecipient',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'paused',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view'
   },
   {
@@ -370,8 +435,11 @@ export const bitSmileyAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'renounceOwnership',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' }
+    ],
+    name: 'renounceRole',
     outputs: [],
     stateMutability: 'nonpayable'
   },
@@ -379,31 +447,73 @@ export const bitSmileyAbi = [
     type: 'function',
     inputs: [
       { name: '_vault', internalType: 'address', type: 'address' },
-      { name: '_bitUSD', internalType: 'int256', type: 'int256' },
+      { name: '_debt', internalType: 'int256', type: 'int256' },
       { name: '_collateral', internalType: 'int256', type: 'int256' }
     ],
-    name: 'repayToBTC',
+    name: 'repay',
     outputs: [],
     stateMutability: 'nonpayable'
   },
   {
     type: 'function',
-    inputs: [{ name: '_penalty', internalType: 'uint256', type: 'uint256' }],
-    name: 'setPenalty',
+    inputs: [
+      { name: '_vault', internalType: 'address', type: 'address' },
+      { name: '_collateral', internalType: 'int256', type: 'int256' }
+    ],
+    name: 'repayAll',
     outputs: [],
     stateMutability: 'nonpayable'
   },
   {
     type: 'function',
-    inputs: [{ name: '_recipient', internalType: 'address', type: 'address' }],
-    name: 'setPenaltyRecipient',
+    inputs: [
+      { name: 'role', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'account', internalType: 'address', type: 'address' }
+    ],
+    name: 'revokeRole',
     outputs: [],
     stateMutability: 'nonpayable'
   },
   {
     type: 'function',
-    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
-    name: 'transferOwnership',
+    inputs: [
+      { name: '_what', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_addr', internalType: 'address', type: 'address' }
+    ],
+    name: 'setAddress',
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_collateralId', internalType: 'bytes32', type: 'bytes32' },
+      { name: '_fee', internalType: 'uint256', type: 'uint256' }
+    ],
+    name: 'setLiquidationFee',
+    outputs: [],
+    stateMutability: 'nonpayable'
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'stabilityFee',
+    outputs: [
+      { name: '', internalType: 'contract IStabilityFee', type: 'address' }
+    ],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'unpause',
     outputs: [],
     stateMutability: 'nonpayable'
   },
@@ -438,8 +548,18 @@ export const bitSmileyAbi = [
   {
     type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'vaultMinted',
+    outputs: [{ name: '', internalType: 'int256', type: 'int256' }],
+    stateMutability: 'view'
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
     name: 'vaults',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    outputs: [
+      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: 'collateralId', internalType: 'bytes32', type: 'bytes32' }
+    ],
     stateMutability: 'view'
   }
 ] as const
@@ -456,21 +576,22 @@ export const useReadBitSmiley = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"BTC_COLLATERAL_ID"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"BITSMILEY_ADMIN"`
  */
-export const useReadBitSmileyBtcCollateralId =
+export const useReadBitSmileyBitsmileyAdmin =
   /*#__PURE__*/ createUseReadContract({
     abi: bitSmileyAbi,
-    functionName: 'BTC_COLLATERAL_ID'
+    functionName: 'BITSMILEY_ADMIN'
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"PENALTY_BASE"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
  */
-export const useReadBitSmileyPenaltyBase = /*#__PURE__*/ createUseReadContract({
-  abi: bitSmileyAbi,
-  functionName: 'PENALTY_BASE'
-})
+export const useReadBitSmileyDefaultAdminRole =
+  /*#__PURE__*/ createUseReadContract({
+    abi: bitSmileyAbi,
+    functionName: 'DEFAULT_ADMIN_ROLE'
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"bitUSD"`
@@ -481,21 +602,54 @@ export const useReadBitSmileyBitUsd = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"liquidationPenalty"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"feeBeneficiary"`
  */
-export const useReadBitSmileyLiquidationPenalty =
+export const useReadBitSmileyFeeBeneficiary =
   /*#__PURE__*/ createUseReadContract({
     abi: bitSmileyAbi,
-    functionName: 'liquidationPenalty'
+    functionName: 'feeBeneficiary'
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"owner"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"feeToken"`
  */
-export const useReadBitSmileyOwner = /*#__PURE__*/ createUseReadContract({
+export const useReadBitSmileyFeeToken = /*#__PURE__*/ createUseReadContract({
   abi: bitSmileyAbi,
-  functionName: 'owner'
+  functionName: 'feeToken'
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"getLiquidationFee"`
+ */
+export const useReadBitSmileyGetLiquidationFee =
+  /*#__PURE__*/ createUseReadContract({
+    abi: bitSmileyAbi,
+    functionName: 'getLiquidationFee'
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"getRoleAdmin"`
+ */
+export const useReadBitSmileyGetRoleAdmin = /*#__PURE__*/ createUseReadContract(
+  { abi: bitSmileyAbi, functionName: 'getRoleAdmin' }
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"hasRole"`
+ */
+export const useReadBitSmileyHasRole = /*#__PURE__*/ createUseReadContract({
+  abi: bitSmileyAbi,
+  functionName: 'hasRole'
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"liquidationBeneficiary"`
+ */
+export const useReadBitSmileyLiquidationBeneficiary =
+  /*#__PURE__*/ createUseReadContract({
+    abi: bitSmileyAbi,
+    functionName: 'liquidationBeneficiary'
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"owners"`
@@ -514,15 +668,6 @@ export const useReadBitSmileyPaused = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"penaltyRecipient"`
- */
-export const useReadBitSmileyPenaltyRecipient =
-  /*#__PURE__*/ createUseReadContract({
-    abi: bitSmileyAbi,
-    functionName: 'penaltyRecipient'
-  })
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"proxiableUUID"`
  */
 export const useReadBitSmileyProxiableUuid =
@@ -532,11 +677,35 @@ export const useReadBitSmileyProxiableUuid =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"stabilityFee"`
+ */
+export const useReadBitSmileyStabilityFee = /*#__PURE__*/ createUseReadContract(
+  { abi: bitSmileyAbi, functionName: 'stabilityFee' }
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const useReadBitSmileySupportsInterface =
+  /*#__PURE__*/ createUseReadContract({
+    abi: bitSmileyAbi,
+    functionName: 'supportsInterface'
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"vaultManager"`
  */
 export const useReadBitSmileyVaultManager = /*#__PURE__*/ createUseReadContract(
   { abi: bitSmileyAbi, functionName: 'vaultManager' }
 )
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"vaultMinted"`
+ */
+export const useReadBitSmileyVaultMinted = /*#__PURE__*/ createUseReadContract({
+  abi: bitSmileyAbi,
+  functionName: 'vaultMinted'
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"vaults"`
@@ -554,6 +723,14 @@ export const useWriteBitSmiley = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useWriteBitSmileyGrantRole = /*#__PURE__*/ createUseWriteContract({
+  abi: bitSmileyAbi,
+  functionName: 'grantRole'
+})
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"initialize"`
  */
 export const useWriteBitSmileyInitialize = /*#__PURE__*/ createUseWriteContract(
@@ -561,22 +738,20 @@ export const useWriteBitSmileyInitialize = /*#__PURE__*/ createUseWriteContract(
 )
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"liquidateVaultBTC"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"liquidate"`
  */
-export const useWriteBitSmileyLiquidateVaultBtc =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: bitSmileyAbi,
-    functionName: 'liquidateVaultBTC'
-  })
+export const useWriteBitSmileyLiquidate = /*#__PURE__*/ createUseWriteContract({
+  abi: bitSmileyAbi,
+  functionName: 'liquidate'
+})
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"mintFromBTC"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"mint"`
  */
-export const useWriteBitSmileyMintFromBtc =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: bitSmileyAbi,
-    functionName: 'mintFromBTC'
-  })
+export const useWriteBitSmileyMint = /*#__PURE__*/ createUseWriteContract({
+  abi: bitSmileyAbi,
+  functionName: 'mint'
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"openVault"`
@@ -587,54 +762,68 @@ export const useWriteBitSmileyOpenVault = /*#__PURE__*/ createUseWriteContract({
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"openVaultAndMintFromBTC"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"pause"`
  */
-export const useWriteBitSmileyOpenVaultAndMintFromBtc =
+export const useWriteBitSmileyPause = /*#__PURE__*/ createUseWriteContract({
+  abi: bitSmileyAbi,
+  functionName: 'pause'
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"renounceRole"`
+ */
+export const useWriteBitSmileyRenounceRole =
   /*#__PURE__*/ createUseWriteContract({
     abi: bitSmileyAbi,
-    functionName: 'openVaultAndMintFromBTC'
+    functionName: 'renounceRole'
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"renounceOwnership"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"repay"`
  */
-export const useWriteBitSmileyRenounceOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: bitSmileyAbi,
-    functionName: 'renounceOwnership'
-  })
+export const useWriteBitSmileyRepay = /*#__PURE__*/ createUseWriteContract({
+  abi: bitSmileyAbi,
+  functionName: 'repay'
+})
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"repayToBTC"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"repayAll"`
  */
-export const useWriteBitSmileyRepayToBtc = /*#__PURE__*/ createUseWriteContract(
-  { abi: bitSmileyAbi, functionName: 'repayToBTC' }
+export const useWriteBitSmileyRepayAll = /*#__PURE__*/ createUseWriteContract({
+  abi: bitSmileyAbi,
+  functionName: 'repayAll'
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"revokeRole"`
+ */
+export const useWriteBitSmileyRevokeRole = /*#__PURE__*/ createUseWriteContract(
+  { abi: bitSmileyAbi, functionName: 'revokeRole' }
 )
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setPenalty"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setAddress"`
  */
-export const useWriteBitSmileySetPenalty = /*#__PURE__*/ createUseWriteContract(
-  { abi: bitSmileyAbi, functionName: 'setPenalty' }
+export const useWriteBitSmileySetAddress = /*#__PURE__*/ createUseWriteContract(
+  { abi: bitSmileyAbi, functionName: 'setAddress' }
 )
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setPenaltyRecipient"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setLiquidationFee"`
  */
-export const useWriteBitSmileySetPenaltyRecipient =
+export const useWriteBitSmileySetLiquidationFee =
   /*#__PURE__*/ createUseWriteContract({
     abi: bitSmileyAbi,
-    functionName: 'setPenaltyRecipient'
+    functionName: 'setLiquidationFee'
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"transferOwnership"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"unpause"`
  */
-export const useWriteBitSmileyTransferOwnership =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: bitSmileyAbi,
-    functionName: 'transferOwnership'
-  })
+export const useWriteBitSmileyUnpause = /*#__PURE__*/ createUseWriteContract({
+  abi: bitSmileyAbi,
+  functionName: 'unpause'
+})
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"upgradeTo"`
@@ -661,6 +850,15 @@ export const useSimulateBitSmiley = /*#__PURE__*/ createUseSimulateContract({
 })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const useSimulateBitSmileyGrantRole =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: bitSmileyAbi,
+    functionName: 'grantRole'
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"initialize"`
  */
 export const useSimulateBitSmileyInitialize =
@@ -670,22 +868,20 @@ export const useSimulateBitSmileyInitialize =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"liquidateVaultBTC"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"liquidate"`
  */
-export const useSimulateBitSmileyLiquidateVaultBtc =
+export const useSimulateBitSmileyLiquidate =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
-    functionName: 'liquidateVaultBTC'
+    functionName: 'liquidate'
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"mintFromBTC"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"mint"`
  */
-export const useSimulateBitSmileyMintFromBtc =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: bitSmileyAbi,
-    functionName: 'mintFromBTC'
-  })
+export const useSimulateBitSmileyMint = /*#__PURE__*/ createUseSimulateContract(
+  { abi: bitSmileyAbi, functionName: 'mint' }
+)
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"openVault"`
@@ -697,57 +893,75 @@ export const useSimulateBitSmileyOpenVault =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"openVaultAndMintFromBTC"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"pause"`
  */
-export const useSimulateBitSmileyOpenVaultAndMintFromBtc =
+export const useSimulateBitSmileyPause =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
-    functionName: 'openVaultAndMintFromBTC'
+    functionName: 'pause'
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"renounceOwnership"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"renounceRole"`
  */
-export const useSimulateBitSmileyRenounceOwnership =
+export const useSimulateBitSmileyRenounceRole =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
-    functionName: 'renounceOwnership'
+    functionName: 'renounceRole'
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"repayToBTC"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"repay"`
  */
-export const useSimulateBitSmileyRepayToBtc =
+export const useSimulateBitSmileyRepay =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
-    functionName: 'repayToBTC'
+    functionName: 'repay'
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setPenalty"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"repayAll"`
  */
-export const useSimulateBitSmileySetPenalty =
+export const useSimulateBitSmileyRepayAll =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
-    functionName: 'setPenalty'
+    functionName: 'repayAll'
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setPenaltyRecipient"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"revokeRole"`
  */
-export const useSimulateBitSmileySetPenaltyRecipient =
+export const useSimulateBitSmileyRevokeRole =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
-    functionName: 'setPenaltyRecipient'
+    functionName: 'revokeRole'
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"transferOwnership"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setAddress"`
  */
-export const useSimulateBitSmileyTransferOwnership =
+export const useSimulateBitSmileySetAddress =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
-    functionName: 'transferOwnership'
+    functionName: 'setAddress'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"setLiquidationFee"`
+ */
+export const useSimulateBitSmileySetLiquidationFee =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: bitSmileyAbi,
+    functionName: 'setLiquidationFee'
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link bitSmileyAbi}__ and `functionName` set to `"unpause"`
+ */
+export const useSimulateBitSmileyUnpause =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: bitSmileyAbi,
+    functionName: 'unpause'
   })
 
 /**

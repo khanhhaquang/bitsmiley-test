@@ -4,11 +4,14 @@ import {
   ProcessingInfoModalTitleIcon,
   ProcessingInfoTitleIcon
 } from '@/assets/icons'
+import { Image } from '@/components/Image'
 import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
 
 type ProcessingProps = {
+  className?: string
   title?: string
   message: ReactNode
   isModal?: boolean
@@ -20,32 +23,45 @@ type ProcessingProps = {
   link?: string
 }
 
-export const ProcessingModal: React.FC<
-  Omit<ProcessingProps, 'isModal'> & { open: boolean }
-> = ({ open, ...rest }) => {
+const ProcessingLoader = () => {
+  return (
+    <div className="flex items-center gap-x-1.5">
+      <Image
+        src={getIllustrationUrl('bitusd-loader-dots', 'webp')}
+        width={34}
+        height={14}
+      />
+      <Image
+        src={getIllustrationUrl('bitusd-loader-smiley', 'webp')}
+        width={26}
+        height={32}
+      />
+
+      <Image
+        src={getIllustrationUrl('bitusd-loader-dots', 'webp')}
+        width={34}
+        height={14}
+      />
+    </div>
+  )
+}
+
+export const ProcessingModal: React.FC<Omit<ProcessingProps, 'isModal'>> = ({
+  ...props
+}) => {
   useEffect(() => {
-    if (open) {
-      document
-        .querySelector('#machine-content-container')
-        ?.classList.add('no-scroll')
-    } else {
-      document
-        .querySelector('#machine-content-container')
-        ?.classList.remove('no-scroll')
-    }
-
+    const machineContainer = document.getElementById(
+      'machine-content-container'
+    )
+    machineContainer?.classList.add('no-scroll')
     return () => {
-      document
-        .querySelector('#machine-content-container')
-        ?.classList.remove('no-scroll')
+      machineContainer?.classList.remove('no-scroll')
     }
-  }, [open])
-
-  if (!open) return null
+  }, [])
 
   return (
     <div className="absolute inset-0 z-50 flex size-full flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
-      <Processing isModal {...rest} />
+      <Processing isModal {...props} />
     </div>
   )
 }
@@ -59,6 +75,7 @@ export const Processing: React.FC<ProcessingProps> = ({
   onClickActionButton,
   titleClassName,
   actionButtonClassName,
+  className,
   link
 }) => {
   const borderColorClassName = useMemo(() => {
@@ -86,7 +103,8 @@ export const Processing: React.FC<ProcessingProps> = ({
     <div
       className={cn(
         'flex w-full flex-col items-center justify-center bg-black',
-        isModal && 'w-[400px]'
+        isModal && 'w-[430px]',
+        className
       )}>
       <div
         className={cn(
@@ -116,15 +134,19 @@ export const Processing: React.FC<ProcessingProps> = ({
 
       <div
         className={cn(
-          'flex w-full flex-col items-center justify-center gap-y-6 border border-t-0 border-blue bg-black px-10 py-9 text-center font-ibmr text-sm text-white',
+          'flex w-full flex-col items-center justify-center gap-y-6 border border-t-0 border-blue bg-black px-3 py-6 text-center font-ibmr text-sm text-white',
+          {
+            'py-6 px-3': isModal
+          },
           borderColorClassName
         )}>
-        <p>
+        {type === 'info' && <ProcessingLoader />}
+        <div className="w-fit">
           {message}
           {!!link && (
-            <span>
+            <p>
               {' '}
-              You can check it on-chain{' '}
+              You can check it here{' '}
               <span
                 className={cn(
                   'cursor-pointer',
@@ -132,17 +154,17 @@ export const Processing: React.FC<ProcessingProps> = ({
                 )}>
                 [
                 <a href={link} target="_blank" className="hover:underline">
-                  Click here
+                  here
                 </a>
                 ]
               </span>
-            </span>
+            </p>
           )}
-        </p>
+        </div>
 
         {actionButtonText && (
           <ActionButton
-            className={cn('w-full', actionButtonClassName)}
+            className={cn('w-[302px]', actionButtonClassName)}
             onClick={onClickActionButton}>
             {actionButtonText}
           </ActionButton>

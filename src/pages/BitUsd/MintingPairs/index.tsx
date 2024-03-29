@@ -4,15 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { useSwitchChain } from 'wagmi'
 
 import {
-  ArrowDownDoubleIcon,
   ArrowRightDoubleIcon,
   ReturnUpIcon,
   RightAngleVaultIcon
 } from '@/assets/icons'
 import { SelectWalletModal } from '@/components/ConnectWallet'
+import { Image } from '@/components/Image'
 import { InfoIndicator } from '@/components/InfoIndicator'
 import { OnChainLoader } from '@/components/OnchainLoader'
-import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import {
   Table,
   TableRow,
@@ -21,7 +20,8 @@ import {
   TableHead,
   TableHeader
 } from '@/components/ui/table'
-import { bobTestnet } from '@/config/wagmi'
+import { chainsIconUrl } from '@/config/chain'
+import { bobTestnet, botanixTestnet } from '@/config/wagmi'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { IMintingPair } from '@/services/user'
@@ -32,17 +32,24 @@ import { VaultTitleBlue, VaultTitleWhite } from '../components/VaultTitle'
 import { getHealthFactorTextColor } from '../display'
 import {
   AvailableMintingPairsTable,
-  MyVaultOverviewTable,
   MyVaultsMintingPairsTable,
   TTable
 } from '../tables'
 
 const MintingPairs: React.FC = () => {
-  const { availableMintingPairs, openedMintingPairs, isLoading } =
-    useUserMintingPairs()
+  const {
+    availableMintingPairs,
+    openedMintingPairs,
+    hasOpenedMintingPairs,
+    isLoading
+  } = useUserMintingPairs()
 
   return (
-    <div className="flex size-full flex-col items-center justify-center gap-y-12">
+    <div
+      className={cn(
+        'scrollbar-none flex size-full flex-col items-center gap-y-12 overflow-y-auto overscroll-contain py-11',
+        !hasOpenedMintingPairs && 'pt-22'
+      )}>
       {isLoading ? (
         <OnChainLoader />
       ) : (
@@ -63,11 +70,16 @@ const MintingPairs: React.FC = () => {
 }
 
 const MintingPairsTable: React.FC<{
-  mintingPairs?: IMintingPair[]
-  table: TTable<IMintingPair>
   isOpenedVaults?: boolean
+  table: TTable<IMintingPair>
+  mintingPairs?: Record<string, IMintingPair[]>
 }> = ({ mintingPairs, isOpenedVaults, table }) => {
-  if (!mintingPairs?.length) return null
+  const flatMintingPairs = Object.values(mintingPairs || {}).reduce(
+    (pre, curr) => [...pre, ...curr],
+    []
+  )
+
+  if (!mintingPairs || !flatMintingPairs.length) return null
 
   return (
     <div className="w-full">
@@ -79,48 +91,45 @@ const MintingPairsTable: React.FC<{
         )}
       </div>
       <div className="w-full px-5">
-        <div
-          className={cn(
-            'relative w-full border border-white/20 px-7 pb-6 pt-4',
-            isOpenedVaults && 'border-blue/50'
-          )}>
-          <Table className="w-full overflow-hidden font-ibmr">
-            <TableHeader className="border-b border-b-white/20 text-sm text-white/70 [&_tr]:mb-0">
-              <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
-                {table.map(({ key, title, message, titleClassName }) => (
-                  <TableHead
-                    key={key}
-                    className={cn('text-nowrap', titleClassName)}>
-                    {title} <InfoIndicator message={message} />
-                  </TableHead>
+        <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
+          {Object.entries(mintingPairs).map(([chainId, pairs], index) => (
+            <Table
+              key={index}
+              className={cn(
+                'w-full overflow-hidden font-ibmr text-xs',
+                index !== 0 && !isOpenedVaults && 'border-t border-white/10'
+              )}>
+              <TableHeader className="[&_tr]:mb-0">
+                <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
+                  {(index !== 0
+                    ? table.filter((t) => t.key === 'pairName')
+                    : table
+                  ).map(
+                    ({ key, title, message, titleClassName, formatTitle }) => (
+                      <TableHead key={key} className={titleClassName}>
+                        {title || formatTitle?.(chainId)}{' '}
+                        <InfoIndicator message={message} />
+                      </TableHead>
+                    )
+                  )}
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pairs.map((mintingPair, index) => (
+                  <MintingPairTableRow
+                    key={index}
+                    table={table}
+                    isOpenedVaults={isOpenedVaults}
+                    mintingPair={mintingPair}
+                  />
                 ))}
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mintingPairs.map((mintingPair) => (
-                <MintingPairTableRow
-                  table={table}
-                  key={mintingPair.chainId}
-                  isOpenedVaults={isOpenedVaults}
-                  mintingPair={mintingPair}
-                />
-              ))}
-            </TableBody>
-          </Table>
+              </TableBody>
+            </Table>
+          ))}
 
-          <RightAngleVaultIcon
-            className={cn(
-              'absolute bottom-1.5 left-1.5',
-              isOpenedVaults ? 'text-blue' : 'text-grey9'
-            )}
-          />
-          <RightAngleVaultIcon
-            className={cn(
-              'absolute bottom-1.5 right-1.5 -rotate-90',
-              isOpenedVaults ? 'text-blue' : 'text-grey9'
-            )}
-          />
+          <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
+          <RightAngleVaultIcon className="absolute bottom-1.5 right-1.5 -rotate-90 text-grey9" />
         </div>
       </div>
     </div>
@@ -136,7 +145,6 @@ const MintingPairTableRow: React.FC<{
   const { evmChainId, isConnected } = useUserInfo()
   const { switchChain } = useSwitchChain()
 
-  const [isOpen, setIsOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
 
@@ -146,7 +154,9 @@ const MintingPairTableRow: React.FC<{
         { chainId: mintingPair.chainId },
         {
           onSuccess: () => {
-            navigate(`./vault/${mintingPair.chainId}`)
+            navigate(
+              `./vault/${mintingPair.chainId}/${mintingPair.collateralId}`
+            )
           },
           onError: () => {
             console.error('Switching network failed')
@@ -160,7 +170,7 @@ const MintingPairTableRow: React.FC<{
       setIsConnectWalletModalOpen(true)
       return
     }
-    navigate(`./vault/${mintingPair.chainId}`)
+    navigate(`./vault/${mintingPair.chainId}/${mintingPair.collateralId}`)
   }
 
   const liquidated = mintingPair.liquidated?.[0]
@@ -169,11 +179,11 @@ const MintingPairTableRow: React.FC<{
   const healthFactor =
     !isOpenedVaults || !mintingPair?.healthFactor
       ? 0
-      : Number(mintingPair.healthFactor) * 100
+      : Number(mintingPair.healthFactor) * 10
 
   const isInLiquidationRisk = useMemo(
     // TODO confirm when to show this message
-    () => isOpenedVaults && !!healthFactor && healthFactor < 100,
+    () => isOpenedVaults && !!healthFactor && healthFactor < 200,
     [healthFactor, isOpenedVaults]
   )
 
@@ -188,85 +198,48 @@ const MintingPairTableRow: React.FC<{
     <>
       <SelectWalletModal
         expectedChainId={mintingPair.chainId}
-        hideParticle={mintingPair.chainId === bobTestnet.id} //TODO: CHECKING FOR MAINNET WHEN IT'S AVAILABLE
+        hideParticle={
+          mintingPair.chainId === bobTestnet.id ||
+          mintingPair.chainId === botanixTestnet.id
+        } //TODO: CHECKING FOR MAINNET WHEN IT'S AVAILABLE
         isOpen={isConnectWalletModalOpen}
         onClose={() => setIsConnectWalletModalOpen(false)}
       />
-      <TableRow
-        key={mintingPair.chainId}
-        className="py-3 [&_td]:w-[120px] [&_td]:p-0">
-        {table.map(({ key, format }) => (
-          <TableCell key={key} className="text-nowrap">
+      <TableRow className="py-3 [&_td]:w-[120px] [&_td]:p-0">
+        {table.map(({ key, format, className }) => (
+          <TableCell key={key} className={cn('text-nowrap', className)}>
             {format(mintingPair)}
           </TableCell>
         ))}
         <TableCell className="flex w-[150px] items-center justify-end gap-x-2">
           <ActionButton onClick={() => handleEnterVault()}>
             <span className="flex items-center gap-x-2">
-              {isOpenedVaults ? 'Manage' : 'Enter'}
-              {(!isOpenedVaults || isInLiquidationRisk) && (
-                <ArrowRightDoubleIcon />
-              )}
+              Enter
+              <ArrowRightDoubleIcon />
             </span>
           </ActionButton>
-          {!isInLiquidationRisk && isOpenedVaults && (
-            <button className="group cursor-pointer hover:bg-white/10 active:bg-white/5">
-              <ArrowDownDoubleIcon
-                onClick={() => setIsOpen((v) => !v)}
-                className={cn(
-                  'text-white/70 group-hover:text-white group-active:text-white/70',
-                  isOpen && 'rotate-180 transition-all'
-                )}
-              />
-            </button>
-          )}
         </TableCell>
       </TableRow>
 
-      {liquidationMessage && (
-        <TableRow className="-mt-1.5">
-          <TableCell
-            className={cn(
-              'font-ibmr text-sm',
-              getHealthFactorTextColor(healthFactor),
-              liquidated && 'text-warning'
-            )}>
-            <span className="flex items-center gap-x-1">
-              <ReturnUpIcon />
-              {liquidationMessage}
-            </span>
+      {isOpenedVaults && (
+        <TableRow className="-mt-4 justify-start gap-x-1 text-xs">
+          <TableCell className="flex items-center gap-x-0.5">
+            <Image src={chainsIconUrl[mintingPair.chainId]} width={15} />
+            <span className="text-xs text-white/70">{mintingPair.network}</span>
           </TableCell>
-        </TableRow>
-      )}
-
-      {!isInLiquidationRisk && isOpenedVaults && (
-        <TableRow className="mt-1 w-full">
-          <TableCell className="w-full">
-            <Collapsible className="w-full" open={isOpen} asChild>
-              <CollapsibleContent>
-                <div className="size-full border border-blue/50 bg-white/5 px-1.5 pb-1.5 pt-2 font-ibmb">
-                  <div className="grid grid-cols-3 text-blue">
-                    {MyVaultOverviewTable.map(({ key, title }) => (
-                      <div
-                        key={key}
-                        className="border-r-2 border-blue px-2 pb-2 last:border-none">
-                        {title}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-3 bg-blue text-black">
-                    {MyVaultOverviewTable.map(({ key, format }) => (
-                      <div
-                        key={key}
-                        className="border-r-2 border-black px-2 py-1 last:border-none">
-                        {format(mintingPair)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </TableCell>
+          {liquidationMessage && (
+            <TableCell
+              className={cn(
+                'font-ibmr text-xs',
+                getHealthFactorTextColor(healthFactor),
+                liquidated && 'text-warning'
+              )}>
+              <span className="flex items-center gap-x-1">
+                <ReturnUpIcon />
+                {liquidationMessage}
+              </span>
+            </TableCell>
+          )}
         </TableRow>
       )}
     </>

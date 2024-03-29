@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Hash, isHash, parseEther } from 'viem'
+import { Address, Hash, isHash, parseEther } from 'viem'
 import {
   useConfig,
   useWaitForTransactionReceipt,
@@ -11,10 +11,10 @@ import { bitSmileyAbi } from '@/contracts/BitSmiley'
 import { bitUsdAbi } from '@/contracts/BitUsd'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
+import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { TransactionStatus } from '@/types/common'
-
-import { useTokenBalance } from './useTokenBalance'
+import { formartNumberAsCeil } from '@/utils/number'
 
 export const useManageVault = () => {
   const config = useConfig()
@@ -122,7 +122,11 @@ export const useManageVault = () => {
     }
   }, [openVaultTxnResultStatus, refetchWBtcAllowance, refetchWBtcBalance])
 
-  const openVault = async (deposit: string, mint: string) => {
+  const openVault = async (
+    deposit: string,
+    mint: string,
+    collateralId: string
+  ) => {
     const totalNum = Number(mint) + Number(deposit)
 
     if (!bitSmileyAddress || !totalNum) return
@@ -132,8 +136,8 @@ export const useManageVault = () => {
       const txnId = await writeContractAsync({
         abi: bitSmileyAbi,
         address: bitSmileyAddress,
-        functionName: 'openVaultAndMintFromBTC',
-        args: [parseEther(mint), parseEther(deposit)]
+        functionName: 'openVault',
+        args: [collateralId as Address, parseEther(mint), parseEther(deposit)]
       })
 
       setOpenVaultTxId(txnId)
@@ -183,7 +187,7 @@ export const useManageVault = () => {
       const txnId = await writeContractAsync({
         abi: bitSmileyAbi,
         address: bitSmileyAddress,
-        functionName: 'mintFromBTC',
+        functionName: 'mint',
         args: [vaultAddress, parseEther(mintBitUsd), parseEther(depositBtc)]
       })
 
@@ -219,8 +223,18 @@ export const useManageVault = () => {
     }
   }, [refetchBitUsdAllowance, refetchBitUsdBalance, repayResultStatus])
 
-  const repayToBtc = async (withdrawBtc: string, repayBitUsd: string) => {
-    if (!bitSmileyAddress || !address || (!withdrawBtc && !repayBitUsd)) return
+  const repayToBtc = async (
+    withdrawBtc: string,
+    repayBitUsd: string,
+    debtBitUSD?: string
+  ) => {
+    if (
+      !bitSmileyAddress ||
+      !address ||
+      !debtBitUSD ||
+      (!withdrawBtc && !repayBitUsd)
+    )
+      return
 
     try {
       setRepayToBtcTxnStatus(TransactionStatus.Signing)
@@ -231,12 +245,29 @@ export const useManageVault = () => {
         args: [address]
       })
 
-      const txnId = await writeContractAsync({
-        abi: bitSmileyAbi,
-        address: bitSmileyAddress,
-        functionName: 'repayToBTC',
-        args: [vaultAddress, parseEther(repayBitUsd), parseEther(withdrawBtc)]
-      })
+      const ceiledRepayBitUsd = formartNumberAsCeil(repayBitUsd)
+      const isRepayAll = ceiledRepayBitUsd >= debtBitUSD
+
+      let txnId: Address
+      if (isRepayAll) {
+        txnId = await writeContractAsync({
+          abi: bitSmileyAbi,
+          address: bitSmileyAddress,
+          functionName: 'repayAll',
+          args: [vaultAddress, parseEther(withdrawBtc)]
+        })
+      } else {
+        txnId = await writeContractAsync({
+          abi: bitSmileyAbi,
+          address: bitSmileyAddress,
+          functionName: 'repay',
+          args: [
+            vaultAddress,
+            parseEther(ceiledRepayBitUsd),
+            parseEther(withdrawBtc)
+          ]
+        })
+      }
 
       setRepayToBtcTxId(txnId)
       setRepayToBtcTxnStatus(TransactionStatus.Processing)

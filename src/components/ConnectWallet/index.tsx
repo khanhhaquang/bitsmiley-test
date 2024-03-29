@@ -4,8 +4,10 @@ import { useAccount } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
+import { CopyButton } from '@/components/CopyButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
+import WrongNetworkModal from '@/components/WrongNetworkModal'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
@@ -16,8 +18,6 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 
 import EvmConnector from './EvmConnector'
-
-import WrongNetworkModal from '../WrongNetworkModal'
 
 import './index.scss'
 
@@ -37,11 +37,13 @@ export const ConnectWallet: React.FC<{
   className?: string
   style?: CSSProperties
 }> = ({ className, style }) => {
-  const buttonRef = useRef<HTMLDivElement>(null)
-  useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
-  const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
+  const dropDownRef = useRef<HTMLDivElement>(null)
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
+
+  useClickOutside(dropDownRef, () => setIsDropdownOpen(false))
 
   const disconnect = useDisconnectAccount()
   const { accounts: btcAccounts } = useBTCProvider()
@@ -53,6 +55,15 @@ export const ConnectWallet: React.FC<{
     chain: evmChain
   } = useAccount()
 
+  const handlePress = () => {
+    if (!isEvmConnected) {
+      setIsConnectWalletModalOpen(true)
+    }
+    if (isEvmConnected && !isDropdownOpen) {
+      setIsDropdownOpen(true)
+    }
+  }
+
   useEffect(() => {
     if (!evmChain && !!evmAddress) {
       setIsNetworkError(true)
@@ -62,41 +73,53 @@ export const ConnectWallet: React.FC<{
   return (
     <>
       <div
-        onClick={() => {
-          if (!isEvmConnected) {
-            setIsConnectWalletModalOpen(true)
-          }
-          if (isEvmConnected && !isLogoutDropdownOpen) {
-            setIsLogoutDropdownOpen(true)
+        tabIndex={0}
+        onClick={handlePress}
+        onKeyUp={(e) => {
+          if (e.code === 'Enter') {
+            handlePress()
           }
         }}
         style={style}
         className={cn(
-          'relative bg-white cursor-pointer text-black px-5 py-2 font-bold whitespace-nowrap text-[15px]',
-          !isLogoutDropdownOpen && 'hover:bg-blue3',
-          !isEvmConnected &&
-            'shadow-connectwallet-button hover:shadow-connectwallet-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue',
+          'relative bg-white cursor-pointer text-center text-black px-5 py-2 font-bold whitespace-nowrap text-sm h-[34px] w-[158px]',
+          !isDropdownOpen && 'hover:bg-blue3',
+          !isEvmConnected && 'active:bg-blue',
           className
         )}>
         {isEvmConnected
           ? displayAddress(btcAccounts[0] || evmAddress, 4, 4)
-          : 'CONNECT WALLET'}
+          : 'Connect wallet'}
 
         <div
-          ref={buttonRef}
-          onClick={() => {
-            disconnect()
-            setIsLogoutDropdownOpen(false)
-          }}
+          ref={dropDownRef}
           className={cn(
-            'absolute left-0 top-full z-10 flex w-full items-center justify-center bg-grey3 font-bold text-white h-0 hover:bg-grey4 text-[15px]',
-            isEvmConnected && 'transition-all ease-in-out duration-100',
-            isLogoutDropdownOpen &&
-              'h-auto px-5 py-2 border border-white border-t-transparent'
+            'absolute left-0 overflow-hidden top-full z-10 w-full bg-grey3 font-bold text-white h-0 text-[15px]',
+            isDropdownOpen && 'h-auto border border-white border-t-transparent'
           )}>
-          {isLogoutDropdownOpen ? 'LOGOUT' : ''}
+          {!!btcAccounts[0] && (
+            <CopyButton
+              text={evmAddress}
+              className="flex w-full cursor-pointer items-center justify-center gap-x-2.5 border-b px-5 py-2 hover:bg-grey10">
+              <Image
+                width={15}
+                height={15}
+                src={getIllustrationUrl('particle')}
+              />
+              {displayAddress(evmAddress, 3, 3)}
+            </CopyButton>
+          )}
+          <button
+            onClick={() => {
+              disconnect()
+              setIsDropdownOpen(false)
+            }}
+            className="flex w-full cursor-pointer items-center justify-center px-5 py-2 hover:bg-grey10">
+            Logout
+          </button>
         </div>
       </div>
+
       <WrongNetworkModal
         isOpen={isNetworkError}
         onClose={() => setIsNetworkError(false)}
