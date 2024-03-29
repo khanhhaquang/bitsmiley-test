@@ -1,5 +1,5 @@
 import { keepPreviousData } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Address, formatEther, parseEther } from 'viem'
 
@@ -14,6 +14,7 @@ import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IVault, IVaultFromChain } from '@/types/vault'
+import { formartNumberAsTrunc } from '@/utils/number'
 
 export const useUserVault = () => {
   const { address } = useUserInfo()
@@ -98,7 +99,7 @@ export const useUserVault = () => {
   const debouncedMaxVaultCollateral = useDebounce(maxVaultCollateral)
 
   const {
-    data: maxVault,
+    data: maxVaultData,
     refetch: refetchMaxVault,
     isFetching: isFetchingMaxVault
   } = useReadBitSmileyQueryGetVaultDetail({
@@ -112,6 +113,14 @@ export const useUserVault = () => {
       : undefined,
     query
   })
+
+  const maxVault = useMemo(
+    () => ({
+      ...maxVaultData,
+      availableToMint: formartNumberAsTrunc(maxVaultData?.availableToMint || '')
+    }),
+    [maxVaultData]
+  )
 
   const { collateralId } = useParams()
   const [tryOpenVaultBitUsd, setTryOpenVaultBitUsd] = useState('')

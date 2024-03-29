@@ -19,7 +19,21 @@ export const formartNumberAsCeil = (
 
   return new Intl.NumberFormat('en', {
     maximumFractionDigits: maximumFractionDigits,
-    roundingMode: 'ceil'
+    roundingMode: 'ceil',
+    useGrouping: false
+  }).format(Number(value))
+}
+
+export const formartNumberAsTrunc = (
+  value: number | bigint | string,
+  maximumFractionDigits: number = 2
+) => {
+  if (isNaN(Number(value))) return 'NaN'
+
+  return new Intl.NumberFormat('en', {
+    maximumFractionDigits: maximumFractionDigits,
+    roundingMode: 'trunc',
+    useGrouping: false
   }).format(Number(value))
 }
 
