@@ -76,12 +76,13 @@ export const useManageVault = () => {
 
     if (!contractAddresses || !bitSmileyAddress || !value) return
 
+    let parsedValue = parseEther(value)
     if (isWBtc) {
       setIsApprovingWbtc(true)
+    } else {
+      // pass 1 more in case fee changes
+      parsedValue = parseEther(value) + parseEther('1')
     }
-
-    // pass 1 more in case fee changes
-    const addedValue = parseEther(value) + parseEther('1')
 
     try {
       setApprovalTxnStatus(TransactionStatus.Signing)
@@ -89,7 +90,7 @@ export const useManageVault = () => {
         abi: bitUsdAbi,
         address: contractAddresses,
         functionName: 'approve',
-        args: [bitSmileyAddress, addedValue]
+        args: [bitSmileyAddress, parsedValue]
       })
 
       setApprovalTxId(txnId)
