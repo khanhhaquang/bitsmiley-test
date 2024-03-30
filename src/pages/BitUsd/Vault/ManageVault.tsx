@@ -125,7 +125,12 @@ export const ManageVault: React.FC<{
 
     if (!!repayBitUsd && Number(repayBitUsd) > bitUsdBalance) return true
 
-    if (!!repayBitUsd && !!minRepay && Number(minRepay) < Number(repayBitUsd))
+    if (
+      !!repayBitUsd &&
+      !!minRepay &&
+      repayBitUsd !== vault?.debtBitUSD &&
+      Number(minRepay) < Number(repayBitUsd)
+    )
       return true
 
     if (
