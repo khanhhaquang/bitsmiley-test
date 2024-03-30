@@ -17,26 +17,28 @@ export const useUserMintingPairs = (
   const { address } = useUserInfo()
   const { projectInfo } = useProjectInfo()
 
-  const { data: allCollaterals } = useQuery({
-    queryKey: [UserService.getAllVaultInfo.key],
-    queryFn: () => UserService.getAllVaultInfo.call(),
-    select: (res) => {
-      const vaults = res.data.map((v) => {
-        const network = Object.keys(v)?.[0]
-        const data = Object.values(v)?.[0]
+  const { data: allCollaterals, isLoading: isLoadingAllCollaterals } = useQuery(
+    {
+      queryKey: [UserService.getAllVaultInfo.key],
+      queryFn: () => UserService.getAllVaultInfo.call(),
+      select: (res) => {
+        const vaults = res.data.map((v) => {
+          const network = Object.keys(v)?.[0]
+          const data = Object.values(v)?.[0]
 
-        const collaterals = decodeFunctionResult({
-          abi: bitSmileyQuery,
-          functionName: 'listCollaterals',
-          data
-        }) as ICollateralFromChain[]
+          const collaterals = decodeFunctionResult({
+            abi: bitSmileyQuery,
+            functionName: 'listCollaterals',
+            data
+          }) as ICollateralFromChain[]
 
-        return { network, collaterals }
-      })
+          return { network, collaterals }
+        })
 
-      return vaults
+        return vaults
+      }
     }
-  })
+  )
 
   const mintingParisParams = allCollaterals?.map((v) => ({
     network: v.network,
@@ -45,7 +47,7 @@ export const useUserMintingPairs = (
 
   const {
     data: mintingPairs,
-    isLoading,
+    isLoading: isLoadingMintingPairs,
     ...rest
   } = useQuery({
     queryKey: [UserService.getMintingPairs.key, address, mintingParisParams],
@@ -169,6 +171,11 @@ export const useUserMintingPairs = (
         (p) => p.chainId === chainId && p.collateralId === collateralId
       ),
     [chainId, collateralId, mintingPairs]
+  )
+
+  const isLoading = useMemo(
+    () => isLoadingAllCollaterals || isLoadingMintingPairs,
+    [isLoadingAllCollaterals, isLoadingMintingPairs]
   )
 
   return {

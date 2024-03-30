@@ -2,6 +2,7 @@ import { Suspense, useMemo, useState } from 'react'
 import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
+import { OnChainLoader } from '@/components/OnchainLoader'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
@@ -134,13 +135,7 @@ const MainApp = () => {
       )
     }
 
-    return isLoading ? (
-      <div className="flex size-full items-center justify-center text-2xl">
-        Loading...
-      </div>
-    ) : (
-      <Outlet />
-    )
+    return isLoading ? <OnChainLoader /> : <Outlet />
   }
 
   return (
