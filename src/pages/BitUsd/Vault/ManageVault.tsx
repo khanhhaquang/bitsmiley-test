@@ -125,7 +125,12 @@ export const ManageVault: React.FC<{
 
     if (!!repayBitUsd && Number(repayBitUsd) > bitUsdBalance) return true
 
-    if (!!repayBitUsd && !!minRepay && Number(minRepay) < Number(repayBitUsd))
+    if (
+      !!repayBitUsd &&
+      !!minRepay &&
+      repayBitUsd !== vault?.debtBitUSD &&
+      Number(minRepay) < Number(repayBitUsd)
+    )
       return true
 
     if (
@@ -512,8 +517,8 @@ export const ManageVault: React.FC<{
             vault={vault}
             changedVault={changedVault}
             hasChangedVault={hasChangedVault}
-            className="mx-auto aspect-[451/192] w-[451px]"
-            innerClassName="gap-x-[70px] pl-7 text-white/70"
+            className="mx-auto aspect-[711/195] w-[711px]"
+            innerClassName="gap-x-[70px] text-white/70 flex items-center justify-center"
             borderSvg={
               <VaultChangesBorderIcon className="absolute inset-0 z-0 w-full" />
             }
