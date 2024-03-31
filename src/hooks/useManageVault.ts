@@ -14,7 +14,6 @@ import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { TransactionStatus } from '@/types/common'
-import { formartNumberAsCeil } from '@/utils/number'
 
 export const useManageVault = () => {
   const config = useConfig()
@@ -77,8 +76,12 @@ export const useManageVault = () => {
 
     if (!contractAddresses || !bitSmileyAddress || !value) return
 
+    let parsedValue = parseEther(value)
     if (isWBtc) {
       setIsApprovingWbtc(true)
+    } else {
+      // pass 1 more in case fee changes
+      parsedValue = parseEther(value) + parseEther('1')
     }
 
     try {
@@ -87,7 +90,7 @@ export const useManageVault = () => {
         abi: bitUsdAbi,
         address: contractAddresses,
         functionName: 'approve',
-        args: [bitSmileyAddress, parseEther(value)]
+        args: [bitSmileyAddress, parsedValue]
       })
 
       setApprovalTxId(txnId)
@@ -228,13 +231,7 @@ export const useManageVault = () => {
     repayBitUsd: string,
     debtBitUSD?: string
   ) => {
-    if (
-      !bitSmileyAddress ||
-      !address ||
-      !debtBitUSD ||
-      (!withdrawBtc && !repayBitUsd)
-    )
-      return
+    if (!bitSmileyAddress || !address || (!withdrawBtc && !repayBitUsd)) return
 
     try {
       setRepayToBtcTxnStatus(TransactionStatus.Signing)
@@ -245,8 +242,15 @@ export const useManageVault = () => {
         args: [address]
       })
 
-      const ceiledRepayBitUsd = formartNumberAsCeil(repayBitUsd)
-      const isRepayAll = ceiledRepayBitUsd >= debtBitUSD
+      const ceiledRepayBitUsd = !repayBitUsd
+        ? parseEther('0')
+        : // pass one more in case fee changes
+          parseEther(repayBitUsd) + parseEther('0.01')
+
+      const isRepayAll =
+        !!debtBitUSD &&
+        (parseEther(repayBitUsd) >= parseEther(debtBitUSD) ||
+          ceiledRepayBitUsd >= parseEther(debtBitUSD))
 
       let txnId: Address
       if (isRepayAll) {
@@ -261,11 +265,7 @@ export const useManageVault = () => {
           abi: bitSmileyAbi,
           address: bitSmileyAddress,
           functionName: 'repay',
-          args: [
-            vaultAddress,
-            parseEther(ceiledRepayBitUsd),
-            parseEther(withdrawBtc)
-          ]
+          args: [vaultAddress, ceiledRepayBitUsd, parseEther(withdrawBtc)]
         })
       }
 

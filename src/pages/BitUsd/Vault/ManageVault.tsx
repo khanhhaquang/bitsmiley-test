@@ -18,6 +18,7 @@ import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { TransactionStatus } from '@/types/common'
 import {
+  formartNumberAsCeil,
   formatNumberAsCompact,
   formatNumberWithSeparator
 } from '@/utils/number'
@@ -109,30 +110,34 @@ export const ManageVault: React.FC<{
     const { availableToMint: maxToMint, availableToWithdraw: maxToWithdraw } =
       maxVault
 
+    // mintAndDeposit
     if (isMintFromBtc === true) {
+      // no input values
       if (!depositBtc && !mintBitUsd) return true
-
+      // deposit > balance
       if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
 
       const minToMint = Number(mintingPair?.collateral.vaultMinDebt)
-
+      // changedVaultDebt < vaultFloor
       if (minToMint && Number(changedVault?.debtBitUSD) < minToMint) return true
-
+      // mintBitusd > availableToMint
       return Number(maxToMint) >= 0 && Number(mintBitUsd) > Number(maxToMint)
     }
 
+    // withdrawAndRepay
+    // no input values
     if (!withdrawBtc && !repayBitUsd) return true
-
+    // repay > balance
     if (!!repayBitUsd && Number(repayBitUsd) > bitUsdBalance) return true
-
+    // remain < vaultFloor
     if (
       !!repayBitUsd &&
       !!minRepay &&
-      repayBitUsd !== vault?.debtBitUSD &&
+      Number(repayBitUsd) < Number(vault?.debtBitUSD) &&
       Number(minRepay) < Number(repayBitUsd)
     )
       return true
-
+    // repay < stability fee
     if (
       !!vault?.debtBitUSD &&
       !!vault?.fee &&
@@ -140,7 +145,7 @@ export const ManageVault: React.FC<{
       Number(repayBitUsd) < Number(vault?.fee)
     )
       return true
-
+    // withdraw > availableToWithdraw
     return (
       Number(maxToWithdraw) >= 0 && Number(withdrawBtc) > Number(maxToWithdraw)
     )
@@ -394,6 +399,7 @@ export const ManageVault: React.FC<{
               icon={<BitCoinIcon className="shrink-0" width={27} height={29} />}
             />
             <NumberInput
+              scale={4}
               value={depositBtc}
               onInputChange={(v) => handleInput('depositBtc', v)}
               onFocus={() => setIsMintFromBtc(true)}
@@ -410,6 +416,7 @@ export const ManageVault: React.FC<{
             </div>
 
             <NumberInput
+              scale={4}
               value={withdrawBtc}
               onInputChange={(v) => handleInput('withdrawBtc', v)}
               disabled={withdrawWbtcDisabled}
@@ -500,7 +507,10 @@ export const ManageVault: React.FC<{
                     disabled={repayBitUsdDisabled || isMintFromBtc === true}
                     className="w-[92px]"
                     onClick={() => {
-                      handleInput('repayBitUsd', vault?.debtBitUSD || '')
+                      handleInput(
+                        'repayBitUsd',
+                        formartNumberAsCeil(vault?.debtBitUSD || '') || ''
+                      )
                       setIsMintFromBtc(false)
                     }}>
                     Repay all

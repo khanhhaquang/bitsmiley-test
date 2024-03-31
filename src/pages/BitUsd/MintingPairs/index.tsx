@@ -41,7 +41,8 @@ const MintingPairs: React.FC = () => {
     availableMintingPairs,
     openedMintingPairs,
     hasOpenedMintingPairs,
-    isLoading
+    isLoading,
+    isRefetching
   } = useUserMintingPairs()
 
   return (
@@ -50,7 +51,7 @@ const MintingPairs: React.FC = () => {
         'scrollbar-none flex size-full flex-col items-center gap-y-12 overflow-y-auto overscroll-contain py-11',
         !hasOpenedMintingPairs && 'pt-22'
       )}>
-      {isLoading ? (
+      {isLoading || isRefetching ? (
         <OnChainLoader />
       ) : (
         <>

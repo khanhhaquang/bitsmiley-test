@@ -1,12 +1,14 @@
-import { ReactNode, useRef, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { IMaskInput } from 'react-imask'
 
 import { InputIndicatorIcon } from '@/assets/icons'
 import { cn } from '@/utils/cn'
+import { formartNumberAsTrunc } from '@/utils/number'
 
 export type NumberInputProps = {
   value?: string
   title: ReactNode
+  scale?: number
   titleSuffix?: ReactNode
   inputSuffix?: ReactNode
   disabled?: boolean
@@ -23,6 +25,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   disabled,
   greyOut,
   title,
+  scale = 2,
   titleSuffix,
   inputSuffix,
   onFocus,
@@ -32,9 +35,6 @@ export const NumberInput: React.FC<NumberInputProps> = ({
   message
 }) => {
   const [isFocus, setIsFocus] = useState(false)
-
-  const ref = useRef(null)
-  const inputRef = useRef(null)
 
   return (
     <div className="flex flex-col gap-y-1">
@@ -56,16 +56,33 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           disabled && 'bg-white/20 border-white/20'
         )}>
         <IMaskInput
-          ref={ref}
           mask={Number}
           thousandsSeparator=","
           radix="."
           min={0}
-          scale={20}
+          scale={scale}
           value={value}
           unmask="typed"
-          inputRef={inputRef}
-          onAccept={(_, mask) => onInputChange?.(mask.unmaskedValue)}
+          onAccept={(_, mask) => {
+            const rawValue = value
+            const unMaskedValue = mask.unmaskedValue
+            const truncatedRawValue = formartNumberAsTrunc(
+              rawValue || '',
+              scale
+            )
+            const rawValueprecision = rawValue?.split('.')?.[1]?.length || 0
+
+            // when 1234.5678904567 is passed, do not change to 1234.56
+            if (
+              !!rawValueprecision &&
+              rawValueprecision > scale &&
+              unMaskedValue === truncatedRawValue
+            ) {
+              return
+            }
+
+            onInputChange?.(mask.unmaskedValue)
+          }}
           disabled={disabled}
           onBlur={() => {
             setIsFocus(false)
