@@ -118,8 +118,14 @@ export const ManageVault: React.FC<{
       if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
 
       const minToMint = Number(mintingPair?.collateral.vaultMinDebt)
-      // changedVaultDebt < vaultFloor
-      if (minToMint && Number(changedVault?.debtBitUSD) < minToMint) return true
+
+      // mintBitUsd && changedVaultDebt < vaultFloor
+      if (
+        minToMint &&
+        !!mintBitUsd &&
+        Number(changedVault?.debtBitUSD) < minToMint
+      )
+        return true
       // mintBitusd > availableToMint
       return Number(maxToMint) >= 0 && Number(mintBitUsd) > Number(maxToMint)
     }
