@@ -69,8 +69,6 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     1102: 'B2'
   }
 
-  console.log(supportedChains)
-
   const query = {
     placeholderData: keepPreviousData,
     select: (res?: ICollateralFromChain[]): ICollateral[] | undefined =>

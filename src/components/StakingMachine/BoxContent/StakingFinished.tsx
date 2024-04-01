@@ -29,7 +29,6 @@ export const StakingFinished: React.FC = () => {
           address: contractAddresses.staking
         })
         addTransaction(txid)
-        console.log(txid)
       } catch (error) {
         console.error(error)
       } finally {
