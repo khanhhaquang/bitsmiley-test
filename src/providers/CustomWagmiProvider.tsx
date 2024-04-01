@@ -7,26 +7,18 @@ import { ReactNode, useMemo, useState } from 'react'
 import { Transport } from 'viem'
 import { WagmiProvider, createConfig, http } from 'wagmi'
 
-import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
+import { chainsNotSupportedByParticle } from '@/config/wagmi'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
+import { useSupportedChains } from '@/hooks/useSupportedChains'
 import LoadingResourcesPage from '@/pages/LoadingResources'
 import NetworkErrorPage from '@/pages/NetworkError'
 
 const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
   const [isEntered, setIsEntered] = useState(false)
-  const { projectInfo, isLoading: isLoadingProject, isError } = useProjectInfo()
+  const { isLoading: isLoadingProject, isError } = useProjectInfo()
+  const { supportedChains, supportedChainIds } = useSupportedChains()
   const { isLoading: isLoadingResources } = usePreloadResources()
-
-  const supportedChainIds = useMemo(
-    () => projectInfo?.web3Info?.map((v) => v.chainId) || [],
-    [projectInfo?.web3Info]
-  )
-
-  const supportedChains = useMemo(
-    () => customChains.filter((v) => supportedChainIds.includes(v.id)) || [],
-    [supportedChainIds]
-  )
 
   const config = useMemo(() => {
     if (supportedChains.length === 0) return undefined

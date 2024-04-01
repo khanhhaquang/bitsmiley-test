@@ -8,10 +8,10 @@ import {
   encodeFunctionData,
   formatEther,
   http,
+  isAddressEqual,
   parseEther
 } from 'viem'
 
-import { customChains } from '@/config/wagmi'
 import { bitSmileyAbi } from '@/contracts/BitSmiley'
 import { bitSmileyQueryAbi } from '@/contracts/BitSmileyQuery'
 import { UserService } from '@/services/user'
@@ -22,19 +22,13 @@ import {
 } from '@/types/vault'
 
 import { useProjectInfo } from './useProjectInfo'
+import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
 
 export const useCollaterals = (chainId?: number, collateralId?: string) => {
   const { address } = useUserInfo()
   const { projectInfo } = useProjectInfo()
-
-  const supportedChains = useMemo(
-    () =>
-      customChains.filter((v) =>
-        (projectInfo?.web3Info?.map((v) => v.chainId) || []).includes(v.id)
-      ) || [],
-    [projectInfo?.web3Info]
-  )
+  const { supportedChains } = useSupportedChains()
 
   const getBitSmileyQueryContractAddress = useCallback(
     (chainId: number) => {
@@ -74,6 +68,8 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     111: 'Bob',
     1102: 'B2'
   }
+
+  console.log(supportedChains)
 
   const query = {
     placeholderData: keepPreviousData,
@@ -187,10 +183,12 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
                   data: vaultAddressRes
                 })
 
-                const hasVaultAddress =
-                  vaultAddress !== '0x0000000000000000000000000000000000000000'
-
-                if (!hasVaultAddress) {
+                if (
+                  isAddressEqual(
+                    vaultAddress,
+                    '0x0000000000000000000000000000000000000000'
+                  )
+                ) {
                   return {
                     chainId: c.chain.id,
                     vaultAddress: undefined,
