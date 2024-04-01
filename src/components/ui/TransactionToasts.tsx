@@ -34,6 +34,19 @@ export const TransactionToast: React.FC<TransactionToastProps> = ({
     return fetchingStatus
   }, [fetchingStatus, txnReceipt?.status])
 
+  const message = useMemo(() => {
+    switch (status) {
+      case 'success':
+        return 'Your transaction succeeded.'
+      case 'reverted':
+        return 'Your transaction has failed.'
+      case 'error':
+        return 'Fetching onchain failed.'
+      default:
+        return 'Transaction processing on-chain...'
+    }
+  }, [status])
+
   useEffect(() => {
     if (status !== 'pending') {
       // REOPEN IF USER ACTIVELY CLOSED TOAST PENDING
@@ -58,11 +71,7 @@ export const TransactionToast: React.FC<TransactionToastProps> = ({
         )}
         {status === 'success' && <SuccessIcon />}
         {status === 'reverted' && <FailIcon />}
-        <span>
-          {status === 'pending' && 'Transaction processing on-chain...'}
-          {status === 'success' && 'Your transaction succeeded.'}
-          {status === 'reverted' && 'Your transaction has failed.'}
-        </span>
+        <span>{message}</span>
       </ToastDescription>
       <a
         className="text-green hover:underline"
