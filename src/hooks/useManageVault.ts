@@ -38,13 +38,15 @@ export const useManageVault = () => {
     refetchAllowance: refetchBitUsdAllowance
   } = useTokenAllowance(bitUsdAddress, bitSmileyAddress)
 
+  const [txnErrorMsg, setTxnErrorMsg] = useState('')
+
   // Approval start
   const [isApprovingWbtc, setIsApprovingWbtc] = useState(false)
   const [approvalTxId, setApprovalTxId] = useState('')
   const [approvalTxnStatus, setApprovalTxnStatus] = useState(
     TransactionStatus.Idle
   )
-  const { status: approvalTxnResultStatus } = useWaitForTransactionReceipt({
+  const { data: approvalTxnReceipt } = useWaitForTransactionReceipt({
     hash: approvalTxId as Hash,
     query: {
       enabled: isHash(approvalTxId)
@@ -52,7 +54,7 @@ export const useManageVault = () => {
   })
 
   useEffect(() => {
-    if (approvalTxnResultStatus === 'success') {
+    if (approvalTxnReceipt?.status === 'success') {
       setApprovalTxnStatus(TransactionStatus.Success)
       if (isApprovingWbtc) {
         refetchWBtcAllowance()
@@ -60,12 +62,12 @@ export const useManageVault = () => {
         refetchBitUsdAllowance()
       }
     }
-    if (approvalTxnResultStatus === 'error') {
+    if (approvalTxnReceipt?.status === 'reverted') {
       setApprovalTxnStatus(TransactionStatus.Failed)
     }
   }, [
+    approvalTxnReceipt?.status,
     isApprovingWbtc,
-    approvalTxnResultStatus,
     refetchBitUsdAllowance,
     refetchWBtcAllowance
   ])
@@ -107,7 +109,7 @@ export const useManageVault = () => {
   const [openVaultTxnStatus, setOpenVaultTxnStatus] = useState(
     TransactionStatus.Idle
   )
-  const { status: openVaultTxnResultStatus } = useWaitForTransactionReceipt({
+  const { data: openVaultTxnReceipt } = useWaitForTransactionReceipt({
     hash: openVaultTxId as Hash,
     query: {
       enabled: isHash(openVaultTxId)
@@ -115,15 +117,20 @@ export const useManageVault = () => {
   })
 
   useEffect(() => {
-    if (openVaultTxnResultStatus === 'success') {
+    if (openVaultTxnReceipt?.status === 'success') {
       refetchWBtcBalance()
       refetchWBtcAllowance()
       setOpenVaultTxnStatus(TransactionStatus.Success)
     }
-    if (openVaultTxnResultStatus === 'error') {
+    if (openVaultTxnReceipt?.status === 'reverted') {
       setOpenVaultTxnStatus(TransactionStatus.Failed)
     }
-  }, [openVaultTxnResultStatus, refetchWBtcAllowance, refetchWBtcBalance])
+  }, [
+    openVaultTxnReceipt?.status,
+    openVaultTxnStatus,
+    refetchWBtcAllowance,
+    refetchWBtcBalance
+  ])
 
   const openVault = async (
     deposit: string,
@@ -157,7 +164,7 @@ export const useManageVault = () => {
   const [mintFromBtcTxnStatus, setMintFromBtcTxnStatus] = useState(
     TransactionStatus.Idle
   )
-  const { status: mintResultStatus } = useWaitForTransactionReceipt({
+  const { data: mintTxnReceipt } = useWaitForTransactionReceipt({
     hash: mintFromBtcTxId as Hash,
     query: {
       enabled: isHash(mintFromBtcTxId)
@@ -165,15 +172,15 @@ export const useManageVault = () => {
   })
 
   useEffect(() => {
-    if (mintResultStatus === 'success') {
+    if (mintTxnReceipt?.status === 'success') {
       refetchWBtcBalance()
       refetchWBtcAllowance()
       setMintFromBtcTxnStatus(TransactionStatus.Success)
     }
-    if (mintResultStatus === 'error') {
+    if (mintTxnReceipt?.status === 'reverted') {
       setMintFromBtcTxnStatus(TransactionStatus.Failed)
     }
-  }, [mintResultStatus, refetchWBtcAllowance, refetchWBtcBalance])
+  }, [mintTxnReceipt?.status, refetchWBtcAllowance, refetchWBtcBalance])
 
   const mintFromBtc = async (depositBtc: string, mintBitUsd: string) => {
     if (!bitSmileyAddress || !address || (!depositBtc && !mintBitUsd)) return
@@ -208,7 +215,7 @@ export const useManageVault = () => {
   const [repayToBtcTxnStatus, setRepayToBtcTxnStatus] = useState(
     TransactionStatus.Idle
   )
-  const { status: repayResultStatus } = useWaitForTransactionReceipt({
+  const { data: repayTxnReceipt } = useWaitForTransactionReceipt({
     hash: repayToBtcTxId as Hash,
     query: {
       enabled: isHash(repayToBtcTxId)
@@ -216,15 +223,15 @@ export const useManageVault = () => {
   })
 
   useEffect(() => {
-    if (repayResultStatus === 'success') {
+    if (repayTxnReceipt?.status === 'success') {
       refetchBitUsdBalance()
       refetchBitUsdAllowance()
       setRepayToBtcTxnStatus(TransactionStatus.Success)
     }
-    if (repayResultStatus === 'error') {
+    if (repayTxnReceipt?.status === 'reverted') {
       setRepayToBtcTxnStatus(TransactionStatus.Failed)
     }
-  }, [refetchBitUsdAllowance, refetchBitUsdBalance, repayResultStatus])
+  }, [refetchBitUsdAllowance, refetchBitUsdBalance, repayTxnReceipt?.status])
 
   const repayToBtc = async (
     withdrawBtc: string,
@@ -300,6 +307,9 @@ export const useManageVault = () => {
     repayToBtc,
     repayToBtcTxnStatus,
     repayToBtcTxId,
-    setRepayToBtcTxnStatus
+    setRepayToBtcTxnStatus,
+
+    setTxnErrorMsg,
+    txnErrorMsg
   }
 }
