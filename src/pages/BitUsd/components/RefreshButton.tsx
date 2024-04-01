@@ -6,15 +6,15 @@ import { cn } from '@/utils/cn'
 export const RefreshButton: React.FC<{ className?: string }> = ({
   className
 }) => {
-  const { refetch: refetchMintingPairs, isFetching: isFetchingMintingPairs } =
+  const { refetch: refetchCollaterals, isFetching: isFetchingCollaterals } =
     useCollaterals()
   const { refreshVaultValues, isRefreshingVaultValues } = useUserVault()
 
-  const isRefreshing = isRefreshingVaultValues || isFetchingMintingPairs
+  const isRefreshing = isRefreshingVaultValues || isFetchingCollaterals
 
   const refresh = () => {
     refreshVaultValues()
-    refetchMintingPairs()
+    refetchCollaterals()
   }
 
   return (

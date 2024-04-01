@@ -47,8 +47,10 @@ export const ManageVault: React.FC<{
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
   const { blockExplorerUrl } = useUserInfo()
-  const { collateral: mintingPair, refetch: refetchMintingPairs } =
-    useCollaterals(chainId, collateralId)
+  const { collateral, refetch: refetchCollaterals } = useCollaterals(
+    chainId,
+    collateralId
+  )
   const {
     vault,
     changedVault,
@@ -91,16 +93,16 @@ export const ManageVault: React.FC<{
   }, [depositBtc, wbtcPrice])
 
   const minRepay = useMemo(() => {
-    if (!repayBitUsd || !vault || !mintingPair) return 0
+    if (!repayBitUsd || !vault || !collateral) return 0
 
     const debt = Number(vault.debtBitUSD)
-    const floor = Number(mintingPair?.collateral?.vaultMinDebt)
+    const floor = Number(collateral?.collateral?.vaultMinDebt)
     const repay = Number(repayBitUsd)
     const remain = debt - repay
 
     if (remain >= floor) return 0
     return debt - floor
-  }, [mintingPair, repayBitUsd, vault])
+  }, [collateral, repayBitUsd, vault])
 
   const nextButtonDisabled = useMemo(() => {
     if (!maxVault || !vault || isMintFromBtc === undefined) return true
@@ -115,7 +117,7 @@ export const ManageVault: React.FC<{
       // deposit > balance
       if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
 
-      const minToMint = Number(mintingPair?.collateral.vaultMinDebt)
+      const minToMint = Number(collateral?.collateral.vaultMinDebt)
 
       // mintBitUsd && changedVaultDebt < vaultFloor
       if (
@@ -161,7 +163,7 @@ export const ManageVault: React.FC<{
     maxVault,
     minRepay,
     mintBitUsd,
-    mintingPair?.collateral.vaultMinDebt,
+    collateral?.collateral.vaultMinDebt,
     repayBitUsd,
     vault,
     wbtcBalance,
@@ -234,7 +236,7 @@ export const ManageVault: React.FC<{
     }
   }
 
-  const liquidated = mintingPair?.liquidated?.[0]
+  const liquidated = collateral?.liquidated?.[0]
   const [isLiquidatedWarningOpen, setIsLiquidatedWarningOpen] =
     useState(!!liquidated)
 
@@ -315,7 +317,7 @@ export const ManageVault: React.FC<{
           actionButtonClassName="w-[300px]"
           type={processingType}
           onClickActionButton={() => {
-            refetchMintingPairs()
+            refetchCollaterals()
             refreshVaultValues()
             navigate(-1)
           }}
@@ -331,7 +333,7 @@ export const ManageVault: React.FC<{
     navigate,
     processingMessage,
     processingType,
-    refetchMintingPairs,
+    refetchCollaterals,
     refreshVaultValues,
     txnLink
   ])
@@ -383,11 +385,11 @@ export const ManageVault: React.FC<{
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
-      <ManageVaultHeaderInformation mintingPair={mintingPair} />
+      <ManageVaultHeaderInformation collateral={collateral} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
         <LiquidatedWarning
-          mintingPair={mintingPair}
+          collateral={collateral}
           open={isLiquidatedWarningOpen}
           onClose={() => setIsLiquidatedWarningOpen(false)}
         />

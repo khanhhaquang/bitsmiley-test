@@ -23,14 +23,6 @@ export interface INft {
   updateTime: Date
 }
 
-export interface IMintingPairCommonInfo {
-  name: string
-  network: string
-  chainId: number
-  isOpenVault: boolean
-  collateralId: Address
-}
-
 export interface ILiquidatedDetail {
   transactionHash: Address
   recipient: Address

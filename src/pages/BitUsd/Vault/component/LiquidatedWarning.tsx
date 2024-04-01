@@ -5,11 +5,11 @@ import { IDetailedCollateral } from '@/types/vault'
 export const LiquidatedWarning: React.FC<{
   open: boolean
   onClose: () => void
-  mintingPair?: IDetailedCollateral
-}> = ({ mintingPair, open, onClose }) => {
+  collateral?: IDetailedCollateral
+}> = ({ collateral, open, onClose }) => {
   const { blockExplorerUrl } = useUserInfo()
 
-  const liquidated = mintingPair?.liquidated?.[0]
+  const liquidated = collateral?.liquidated?.[0]
 
   if (!liquidated || !open) return null
 

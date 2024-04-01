@@ -199,7 +199,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
       {processingModal}
 
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
-      <VaultHeader mintingPair={collateral} />
+      <VaultHeader collateral={collateral} />
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
@@ -246,7 +246,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             debtBitUSD: mint,
             lockedCollateral: deposit
           }}
-          mintingPairs={collateral}
+          collateral={collateral}
           borderSvg={
             <VaultInfoBorderIcon className="absolute inset-0 z-0 text-white" />
           }

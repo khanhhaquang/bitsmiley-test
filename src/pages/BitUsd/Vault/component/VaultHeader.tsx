@@ -5,9 +5,9 @@ import { cn } from '@/utils/cn'
 import { VaultHeaderColumns } from '../../tables'
 
 const VaultHeader: React.FC<{
-  mintingPair?: IDetailedCollateral
+  collateral?: IDetailedCollateral
   className?: string
-}> = ({ mintingPair, className }) => {
+}> = ({ collateral, className }) => {
   return (
     <div
       className={cn(
@@ -16,7 +16,7 @@ const VaultHeader: React.FC<{
       )}>
       {VaultHeaderColumns.map(({ key, title, message, format }) => (
         <span key={key} className="flex items-center gap-x-1">
-          {title} <InfoIndicator message={message} />: {format(mintingPair)}
+          {title} <InfoIndicator message={message} />: {format(collateral)}
         </span>
       ))}
     </div>
