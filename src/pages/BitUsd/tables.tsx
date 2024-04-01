@@ -298,7 +298,7 @@ export const VaultHeaderColumns: TTable<IDetailedCollateral> = [
   },
   {
     key: 'Liquidation Fee',
-    title: 'liquidationFee',
+    title: 'Liquidation Fee',
     message: messages.liquidationFee,
     format: (item) => displayCollateralValues(item).collateralLiquidationFeeRate
   },
