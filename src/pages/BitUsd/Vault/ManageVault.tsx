@@ -15,7 +15,7 @@ import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useUserVault } from '@/hooks/useUserVault'
+import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { TransactionStatus } from '@/types/common'
 import {
   formartNumberAsCeil,
@@ -51,6 +51,7 @@ export const ManageVault: React.FC<{
     chainId,
     collateralId
   )
+
   const {
     vault,
     changedVault,
@@ -61,7 +62,23 @@ export const ManageVault: React.FC<{
     maxVault,
     setMaxVaultBitUsd,
     setMaxVaultCollateral
-  } = useUserVault()
+  } = useVaultDetail()
+
+  const {
+    wBtcAllowance,
+    bitUsdAllowance,
+    approvalTxnStatus,
+    approvalVault,
+    mintFromBtc,
+    repayToBtc,
+    mintFromBtcTxnStatus,
+    repayToBtcTxnStatus,
+    mintFromBtcTxId,
+    repayToBtcTxId,
+    setApprovalTxnStatus,
+    setMintFromBtcTxnStatus,
+    setRepayToBtcTxnStatus
+  } = useManageVault()
 
   const contractAddress = useContractAddresses()
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
@@ -74,19 +91,6 @@ export const ManageVault: React.FC<{
   const wbtcPrice = useTokenPrice()
   const { balance: wbtcBalance } = useTokenBalance(contractAddress?.WBTC)
   const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
-
-  const {
-    wBtcAllowance,
-    bitUsdAllowance,
-    approvalTxnStatus,
-    approvalVault,
-    mintFromBtc,
-    repayToBtc,
-    mintFromBtcTxnStatus,
-    repayToBtcTxnStatus,
-    mintFromBtcTxId,
-    repayToBtcTxId
-  } = useManageVault()
 
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
@@ -319,7 +323,15 @@ export const ManageVault: React.FC<{
           onClickActionButton={() => {
             refetchCollaterals()
             refreshVaultValues()
-            navigate(-1)
+            if (processingType === 'error') {
+              setApprovalTxnStatus(TransactionStatus.Idle)
+              setMintFromBtcTxnStatus(TransactionStatus.Idle)
+              setRepayToBtcTxnStatus(TransactionStatus.Idle)
+            }
+
+            if (processingType === 'success') {
+              navigate(-1)
+            }
           }}
           actionButtonText={processingType !== 'info' ? 'Ok' : ''}
           message={processingMessage}
@@ -335,6 +347,9 @@ export const ManageVault: React.FC<{
     processingType,
     refetchCollaterals,
     refreshVaultValues,
+    setApprovalTxnStatus,
+    setMintFromBtcTxnStatus,
+    setRepayToBtcTxnStatus,
     txnLink
   ])
 

@@ -129,6 +129,7 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
 
   const { data: allCollaterals, ...rest } = useQuery({
     ...query,
+    retry: false,
     queryKey: ['getAllCollaterals', projectInfo, address],
     queryFn:
       !projectInfo || !address

@@ -16,7 +16,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { IVault, IVaultFromChain } from '@/types/vault'
 import { formartNumberAsTrunc } from '@/utils/number'
 
-export const useUserVault = () => {
+export const useVaultDetail = () => {
   const { address } = useUserInfo()
   const contractAddresses = useContractAddresses()
 

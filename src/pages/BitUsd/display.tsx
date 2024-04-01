@@ -112,7 +112,7 @@ export const displayCollateralValues = (
   fee: formatBitUsd(value?.fee, withUnit),
   lockedCollateral: formatWBtc(value?.lockedCollateral, withUnit, true),
   liquidationPrice: formatMoney(value?.liquidationPrice, withUnit),
-  healthFactor: formatPercentage(Number(value?.healthFactor) * 10, withUnit),
+  healthFactor: formatPercentage(value?.healthFactor, withUnit),
   totalDebt: formatBitUsd(value?.debt, withUnit, true),
   availableToWithdraw: formatWBtc(value?.availableToWithdraw, withUnit),
   availableToMint: formatBitUsd(value?.availableToMint, withUnit),

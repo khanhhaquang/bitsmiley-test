@@ -178,7 +178,7 @@ const MintingPairTableRow: React.FC<{
   const healthFactor =
     !isOpenedVaults || !collateral?.healthFactor
       ? 0
-      : Number(collateral.healthFactor) * 10
+      : Number(collateral.healthFactor)
 
   const isInLiquidationRisk = useMemo(
     // TODO confirm when to show this message

@@ -8,7 +8,7 @@ import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useUserVault } from '@/hooks/useUserVault'
+import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { TransactionStatus } from '@/types/common'
 
 import VaultHeader from './component/VaultHeader'
@@ -34,7 +34,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     tryOpenVaultInfo,
     setTryOpenVaultBitUsd,
     setTryOpenVaultCollateral
-  } = useUserVault()
+  } = useVaultDetail()
   const { collateral, refetch: refetchCollateral } = useCollaterals(
     chainId,
     collateralId

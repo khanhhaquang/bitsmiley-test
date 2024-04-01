@@ -65,10 +65,5 @@ export const UserService = {
       axiosInstance
         .get(`/bsInfo/v2/getFunctionalModuleInfo/${address}`)
         .then((res) => res.data)
-  },
-  getAllVaultInfo: {
-    key: 'user.getAllVaultInfo',
-    call: (): Promise<IResponse<Array<Record<string, Address>>>> =>
-      axiosInstance.get('/user/getAllVaultInfo').then((res) => res.data)
   }
 }
