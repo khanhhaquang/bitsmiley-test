@@ -31,49 +31,23 @@ export interface IMintingPairCommonInfo {
   collateralId: Address
 }
 
-export interface IMintingPair extends IMintingPairCommonInfo {
-  // from getAllVaultInfo decoded
-  collateral: {
-    maxDebt: string
-    safetyFactor: string
-    tokenAddress: Address
-    totalDebt: string
-    totalLocked: string
-    vaultMaxDebt: string
-    vaultMinDebt: string
-  }
-  collateralId: Address
-  liquidationFeeRate: string
-  maxLTV: string
-  stabilityFeeRate: bigint
-
-  // computed
-  stabilityFee: number
-
-  // from backend (opened vault)
-  fee?: string
-  availableToMint?: string
-  liquidationPrice?: string
-  healthFactor?: string
-  availableToWithdraw?: string
-  vaultAddress?: string
-  debt?: string
-  mintedBitUSD?: string
-  lockedCollateral?: string
-  liquidated?: {
-    transactionHash: Address
-    recipient: Address
-    collateral: string
-    bitUSD: string
-    penalty: string
-    blockNumber: number
-    timestamp: number
-  }[]
+export interface ILiquidatedDetail {
+  transactionHash: Address
+  recipient: Address
+  collateral: string
+  bitUSD: string
+  penalty: string
+  blockNumber: number
+  timestamp: number
 }
 
-interface IVaultParams {
-  name: string[]
-  network: string
+export interface ILiquidated {
+  vaultAddress?: string
+  liquidated?: ILiquidatedDetail[]
+}
+
+interface ILiquidatedParams {
+  vault: { network: string; vaultAddress: Address }[]
 }
 
 export interface IFeaturesEnabled {
@@ -88,18 +62,10 @@ export const UserService = {
     call: (address: Address): Promise<IResponse<INft[]>> =>
       axiosInstance.get(`/l2nft/getNFT/${address}`).then((res) => res.data)
   },
-  getMintingPairs: {
-    key: 'user.getMintingPairs',
-    call: (
-      address: Address,
-      vaults: IVaultParams[]
-    ): Promise<IResponse<IMintingPair[]>> =>
-      axiosInstance
-        .post('/user/v2/getMintingPairsInfo', {
-          address,
-          vault: vaults
-        })
-        .then((res) => res.data)
+  getLiquidated: {
+    key: 'user.getLiquidated',
+    call: (params: ILiquidatedParams): Promise<IResponse<ILiquidated>> =>
+      axiosInstance.post('/user/getLiquidated', params).then((res) => res.data)
   },
   getEnabledFeatures: {
     key: 'project.getEnabledFeatures',

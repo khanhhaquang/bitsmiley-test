@@ -22,14 +22,14 @@ import {
 } from '@/components/ui/table'
 import { chainsIconUrl } from '@/config/chain'
 import { bobTestnet, botanixTestnet } from '@/config/wagmi'
+import { useCollaterals } from '@/hooks/useCollaterals'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
-import { IMintingPair } from '@/services/user'
+import { IDetailedCollateral } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import { ActionButton } from '../components/ActionButton'
 import { VaultTitleBlue, VaultTitleWhite } from '../components/VaultTitle'
-import { getHealthFactorTextColor } from '../display'
+import { displayCollateralValues, getHealthFactorTextColor } from '../display'
 import {
   AvailableMintingPairsTable,
   MyVaultsMintingPairsTable,
@@ -38,18 +38,18 @@ import {
 
 const MintingPairs: React.FC = () => {
   const {
-    availableMintingPairs,
-    openedMintingPairs,
-    hasOpenedMintingPairs,
+    availableCollaterals,
+    openedCollaterals,
+    hasOpenedCollaterals,
     isLoading,
     isRefetching
-  } = useUserMintingPairs()
+  } = useCollaterals()
 
   return (
     <div
       className={cn(
         'scrollbar-none flex size-full flex-col items-center gap-y-12 overflow-y-auto overscroll-contain py-11',
-        !hasOpenedMintingPairs && 'pt-22'
+        !hasOpenedCollaterals && 'pt-22'
       )}>
       {isLoading || isRefetching ? (
         <OnChainLoader />
@@ -57,11 +57,11 @@ const MintingPairs: React.FC = () => {
         <>
           <MintingPairsTable
             isOpenedVaults
-            mintingPairs={openedMintingPairs}
+            mintingPairs={openedCollaterals}
             table={MyVaultsMintingPairsTable}
           />
           <MintingPairsTable
-            mintingPairs={availableMintingPairs}
+            mintingPairs={availableCollaterals}
             table={AvailableMintingPairsTable}
           />
         </>
@@ -72,8 +72,8 @@ const MintingPairs: React.FC = () => {
 
 const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
-  table: TTable<IMintingPair>
-  mintingPairs?: Record<string, IMintingPair[]>
+  table: TTable<IDetailedCollateral>
+  mintingPairs?: Record<string, IDetailedCollateral[]>
 }> = ({ mintingPairs, isOpenedVaults, table }) => {
   const flatMintingPairs = Object.values(mintingPairs || {}).reduce(
     (pre, curr) => [...pre, ...curr],
@@ -139,8 +139,8 @@ const MintingPairsTable: React.FC<{
 
 const MintingPairTableRow: React.FC<{
   isOpenedVaults?: boolean
-  mintingPair: IMintingPair
-  table: TTable<IMintingPair>
+  mintingPair: IDetailedCollateral
+  table: TTable<IDetailedCollateral>
 }> = ({ mintingPair, table, isOpenedVaults }) => {
   const navigate = useNavigate()
   const { evmChainId, isConnected } = useUserInfo()
@@ -226,7 +226,9 @@ const MintingPairTableRow: React.FC<{
         <TableRow className="-mt-4 justify-start gap-x-1 text-xs">
           <TableCell className="flex items-center gap-x-0.5">
             <Image src={chainsIconUrl[mintingPair.chainId]} width={15} />
-            <span className="text-xs text-white/70">{mintingPair.network}</span>
+            <span className="text-xs text-white/70">
+              {displayCollateralValues(mintingPair).network}
+            </span>
           </TableCell>
           {liquidationMessage && (
             <TableCell

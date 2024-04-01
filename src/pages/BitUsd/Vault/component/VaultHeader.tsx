@@ -1,11 +1,11 @@
 import { InfoIndicator } from '@/components/InfoIndicator'
-import { IMintingPair } from '@/services/user'
+import { IDetailedCollateral } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import { VaultHeaderColumns } from '../../tables'
 
 const VaultHeader: React.FC<{
-  mintingPair?: IMintingPair
+  mintingPair?: IDetailedCollateral
   className?: string
 }> = ({ mintingPair, className }) => {
   return (

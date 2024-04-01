@@ -4,13 +4,12 @@ import { GetTokenReturnType } from 'wagmi/actions'
 import { Image } from '@/components/Image'
 import { chainsIconUrl } from '@/config/chain'
 import { customChains } from '@/config/wagmi'
-import { IMintingPair } from '@/services/user'
-import { IVault } from '@/types/vault'
+import { IDetailedCollateral, IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import {
   DEFAULT_TEXT,
-  displayMintingPairValues,
+  displayCollateralValues,
   displayVaultValues,
   getHealthFactorTextColor
 } from './display'
@@ -46,7 +45,7 @@ export const messages = {
   collateral: 'collateral'
 }
 
-export const AvailableMintingPairsTable: TTable<IMintingPair> = [
+export const AvailableMintingPairsTable: TTable<IDetailedCollateral> = [
   {
     key: 'pairName',
     formatTitle: (chainId) =>
@@ -69,7 +68,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[70px] text-nowrap',
     className: '!w-[70px] text-nowrap',
     message: messages.maxLTV,
-    format: (item) => displayMintingPairValues(item).collateralMaxLTV
+    format: (item) => displayCollateralValues(item).collateralMaxLTV
   },
   {
     key: 'borrowRate',
@@ -77,7 +76,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[78px]',
     className: '!w-[78px]',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).collateralStabilityFee
+    format: (item) => displayCollateralValues(item).collateralStabilityFee
   },
   {
     key: 'vaultFloor',
@@ -85,7 +84,7 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     titleClassName: '!w-[99px] text-nowrap',
     className: '!w-[99px] text-nowrap',
     message: messages.vaultFloor,
-    format: (item) => displayMintingPairValues(item, false).collateralVaultFloor
+    format: (item) => displayCollateralValues(item, false).collateralVaultFloor
   },
   {
     key: 'vaultCeiling',
@@ -94,11 +93,11 @@ export const AvailableMintingPairsTable: TTable<IMintingPair> = [
     className: 'w-[113px] text-nowrap',
     message: messages.vaultCeiling,
     format: (item) =>
-      displayMintingPairValues(item, false).collateralVaultCeiling
+      displayCollateralValues(item, false).collateralVaultCeiling
   }
 ]
 
-export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
+export const MyVaultsMintingPairsTable: TTable<IDetailedCollateral> = [
   {
     key: 'pairName',
     title: '',
@@ -110,7 +109,7 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
     className: '!w-[100px]',
     titleClassName: '!w-[100px]',
     message: messages.collateral,
-    format: (item) => displayMintingPairValues(item).lockedCollateral
+    format: (item) => displayCollateralValues(item).lockedCollateral
   },
   {
     key: 'totalDebt',
@@ -118,14 +117,14 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
     className: '!w-[92px]',
     titleClassName: '!w-[92px] text-nowrap',
     message: messages.totalDebt,
-    format: (item) => displayMintingPairValues(item).totalDebt
+    format: (item) => displayCollateralValues(item).totalDebt
   },
   {
     key: 'liquidationPrice',
     title: 'Liquidation Price',
     className: '!w-[123px]',
     titleClassName: '!w-[123px] text-nowrap',
-    format: (item) => displayMintingPairValues(item).liquidationPrice
+    format: (item) => displayCollateralValues(item).liquidationPrice
   },
   {
     key: 'healthFactor',
@@ -133,34 +132,33 @@ export const MyVaultsMintingPairsTable: TTable<IMintingPair> = [
     className: '!w-[113px]',
     titleClassName: '!w-[113px] text-nowrap',
     message: messages.healthFactor,
-    format: (item) => displayMintingPairValues(item).healthFactor
+    format: (item) => displayCollateralValues(item).healthFactor
   }
 ]
 
-export const ManageVaultHeaderInfoTable: TTable<IMintingPair> = [
+export const ManageVaultHeaderInfoTable: TTable<IDetailedCollateral> = [
   {
     key: 'network',
     title: 'Network',
-    format: (item) => displayMintingPairValues(item).network
+    format: (item) => displayCollateralValues(item).network
   },
   {
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).collateralStabilityFee
+    format: (item) => displayCollateralValues(item).collateralStabilityFee
   },
   {
     key: 'liquidationPenalty',
     title: 'Liquidation Fee',
     message: messages.liquidationFee,
-    format: (item) =>
-      displayMintingPairValues(item).collateralLiquidationFeeRate
+    format: (item) => displayCollateralValues(item).collateralLiquidationFeeRate
   },
   {
     key: 'vaultFloor',
     title: 'Vault Floor',
     message: messages.vaultFloor,
-    format: (item) => displayMintingPairValues(item).collateralVaultFloor
+    format: (item) => displayCollateralValues(item).collateralVaultFloor
   }
 ]
 
@@ -286,29 +284,28 @@ export const VaultOpenInfoTable: TTable<IVault> = [
   }
 ]
 
-export const VaultHeaderColumns: TTable<IMintingPair> = [
+export const VaultHeaderColumns: TTable<IDetailedCollateral> = [
   {
     key: 'network',
     title: 'Network',
-    format: (item) => displayMintingPairValues(item).network
+    format: (item) => displayCollateralValues(item).network
   },
   {
     key: 'stabilityFee',
     title: 'Stability Fee',
     message: messages.stabilityFee,
-    format: (item) => displayMintingPairValues(item).collateralStabilityFee
+    format: (item) => displayCollateralValues(item).collateralStabilityFee
   },
   {
     key: 'Liquidation Fee',
     title: 'liquidationFee',
     message: messages.liquidationFee,
-    format: (item) =>
-      displayMintingPairValues(item).collateralLiquidationFeeRate
+    format: (item) => displayCollateralValues(item).collateralLiquidationFeeRate
   },
   {
     key: 'vaultFloor',
     title: 'Vault Floor',
     message: messages.vaultFloor,
-    format: (item) => displayMintingPairValues(item).collateralVaultFloor
+    format: (item) => displayCollateralValues(item).collateralVaultFloor
   }
 ]

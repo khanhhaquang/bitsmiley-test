@@ -2,8 +2,7 @@ import { ReactNode } from 'react'
 
 import { ChevronRightIcon } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
-import { IMintingPair } from '@/services/user'
-import { IVault } from '@/types/vault'
+import { IDetailedCollateral, IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import { VaultOpenInfoTable, VaultChangesInfoTable } from '../tables'
@@ -14,7 +13,7 @@ type VaultInfoProps = {
   changedVault?: IVault
   hasChangedVault?: boolean
 
-  mintingPairs?: IMintingPair
+  mintingPairs?: IDetailedCollateral
   borderSvg: ReactNode
   className?: string
   innerClassName?: string

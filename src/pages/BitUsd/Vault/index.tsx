@@ -1,17 +1,14 @@
 import { useParams } from 'react-router-dom'
 
 import { OnChainLoader } from '@/components/OnchainLoader'
-import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
+import { useCollaterals } from '@/hooks/useCollaterals'
 
 import { ManageVault } from './ManageVault'
 import { OpenVault } from './OpenVault'
 
 const Vault: React.FC = () => {
   const { chainId, collateralId } = useParams()
-  const { isMyVault, isLoading } = useUserMintingPairs(
-    Number(chainId),
-    collateralId
-  )
+  const { isMyVault, isLoading } = useCollaterals(Number(chainId), collateralId)
 
   if (!chainId || !collateralId) return null
 

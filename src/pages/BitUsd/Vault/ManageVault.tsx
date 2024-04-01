@@ -9,12 +9,12 @@ import {
   VaultChangesBorderIcon
 } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
+import { useCollaterals } from '@/hooks/useCollaterals'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
 import { useUserVault } from '@/hooks/useUserVault'
 import { TransactionStatus } from '@/types/common'
 import {
@@ -47,10 +47,8 @@ export const ManageVault: React.FC<{
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
   const { blockExplorerUrl } = useUserInfo()
-  const { mintingPair, refetch: refetchMintingPairs } = useUserMintingPairs(
-    chainId,
-    collateralId
-  )
+  const { collateral: mintingPair, refetch: refetchMintingPairs } =
+    useCollaterals(chainId, collateralId)
   const {
     vault,
     changedVault,
