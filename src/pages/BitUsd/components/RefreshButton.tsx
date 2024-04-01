@@ -1,20 +1,20 @@
 import { RefreshIcon } from '@/assets/icons'
-import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
-import { useUserVault } from '@/hooks/useUserVault'
+import { useCollaterals } from '@/hooks/useCollaterals'
+import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { cn } from '@/utils/cn'
 
 export const RefreshButton: React.FC<{ className?: string }> = ({
   className
 }) => {
-  const { refetch: refetchMintingPairs, isFetching: isFetchingMintingPairs } =
-    useUserMintingPairs()
-  const { refreshVaultValues, isRefreshingVaultValues } = useUserVault()
+  const { refetch: refetchCollaterals, isFetching: isFetchingCollaterals } =
+    useCollaterals()
+  const { refreshVaultValues, isRefreshingVaultValues } = useVaultDetail()
 
-  const isRefreshing = isRefreshingVaultValues || isFetchingMintingPairs
+  const isRefreshing = isRefreshingVaultValues || isFetchingCollaterals
 
   const refresh = () => {
     refreshVaultValues()
-    refetchMintingPairs()
+    refetchCollaterals()
   }
 
   return (

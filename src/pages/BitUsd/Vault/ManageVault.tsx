@@ -9,13 +9,13 @@ import {
   VaultChangesBorderIcon
 } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
+import { useCollaterals } from '@/hooks/useCollaterals'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
-import { useUserVault } from '@/hooks/useUserVault'
+import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { TransactionStatus } from '@/types/common'
 import {
   formartNumberAsCeil,
@@ -47,10 +47,11 @@ export const ManageVault: React.FC<{
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
   const { blockExplorerUrl } = useUserInfo()
-  const { mintingPair, refetch: refetchMintingPairs } = useUserMintingPairs(
+  const { collateral, refetch: refetchCollaterals } = useCollaterals(
     chainId,
     collateralId
   )
+
   const {
     vault,
     changedVault,
@@ -61,7 +62,23 @@ export const ManageVault: React.FC<{
     maxVault,
     setMaxVaultBitUsd,
     setMaxVaultCollateral
-  } = useUserVault()
+  } = useVaultDetail()
+
+  const {
+    wBtcAllowance,
+    bitUsdAllowance,
+    approvalTxnStatus,
+    approvalVault,
+    mintFromBtc,
+    repayToBtc,
+    mintFromBtcTxnStatus,
+    repayToBtcTxnStatus,
+    mintFromBtcTxId,
+    repayToBtcTxId,
+    setApprovalTxnStatus,
+    setMintFromBtcTxnStatus,
+    setRepayToBtcTxnStatus
+  } = useManageVault()
 
   const contractAddress = useContractAddresses()
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
@@ -75,34 +92,21 @@ export const ManageVault: React.FC<{
   const { balance: wbtcBalance } = useTokenBalance(contractAddress?.WBTC)
   const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
 
-  const {
-    wBtcAllowance,
-    bitUsdAllowance,
-    approvalTxnStatus,
-    approvalVault,
-    mintFromBtc,
-    repayToBtc,
-    mintFromBtcTxnStatus,
-    repayToBtcTxnStatus,
-    mintFromBtcTxId,
-    repayToBtcTxId
-  } = useManageVault()
-
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
   }, [depositBtc, wbtcPrice])
 
   const minRepay = useMemo(() => {
-    if (!repayBitUsd || !vault || !mintingPair) return 0
+    if (!repayBitUsd || !vault || !collateral) return 0
 
     const debt = Number(vault.debtBitUSD)
-    const floor = Number(mintingPair?.collateral?.vaultMinDebt)
+    const floor = Number(collateral?.collateral?.vaultMinDebt)
     const repay = Number(repayBitUsd)
     const remain = debt - repay
 
     if (remain >= floor) return 0
     return debt - floor
-  }, [mintingPair, repayBitUsd, vault])
+  }, [collateral, repayBitUsd, vault])
 
   const nextButtonDisabled = useMemo(() => {
     if (!maxVault || !vault || isMintFromBtc === undefined) return true
@@ -117,7 +121,7 @@ export const ManageVault: React.FC<{
       // deposit > balance
       if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
 
-      const minToMint = Number(mintingPair?.collateral.vaultMinDebt)
+      const minToMint = Number(collateral?.collateral.vaultMinDebt)
 
       // mintBitUsd && changedVaultDebt < vaultFloor
       if (
@@ -163,7 +167,7 @@ export const ManageVault: React.FC<{
     maxVault,
     minRepay,
     mintBitUsd,
-    mintingPair?.collateral.vaultMinDebt,
+    collateral?.collateral.vaultMinDebt,
     repayBitUsd,
     vault,
     wbtcBalance,
@@ -236,7 +240,7 @@ export const ManageVault: React.FC<{
     }
   }
 
-  const liquidated = mintingPair?.liquidated?.[0]
+  const liquidated = collateral?.liquidated?.[0]
   const [isLiquidatedWarningOpen, setIsLiquidatedWarningOpen] =
     useState(!!liquidated)
 
@@ -317,9 +321,17 @@ export const ManageVault: React.FC<{
           actionButtonClassName="w-[300px]"
           type={processingType}
           onClickActionButton={() => {
-            refetchMintingPairs()
+            refetchCollaterals()
             refreshVaultValues()
-            navigate(-1)
+            if (processingType === 'error') {
+              setApprovalTxnStatus(TransactionStatus.Idle)
+              setMintFromBtcTxnStatus(TransactionStatus.Idle)
+              setRepayToBtcTxnStatus(TransactionStatus.Idle)
+            }
+
+            if (processingType === 'success') {
+              navigate(-1)
+            }
           }}
           actionButtonText={processingType !== 'info' ? 'Ok' : ''}
           message={processingMessage}
@@ -333,8 +345,11 @@ export const ManageVault: React.FC<{
     navigate,
     processingMessage,
     processingType,
-    refetchMintingPairs,
+    refetchCollaterals,
     refreshVaultValues,
+    setApprovalTxnStatus,
+    setMintFromBtcTxnStatus,
+    setRepayToBtcTxnStatus,
     txnLink
   ])
 
@@ -385,11 +400,11 @@ export const ManageVault: React.FC<{
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
-      <ManageVaultHeaderInformation mintingPair={mintingPair} />
+      <ManageVaultHeaderInformation collateral={collateral} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
         <LiquidatedWarning
-          mintingPair={mintingPair}
+          collateral={collateral}
           open={isLiquidatedWarningOpen}
           onClose={() => setIsLiquidatedWarningOpen(false)}
         />

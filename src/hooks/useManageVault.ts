@@ -285,6 +285,7 @@ export const useManageVault = () => {
     approvalVault,
     approvalTxnStatus,
     approvalTxId,
+    setApprovalTxnStatus,
 
     openVault,
     openVaultTxId,
@@ -294,9 +295,11 @@ export const useManageVault = () => {
     mintFromBtc,
     mintFromBtcTxnStatus,
     mintFromBtcTxId,
+    setMintFromBtcTxnStatus,
 
     repayToBtc,
     repayToBtcTxnStatus,
-    repayToBtcTxId
+    repayToBtcTxId,
+    setRepayToBtcTxnStatus
   }
 }

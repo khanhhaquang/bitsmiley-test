@@ -1,15 +1,15 @@
 import { CloseIcon } from '@/assets/icons'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IMintingPair } from '@/services/user'
+import { IDetailedCollateral } from '@/types/vault'
 
 export const LiquidatedWarning: React.FC<{
   open: boolean
   onClose: () => void
-  mintingPair?: IMintingPair
-}> = ({ mintingPair, open, onClose }) => {
+  collateral?: IDetailedCollateral
+}> = ({ collateral, open, onClose }) => {
   const { blockExplorerUrl } = useUserInfo()
 
-  const liquidated = mintingPair?.liquidated?.[0]
+  const liquidated = collateral?.liquidated?.[0]
 
   if (!liquidated || !open) return null
 

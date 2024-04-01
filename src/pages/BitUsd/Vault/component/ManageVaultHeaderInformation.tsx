@@ -2,13 +2,13 @@ import { useNavigate } from 'react-router-dom'
 
 import { ArrowLeftDoubleIcon } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
-import { IMintingPair } from '@/services/user'
+import { IDetailedCollateral } from '@/types/vault'
 
 import { ManageVaultHeaderInfoTable } from '../../tables'
 
 export const ManageVaultHeaderInformation: React.FC<{
-  mintingPair?: IMintingPair
-}> = ({ mintingPair }) => {
+  collateral?: IDetailedCollateral
+}> = ({ collateral }) => {
   const navigate = useNavigate()
 
   return (
@@ -25,7 +25,7 @@ export const ManageVaultHeaderInformation: React.FC<{
           <span>
             {title} <InfoIndicator message={message} />:
           </span>
-          <span>{format(mintingPair)}</span>
+          <span>{format(collateral)}</span>
         </div>
       ))}
     </div>

@@ -2,8 +2,7 @@ import { ReactNode } from 'react'
 
 import { ChevronRightIcon } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
-import { IMintingPair } from '@/services/user'
-import { IVault } from '@/types/vault'
+import { IDetailedCollateral, IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import { VaultOpenInfoTable, VaultChangesInfoTable } from '../tables'
@@ -14,7 +13,7 @@ type VaultInfoProps = {
   changedVault?: IVault
   hasChangedVault?: boolean
 
-  mintingPairs?: IMintingPair
+  collateral?: IDetailedCollateral
   borderSvg: ReactNode
   className?: string
   innerClassName?: string
@@ -22,7 +21,7 @@ type VaultInfoProps = {
 
 export const VaultInfo: React.FC<VaultInfoProps> = ({
   type = 'open',
-  mintingPairs,
+  collateral,
   vault,
   changedVault,
   hasChangedVault,
@@ -56,11 +55,11 @@ export const VaultInfo: React.FC<VaultInfoProps> = ({
             <div
               key={key}
               className={cn('flex items-center gap-x-2', className)}>
-              <span>{format(vault, mintingPairs)}</span>
+              <span>{format(vault, collateral)}</span>
               {hasChangedVault && (
                 <>
                   <ChevronRightIcon width={5} className="text-white" />
-                  <span>{format(changedVault, mintingPairs)}</span>
+                  <span>{format(changedVault, collateral)}</span>
                 </>
               )}
             </div>

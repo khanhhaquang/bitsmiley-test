@@ -1,9 +1,17 @@
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
+import {
+  bobTestnet,
+  botanixTestnet,
+  bSquaredTestnet,
+  merlinMainnet,
+  merlinTestnet
+} from './wagmi'
+
 export const chainsIconUrl: { [key: string]: string } = {
-  4200: getIllustrationUrl('merlin-chain-logo', 'webp'),
-  686868: getIllustrationUrl('merlin-chain-logo', 'webp'),
-  111: getIllustrationUrl('bob-chain-logo', 'webp'),
-  1102: getIllustrationUrl('bsquared-chain-logo', 'webp'),
-  3636: getIllustrationUrl('botanix-chain-logo', 'webp')
+  [merlinMainnet.id]: getIllustrationUrl('merlin-chain-logo', 'webp'),
+  [merlinTestnet.id]: getIllustrationUrl('merlin-chain-logo', 'webp'),
+  [bobTestnet.id]: getIllustrationUrl('bob-chain-logo', 'webp'),
+  [bSquaredTestnet.id]: getIllustrationUrl('bsquared-chain-logo', 'webp'),
+  [botanixTestnet.id]: getIllustrationUrl('botanix-chain-logo', 'webp')
 } as const

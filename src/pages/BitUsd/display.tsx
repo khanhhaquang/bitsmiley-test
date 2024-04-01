@@ -1,6 +1,6 @@
 import { BitUsdIcon } from '@/assets/icons'
-import { IMintingPair } from '@/services/user'
-import { IVault } from '@/types/vault'
+import { customChains } from '@/config/wagmi'
+import { IDetailedCollateral, IVault } from '@/types/vault'
 import {
   formatNumberAsCompact,
   formatNumberWithSeparator
@@ -75,8 +75,8 @@ export const displayVaultValues = (
   availableToMint: formatBitUsd(vault?.availableToMint, withUnit)
 })
 
-export const displayMintingPairValues = (
-  value?: IMintingPair,
+export const displayCollateralValues = (
+  value?: IDetailedCollateral,
   withUnit: boolean = true
 ) => ({
   collateralMaxLTV: formatPercentage(Number(value?.maxLTV) * 100, withUnit),
@@ -112,14 +112,12 @@ export const displayMintingPairValues = (
   fee: formatBitUsd(value?.fee, withUnit),
   lockedCollateral: formatWBtc(value?.lockedCollateral, withUnit, true),
   liquidationPrice: formatMoney(value?.liquidationPrice, withUnit),
-  healthFactor: formatPercentage(Number(value?.healthFactor) * 10, withUnit),
+  healthFactor: formatPercentage(value?.healthFactor, withUnit),
   totalDebt: formatBitUsd(value?.debt, withUnit, true),
   availableToWithdraw: formatWBtc(value?.availableToWithdraw, withUnit),
   availableToMint: formatBitUsd(value?.availableToMint, withUnit),
 
-  network: !value?.network ? DEFAULT_TEXT : value.network,
-  chainId: !value?.chainId ? DEFAULT_TEXT : value.chainId,
-  vaultAddress: !value?.vaultAddress ? DEFAULT_TEXT : value?.vaultAddress,
+  network: customChains.find((c) => c.id === value?.chainId)?.name,
   isOpenVault: !!value?.isOpenVault
 })
 

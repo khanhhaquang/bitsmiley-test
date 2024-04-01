@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
+import { useCollaterals } from '@/hooks/useCollaterals'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useUserMintingPairs } from '@/hooks/useUserMintingPairs'
-import { useUserVault } from '@/hooks/useUserVault'
+import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { TransactionStatus } from '@/types/common'
 
 import VaultHeader from './component/VaultHeader'
@@ -22,7 +22,7 @@ import { NumberInput } from '../components/NumberInput'
 import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayMintingPairValues, formatBitUsd, formatWBtc } from '../display'
+import { displayCollateralValues, formatBitUsd, formatWBtc } from '../display'
 
 export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   chainId,
@@ -34,8 +34,8 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     tryOpenVaultInfo,
     setTryOpenVaultBitUsd,
     setTryOpenVaultCollateral
-  } = useUserVault()
-  const { mintingPair, refetch: refetchMintingPairs } = useUserMintingPairs(
+  } = useVaultDetail()
+  const { collateral, refetch: refetchCollateral } = useCollaterals(
     chainId,
     collateralId
   )
@@ -66,16 +66,16 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     if (!deposit) return true
 
     if (Number(deposit) > wbtcBalance) return true
-    if (mint && Number(mint) > Number(mintingPair?.collateral?.vaultMaxDebt))
+    if (mint && Number(mint) > Number(collateral?.collateral?.vaultMaxDebt))
       return true
-    if (mint && Number(mint) < Number(mintingPair?.collateral?.vaultMinDebt))
+    if (mint && Number(mint) < Number(collateral?.collateral?.vaultMinDebt))
       return true
     return false
   }, [
     deposit,
     mint,
-    mintingPair?.collateral?.vaultMaxDebt,
-    mintingPair?.collateral?.vaultMinDebt,
+    collateral?.collateral?.vaultMaxDebt,
+    collateral?.collateral?.vaultMinDebt,
     wbtcBalance
   ])
 
@@ -85,12 +85,12 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 
   const mintDisabled = useMemo(() => {
     return (
-      !!mintingPair?.collateral.vaultMinDebt &&
+      !!collateral?.collateral.vaultMinDebt &&
       !!tryOpenVaultInfo?.availableToMint &&
       Number(tryOpenVaultInfo?.availableToMint) <
-        Number(mintingPair?.collateral.vaultMinDebt)
+        Number(collateral?.collateral.vaultMinDebt)
     )
-  }, [mintingPair?.collateral.vaultMinDebt, tryOpenVaultInfo?.availableToMint])
+  }, [collateral?.collateral.vaultMinDebt, tryOpenVaultInfo?.availableToMint])
 
   const handleNext = () => {
     if (!isApproved) {
@@ -133,7 +133,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             type="success"
             actionButtonText="Ok"
             onClickActionButton={() => {
-              refetchMintingPairs()
+              refetchCollateral()
               refreshVaultValues()
               navigate(-1)
             }}
@@ -175,7 +175,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     openVaultTxId,
     openVaultTxnStatus,
     navigate,
-    refetchMintingPairs,
+    refetchCollateral,
     refreshVaultValues,
     setOpenVaultTxnStatus
   ])
@@ -199,7 +199,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
       {processingModal}
 
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
-      <VaultHeader mintingPair={mintingPair} />
+      <VaultHeader collateral={collateral} />
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
@@ -223,8 +223,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           disabledMessage={
             <span>
               Max bitUSD you can mint doesn't reach vault floor:{' '}
-              {displayMintingPairValues(mintingPair).collateralVaultFloor}{' '}
-              bitUSD
+              {displayCollateralValues(collateral).collateralVaultFloor} bitUSD
             </span>
           }
           title="Mint bitUSD"
@@ -247,7 +246,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             debtBitUSD: mint,
             lockedCollateral: deposit
           }}
-          mintingPairs={mintingPair}
+          collateral={collateral}
           borderSvg={
             <VaultInfoBorderIcon className="absolute inset-0 z-0 text-white" />
           }
