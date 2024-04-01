@@ -263,7 +263,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             <SubmitButton
               onClick={handleNext}
               className="h-9 w-full flex-1"
-              disabled={false}>
+              disabled={isNextButtonDisabled}>
               Open vault
             </SubmitButton>
           ) : (
