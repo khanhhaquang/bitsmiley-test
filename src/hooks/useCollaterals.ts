@@ -12,6 +12,12 @@ import {
   parseEther
 } from 'viem'
 
+import {
+  bobTestnet,
+  bSquaredTestnet,
+  merlinMainnet,
+  merlinTestnet
+} from '@/config/wagmi'
 import { bitSmileyAbi } from '@/contracts/BitSmiley'
 import { bitSmileyQueryAbi } from '@/contracts/BitSmileyQuery'
 import { UserService } from '@/services/user'
@@ -64,9 +70,10 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   )
 
   const chainIdToNetwork: { [key: number]: string } = {
-    686868: 'Merlin',
-    111: 'Bob',
-    1102: 'B2'
+    [merlinMainnet.id]: 'Merlin',
+    [merlinTestnet.id]: 'Merlin',
+    [bobTestnet.id]: 'Bob',
+    [bSquaredTestnet.id]: 'B2'
   }
 
   const query = {
