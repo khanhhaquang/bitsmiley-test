@@ -425,7 +425,7 @@ export const ManageVault: React.FC<{
               icon={<BitCoinIcon className="shrink-0" width={27} height={29} />}
             />
             <NumberInput
-              scale={4}
+              scale={8}
               value={depositBtc}
               onInputChange={(v) => handleInput('depositBtc', v)}
               onFocus={() => setIsMintFromBtc(true)}
@@ -442,7 +442,7 @@ export const ManageVault: React.FC<{
             </div>
 
             <NumberInput
-              scale={4}
+              scale={8}
               value={withdrawBtc}
               onInputChange={(v) => handleInput('withdrawBtc', v)}
               disabled={withdrawWbtcDisabled}
