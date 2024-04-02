@@ -208,6 +208,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
+          scale={8}
           value={deposit}
           onInputChange={(v) => handleInput(v, setDeposit)}
           greyOut={depositDisabled}
