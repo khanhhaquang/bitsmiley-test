@@ -16,8 +16,6 @@ const CONTRACT_REVERT_ERRORS: Record<`0x${string}`, string> = {
 }
 
 export const getContractRevertErrorMsg = (signature?: `0x${string}`) => {
-  console.log('🚀 ~ getContractRevertErrorMsg ~ signature:', signature)
-
   if (!signature || !CONTRACT_REVERT_ERRORS[signature])
     return 'Contract function reverted with unknown error.'
 
