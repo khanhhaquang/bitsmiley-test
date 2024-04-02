@@ -14,6 +14,7 @@ import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { TransactionStatus } from '@/types/common'
+import { getTxnErrorMsg } from '@/utils/error'
 
 export const useManageVault = () => {
   const config = useConfig()
@@ -99,6 +100,7 @@ export const useManageVault = () => {
       setApprovalTxnStatus(TransactionStatus.Processing)
     } catch (e) {
       console.error(e)
+      setTxnErrorMsg(getTxnErrorMsg(e))
       setApprovalTxnStatus(TransactionStatus.Failed)
     }
   }
@@ -154,6 +156,7 @@ export const useManageVault = () => {
       setOpenVaultTxnStatus(TransactionStatus.Processing)
     } catch (e) {
       console.error(e)
+      setTxnErrorMsg(getTxnErrorMsg(e))
       setOpenVaultTxnStatus(TransactionStatus.Failed)
     }
   }
@@ -205,6 +208,7 @@ export const useManageVault = () => {
       setMintFromBtcTxnStatus(TransactionStatus.Processing)
     } catch (e) {
       console.error(e)
+      setTxnErrorMsg(getTxnErrorMsg(e))
       setMintFromBtcTxnStatus(TransactionStatus.Failed)
     }
   }
@@ -280,6 +284,7 @@ export const useManageVault = () => {
       setRepayToBtcTxnStatus(TransactionStatus.Processing)
     } catch (e) {
       console.error(e)
+      setTxnErrorMsg(getTxnErrorMsg(e))
       setRepayToBtcTxnStatus(TransactionStatus.Failed)
     }
   }

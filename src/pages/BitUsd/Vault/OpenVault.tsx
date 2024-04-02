@@ -48,6 +48,8 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   const [deposit, setDeposit] = useState('')
 
   const {
+    txnErrorMsg,
+    setTxnErrorMsg,
     openVault,
     openVaultTxId,
     openVaultTxnStatus,
@@ -147,12 +149,13 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           <ProcessingModal
             type="error"
             actionButtonText="Ok"
-            onClickActionButton={() =>
+            onClickActionButton={() => {
               setOpenVaultTxnStatus(TransactionStatus.Idle)
-            }
+              setTxnErrorMsg('')
+            }}
             message={
               !blockExplorerUrl || !openVaultTxId ? (
-                <span>This transaction has failed.</span>
+                <span>{txnErrorMsg}</span>
               ) : (
                 <span>
                   The transaction has failed. You can check it on-chain{' '}
@@ -170,14 +173,16 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
         return null
     }
   }, [
-    blockExplorerUrl,
     isApproving,
-    openVaultTxId,
     openVaultTxnStatus,
-    navigate,
+    blockExplorerUrl,
+    openVaultTxId,
+    txnErrorMsg,
     refetchCollateral,
     refreshVaultValues,
-    setOpenVaultTxnStatus
+    navigate,
+    setOpenVaultTxnStatus,
+    setTxnErrorMsg
   ])
 
   useEffect(() => {
