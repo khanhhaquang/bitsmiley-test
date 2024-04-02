@@ -77,7 +77,9 @@ export const ManageVault: React.FC<{
     repayToBtcTxId,
     setApprovalTxnStatus,
     setMintFromBtcTxnStatus,
-    setRepayToBtcTxnStatus
+    setRepayToBtcTxnStatus,
+    txnErrorMsg,
+    setTxnErrorMsg
   } = useManageVault()
 
   const contractAddress = useContractAddresses()
@@ -305,11 +307,12 @@ export const ManageVault: React.FC<{
       case 'success':
         return 'Your vault change is completed.'
       case 'error':
+        if (txnErrorMsg) return txnErrorMsg
         return 'The transaction has failed.'
       default:
         return 'Your transaction is getting processed on-chain.'
     }
-  }, [processingType])
+  }, [processingType, txnErrorMsg])
 
   const processingModal = useMemo(() => {
     if (isTransactionStatusSigning)
@@ -327,6 +330,7 @@ export const ManageVault: React.FC<{
               setApprovalTxnStatus(TransactionStatus.Idle)
               setMintFromBtcTxnStatus(TransactionStatus.Idle)
               setRepayToBtcTxnStatus(TransactionStatus.Idle)
+              setTxnErrorMsg('')
             }
 
             if (processingType === 'success') {
@@ -350,6 +354,7 @@ export const ManageVault: React.FC<{
     setApprovalTxnStatus,
     setMintFromBtcTxnStatus,
     setRepayToBtcTxnStatus,
+    setTxnErrorMsg,
     txnLink
   ])
 
