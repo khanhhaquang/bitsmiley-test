@@ -5,7 +5,7 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { customChains } from '@/config/wagmi'
-import { UserService } from '@/services/user'
+import { IFeaturesEnabled, UserService } from '@/services/user'
 
 export const useUserInfo = () => {
   const { accounts: btcAccounts } = useBTCProvider()
@@ -19,16 +19,15 @@ export const useUserInfo = () => {
 
   const addressForDisplay = (btcAccounts[0] as Address) || evmAddress
 
-  const { data: enabledFeatures, isLoading: isLoadingEnabledFeatures } =
-    useQuery({
-      queryKey: [UserService.getEnabledFeatures.key, addressForDisplay],
-      queryFn: () =>
-        !addressForDisplay
-          ? null
-          : UserService.getEnabledFeatures.call(addressForDisplay),
-      enabled: !!addressForDisplay,
-      select: (res) => res?.data
-    })
+  const { isLoading: isLoadingEnabledFeatures } = useQuery({
+    queryKey: [UserService.getEnabledFeatures.key, addressForDisplay],
+    queryFn: () =>
+      !addressForDisplay
+        ? null
+        : UserService.getEnabledFeatures.call(addressForDisplay),
+    enabled: !!addressForDisplay,
+    select: (res) => res?.data
+  })
 
   const evmChain = useMemo(
     () => customChains.find((c) => c.id === evmChainId),
@@ -41,6 +40,13 @@ export const useUserInfo = () => {
   )
 
   const isLoading = isConnecting || isReconnecting || isLoadingEnabledFeatures
+
+  //TODO: THIS IS TEMPORARY MOCK FOR TEST, REMOVE THIS AFTER TESTING DONE
+  const enabledFeatures: IFeaturesEnabled = {
+    Staking: true,
+    AlphaNet: true,
+    BitPoint: false
+  }
 
   return {
     isConnected: isEvmConnected,
