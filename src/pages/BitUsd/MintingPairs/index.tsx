@@ -21,7 +21,7 @@ import {
   TableHeader
 } from '@/components/ui/table'
 import { chainsIconUrl } from '@/config/chain'
-import { bobTestnet, botanixTestnet } from '@/config/wagmi'
+import { chainsNotSupportedByParticle } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IDetailedCollateral } from '@/types/vault'
@@ -55,11 +55,13 @@ const MintingPairs: React.FC = () => {
         <OnChainLoader />
       ) : (
         <>
-          <MintingPairsTable
-            isOpenedVaults
-            collaterals={openedCollaterals}
-            table={MyVaultsMintingPairsTable}
-          />
+          {hasOpenedCollaterals && (
+            <MintingPairsTable
+              isOpenedVaults
+              collaterals={openedCollaterals}
+              table={MyVaultsMintingPairsTable}
+            />
+          )}
           <MintingPairsTable
             collaterals={availableCollaterals}
             table={AvailableMintingPairsTable}
@@ -75,12 +77,7 @@ const MintingPairsTable: React.FC<{
   table: TTable<IDetailedCollateral>
   collaterals?: Record<string, IDetailedCollateral[]>
 }> = ({ collaterals, isOpenedVaults, table }) => {
-  const flatMintingPairs = Object.values(collaterals || {}).reduce(
-    (pre, curr) => [...pre, ...curr],
-    []
-  )
-
-  if (!collaterals || !flatMintingPairs.length) return null
+  if (!collaterals) return null
 
   return (
     <div className="w-full">
@@ -117,14 +114,26 @@ const MintingPairsTable: React.FC<{
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pairs.map((collateral, index) => (
-                  <MintingPairTableRow
-                    key={index}
-                    table={table}
-                    isOpenedVaults={isOpenedVaults}
-                    collateral={collateral}
-                  />
-                ))}
+                {pairs.length === 1 && pairs[0].rpcError ? (
+                  <TableRow className="my-6">
+                    <TableCell
+                      width="100%"
+                      align="center"
+                      className="text-sm text-white/70">
+                      {pairs[0].name} network is currently unreachable. All data
+                      will be accessible once connected.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  pairs.map((collateral, index) => (
+                    <MintingPairTableRow
+                      key={index}
+                      table={table}
+                      isOpenedVaults={isOpenedVaults}
+                      collateral={collateral}
+                    />
+                  ))
+                )}
               </TableBody>
             </Table>
           ))}
@@ -197,10 +206,7 @@ const MintingPairTableRow: React.FC<{
     <>
       <SelectWalletModal
         expectedChainId={collateral.chainId}
-        hideParticle={
-          collateral.chainId === bobTestnet.id ||
-          collateral.chainId === botanixTestnet.id
-        } //TODO: CHECKING FOR MAINNET WHEN IT'S AVAILABLE
+        hideParticle={chainsNotSupportedByParticle.includes(collateral.chainId)} //TODO: CHECKING FOR MAINNET WHEN IT'S AVAILABLE
         isOpen={isConnectWalletModalOpen}
         onClose={() => setIsConnectWalletModalOpen(false)}
       />

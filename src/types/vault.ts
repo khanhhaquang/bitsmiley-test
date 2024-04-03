@@ -52,20 +52,15 @@ export interface IDetailedCollateralFromChain {
   mintedBitUSD?: bigint
 }
 
-export interface ICollateralFromChain {
-  chainId: number
-  vaultAddress?: Address
-  collaterals?: IDetailedCollateralFromChain[]
-}
-
 export interface IDetailedCollateral {
-  name: string
   chainId: number
-  maxLTV: string
+  rpcError?: boolean
+  name?: string
+  maxLTV?: string
   isOpenVault: boolean
-  collateralId: Address
-  liquidationFeeRate: string
-  collateral: {
+  collateralId?: Address
+  liquidationFeeRate?: string
+  collateral?: {
     tokenAddress: Address
     maxDebt: string
     safetyFactor: string
@@ -75,7 +70,7 @@ export interface IDetailedCollateral {
     vaultMinDebt: string
   }
   // computed
-  stabilityFee: number
+  stabilityFee?: number
 
   // from UserService.getLiquidated
   liquidated?: ILiquidatedDetail[]
@@ -91,8 +86,16 @@ export interface IDetailedCollateral {
   mintedBitUSD?: string
 }
 
+export interface ICollateralFromChain {
+  chainId: number
+  rpcError?: boolean
+  vaultAddress?: Address
+  collaterals?: IDetailedCollateralFromChain[]
+}
+
 export interface ICollateral {
   chainId: number
+  rpcError?: boolean
   vaultAddress?: Address
   collaterals?: IDetailedCollateral[]
 }

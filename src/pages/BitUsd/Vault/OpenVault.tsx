@@ -87,12 +87,12 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 
   const mintDisabled = useMemo(() => {
     return (
-      !!collateral?.collateral.vaultMinDebt &&
+      !!collateral?.collateral?.vaultMinDebt &&
       !!tryOpenVaultInfo?.availableToMint &&
       Number(tryOpenVaultInfo?.availableToMint) <
         Number(collateral?.collateral.vaultMinDebt)
     )
-  }, [collateral?.collateral.vaultMinDebt, tryOpenVaultInfo?.availableToMint])
+  }, [collateral?.collateral?.vaultMinDebt, tryOpenVaultInfo?.availableToMint])
 
   const handleNext = () => {
     if (!isApproved) {

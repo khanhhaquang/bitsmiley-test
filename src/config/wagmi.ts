@@ -74,15 +74,33 @@ export const botanixTestnet = {
   testnet: true
 } as const satisfies Chain
 
-//TODO: PARTICLE DOES NOT SUPPORT BOB/BOTANIX YET
+export const bitLayerTestnet = {
+  id: 200810,
+  name: 'Bitlayer Testnet',
+  nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://testnet-rpc.bitlayer.org'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Bitlayer Testnet Scan',
+      url: 'https://testnet-scan.bitlayer.org'
+    }
+  },
+  testnet: true
+}
+
+//TODO: PARTICLE DOES NOT SUPPORT THESE CHAINS YET
 export const chainsNotSupportedByParticle: number[] = [
   botanixTestnet.id,
-  bobTestnet.id
+  bobTestnet.id,
+  bitLayerTestnet.id
 ]
 
 export const customChains = [
   merlinTestnet,
   merlinMainnet,
   bobTestnet,
-  bSquaredTestnet
+  bSquaredTestnet,
+  bitLayerTestnet
 ] as Chain[]

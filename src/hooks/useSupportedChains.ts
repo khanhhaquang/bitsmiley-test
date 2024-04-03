@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { Chain, createClient, http } from 'viem'
 
 import { customChains } from '@/config/wagmi'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
@@ -15,5 +16,16 @@ export const useSupportedChains = () => {
     [supportedChainIds]
   )
 
-  return { supportedChainIds, supportedChains, isLoading }
+  const clients = useMemo(
+    () =>
+      supportedChains.map((c) =>
+        createClient({
+          chain: c as Chain,
+          transport: http()
+        })
+      ),
+    [supportedChains]
+  )
+
+  return { supportedChainIds, supportedChains, isLoading, clients }
 }
