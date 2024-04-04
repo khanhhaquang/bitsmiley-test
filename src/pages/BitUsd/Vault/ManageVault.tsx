@@ -246,15 +246,18 @@ export const ManageVault: React.FC<{
   const [isLiquidatedWarningOpen, setIsLiquidatedWarningOpen] =
     useState(!!liquidated)
 
-  const isApproving =
-    approvalTxnStatus === TransactionStatus.Signing ||
-    approvalTxnStatus === TransactionStatus.Processing
-
   const noInputValues =
     !depositBtc && !mintBitUsd && !withdrawBtc && !repayBitUsd
   const isNotApproved = isMintFromBtc
     ? !!depositBtc && wBtcAllowance < Number(depositBtc)
     : !!repayBitUsd && bitUsdAllowance < Number(repayBitUsd)
+
+  const isApproving = useMemo(
+    () =>
+      approvalTxnStatus === TransactionStatus.Signing ||
+      approvalTxnStatus === TransactionStatus.Processing,
+    [approvalTxnStatus]
+  )
 
   const isTransactionStatusIdle = useMemo(() => {
     if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Idle
@@ -262,10 +265,9 @@ export const ManageVault: React.FC<{
   }, [isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
 
   const isTransactionStatusSigning = useMemo(() => {
-    if (isApproving) return true
     if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Signing
     return repayToBtcTxnStatus === TransactionStatus.Signing
-  }, [isApproving, isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
+  }, [isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
 
   const getProcessingTypeFromTxnStatus = useCallback(
     (status: TransactionStatus) => {
@@ -315,8 +317,11 @@ export const ManageVault: React.FC<{
   }, [processingType, txnErrorMsg])
 
   const processingModal = useMemo(() => {
+    if (isApproving)
+      return <ProcessingModal message="Waiting for approval from wallet..." />
+
     if (isTransactionStatusSigning)
-      return <ProcessingModal message="Waiting for wallet signature" />
+      return <ProcessingModal message="Waiting for wallet signature..." />
 
     if (!isTransactionStatusIdle)
       return (
@@ -344,6 +349,7 @@ export const ManageVault: React.FC<{
       )
     return null
   }, [
+    isApproving,
     isTransactionStatusIdle,
     isTransactionStatusSigning,
     navigate,
@@ -365,22 +371,14 @@ export const ManageVault: React.FC<{
       !!repayBitUsd &&
       Number(repayBitUsd) < Number(vault?.fee)
     ) {
-      return (
-        <span className="text-warning">
-          Min repay must exceed stability fee
-        </span>
-      )
+      return 'Min repay must exceed stability fee'
     }
 
     if (!!repayBitUsd && Number(repayBitUsd) > Number(bitUsdBalance)) {
-      return (
-        <span className="text-white">
-          *Available bitUSD doesn’t cover the debts
-        </span>
-      )
+      return '*Available bitUSD doesn’t cover the debts'
     }
 
-    return null
+    return ''
   }, [bitUsdBalance, repayBitUsd, vault?.debtBitUSD, vault?.fee])
 
   useEffect(() => {
