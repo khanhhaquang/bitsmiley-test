@@ -54,7 +54,6 @@ export interface IDetailedCollateralFromChain {
 
 export interface IDetailedCollateral {
   chainId: number
-  rpcError?: boolean
   name?: string
   maxLTV?: string
   isOpenVault: boolean
@@ -88,14 +87,12 @@ export interface IDetailedCollateral {
 
 export interface ICollateralFromChain {
   chainId: number
-  rpcError?: boolean
   vaultAddress?: Address
   collaterals?: IDetailedCollateralFromChain[]
 }
 
 export interface ICollateral {
   chainId: number
-  rpcError?: boolean
   vaultAddress?: Address
   collaterals?: IDetailedCollateral[]
 }
