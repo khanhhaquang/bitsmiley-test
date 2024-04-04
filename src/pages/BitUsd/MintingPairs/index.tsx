@@ -90,7 +90,7 @@ const ChainPairsTable: React.FC<{
         collateral={collateral}
       />
     ))
-  }, [collaterals, table])
+  }, [chain.name, collaterals, index, isOpenedVaults, table])
 
   return (
     <Table
