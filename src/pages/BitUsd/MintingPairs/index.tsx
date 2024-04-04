@@ -56,13 +56,8 @@ const ChainPairsTable: React.FC<{
   table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
 }> = ({ chain, index, table, isOpenedVaults }) => {
-  const {
-    isFetching,
-    availableCollaterals,
-    openedCollaterals,
-    hasOpenedCollaterals,
-    isError
-  } = useCollaterals(chain.id)
+  const { isFetching, availableCollaterals, openedCollaterals, isError } =
+    useCollaterals(chain.id)
 
   const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
 
@@ -96,7 +91,7 @@ const ChainPairsTable: React.FC<{
     <Table
       className={cn(
         'w-full overflow-hidden font-ibmr text-xs',
-        index !== 0 && !hasOpenedCollaterals && 'border-t border-white/10'
+        index !== 0 && !isOpenedVaults && 'border-t border-white/10'
       )}>
       <TableHeader className="[&_tr]:mb-0">
         <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
