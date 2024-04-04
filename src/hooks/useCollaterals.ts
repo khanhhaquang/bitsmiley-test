@@ -32,7 +32,7 @@ export const useCollaterals = (chainId: number, collateralId?: string) => {
   const { projectInfo } = useProjectInfo()
   const { clients } = useSupportedChains()
 
-  const client = clients.find((c) => c.chain.id === chainId)!
+  const client = clients.find((c) => c.chain.id === chainId)
 
   const getBitSmileyQueryContractAddress = useMemo(() => {
     return projectInfo?.web3Info?.find((w) => w.chainId === chainId)?.contract
@@ -125,7 +125,7 @@ export const useCollaterals = (chainId: number, collateralId?: string) => {
     retryDelay: 10000,
     queryKey: [chainId, 'collaterals', address],
     queryFn:
-      !projectInfo || !address
+      !client || !address
         ? undefined
         : async (): Promise<ICollateralFromChain> => {
             // collaterals information
