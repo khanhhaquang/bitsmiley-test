@@ -133,7 +133,7 @@ export const getHealthFactorTextColor = (v?: number | string) => {
 
   const healthFactor = Number(v)
 
-  if (healthFactor >= 200) return 'text-green'
-  if (healthFactor >= 120 && healthFactor < 200) return 'text-yellow'
+  if (healthFactor >= 120) return 'text-green'
+  if (healthFactor >= 110 && healthFactor < 120) return 'text-yellow'
   return 'text-warning'
 }
