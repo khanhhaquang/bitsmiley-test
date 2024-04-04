@@ -226,10 +226,15 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           onInputChange={(v) => handleInput(v, setMint)}
           disabled={mintDisabled}
           greyOut={mintDisabled}
+          errorMessage={
+            !!mint &&
+            Number(mint) < Number(collateral?.collateral?.vaultMinDebt) &&
+            'Mint bitUSD value doesn’t reach vault floor.'
+          }
           disabledMessage={
             <span>
               Max bitUSD you can mint doesn't reach vault floor:{' '}
-              {displayCollateralValues(collateral).collateralVaultFloor} bitUSD
+              {displayCollateralValues(collateral).collateralVaultFloor}
             </span>
           }
           title="Mint bitUSD"

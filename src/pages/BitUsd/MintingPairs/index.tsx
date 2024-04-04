@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Chain } from 'viem'
 import { useSwitchChain } from 'wagmi'
 
 import {
@@ -11,7 +12,6 @@ import {
 import { SelectWalletModal } from '@/components/ConnectWallet'
 import { Image } from '@/components/Image'
 import { InfoIndicator } from '@/components/InfoIndicator'
-import { OnChainLoader } from '@/components/OnchainLoader'
 import {
   Table,
   TableRow,
@@ -23,6 +23,7 @@ import {
 import { chainsIconUrl } from '@/config/chain'
 import { chainsNotSupportedByParticle } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
+import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IDetailedCollateral } from '@/types/vault'
 import { cn } from '@/utils/cn'
@@ -37,47 +38,113 @@ import {
 } from '../tables'
 
 const MintingPairs: React.FC = () => {
-  const {
-    availableCollaterals,
-    openedCollaterals,
-    hasOpenedCollaterals,
-    isLoading,
-    isRefetching
-  } = useCollaterals()
-
   return (
     <div
       className={cn(
         'scrollbar-none flex size-full flex-col items-center gap-y-12 overflow-y-auto overscroll-contain py-11',
-        !hasOpenedCollaterals && 'pt-22'
+        'pt-22'
       )}>
-      {isLoading || isRefetching ? (
-        <OnChainLoader />
-      ) : (
-        <>
-          {hasOpenedCollaterals && (
-            <MintingPairsTable
-              isOpenedVaults
-              collaterals={openedCollaterals}
-              table={MyVaultsMintingPairsTable}
-            />
-          )}
-          <MintingPairsTable
-            collaterals={availableCollaterals}
-            table={AvailableMintingPairsTable}
-          />
-        </>
-      )}
+      <MintingPairsTable isOpenedVaults table={MyVaultsMintingPairsTable} />
+      <MintingPairsTable table={AvailableMintingPairsTable} />
     </div>
+  )
+}
+
+const ChainPairsTable: React.FC<{
+  chain: Chain
+  index: number
+  table: TTable<IDetailedCollateral>
+  isOpenedVaults?: boolean
+}> = ({ chain, index, table, isOpenedVaults }) => {
+  const {
+    isFetching,
+    availableCollaterals,
+    openedCollaterals,
+    hasOpenedCollaterals,
+    isError
+  } = useCollaterals(chain.id)
+
+  const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
+
+  const rows = useMemo(() => {
+    if (!collaterals.length) {
+      return (
+        <TableRow className={index === 0 ? 'my-2' : 'my-1'}>
+          <TableCell
+            width="100%"
+            align="center"
+            className="text-sm text-white/70">
+            {isOpenedVaults
+              ? `No opened vaults in ${chain.name}`
+              : `No available vaults in ${chain.name}`}
+          </TableCell>
+        </TableRow>
+      )
+    }
+
+    return collaterals.map((collateral) => (
+      <MintingPairTableRow
+        key={collateral.collateralId}
+        table={table}
+        isOpened={collateral.isOpenVault}
+        collateral={collateral}
+      />
+    ))
+  }, [collaterals, table])
+
+  return (
+    <Table
+      className={cn(
+        'w-full overflow-hidden font-ibmr text-xs',
+        index !== 0 && !hasOpenedCollaterals && 'border-t border-white/10'
+      )}>
+      <TableHeader className="[&_tr]:mb-0">
+        <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
+          {(index !== 0
+            ? table.filter((t) => t.key === 'pairName')
+            : table
+          ).map(({ key, title, message, titleClassName, formatTitle }) => (
+            <TableHead key={key} className={titleClassName}>
+              {title || formatTitle?.(chain.id)}{' '}
+              <InfoIndicator message={message} />
+            </TableHead>
+          ))}
+          <TableHead />
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {isFetching ? (
+          <TableRow className="my-6">
+            <TableCell
+              width="100%"
+              align="center"
+              className="text-sm text-white/70">
+              Loading...
+            </TableCell>
+          </TableRow>
+        ) : isError ? (
+          <TableRow className="my-6">
+            <TableCell
+              width="100%"
+              align="center"
+              className="text-sm text-white/70">
+              {chain.name} network is currently unreachable. All data will be
+              accessible once connected.
+            </TableCell>
+          </TableRow>
+        ) : (
+          rows
+        )}
+      </TableBody>
+    </Table>
   )
 }
 
 const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
-  collaterals?: Record<string, IDetailedCollateral[]>
-}> = ({ collaterals, isOpenedVaults, table }) => {
-  if (!collaterals) return null
+}> = ({ isOpenedVaults, table }) => {
+  const { supportedChains } = useSupportedChains()
 
   return (
     <div className="w-full">
@@ -90,54 +157,15 @@ const MintingPairsTable: React.FC<{
       </div>
       <div className="w-full px-5">
         <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
-          {Object.entries(collaterals).map(([chainId, pairs], index) => (
-            <Table
-              key={index}
-              className={cn(
-                'w-full overflow-hidden font-ibmr text-xs',
-                index !== 0 && !isOpenedVaults && 'border-t border-white/10'
-              )}>
-              <TableHeader className="[&_tr]:mb-0">
-                <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
-                  {(index !== 0
-                    ? table.filter((t) => t.key === 'pairName')
-                    : table
-                  ).map(
-                    ({ key, title, message, titleClassName, formatTitle }) => (
-                      <TableHead key={key} className={titleClassName}>
-                        {title || formatTitle?.(chainId)}{' '}
-                        <InfoIndicator message={message} />
-                      </TableHead>
-                    )
-                  )}
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pairs.length === 1 && pairs[0].rpcError ? (
-                  <TableRow className="my-6">
-                    <TableCell
-                      width="100%"
-                      align="center"
-                      className="text-sm text-white/70">
-                      {pairs[0].name} network is currently unreachable. All data
-                      will be accessible once connected.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  pairs.map((collateral, index) => (
-                    <MintingPairTableRow
-                      key={index}
-                      table={table}
-                      isOpenedVaults={isOpenedVaults}
-                      collateral={collateral}
-                    />
-                  ))
-                )}
-              </TableBody>
-            </Table>
+          {supportedChains.map((c, index) => (
+            <ChainPairsTable
+              isOpenedVaults={isOpenedVaults}
+              key={c.id}
+              index={index}
+              chain={c}
+              table={table}
+            />
           ))}
-
           <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
           <RightAngleVaultIcon className="absolute bottom-1.5 right-1.5 -rotate-90 text-grey9" />
         </div>
@@ -147,10 +175,10 @@ const MintingPairsTable: React.FC<{
 }
 
 const MintingPairTableRow: React.FC<{
-  isOpenedVaults?: boolean
+  isOpened?: boolean
   collateral: IDetailedCollateral
   table: TTable<IDetailedCollateral>
-}> = ({ collateral, table, isOpenedVaults }) => {
+}> = ({ collateral, table, isOpened }) => {
   const navigate = useNavigate()
   const { evmChainId, isConnected } = useUserInfo()
   const { switchChain } = useSwitchChain()
@@ -185,14 +213,12 @@ const MintingPairTableRow: React.FC<{
   const liquidatedDate = dayjs(liquidated?.timestamp).format('DD/MM/YYYY')
 
   const healthFactor =
-    !isOpenedVaults || !collateral?.healthFactor
-      ? 0
-      : Number(collateral.healthFactor)
+    !isOpened || !collateral?.healthFactor ? 0 : Number(collateral.healthFactor)
 
   const isInLiquidationRisk = useMemo(
     // TODO confirm when to show this message
-    () => isOpenedVaults && !!healthFactor && healthFactor < 200,
-    [healthFactor, isOpenedVaults]
+    () => isOpened && !!healthFactor && healthFactor < 200,
+    [healthFactor, isOpened]
   )
 
   const liquidationMessage = useMemo(() => {
@@ -226,7 +252,7 @@ const MintingPairTableRow: React.FC<{
         </TableCell>
       </TableRow>
 
-      {isOpenedVaults && (
+      {isOpened && (
         <TableRow className="-mt-4 justify-start gap-x-1 text-xs">
           <TableCell className="flex items-center gap-x-0.5">
             <Image src={chainsIconUrl[collateral.chainId]} width={15} />

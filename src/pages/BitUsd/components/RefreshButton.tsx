@@ -1,3 +1,5 @@
+import { useParams } from 'react-router-dom'
+
 import { RefreshIcon } from '@/assets/icons'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
@@ -6,8 +8,9 @@ import { cn } from '@/utils/cn'
 export const RefreshButton: React.FC<{ className?: string }> = ({
   className
 }) => {
+  const { chainId } = useParams()
   const { refetch: refetchCollaterals, isFetching: isFetchingCollaterals } =
-    useCollaterals()
+    useCollaterals(Number(chainId))
   const { refreshVaultValues, isRefreshingVaultValues } = useVaultDetail()
 
   const isRefreshing = isRefreshingVaultValues || isFetchingCollaterals

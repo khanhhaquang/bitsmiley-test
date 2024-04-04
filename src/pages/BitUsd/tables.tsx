@@ -57,7 +57,10 @@ export const AvailableMintingPairsTable: TTable<IDetailedCollateral> = [
             'flex items-center justify-start gap-x-0.5 text-nowrap'
           )}>
           <Image src={chainsIconUrl[chainId]} width={15} height={15} />
-          {customChains.find((c) => c.id.toString() === chainId)?.name}
+          {
+            customChains.find((c) => c.id.toString() === chainId.toString())
+              ?.name
+          }
         </div>
       ),
     format: (item) => item?.name

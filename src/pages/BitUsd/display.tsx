@@ -19,47 +19,54 @@ export const formatBitUsd = (
   v?: string | number,
   withUnit: boolean = true,
   compact: boolean = false
-) =>
-  !v ? (
-    DEFAULT_TEXT
-  ) : (
+) => {
+  if (!v || !Number(v)) return DEFAULT_TEXT
+
+  return (
     <span className="flex items-center gap-x-1">
       {compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}
       {withUnit && BITUSD_UNIT}
     </span>
   )
+}
 
 export const formatWBtc = (
   v?: string | number,
   withUnit = true,
   compact: boolean = false
-) =>
-  !v
-    ? DEFAULT_TEXT
-    : `${
-        compact ? formatNumberAsCompact(v, 4) : formatNumberWithSeparator(v, 4)
-      }` + `${withUnit ? WBTC_UNIT : ''}`
+) => {
+  if (!v || !Number(v)) return DEFAULT_TEXT
+  return (
+    `${
+      compact ? formatNumberAsCompact(v, 4) : formatNumberWithSeparator(v, 4)
+    }` + `${withUnit ? WBTC_UNIT : ''}`
+  )
+}
 
 export const formatMoney = (
   v?: string | number,
   withUnit: boolean = true,
   compact: boolean = false
-) =>
-  !v
-    ? DEFAULT_TEXT
-    : `${withUnit ? DOLLAR_UNIT : ''}` +
-      `${compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}`
+) => {
+  if (!v || !Number(v)) return DEFAULT_TEXT
+  return (
+    `${withUnit ? DOLLAR_UNIT : ''}` +
+    `${compact ? formatNumberAsCompact(v) : formatNumberWithSeparator(v)}`
+  )
+}
 
 const formatPercentage = (
   v?: string | number,
   withUnit: boolean = true,
   compact: boolean = false
-) =>
-  !v
-    ? DEFAULT_TEXT
-    : `${
-        compact ? formatNumberAsCompact(v, 1) : formatNumberWithSeparator(v, 1)
-      }` + `${withUnit ? PERCENTAGE_UNIT : ''}`
+) => {
+  if (!v || !Number(v)) return DEFAULT_TEXT
+  return (
+    `${
+      compact ? formatNumberAsCompact(v, 1) : formatNumberWithSeparator(v, 1)
+    }` + `${withUnit ? PERCENTAGE_UNIT : ''}`
+  )
+}
 
 export const displayVaultValues = (
   vault?: IVault,

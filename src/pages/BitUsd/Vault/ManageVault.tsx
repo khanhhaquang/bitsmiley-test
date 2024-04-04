@@ -416,7 +416,7 @@ export const ManageVault: React.FC<{
 
         <ManageVaultInfoSection className="mb-12" vault={vault} />
 
-        <div className="mb-6 grid grid-cols-2 gap-x-12">
+        <div className="mb-6 grid grid-cols-2 gap-x-[46px]">
           <div className="overflow-hidden">
             <ManageVaultSectionTitle
               title="manage"
@@ -484,6 +484,18 @@ export const ManageVault: React.FC<{
               onInputChange={(v) => handleInput('mintBitUsd', v)}
               greyOut={isMintFromBtc === false}
               title="mint bitUSD"
+              errorMessage={
+                !!mintBitUsd &&
+                Number(mintBitUsd) <
+                  Number(collateral?.collateral?.vaultMinDebt) &&
+                'Mint bitUSD doesn’t reach vault floor.'
+              }
+              disabledMessage={
+                <span>
+                  Mint bitUSD value doesn’t reach vault floor. Please key in a
+                  higher value
+                </span>
+              }
               titleSuffix={
                 <span className="flex items-center gap-x-2">
                   Max Mint:
@@ -509,7 +521,7 @@ export const ManageVault: React.FC<{
             <NumberInput
               value={repayBitUsd}
               disabled={repayBitUsdDisabled}
-              message={repayInputMessage}
+              errorMessage={repayInputMessage}
               onInputChange={(v) => handleInput('repayBitUsd', v)}
               onFocus={() => setIsMintFromBtc(false)}
               greyOut={isMintFromBtc === true}
