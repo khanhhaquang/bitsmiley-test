@@ -488,12 +488,6 @@ export const ManageVault: React.FC<{
                   Number(collateral?.collateral?.vaultMinDebt) &&
                 'Mint bitUSD doesn’t reach vault floor.'
               }
-              disabledMessage={
-                <span>
-                  Mint bitUSD value doesn’t reach vault floor. Please key in a
-                  higher value
-                </span>
-              }
               titleSuffix={
                 <span className="flex items-center gap-x-2">
                   Max Mint:
