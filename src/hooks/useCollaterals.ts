@@ -266,10 +266,6 @@ export const useCollaterals = (chainId: number, collateralId?: string) => {
 
     return collaterals?.map((c) => ({ ...c, ...rest })) || []
   }, [chainWithCollaterals])
-  console.log(
-    '🚀 ~ constcollaterals:IDetailedCollateral[]=useMemo ~ collaterals:',
-    collaterals
-  )
 
   const availableCollaterals = useMemo(
     () => collaterals?.filter((item) => !item.isOpenVault) || [],

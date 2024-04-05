@@ -11,7 +11,7 @@ export const formatNumberWithSeparator = (
   }).format(Number(value))
 }
 
-export const formartNumberAsCeil = (
+export const formatNumberAsCeil = (
   value: number | bigint | string,
   maximumFractionDigits: number = 2
 ) => {

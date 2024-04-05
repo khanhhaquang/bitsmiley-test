@@ -18,7 +18,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { TransactionStatus } from '@/types/common'
 import {
-  formartNumberAsCeil,
+  formatNumberAsCeil,
   formatNumberAsCompact,
   formatNumberWithSeparator
 } from '@/utils/number'
@@ -364,7 +364,25 @@ export const ManageVault: React.FC<{
     txnLink
   ])
 
-  const repayInputMessage = useMemo(() => {
+  const commonBitUsdChangedErrorMsg = useMemo(() => {
+    if (
+      changedVault?.debtBitUSD &&
+      Number(changedVault?.debtBitUSD) <
+        Number(collateral?.collateral?.vaultMinDebt)
+    ) {
+      return 'Vault debt doesn’t reach vault floor.'
+    }
+    return ''
+  }, [changedVault?.debtBitUSD, collateral?.collateral?.vaultMinDebt])
+
+  const mintInputErrorMsg = useMemo(() => {
+    if (!!mintBitUsd && commonBitUsdChangedErrorMsg) {
+      return commonBitUsdChangedErrorMsg
+    }
+    return ''
+  }, [commonBitUsdChangedErrorMsg, mintBitUsd])
+
+  const repayInputErrorMsg = useMemo(() => {
     if (
       !!vault?.debtBitUSD &&
       !!vault?.fee &&
@@ -375,11 +393,20 @@ export const ManageVault: React.FC<{
     }
 
     if (!!repayBitUsd && Number(repayBitUsd) > Number(bitUsdBalance)) {
-      return '*Available bitUSD doesn’t cover the debts'
+      return 'Available bitUSD doesn’t cover the debts'
     }
 
+    if (!!repayBitUsd && commonBitUsdChangedErrorMsg)
+      return commonBitUsdChangedErrorMsg
+
     return ''
-  }, [bitUsdBalance, repayBitUsd, vault?.debtBitUSD, vault?.fee])
+  }, [
+    bitUsdBalance,
+    commonBitUsdChangedErrorMsg,
+    repayBitUsd,
+    vault?.debtBitUSD,
+    vault?.fee
+  ])
 
   useEffect(() => {
     if (withdrawBtc && !repayBitUsd && !!vault?.fee) {
@@ -476,18 +503,14 @@ export const ManageVault: React.FC<{
               icon={<DollarIcon className="shrink-0" width={27} height={29} />}
             />
             <NumberInput
+              scale={4}
               value={mintBitUsd}
               disabled={mintBitUsdDisabled}
               onFocus={() => setIsMintFromBtc(true)}
               onInputChange={(v) => handleInput('mintBitUsd', v)}
               greyOut={isMintFromBtc === false}
               title="mint bitUSD"
-              errorMessage={
-                !!mintBitUsd &&
-                Number(mintBitUsd) <
-                  Number(collateral?.collateral?.vaultMinDebt) &&
-                'Mint bitUSD doesn’t reach vault floor.'
-              }
+              errorMessage={mintInputErrorMsg}
               titleSuffix={
                 <span className="flex items-center gap-x-2">
                   Max Mint:
@@ -511,9 +534,10 @@ export const ManageVault: React.FC<{
               <div className="h-[1px] flex-1 bg-white/20" />
             </div>
             <NumberInput
+              scale={4}
               value={repayBitUsd}
               disabled={repayBitUsdDisabled}
-              errorMessage={repayInputMessage}
+              errorMessage={repayInputErrorMsg}
               onInputChange={(v) => handleInput('repayBitUsd', v)}
               onFocus={() => setIsMintFromBtc(false)}
               greyOut={isMintFromBtc === true}
@@ -539,7 +563,7 @@ export const ManageVault: React.FC<{
                     onClick={() => {
                       handleInput(
                         'repayBitUsd',
-                        formartNumberAsCeil(vault?.debtBitUSD || '') || ''
+                        formatNumberAsCeil(vault?.debtBitUSD || '') || ''
                       )
                       setIsMintFromBtc(false)
                     }}>

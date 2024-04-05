@@ -1,5 +1,5 @@
 import { keepPreviousData } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Address, formatEther, parseEther } from 'viem'
 
@@ -123,6 +123,7 @@ export const useVaultDetail = () => {
   )
 
   const { collateralId } = useParams()
+  const [capturedMaxMint, setCapturedMaxMint] = useState('')
   const [tryOpenVaultBitUsd, setTryOpenVaultBitUsd] = useState('')
   const [tryOpenVaultCollateral, setTryOpenVaultCollateral] = useState('')
 
@@ -140,6 +141,14 @@ export const useVaultDetail = () => {
       : undefined,
     query
   })
+
+  useEffect(() => {
+    if (!debouncedTryOpenVaultBitUsd || !Number(debouncedTryOpenVaultBitUsd)) {
+      if (tryOpenVaultInfo?.availableToMint) {
+        setCapturedMaxMint(tryOpenVaultInfo.availableToMint)
+      }
+    }
+  }, [debouncedTryOpenVaultBitUsd, tryOpenVaultInfo?.availableToMint])
 
   const {
     refetchAllowance: refetchWbtcAllowance,
@@ -202,6 +211,7 @@ export const useVaultDetail = () => {
     isRefreshingVaultValues,
 
     tryOpenVaultInfo,
+    capturedMaxMint,
     setTryOpenVaultBitUsd,
     setTryOpenVaultCollateral
   }

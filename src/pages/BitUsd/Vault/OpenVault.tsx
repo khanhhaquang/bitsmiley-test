@@ -22,7 +22,7 @@ import { NumberInput } from '../components/NumberInput'
 import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { displayCollateralValues, formatBitUsd, formatWBtc } from '../display'
+import { formatBitUsd, formatWBtc } from '../display'
 
 export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   chainId,
@@ -33,7 +33,8 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     refreshVaultValues,
     tryOpenVaultInfo,
     setTryOpenVaultBitUsd,
-    setTryOpenVaultCollateral
+    setTryOpenVaultCollateral,
+    capturedMaxMint
   } = useVaultDetail()
   const { collateral, refetch: refetchCollateral } = useCollaterals(
     chainId,
@@ -64,35 +65,57 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     approvalTxnStatus === TransactionStatus.Processing
   const isApproved = Number(wBtcAllowance) >= Number(deposit)
 
-  const isNextButtonDisabled = useMemo(() => {
-    if (!deposit) return true
-
-    if (Number(deposit) > wbtcBalance) return true
-    if (mint && Number(mint) > Number(collateral?.collateral?.vaultMaxDebt))
-      return true
-    if (mint && Number(mint) < Number(collateral?.collateral?.vaultMinDebt))
-      return true
-    return false
-  }, [
-    deposit,
-    mint,
-    collateral?.collateral?.vaultMaxDebt,
-    collateral?.collateral?.vaultMinDebt,
-    wbtcBalance
-  ])
-
   const depositDisabled = useMemo(() => {
     if (wbtcBalance <= 0) return true
   }, [wbtcBalance])
 
+  const depositInputErrorMsg = useMemo(() => {
+    if (deposit) {
+      if (Number(deposit) <= 0) {
+        return 'Deposit value must larger than zero.'
+      }
+      if (Number(deposit) > wbtcBalance)
+        return 'Deposit value is exceeding balance.'
+    }
+
+    return ''
+  }, [deposit, wbtcBalance])
+
+  const mintInputErrorMsg = useMemo(() => {
+    if (mint) {
+      if (Number(mint) > Number(collateral?.collateral?.vaultMaxDebt)) {
+        return 'Mint bitUSD value can’t exceed vault max debt.'
+      }
+      if (Number(mint) < Number(collateral?.collateral?.vaultMinDebt))
+        return 'Mint bitUSD value doesn’t reach vault floor.'
+
+      if (Number(mint) > Number(capturedMaxMint))
+        return 'Mint bitUSD value can’t exceed max mint.'
+    }
+
+    return ''
+  }, [
+    capturedMaxMint,
+    collateral?.collateral?.vaultMaxDebt,
+    collateral?.collateral?.vaultMinDebt,
+    mint
+  ])
+
   const mintDisabled = useMemo(() => {
     return (
-      !!collateral?.collateral?.vaultMinDebt &&
-      !!tryOpenVaultInfo?.availableToMint &&
-      Number(tryOpenVaultInfo?.availableToMint) <
-        Number(collateral?.collateral.vaultMinDebt)
+      !collateral?.collateral?.vaultMinDebt ||
+      !tryOpenVaultInfo?.availableToMint
     )
   }, [collateral?.collateral?.vaultMinDebt, tryOpenVaultInfo?.availableToMint])
+
+  const isNextButtonDisabled = useMemo(() => {
+    if (!deposit) return true
+
+    if (depositInputErrorMsg) return true
+    if (mintInputErrorMsg) return true
+
+    return false
+  }, [deposit, depositInputErrorMsg, mintInputErrorMsg])
 
   const handleNext = () => {
     if (!isApproved) {
@@ -186,15 +209,12 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   ])
 
   useEffect(() => {
-    if (mintDisabled) setMint('')
-  }, [mintDisabled])
-
-  useEffect(() => {
     setTryOpenVaultBitUsd(mint)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mint])
 
   useEffect(() => {
+    setMint('')
     setTryOpenVaultCollateral(deposit)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deposit])
@@ -213,6 +233,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           onInputChange={(v) => handleInput(v, setDeposit)}
           greyOut={depositDisabled}
           disabled={depositDisabled}
+          errorMessage={depositInputErrorMsg}
           title="DEPOSIT WBTC"
           titleSuffix={`Available: ${formatWBtc(wbtcBalance, true, true)}`}
           inputSuffix={
@@ -226,22 +247,11 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           onInputChange={(v) => handleInput(v, setMint)}
           disabled={mintDisabled}
           greyOut={mintDisabled}
-          errorMessage={
-            !!mint &&
-            Number(mint) < Number(collateral?.collateral?.vaultMinDebt) &&
-            'Mint bitUSD value doesn’t reach vault floor.'
-          }
-          disabledMessage={
-            <span>
-              Max bitUSD you can mint doesn't reach vault floor:{' '}
-              {displayCollateralValues(collateral).collateralVaultFloor}
-            </span>
-          }
+          errorMessage={mintInputErrorMsg}
           title="Mint bitUSD"
           titleSuffix={
             <span className="flex items-center gap-x-2">
-              Max mint:{' '}
-              {formatBitUsd(tryOpenVaultInfo?.availableToMint, true, true)}
+              Max mint: {formatBitUsd(capturedMaxMint, true, true)}
             </span>
           }
           inputSuffix={

@@ -56,10 +56,20 @@ const ChainPairsTable: React.FC<{
   table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
 }> = ({ chain, index, table, isOpenedVaults }) => {
-  const { isFetching, availableCollaterals, openedCollaterals, isError } =
-    useCollaterals(chain.id)
+  const {
+    isFetching,
+    availableCollaterals,
+    openedCollaterals,
+    isError,
+    isSuccess
+  } = useCollaterals(chain.id)
 
   const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
+
+  const hideHeaderChainName = useMemo(
+    () => isSuccess && !collaterals.length,
+    [collaterals.length, isSuccess]
+  )
 
   const rows = useMemo(() => {
     if (!collaterals.length) {
@@ -89,7 +99,8 @@ const ChainPairsTable: React.FC<{
             : table
           ).map(({ key, title, message, titleClassName, formatTitle }) => (
             <TableHead key={key} className={titleClassName}>
-              {title || formatTitle?.(chain.id)}{' '}
+              {title ||
+                formatTitle?.(hideHeaderChainName ? undefined : chain.id)}{' '}
               <InfoIndicator message={message} />
             </TableHead>
           ))}
