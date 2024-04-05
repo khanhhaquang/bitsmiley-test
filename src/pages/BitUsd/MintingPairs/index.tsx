@@ -63,18 +63,7 @@ const ChainPairsTable: React.FC<{
 
   const rows = useMemo(() => {
     if (!collaterals.length) {
-      return (
-        <TableRow className={index === 0 ? 'my-2' : 'my-1'}>
-          <TableCell
-            width="100%"
-            align="center"
-            className="text-sm text-white/70">
-            {isOpenedVaults
-              ? `No opened vaults in ${chain.name}`
-              : `No available vaults in ${chain.name}`}
-          </TableCell>
-        </TableRow>
-      )
+      return null
     }
 
     return collaterals.map((collateral) => (
@@ -85,7 +74,7 @@ const ChainPairsTable: React.FC<{
         collateral={collateral}
       />
     ))
-  }, [chain.name, collaterals, index, isOpenedVaults, table])
+  }, [collaterals, table])
 
   return (
     <Table
@@ -114,7 +103,7 @@ const ChainPairsTable: React.FC<{
               width="100%"
               align="center"
               className="text-sm text-white/70">
-              Loading...
+              we are fetching more on-chain data...
             </TableCell>
           </TableRow>
         ) : isError ? (
