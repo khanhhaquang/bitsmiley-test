@@ -67,7 +67,9 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
             ]
           }
         },
-        walletOptions: { visible: import.meta.env.DEV }
+        walletOptions: {
+          visible: import.meta.env.VITE_PARTICLE_WALLET_VISIBLE === 'true'
+        }
       }}
       connectors={[new OKXConnector(), new UnisatConnector()]}>
       <WagmiProvider reconnectOnMount={false} config={config}>
