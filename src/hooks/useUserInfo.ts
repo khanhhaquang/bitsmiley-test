@@ -49,6 +49,7 @@ export const useUserInfo = () => {
   }
 
   return {
+    isConnectedWithAA: !!(btcAccounts[0] as Address),
     isConnected: isEvmConnected,
     address: evmAddress,
     addressForDisplay,

@@ -3,8 +3,10 @@ import { Outlet } from 'react-router-dom'
 
 import { useUserInfo } from '@/hooks/useUserInfo'
 
+import TransferFromAA from './components/TransferFromAA'
+
 const BitUsd: React.FC = () => {
-  const { enabledFeatures } = useUserInfo()
+  const { enabledFeatures, isConnectedWithAA } = useUserInfo()
 
   if (!enabledFeatures?.AlphaNet)
     return (
@@ -16,6 +18,7 @@ const BitUsd: React.FC = () => {
   return (
     <Suspense fallback="...">
       <Outlet />
+      {isConnectedWithAA && <TransferFromAA />}
     </Suspense>
   )
 }

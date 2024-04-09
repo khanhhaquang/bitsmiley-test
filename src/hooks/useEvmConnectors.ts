@@ -1,7 +1,6 @@
 import {
   useBTCProvider,
-  useETHProvider,
-  useETHProvider as useParticleETHProvider
+  useETHProvider
 } from '@particle-network/btc-connectkit'
 import { useEffect, useMemo, useSyncExternalStore } from 'react'
 import { injected } from 'wagmi/connectors'
@@ -27,8 +26,11 @@ export const useEvmConnectors = () => {
     (p) => p.info.rdns === METAMASK_RDNS
   )
 
-  const { evmAccount, chainId: evmChainId } = useETHProvider()
-  const { provider: particleEvmProvider } = useParticleETHProvider()
+  const {
+    evmAccount,
+    chainId: evmChainId,
+    provider: particleEvmProvider
+  } = useETHProvider()
 
   const { getNetwork, switchNetwork } = useBTCProvider()
 

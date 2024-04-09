@@ -40,7 +40,7 @@ export const CopyButton: React.FC<TProps> = ({ text, className, children }) => {
   return (
     <Tooltip delayDuration={100} open={copied}>
       <TooltipTrigger className="z-10 w-full cursor-pointer">
-        <button
+        <span
           className={className}
           onClick={(e) => {
             e.stopPropagation()
@@ -54,7 +54,7 @@ export const CopyButton: React.FC<TProps> = ({ text, className, children }) => {
               )}
             />
           )}
-        </button>
+        </span>
       </TooltipTrigger>
       <TooltipContent className="px-3 py-1.5 text-sm">Copied</TooltipContent>
     </Tooltip>

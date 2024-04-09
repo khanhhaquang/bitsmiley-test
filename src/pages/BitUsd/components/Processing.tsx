@@ -146,7 +146,7 @@ export const Processing: React.FC<ProcessingProps> = ({
           {!!link && (
             <p>
               {' '}
-              You can check it here{' '}
+              You can check it{' '}
               <span
                 className={cn(
                   'cursor-pointer',
