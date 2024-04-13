@@ -1,3 +1,4 @@
+import AlertBg from './alert-bg.svg'
 import ArrowDownDoubleIcon from './arrow-down-double.svg'
 import ArrowDownIcon from './arrow-down.svg'
 import ArrowLeftDoubleIcon from './arrow-left-double.svg'
@@ -133,5 +134,6 @@ export {
   ManageVaultSectionTitleIcon,
   ReturnUpIcon,
   RefreshIcon,
-  ArrowLeftDoubleIcon
+  ArrowLeftDoubleIcon,
+  AlertBg
 }

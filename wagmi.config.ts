@@ -9,6 +9,7 @@ import bitUsdL2Abi from './src/abi/BitUsdL2.json'
 import oracleAbi from './src/abi/Oracle.json'
 import erc721StakingAbi from './src/abi/Staking.json'
 import vaultManagerAbi from './src/abi/VaultManager.json'
+import Regiter from './src/abi/Regiter.json'
 
 export default defineConfig([
   {
@@ -90,5 +91,16 @@ export default defineConfig([
       }
     ],
     plugins: [react()]
-  }
+  },
+  {
+    out: 'src/contracts/Regiter.ts',
+    contracts: [
+      {
+        name: 'Regiter',
+        abi: Regiter as Abi
+      }
+    ],
+    plugins: [react()]
+  },
+  
 ])

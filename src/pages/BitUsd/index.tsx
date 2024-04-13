@@ -1,12 +1,27 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { isAddressEqual } from 'viem'
 
+import { useRegiter } from '@/hooks/useRegiter'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
-import TransferFromAA from './components/TransferFromAA'
+import PersonalSignModal from './components/PersonalSignModal'
 
 const BitUsd: React.FC = () => {
   const { enabledFeatures, isConnectedWithAA } = useUserInfo()
+  const { airdropState } = useRegiter()
+  const [airdropStateEqual, setAirdropStateEqual] = useState(false)
+  console.log('---=airdropState--', airdropState)
+  useEffect(() => {
+    if (airdropState) {
+      setAirdropStateEqual(
+        isAddressEqual(
+          airdropState,
+          '0x0000000000000000000000000000000000000000'
+        )
+      )
+    }
+  }, [airdropState])
 
   if (!enabledFeatures?.AlphaNet)
     return (
@@ -18,7 +33,7 @@ const BitUsd: React.FC = () => {
   return (
     <Suspense fallback="...">
       <Outlet />
-      {isConnectedWithAA && <TransferFromAA />}
+      {isConnectedWithAA && airdropStateEqual && <PersonalSignModal />}
     </Suspense>
   )
 }

@@ -12,6 +12,7 @@ export interface IContractAddresses {
   staking: Address | null
   l2nft: Address | null
   bitSmileyQuery: Address | null
+  register: Address
 }
 export interface INetworkInfo {
   network: string
