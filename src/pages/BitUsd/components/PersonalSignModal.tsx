@@ -14,6 +14,7 @@ import { getTxnErrorMsg } from '@/utils/error'
 import { ActionButton } from './ActionButton'
 import InputBlack from './InputBlack'
 import { ProcessingModal } from './Processing'
+import TransferFromAA from './TransferFromAA'
 
 const PersonalSignModal = () => {
   const { address, blockExplorerUrl } = useUserInfo()
@@ -135,7 +136,7 @@ const PersonalSignModal = () => {
       setTxnStatus(TransactionStatus.Failed)
     }
   }, [txnReceipt?.status, refetchAirdropState])
-  if (!isOpen) return null
+  if (!isOpen) return <TransferFromAA />
   return (
     <>
       {processingModal}
@@ -161,14 +162,17 @@ const PersonalSignModal = () => {
               'flex w-full flex-col gap-y-6 items-center justify-center bg-black text-center font-ibmr text-sm text-white'
             )}>
             <h2 className="text-2xl font-semibold uppercase">
-              Dear bitdisc owner
+              TO mBITDISC OWNERS
             </h2>
             <p className="text-sm text-white">
               We will carry out our testnet campaign in other networks which
               might not have AA wallet enabled. Please leave another EVM wallet
               that you wish to receive future testnet airdrops.
             </p>
-
+            <div className="flex w-full flex-col gap-y-1.5">
+              <p className=" px-3 text-left">Current AA wallet address：</p>
+              <p className=" px-3 text-left">{address}</p>
+            </div>
             <div className="flex w-full flex-col gap-y-1.5">
               <InputBlack
                 errorMessage={addressInputError}

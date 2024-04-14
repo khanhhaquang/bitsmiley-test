@@ -6,6 +6,7 @@ import { useRegiter } from '@/hooks/useRegiter'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 import PersonalSignModal from './components/PersonalSignModal'
+import TransferFromAA from './components/TransferFromAA'
 
 const BitUsd: React.FC = () => {
   const { enabledFeatures, isConnectedWithAA } = useUserInfo()
@@ -29,11 +30,17 @@ const BitUsd: React.FC = () => {
         Not available
       </div>
     )
-
+  if (!airdropState) return null
   return (
     <Suspense fallback="...">
       <Outlet />
-      {isConnectedWithAA && airdropStateEqual && <PersonalSignModal />}
+      {isConnectedWithAA && airdropState ? (
+        airdropStateEqual ? (
+          <PersonalSignModal />
+        ) : (
+          <TransferFromAA />
+        )
+      ) : null}
     </Suspense>
   )
 }

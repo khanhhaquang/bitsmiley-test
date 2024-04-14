@@ -5,7 +5,11 @@ export const merlinTestnet = {
   name: 'Merlin Testnet',
   nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://testnet-rpc.merlinchain.io'] }
+    default: {
+      http: [
+        'https://merlin-testnet.blockpi.network/v1/rpc/648b991f0022274a55d528cb126e1a63fa4b84a1'
+      ]
+    }
   },
   blockExplorers: {
     default: { name: 'Merlinscan', url: 'https://testnet-scan.merlinchain.io' }
