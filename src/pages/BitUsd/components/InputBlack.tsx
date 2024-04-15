@@ -21,8 +21,8 @@ const Input: React.FC<NumberInputProps> = ({
     <div className="flex w-full flex-col items-start gap-y-1">
       <div
         className={cn(
-          'relative border border-[#111111] bg-black/50 px-3 py-1 h-9 w-full',
-          greyOut && 'bg-white/10',
+          'relative border border-white/20 px-3 py-1 h-9 w-full bg-white/5 backdrop-blur-[10px]',
+          greyOut && 'bg-white/5',
           disabled && 'bg-white/20 border-white/20'
         )}>
         <BaseInput
@@ -40,7 +40,7 @@ const Input: React.FC<NumberInputProps> = ({
       </div>
 
       {!!errorMessage && (
-        <p className="w-full text-center font-ibmr text-sm text-error">
+        <p className="w-full text-left font-ibmr text-sm text-error">
           {errorMessage}
         </p>
       )}
