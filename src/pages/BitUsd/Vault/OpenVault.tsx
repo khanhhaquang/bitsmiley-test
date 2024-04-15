@@ -102,11 +102,8 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   ])
 
   const mintDisabled = useMemo(() => {
-    return (
-      !collateral?.collateral?.vaultMinDebt ||
-      !tryOpenVaultInfo?.availableToMint
-    )
-  }, [collateral?.collateral?.vaultMinDebt, tryOpenVaultInfo?.availableToMint])
+    return !collateral?.collateral?.vaultMinDebt || !capturedMaxMint
+  }, [collateral?.collateral?.vaultMinDebt, capturedMaxMint])
 
   const isNextButtonDisabled = useMemo(() => {
     if (!deposit) return true

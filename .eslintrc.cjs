@@ -8,7 +8,8 @@ module.exports = {
     'plugin:react-hooks/recommended',
     'plugin:tailwindcss/recommended',
     'plugin:import/recommended',
-    'plugin:import/typescript'
+    'plugin:import/typescript',
+    'plugin:security/recommended-legacy'
   ],
   ignorePatterns: [
     'dist',
