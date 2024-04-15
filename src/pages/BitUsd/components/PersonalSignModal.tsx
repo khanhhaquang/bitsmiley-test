@@ -162,9 +162,7 @@ const PersonalSignModal = () => {
               'flex w-full flex-col gap-y-6 items-center justify-center bg-black text-center font-ibmr text-sm text-white',
               'px-[48px] py-[24px] border border-white/20'
             )}>
-            <h2 className="text-2xl font-semibold uppercase">
-              Dear M-bitDisc Owner
-            </h2>
+            <h2 className="text-2xl font-semibold">Dear M-bitDisc Owner</h2>
             <p className="text-sm text-white">
               We will conduct our testnet campaign on networks without AA wallet
               capability. Please provide an alternative EVM wallet for future
