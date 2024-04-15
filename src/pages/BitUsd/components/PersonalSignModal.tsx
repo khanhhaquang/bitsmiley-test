@@ -140,43 +140,44 @@ const PersonalSignModal = () => {
   return (
     <>
       {processingModal}
-      <div className="absolute inset-0 z-40 flex size-full flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="absolute inset-0 z-40 flex size-full flex-col items-center justify-center bg-black/50">
         <div
           className={cn(
-            'flex w-full flex-col items-center justify-center bg-black px-[48px] py-[24px]',
-            'w-[537px] relative'
+            'flex w-full flex-col items-center justify-center bg-black',
+            'w-[600px] relative border border-white/20 p-[2px]'
           )}>
-          <div className=" absolute left-0 top-0 rotate-180">
+          <div className=" absolute left-0.5 top-0.5 z-0 rotate-180">
             <AlertBg />
           </div>
-          <div className=" absolute bottom-0 right-0">
+          <div className=" absolute bottom-0.5 right-0.5 z-0">
             <AlertBg />
           </div>
           <button
-            className="absolute right-2 flex h-full w-6 shrink-0 justify-center"
+            className="absolute right-[13px] top-[11px] flex h-full w-6 shrink-0 justify-center"
             onClick={() => setIsOpen(false)}>
             <CloseIcon height={13} width={13} />
           </button>
           <div
             className={cn(
-              'flex w-full flex-col gap-y-6 items-center justify-center bg-black text-center font-ibmr text-sm text-white'
+              'flex w-full flex-col gap-y-6 items-center justify-center bg-black text-center font-ibmr text-sm text-white',
+              'px-[48px] py-[24px] border border-white/20'
             )}>
             <h2 className="text-2xl font-semibold uppercase">
-              TO mBITDISC OWNERS
+              Dear M-bitDisc Owner
             </h2>
             <p className="text-sm text-white">
-              We will carry out our testnet campaign in other networks which
-              might not have AA wallet enabled. Please leave another EVM wallet
-              that you wish to receive future testnet airdrops.
+              We will conduct our testnet campaign on networks without AA wallet
+              capability. Please provide an alternative EVM wallet for future
+              exclusive testnet airdrops.
             </p>
             <div className="flex w-full flex-col gap-y-1.5">
-              <p className=" px-3 text-left">Current AA wallet address：</p>
-              <p className=" px-3 text-left">{address}</p>
-            </div>
-            <div className="flex w-full flex-col gap-y-1.5">
+              <p className=" text-left text-[12px]">
+                Current AA wallet address：
+                <span className="text-white/70">{address}</span>
+              </p>
               <InputBlack
                 errorMessage={addressInputError}
-                placeholder="Wallet Address"
+                placeholder="Input wallet addres"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
               />
@@ -184,10 +185,9 @@ const PersonalSignModal = () => {
 
             <ActionButton
               className={cn(
-                'w-[91px] flex py-[4px] border-white/50 bg-white/70 gap-x-2 items-center text-black/75'
+                ' relative w-[91px] flex py-[4px] border-white/50 bg-white/70 gap-x-2 items-center text-black/75 z-1 backdrop-blur-[2px]'
               )}
               onClick={handleTransfer}>
-              {/* onClick={() => signMessage()}> */}
               Confirm
             </ActionButton>
           </div>
