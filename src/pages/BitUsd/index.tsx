@@ -12,7 +12,6 @@ const BitUsd: React.FC = () => {
   const { enabledFeatures, isConnectedWithAA } = useUserInfo()
   const { airdropState } = useRegiter()
   const [airdropStateEqual, setAirdropStateEqual] = useState(false)
-  console.log('---=airdropState--', airdropState)
   useEffect(() => {
     if (airdropState) {
       setAirdropStateEqual(
@@ -30,7 +29,7 @@ const BitUsd: React.FC = () => {
         Not available
       </div>
     )
-  if (!airdropState) return null
+  if (isConnectedWithAA && !airdropState) return null
   return (
     <Suspense fallback="...">
       <Outlet />
