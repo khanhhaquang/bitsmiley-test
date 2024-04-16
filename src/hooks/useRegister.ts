@@ -2,7 +2,7 @@ import { useReadRegiterBeneficiaries } from '@/contracts/Regiter'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
-export const useRegiter = () => {
+export const useRegister = () => {
   const { address } = useUserInfo()
   const contractAddresses = useContractAddresses()
   const {

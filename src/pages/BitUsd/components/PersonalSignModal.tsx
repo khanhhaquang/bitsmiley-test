@@ -5,7 +5,7 @@ import { useWaitForTransactionReceipt } from 'wagmi'
 import { AlertBg, CloseIcon } from '@/assets/icons'
 import { useWriteRegiterTransferBeneficiary } from '@/contracts/Regiter'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
-import { useRegiter } from '@/hooks/useRegiter'
+import { useRegister } from '@/hooks/useRegister'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { TransactionStatus } from '@/types/common'
 import { cn } from '@/utils/cn'
@@ -26,7 +26,7 @@ const PersonalSignModal = () => {
   const [txnStatus, setTxnStatus] = useState(TransactionStatus.Idle)
   const [txnId, setTxnId] = useState('')
   const [txnError, setTxnError] = useState('')
-  const { refetchAirdropState } = useRegiter()
+  const { refetchAirdropState } = useRegister()
   const [isOpen, setIsOpen] = useState(true)
 
   const registerAddress = contractAddresses?.register

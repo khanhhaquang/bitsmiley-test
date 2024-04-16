@@ -24,7 +24,7 @@ import BitUsdInput from './Input'
 import { NumberInput } from './NumberInput'
 import { ProcessingModal } from './Processing'
 
-import { formatWBtc } from '../display'
+import { formatBitUsd, formatWBtc } from '../display'
 
 const TransferFromAA = () => {
   const { address, blockExplorerUrl } = useUserInfo()
@@ -33,23 +33,35 @@ const TransferFromAA = () => {
   const contractAddresses = useContractAddresses()
   const transferWbtc = useWriteBitUsdTransfer()
   const { balance: wbtcBalance } = useTokenBalance(contractAddresses?.WBTC)
+  const { balance: bitUsdBalance } = useTokenBalance(
+    contractAddresses?.BitUSDL2
+  )
   const { data: nativeBalance } = useBalance({ address: address })
 
   const [isOpen, setIsOpen] = useState(true)
   const [btc, setBtc] = useState('')
   const [wbtc, setWbtc] = useState('')
+  const [bitUsd, setBitUsd] = useState('')
   const [to, setTo] = useState('')
   const [txnStatus, setTxnStatus] = useState(TransactionStatus.Idle)
   const [txnId, setTxnId] = useState('')
   const [txnError, setTxnError] = useState('')
 
   const wbtcInputError = useMemo(() => {
-    if (btc && wbtcBalance && Number(wbtc) > wbtcBalance) {
+    if (wbtcBalance && Number(wbtc) > wbtcBalance) {
       return 'Amount exceeds balance'
     }
 
     return ''
-  }, [btc, wbtc, wbtcBalance])
+  }, [wbtc, wbtcBalance])
+
+  const bitUsdInputError = useMemo(() => {
+    if (bitUsd && Number(bitUsd) > bitUsdBalance) {
+      return 'Amount exceeds balance'
+    }
+
+    return ''
+  }, [bitUsd, bitUsdBalance])
 
   const btcInputError = useMemo(() => {
     if (
@@ -80,22 +92,6 @@ const TransferFromAA = () => {
 
   const handleTransfer = async () => {
     if (isAddress(to) && address) {
-      if (wbtc && contractAddresses?.WBTC) {
-        try {
-          setTxnStatus(TransactionStatus.Signing)
-          const txnHash = await transferWbtc.writeContractAsync({
-            address: contractAddresses?.WBTC,
-            args: [to, parseEther(wbtc)]
-          })
-
-          setTxnId(txnHash)
-          setTxnStatus(TransactionStatus.Processing)
-        } catch (error) {
-          setTxnStatus(TransactionStatus.Failed)
-          setTxnError(getTxnErrorMsg(error))
-        }
-      }
-
       if (btc) {
         setTxnStatus(TransactionStatus.Signing)
         sendTransaction(
@@ -114,6 +110,38 @@ const TransferFromAA = () => {
             }
           }
         )
+      } else {
+        if (wbtc && contractAddresses?.WBTC) {
+          try {
+            setTxnStatus(TransactionStatus.Signing)
+            const txnHash = await transferWbtc.writeContractAsync({
+              address: contractAddresses?.WBTC,
+              args: [to, parseEther(wbtc)]
+            })
+
+            setTxnId(txnHash)
+            setTxnStatus(TransactionStatus.Processing)
+          } catch (error) {
+            setTxnStatus(TransactionStatus.Failed)
+            setTxnError(getTxnErrorMsg(error))
+          }
+        }
+
+        if (bitUsd && contractAddresses?.BitUSDL2) {
+          try {
+            setTxnStatus(TransactionStatus.Signing)
+            const txnHash = await transferWbtc.writeContractAsync({
+              address: contractAddresses?.BitUSDL2,
+              args: [to, parseEther(bitUsd)]
+            })
+
+            setTxnId(txnHash)
+            setTxnStatus(TransactionStatus.Processing)
+          } catch (error) {
+            setTxnStatus(TransactionStatus.Failed)
+            setTxnError(getTxnErrorMsg(error))
+          }
+        }
       }
     }
   }
@@ -194,7 +222,7 @@ const TransferFromAA = () => {
   return (
     <>
       {processingModal}
-      <div className="absolute inset-0 z-40 flex size-full flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="absolute inset-0 z-40 flex size-full flex-col items-center justify-center overflow-y-auto overscroll-contain bg-black/50 pt-12 backdrop-blur-sm">
         <div
           className={cn(
             'flex w-full flex-col items-center justify-center bg-black',
@@ -240,6 +268,7 @@ const TransferFromAA = () => {
                 errorMessage={wbtcInputError}
                 onInputChange={(v) => {
                   setBtc('')
+                  setBitUsd('')
                   setWbtc(v || '')
                 }}
                 title="WBTC"
@@ -247,6 +276,29 @@ const TransferFromAA = () => {
                 inputSuffix={
                   <InputSuffixActionButton
                     onClick={() => setWbtc(wbtcBalance.toString())}>
+                    Max
+                  </InputSuffixActionButton>
+                }
+              />
+              <NumberInput
+                scale={4}
+                value={bitUsd}
+                disabled={!bitUsdBalance}
+                errorMessage={bitUsdInputError}
+                onInputChange={(v) => {
+                  setBtc('')
+                  setWbtc('')
+                  setBitUsd(v || '')
+                }}
+                title="BITUSD"
+                titleSuffix={`Balance: ${formatBitUsd(
+                  bitUsdBalance,
+                  false,
+                  true
+                )}`}
+                inputSuffix={
+                  <InputSuffixActionButton
+                    onClick={() => setBitUsd(bitUsdBalance.toString())}>
                     Max
                   </InputSuffixActionButton>
                 }
@@ -259,6 +311,7 @@ const TransferFromAA = () => {
                 errorMessage={btcInputError}
                 onInputChange={(v) => {
                   setWbtc('')
+                  setBitUsd('')
                   setBtc(v || '')
                 }}
                 title="BTC"
