@@ -253,10 +253,11 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             </span>
           }
           inputSuffix={
-            !!tryOpenVaultInfo?.availableToMint && (
+            !!capturedMaxMint &&
+            !!Number(capturedMaxMint) && (
               <InputSuffixActionButton
                 onClick={() => {
-                  setMint(tryOpenVaultInfo.availableToMint as string)
+                  setMint(capturedMaxMint)
                 }}>
                 Max
               </InputSuffixActionButton>
