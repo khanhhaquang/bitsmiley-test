@@ -240,6 +240,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           }
         />
         <NumberInput
+          scale={4}
           value={mint}
           onInputChange={(v) => handleInput(v, setMint)}
           disabled={mintDisabled}
@@ -252,10 +253,14 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             </span>
           }
           inputSuffix={
-            <InputSuffixActionButton
-              onClick={() => setMint(tryOpenVaultInfo?.availableToMint || '')}>
-              Max
-            </InputSuffixActionButton>
+            !!tryOpenVaultInfo?.availableToMint && (
+              <InputSuffixActionButton
+                onClick={() => {
+                  setMint(tryOpenVaultInfo.availableToMint as string)
+                }}>
+                Max
+              </InputSuffixActionButton>
+            )
           }
         />
         <VaultInfo
