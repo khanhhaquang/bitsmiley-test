@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-import { HeaderIcon, RightAngleThin } from '@/assets/icons'
+import { AirdropIcon, HeaderIcon, RightAngleThin } from '@/assets/icons'
+import { useAirdropAddresses } from '@/hooks/useAirdropAddresses'
 import { cn } from '@/utils/cn'
 
 import { ConnectWallet } from './ConnectWallet'
@@ -17,6 +18,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
           <div className="relative">
             <ConnectWallet />
             <EnterAppButton />
+            <AirdropButton />
           </div>
         </div>
       )}
@@ -47,6 +49,30 @@ const EnterAppButton: React.FC = () => {
             'text-white bg-black/30 group-hover:bg-black/50 mix-blend-difference'
         )}>
         <span>{isMainApp ? 'Home' : 'Enter APP'}</span>
+        <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
+        <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
+        <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
+        <RightAngleThin className="absolute bottom-[-1px] left-[-1px] -rotate-90" />
+      </div>
+    </div>
+  )
+}
+
+const AirdropButton: React.FC = () => {
+  const airdropAddresses = useAirdropAddresses()
+
+  if (!airdropAddresses?.length) return null
+
+  return (
+    <div className="group absolute top-[calc(200%+24px)] size-full cursor-pointer">
+      <div
+        className={cn(
+          'relative flex size-full items-center justify-center whitespace-nowrap bg-yellow4/25 uppercase text-yellow5 group-hover:bg-yellow4/50 group-active:text-opacity-50 group-active:bg-yellow4/10'
+        )}>
+        <span className="flex items-center justify-center gap-x-1">
+          <AirdropIcon />
+          AIRDROP
+        </span>
         <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
         <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
         <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
