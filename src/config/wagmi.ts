@@ -88,7 +88,7 @@ export const bitLayerTestnet = {
   blockExplorers: {
     default: {
       name: 'Bitlayer Testnet Scan',
-      url: 'https://testnet-scan.bitlayer.org'
+      url: 'https://testnet.btrscan.com'
     }
   },
   testnet: true
