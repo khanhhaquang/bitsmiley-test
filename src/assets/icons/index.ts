@@ -1,3 +1,5 @@
+import AirdropModalTitleLeftIcon from './airdrop-modal-title-left.svg'
+import AirdropModalTitleRightIcon from './airdrop-modal-title-right.svg'
 import AirdropIcon from './airdrop.svg'
 import AlertBg from './alert-bg.svg'
 import ArrowDownDoubleIcon from './arrow-down-double.svg'
@@ -69,6 +71,8 @@ import WarningOutline from './warning-outline.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
 
 export {
+  AirdropModalTitleLeftIcon,
+  AirdropModalTitleRightIcon,
   AirdropIcon,
   ManageVaultInfoTitleIcon,
   BitUsdIcon,
