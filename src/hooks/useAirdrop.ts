@@ -1,24 +1,74 @@
+import { useMemo, useState } from 'react'
 import { Address, formatEther } from 'viem'
+import { useWriteContract } from 'wagmi'
 
-import { useReadAirdropAirdrop } from '@/contracts/Airdrop'
+import airdropAbi from '@/abi/BitSmileyMerkleErc20Airdrop.json'
+import {
+  useReadAirdropAirdrop,
+  useReadAirdropCanClaim,
+  useReadAirdropClaimed
+} from '@/contracts/Airdrop'
+import { useStoreActions } from '@/hooks/useStoreActions'
 
 export const useAirdrop = (airdropAddress?: Address) => {
   const { data: airdropInfo, isLoading: isLoadingAirdropInfo } =
     useReadAirdropAirdrop({
       address: airdropAddress,
       query: {
-        select: (res) => ({
-          receivedUsers: res[0],
-          createdBy: res[1],
-          token: res[2],
-          startTime: res[3].toString(),
-          endTime: res[4].toString(),
-          merkleTreeRoot: res[5],
-          totalAllocation: formatEther(res[6]),
-          totalReceived: formatEther(res[7])
+        select: ([
+          token,
+          receivedUsers,
+          merkleTreeRoot,
+          endTime,
+          createdBy,
+          startTime,
+          totalReceived,
+          totalAllocation
+        ]) => ({
+          token,
+          receivedUsers,
+          merkleTreeRoot,
+          endTime: endTime.toString(),
+          createdBy: createdBy.toString(),
+          startTime: startTime.toString(),
+          totalReceived: formatEther(totalReceived),
+          totalAllocation: formatEther(totalAllocation)
         })
       }
     })
 
-  return { airdropInfo, isLoadingAirdropInfo }
+  const { data: isClaimed, isLoading: isLoadingClaimed } =
+    useReadAirdropClaimed({ address: airdropAddress })
+  const { data: canClaim, isLoading: isLoadingCanClaim } =
+    useReadAirdropCanClaim({ address: airdropAddress })
+
+  const { addTransaction } = useStoreActions()
+  const { writeContractAsync } = useWriteContract()
+  const [isClaiming, setIsClaiming] = useState(false)
+
+  const claim = async () => {
+    if (!airdropAddress || isClaiming) return
+
+    try {
+      setIsClaiming(true)
+      const txId = await writeContractAsync({
+        abi: airdropAbi,
+        address: airdropAddress,
+        functionName: 'claim',
+        args: []
+      })
+      addTransaction(txId)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsClaiming(false)
+    }
+  }
+
+  const isLoading = useMemo(
+    () => isLoadingAirdropInfo || isLoadingClaimed || isLoadingCanClaim,
+    [isLoadingAirdropInfo, isLoadingCanClaim, isLoadingClaimed]
+  )
+
+  return { airdropInfo, isClaimed, canClaim, isLoading, claim, isClaiming }
 }

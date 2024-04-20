@@ -11,10 +11,6 @@ import {
 } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { chainsIconUrl } from '@/config/chain'
-import {
-  useReadAirdropCanClaim,
-  useReadAirdropClaimed
-} from '@/contracts/Airdrop'
 import { useAirdrop } from '@/hooks/useAirdrop'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
@@ -94,20 +90,18 @@ const AirdropModal: React.FC<{
     [supportedChains, token?.chainId]
   )
 
-  const { isLoadingAirdropInfo } = useAirdrop(token?.airdropAddress)
-  const { data: isClaimed, isLoading: isLoadingClaimed } =
-    useReadAirdropClaimed({ address: token?.airdropAddress })
-  const { data: canClaim, isLoading: isLoadingCanClaim } =
-    useReadAirdropCanClaim({ address: token?.airdropAddress })
-
-  const isLoading = useMemo(
-    () => isLoadingAirdropInfo || isLoadingClaimed || isLoadingCanClaim,
-    [isLoadingAirdropInfo, isLoadingCanClaim, isLoadingClaimed]
+  const { isClaimed, canClaim, isLoading, claim } = useAirdrop(
+    token?.airdropAddress
   )
 
   useEffect(() => {
     if (!isOpen) setToken(undefined)
   }, [isOpen])
+
+  const onClaim = () => {
+    claim()
+    onClose()
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
@@ -159,6 +153,7 @@ const AirdropModal: React.FC<{
 
           {canClaim && (
             <button
+              onClick={onClaim}
               className={cn(
                 'cursor-pointer w-[124px]',
                 'text-nowrap border border-white/50 bg-white/10 py-1 font-ibmb text-sm text-white/70 shadow-[0_0_5px_1px_rgba(255,255,255,0.12)] hover:bg-white/20 hover:text-white active:bg-white/5 active:text-white/50',
