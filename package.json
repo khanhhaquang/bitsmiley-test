@@ -21,6 +21,7 @@
     "pre-commit": "npm run lint"
   },
   "dependencies": {
+    "@openzeppelin/merkle-tree": "^1.0.6",
     "@particle-network/btc-connectkit": "^1.0.0-alpha.12",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

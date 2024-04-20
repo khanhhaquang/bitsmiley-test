@@ -11,11 +11,13 @@ import {
 } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { chainsIconUrl } from '@/config/chain'
+import { useAirdrop } from '@/hooks/useAirdrop'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { cn } from '@/utils/cn'
 
 import { Modal } from './Modal'
+import Typewriter from './Typewriter'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,6 +84,8 @@ const AirdropModal: React.FC<{
 }> = ({ isOpen, onClose }) => {
   const [token, setToken] = useState<Token>()
 
+  const { isLoadingAirdropInfo } = useAirdrop(token?.airdropAddress)
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
       <div className="flex flex-col">
@@ -101,6 +105,27 @@ const AirdropModal: React.FC<{
 
         <div className="flex flex-col items-center gap-y-6 border border-blue bg-black p-6">
           <SelectToken token={token} onSelect={setToken} />
+          {!!token && (
+            <div className="flex flex-col gap-y-3">
+              <div className="font-ibmr text-sm text-white/70">
+                You can claim
+              </div>
+              <div className="flex items-center justify-center font-ibmb text-white">
+                {isLoadingAirdropInfo ? (
+                  <Typewriter
+                    loop
+                    wrapperClassName="min-w-10"
+                    speed={300}
+                    cursor={false}
+                    renderNodes={() => '...'}
+                  />
+                ) : (
+                  'xxxxx'
+                )}{' '}
+                wBTC
+              </div>
+            </div>
+          )}
           <button className="flex w-[124px] cursor-pointer items-center justify-center border border-white/50 bg-white/10 font-ibmb text-sm">
             Claim
           </button>
