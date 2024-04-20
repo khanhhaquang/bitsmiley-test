@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Address } from 'viem'
+import { useEffect, useMemo, useState } from 'react'
+import { Address, Chain } from 'viem'
 
 import {
   AirdropIcon,
@@ -11,6 +11,10 @@ import {
 } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { chainsIconUrl } from '@/config/chain'
+import {
+  useReadAirdropCanClaim,
+  useReadAirdropClaimed
+} from '@/contracts/Airdrop'
 import { useAirdrop } from '@/hooks/useAirdrop'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
@@ -84,7 +88,26 @@ const AirdropModal: React.FC<{
 }> = ({ isOpen, onClose }) => {
   const [token, setToken] = useState<Token>()
 
+  const { supportedChains } = useSupportedChains()
+  const chain = useMemo(
+    () => supportedChains.find((c) => c.id === token?.chainId),
+    [supportedChains, token?.chainId]
+  )
+
   const { isLoadingAirdropInfo } = useAirdrop(token?.airdropAddress)
+  const { data: isClaimed, isLoading: isLoadingClaimed } =
+    useReadAirdropClaimed({ address: token?.airdropAddress })
+  const { data: canClaim, isLoading: isLoadingCanClaim } =
+    useReadAirdropCanClaim({ address: token?.airdropAddress })
+
+  const isLoading = useMemo(
+    () => isLoadingAirdropInfo || isLoadingClaimed || isLoadingCanClaim,
+    [isLoadingAirdropInfo, isLoadingCanClaim, isLoadingClaimed]
+  )
+
+  useEffect(() => {
+    if (!isOpen) setToken(undefined)
+  }, [isOpen])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
@@ -98,37 +121,52 @@ const AirdropModal: React.FC<{
 
           <button
             onClick={onClose}
-            className="absolute right-0 top-0 flex aspect-square h-full cursor-pointer items-center justify-center bg-black text-blue">
+            className="absolute right-0 top-0 flex aspect-square h-full cursor-pointer items-center justify-center bg-black text-blue hover:text-blue1">
             <CloseIcon width={13} height={13} />
           </button>
         </div>
 
         <div className="flex flex-col items-center gap-y-6 border border-blue bg-black p-6">
-          <SelectToken token={token} onSelect={setToken} />
+          <SelectToken chain={chain} onSelect={setToken} />
           {!!token && (
             <div className="flex flex-col gap-y-3">
               <div className="font-ibmr text-sm text-white/70">
-                You can claim
+                {isClaimed
+                  ? 'You have claimed'
+                  : canClaim
+                    ? 'You can claim'
+                    : 'You cannot claim this airdrop'}
               </div>
-              <div className="flex items-center justify-center font-ibmb text-white">
-                {isLoadingAirdropInfo ? (
-                  <Typewriter
-                    loop
-                    wrapperClassName="min-w-10"
-                    speed={300}
-                    cursor={false}
-                    renderNodes={() => '...'}
-                  />
-                ) : (
-                  'xxxxx'
-                )}{' '}
-                wBTC
-              </div>
+
+              {(canClaim || isClaimed) && (
+                <div className="flex items-center justify-center font-ibmb text-white">
+                  {isLoading ? (
+                    <Typewriter
+                      loop
+                      wrapperClassName="min-w-10"
+                      speed={300}
+                      cursor={false}
+                      renderNodes={() => '...'}
+                    />
+                  ) : (
+                    'xxxxx'
+                  )}{' '}
+                  {chain?.nativeCurrency.symbol}
+                </div>
+              )}
             </div>
           )}
-          <button className="flex w-[124px] cursor-pointer items-center justify-center border border-white/50 bg-white/10 font-ibmb text-sm">
-            Claim
-          </button>
+
+          {canClaim && (
+            <button
+              className={cn(
+                'cursor-pointer w-[124px]',
+                'text-nowrap border border-white/50 bg-white/10 py-1 font-ibmb text-sm text-white/70 shadow-[0_0_5px_1px_rgba(255,255,255,0.12)] hover:bg-white/20 hover:text-white active:bg-white/5 active:text-white/50',
+                'disabled:bg-white/10 disabled:text-white/20  disabled:cursor-not-allowed'
+              )}>
+              Claim
+            </button>
+          )}
         </div>
       </div>
     </Modal>
@@ -136,9 +174,9 @@ const AirdropModal: React.FC<{
 }
 
 const SelectToken: React.FC<{
-  token?: Token
+  chain?: Chain
   onSelect: (t: Token) => void
-}> = ({ token, onSelect }) => {
+}> = ({ chain, onSelect }) => {
   const { projectInfo } = useProjectInfo()
   const { supportedChains } = useSupportedChains()
 
@@ -146,18 +184,11 @@ const SelectToken: React.FC<{
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex w-[294px] cursor-pointer items-center justify-between border border-white/70 p-2 font-smb text-xs text-white/50 [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)] hover:border-white hover:text-white">
-          {token?.chainId ? (
+          {chain?.id ? (
             <>
               <span className="flex items-center gap-x-1.5 font-smb text-xs">
-                <Image
-                  src={chainsIconUrl[token.chainId]}
-                  width={16}
-                  height={16}
-                />
-                {
-                  supportedChains.find((c) => c.id === token.chainId)
-                    ?.nativeCurrency.symbol
-                }
+                <Image src={chainsIconUrl[chain.id]} width={16} height={16} />
+                {chain.nativeCurrency.symbol}
               </span>
             </>
           ) : (
