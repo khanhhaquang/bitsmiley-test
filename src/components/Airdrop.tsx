@@ -105,29 +105,34 @@ const AirdropModal: React.FC<{
     claim
   } = useAirdrop(token?.chainId, token?.airdropAddress)
 
-  useEffect(() => {
-    if (!isOpen) setToken(undefined)
-  }, [isOpen])
-
-  useEffect(() => {
-    if (token && chainId !== token.chainId) {
+  const handleOnSelect = (t: Token) => {
+    if (chainId !== t.chainId) {
       switchChain(
-        { chainId: token.chainId },
+        { chainId: t.chainId },
         {
+          onSuccess: () => {
+            setToken(t)
+          },
           onError: () => {
             onClose()
             console.error('Switching network failed')
           }
         }
       )
+      return
     }
-  }, [chainId, onClose, switchChain, token])
+    setToken(t)
+  }
 
   const onClaim = async () => {
     if (isClaiming) return
     await claim()
     onClose()
   }
+
+  useEffect(() => {
+    if (!isOpen) setToken(undefined)
+  }, [isOpen])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
@@ -150,7 +155,7 @@ const AirdropModal: React.FC<{
           <SelectToken
             chain={chain}
             selectedToken={token}
-            onSelect={setToken}
+            onSelect={handleOnSelect}
           />
           {!!token && (
             <div className="flex flex-col gap-y-3">

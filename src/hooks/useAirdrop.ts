@@ -12,7 +12,6 @@ import { useChainId, useWriteContract } from 'wagmi'
 
 import airdropAbi from '@/abi/BitSmileyMerkleErc20Airdrop.json'
 import {
-  useReadAirdropAirdrop,
   useReadAirdropCanClaim,
   useReadAirdropClaimed
 } from '@/contracts/Airdrop'
@@ -24,35 +23,68 @@ import { UserService } from '@/services/user'
 export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
   const currentChainId = useChainId()
   const { address: userAddress } = useUserInfo()
-
-  const { data: airdropInfo, isLoading: isLoadingAirdropInfo } =
-    useReadAirdropAirdrop({
-      address: airdropAddress,
-      query: {
-        select: ([
-          receivedUsers,
-          createdBy,
-          token,
-          startTime,
-          endTime,
-          merkleTreeRoot,
-          totalAllocation,
-          totalReceived
-        ]) => ({
-          token,
-          receivedUsers,
-          merkleTreeRoot,
-          endTime: endTime.toString(),
-          createdBy: createdBy.toString(),
-          startTime: startTime.toString(),
-          totalReceived: formatEther(totalReceived),
-          totalAllocation: formatEther(totalAllocation)
-        })
-      }
-    })
-
   const { clients } = useSupportedChains()
   const client = clients.find((c) => c.chain.id === chainId)
+
+  const { data: airdropInfo, isLoading: isLoadingAirdropInfo } = useQuery({
+    queryKey: [chainId, airdropAddress],
+    queryFn:
+      !client || !airdropAddress
+        ? undefined
+        : async () => {
+            const airdropRes = await client.request({
+              method: 'eth_call',
+              params: [
+                {
+                  data: encodeFunctionData({
+                    abi: airdropAbi,
+                    functionName: 'airdrop'
+                  }),
+                  to: airdropAddress
+                }
+              ]
+            })
+
+            const [
+              receivedUsers,
+              createdBy,
+              token,
+              startTime,
+              endTime,
+              merkleTreeRoot,
+              totalAllocation,
+              totalReceived
+            ] =
+              (decodeFunctionResult({
+                abi: airdropAbi,
+                functionName: 'airdrop',
+                data: airdropRes
+              }) as
+                | [
+                    number,
+                    Address,
+                    Address,
+                    bigint,
+                    bigint,
+                    Address,
+                    bigint,
+                    bigint
+                  ]
+                | undefined) || []
+
+            return {
+              token,
+              receivedUsers,
+              merkleTreeRoot,
+              endTime: endTime?.toString(),
+              createdBy: createdBy?.toString(),
+              startTime: startTime?.toString(),
+              totalReceived: formatEther(totalReceived || BigInt('0')),
+              totalAllocation: formatEther(totalAllocation || BigInt('0'))
+            }
+          }
+  })
+
   const { data: tokenInfo, isLoading: isLoadingTokenInfo } = useQuery({
     queryKey: [chainId, airdropInfo?.token],
     enabled: !!client && !!airdropInfo?.token,
@@ -142,7 +174,10 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
     isRefetching: isRefetchingIsClaimed
   } = useReadAirdropClaimed({
     address: airdropAddress,
-    args: userAddress && [userAddress]
+    args: userAddress && [userAddress],
+    query: {
+      enabled: !!airdropInfo?.token && currentChainId === chainId
+    }
   })
   const {
     data: canClaim,
@@ -160,7 +195,10 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
             parseEther(airdropProofAndAmount.amount),
             airdropProofAndAmount.proof
           ]
-        : undefined
+        : undefined,
+    query: {
+      enabled: !!airdropInfo?.token && currentChainId === chainId
+    }
   })
 
   const { addTransaction } = useStoreActions()
