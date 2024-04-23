@@ -124,6 +124,7 @@ const AirdropModal: React.FC<{
   }, [chainId, onClose, switchChain, token])
 
   const onClaim = async () => {
+    if (isClaiming) return
     await claim()
     onClose()
   }
@@ -185,6 +186,7 @@ const AirdropModal: React.FC<{
           {!isLoading && !isRefetching && canClaim && !isClaimed && (
             <button
               onClick={onClaim}
+              disabled={isClaiming}
               className={cn(
                 'cursor-pointer w-[124px]',
                 'text-nowrap border border-white/50 bg-white/10 py-1 font-ibmb text-sm text-white/70 shadow-[0_0_5px_1px_rgba(255,255,255,0.12)] hover:bg-white/20 hover:text-white active:bg-white/5 active:text-white/50',
