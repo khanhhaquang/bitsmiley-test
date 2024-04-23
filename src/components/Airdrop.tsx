@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Address, Chain } from 'viem'
+import { useChainId, useSwitchChain } from 'wagmi'
 
 import {
   AirdropIcon,
@@ -28,6 +29,8 @@ import {
 type Token = {
   chainId: number
   airdropAddress: Address
+  name?: string
+  symbol?: string
 }
 
 export const Airdrop: React.FC = () => {
@@ -82,6 +85,8 @@ const AirdropModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
+  const chainId = useChainId()
+  const { switchChain } = useSwitchChain()
   const [token, setToken] = useState<Token>()
 
   const { supportedChains } = useSupportedChains()
@@ -90,16 +95,41 @@ const AirdropModal: React.FC<{
     [supportedChains, token?.chainId]
   )
 
-  const { isClaimed, canClaim, isLoading, claim } = useAirdrop(
-    token?.airdropAddress
-  )
+  const {
+    airdropProofAndAmount,
+    isClaimed,
+    canClaim,
+    isLoading,
+    isLoadingAirdropProofAndAmount,
+    isClaiming,
+    isRefetching,
+    claim
+  } = useAirdrop(token?.chainId, token?.airdropAddress)
+
+  console.log({
+    isLoading
+  })
 
   useEffect(() => {
     if (!isOpen) setToken(undefined)
   }, [isOpen])
 
-  const onClaim = () => {
-    claim()
+  useEffect(() => {
+    if (token && chainId !== token.chainId) {
+      switchChain(
+        { chainId: token.chainId },
+        {
+          onError: () => {
+            onClose()
+            console.error('Switching network failed')
+          }
+        }
+      )
+    }
+  }, [chainId, onClose, switchChain, token])
+
+  const onClaim = async () => {
+    await claim()
     onClose()
   }
 
@@ -121,20 +151,26 @@ const AirdropModal: React.FC<{
         </div>
 
         <div className="flex flex-col items-center gap-y-6 border border-blue bg-black p-6">
-          <SelectToken chain={chain} onSelect={setToken} />
+          <SelectToken
+            chain={chain}
+            selectedToken={token}
+            onSelect={setToken}
+          />
           {!!token && (
             <div className="flex flex-col gap-y-3">
               <div className="font-ibmr text-sm text-white/70">
-                {isClaimed
-                  ? 'You have claimed'
-                  : canClaim
-                    ? 'You can claim'
-                    : 'You cannot claim this airdrop'}
+                {isLoading || isRefetching
+                  ? '...Loading'
+                  : isClaimed
+                    ? 'You have claimed'
+                    : canClaim
+                      ? 'You can claim'
+                      : 'You cannot claim this airdrop'}
               </div>
 
               {(canClaim || isClaimed) && (
                 <div className="flex items-center justify-center font-ibmb text-white">
-                  {isLoading ? (
+                  {isLoadingAirdropProofAndAmount ? (
                     <Typewriter
                       loop
                       wrapperClassName="min-w-10"
@@ -143,15 +179,15 @@ const AirdropModal: React.FC<{
                       renderNodes={() => '...'}
                     />
                   ) : (
-                    'xxxxx'
+                    airdropProofAndAmount?.amount
                   )}{' '}
-                  {chain?.nativeCurrency.symbol}
+                  {token?.symbol}
                 </div>
               )}
             </div>
           )}
 
-          {canClaim && (
+          {!isLoading && !isRefetching && canClaim && !isClaimed && (
             <button
               onClick={onClaim}
               className={cn(
@@ -159,7 +195,7 @@ const AirdropModal: React.FC<{
                 'text-nowrap border border-white/50 bg-white/10 py-1 font-ibmb text-sm text-white/70 shadow-[0_0_5px_1px_rgba(255,255,255,0.12)] hover:bg-white/20 hover:text-white active:bg-white/5 active:text-white/50',
                 'disabled:bg-white/10 disabled:text-white/20  disabled:cursor-not-allowed'
               )}>
-              Claim
+              {isClaiming ? 'Claiming...' : 'Claim'}
             </button>
           )}
         </div>
@@ -170,20 +206,20 @@ const AirdropModal: React.FC<{
 
 const SelectToken: React.FC<{
   chain?: Chain
+  selectedToken?: Token
   onSelect: (t: Token) => void
-}> = ({ chain, onSelect }) => {
+}> = ({ chain, onSelect, selectedToken }) => {
   const { projectInfo } = useProjectInfo()
-  const { supportedChains } = useSupportedChains()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex w-[294px] cursor-pointer items-center justify-between border border-white/70 p-2 font-smb text-xs text-white/50 [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)] hover:border-white hover:text-white">
-          {chain?.id ? (
+          {selectedToken?.name && !!chain?.id ? (
             <>
               <span className="flex items-center gap-x-1.5 font-smb text-xs">
                 <Image src={chainsIconUrl[chain.id]} width={16} height={16} />
-                {chain.nativeCurrency.symbol}
+                {selectedToken.name}
               </span>
             </>
           ) : (
@@ -200,30 +236,52 @@ const SelectToken: React.FC<{
           .filter((item) => !!item.contract.airdrop.length)
           .map((item) =>
             item.contract.airdrop.map((airdropAddress) => (
-              <DropdownMenuItem
+              <SelectItem
                 key={airdropAddress}
-                onSelect={() => {
-                  onSelect({
-                    chainId: item.chainId,
-                    airdropAddress
-                  })
-                }}
-                className="cursor-pointer rounded-none border border-white/70 bg-black px-2 py-1.5 text-white/50 hover:border-white hover:bg-black hover:text-white active:border-white active:bg-black active:text-white">
-                <span className="flex items-center gap-x-1.5 font-smb text-xs">
-                  <Image
-                    src={chainsIconUrl[item.chainId]}
-                    width={16}
-                    height={16}
-                  />
-                  {
-                    supportedChains.find((c) => c.id === item.chainId)
-                      ?.nativeCurrency.symbol
-                  }
-                </span>
-              </DropdownMenuItem>
+                chainId={item.chainId}
+                airdropAddress={airdropAddress}
+                onSelect={(t: Token) => onSelect(t)}
+              />
             ))
           )}
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+const SelectItem: React.FC<{
+  chainId: number
+  airdropAddress: Address
+  onSelect: (t: Token) => void
+}> = ({ chainId, airdropAddress, onSelect }) => {
+  const { tokenInfo } = useAirdrop(chainId, airdropAddress)
+
+  return (
+    <DropdownMenuItem
+      key={airdropAddress}
+      onSelect={() =>
+        onSelect({
+          chainId,
+          airdropAddress,
+          name: tokenInfo?.name,
+          symbol: tokenInfo?.symbol
+        })
+      }
+      className="cursor-pointer rounded-none border border-white/70 bg-black px-2 py-1.5 text-white/50 hover:border-white hover:bg-black hover:text-white active:border-white active:bg-black active:text-white">
+      <span className="flex min-h-4 items-center gap-x-1.5 font-smb text-xs">
+        <Image src={chainsIconUrl[chainId as number]} width={16} height={16} />
+        {!tokenInfo?.name ? (
+          <Typewriter
+            loop
+            wrapperClassName="min-w-10"
+            speed={300}
+            cursor={false}
+            renderNodes={() => '...'}
+          />
+        ) : (
+          tokenInfo?.name
+        )}
+      </span>
+    </DropdownMenuItem>
   )
 }
