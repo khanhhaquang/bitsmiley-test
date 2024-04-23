@@ -9,6 +9,7 @@ import {
 } from 'viem'
 
 import {
+  bitLayerTestnet,
   bobTestnet,
   bSquaredTestnet,
   merlinMainnet,
@@ -65,7 +66,8 @@ export const useCollaterals = (chainId: number, collateralId?: string) => {
     [merlinMainnet.id]: 'Merlin',
     [merlinTestnet.id]: 'Merlin',
     [bobTestnet.id]: 'Bob',
-    [bSquaredTestnet.id]: 'B2'
+    [bSquaredTestnet.id]: 'B2',
+    [bitLayerTestnet.id]: 'BitLayer'
   }
 
   const query = {
