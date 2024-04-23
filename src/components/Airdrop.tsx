@@ -11,20 +11,19 @@ import {
   RightAngleThin
 } from '@/assets/icons'
 import { Image } from '@/components/Image'
-import { chainsIconUrl } from '@/config/chain'
-import { useAirdrop } from '@/hooks/useAirdrop'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
-import { useSupportedChains } from '@/hooks/useSupportedChains'
-import { cn } from '@/utils/cn'
-
-import { Modal } from './Modal'
-import Typewriter from './Typewriter'
+import { Modal } from '@/components/Modal'
+import Typewriter from '@/components/Typewriter'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
-} from './ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu'
+import { chainsIconUrl } from '@/config/chain'
+import { useAirdrop } from '@/hooks/useAirdrop'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
+import { useSupportedChains } from '@/hooks/useSupportedChains'
+import { cn } from '@/utils/cn'
 
 type Token = {
   chainId: number
@@ -105,10 +104,6 @@ const AirdropModal: React.FC<{
     isRefetching,
     claim
   } = useAirdrop(token?.chainId, token?.airdropAddress)
-
-  console.log({
-    isLoading
-  })
 
   useEffect(() => {
     if (!isOpen) setToken(undefined)

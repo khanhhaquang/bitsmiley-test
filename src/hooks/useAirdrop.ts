@@ -17,10 +17,9 @@ import {
   useReadAirdropClaimed
 } from '@/contracts/Airdrop'
 import { useStoreActions } from '@/hooks/useStoreActions'
+import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { UserService } from '@/services/user'
-
-import { useSupportedChains } from './useSupportedChains'
 
 export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
   const currentChainId = useChainId()
