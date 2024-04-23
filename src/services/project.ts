@@ -13,6 +13,7 @@ export interface IContractAddresses {
   l2nft: Address | null
   bitSmileyQuery: Address | null
   register: Address
+  airdrop: Address[]
 }
 export interface INetworkInfo {
   network: string

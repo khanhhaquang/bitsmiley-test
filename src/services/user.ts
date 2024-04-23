@@ -48,6 +48,15 @@ export interface IFeaturesEnabled {
   BitPoint: boolean
 }
 
+export interface IAirdropProofAndAmount {
+  airdropContractAddress: Address
+  id: number
+  amount: number
+  chainId: number
+  proof: Hash[]
+  userAddress: Address
+}
+
 export const UserService = {
   getNFTs: {
     key: 'user.getNFTs',
@@ -60,10 +69,23 @@ export const UserService = {
       axiosInstance.post('/user/getLiquidated', params).then((res) => res.data)
   },
   getEnabledFeatures: {
-    key: 'project.getEnabledFeatures',
+    key: 'user.getEnabledFeatures',
     call: (address: Address): Promise<IResponse<IFeaturesEnabled>> =>
       axiosInstance
         .get(`/bsInfo/v2/getFunctionalModuleInfo/${address}`)
+        .then((res) => res.data)
+  },
+  getAirdropProofAndAmount: {
+    key: 'user.getAirdropProofAndAmount',
+    call: (
+      chainId: number,
+      userAddress: Address,
+      airdropContractAddress: Address
+    ): Promise<IResponse<IAirdropProofAndAmount>> =>
+      axiosInstance
+        .get(
+          `/user/getUserProof/${chainId}/${airdropContractAddress}/${userAddress}`
+        )
         .then((res) => res.data)
   }
 }

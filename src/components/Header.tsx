@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { HeaderIcon, RightAngleThin } from '@/assets/icons'
 import { cn } from '@/utils/cn'
 
+import { Airdrop } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
 
 export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
@@ -17,6 +18,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
           <div className="relative">
             <ConnectWallet />
             <EnterAppButton />
+            <Airdrop />
           </div>
         </div>
       )}
