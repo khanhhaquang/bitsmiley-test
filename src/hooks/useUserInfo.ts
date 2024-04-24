@@ -19,15 +19,16 @@ export const useUserInfo = () => {
 
   const addressForDisplay = (btcAccounts[0] as Address) || evmAddress
 
-  const { isLoading: isLoadingEnabledFeatures } = useQuery({
-    queryKey: [UserService.getEnabledFeatures.key, addressForDisplay],
-    queryFn: () =>
-      !addressForDisplay
-        ? null
-        : UserService.getEnabledFeatures.call(addressForDisplay),
-    enabled: !!addressForDisplay,
-    select: (res) => res?.data
-  })
+  const { data: enabledFeaturesData, isLoading: isLoadingEnabledFeatures } =
+    useQuery({
+      queryKey: [UserService.getEnabledFeatures.key, addressForDisplay],
+      queryFn: () =>
+        !addressForDisplay
+          ? null
+          : UserService.getEnabledFeatures.call(addressForDisplay),
+      enabled: !!addressForDisplay,
+      select: (res) => res?.data
+    })
 
   const evmChain = useMemo(
     () => customChains.find((c) => c.id === evmChainId),
@@ -42,11 +43,14 @@ export const useUserInfo = () => {
   const isLoading = isConnecting || isReconnecting || isLoadingEnabledFeatures
 
   //TODO: THIS IS TEMPORARY MOCK FOR TEST, REMOVE THIS AFTER TESTING DONE
-  const enabledFeatures: IFeaturesEnabled = {
-    Staking: true,
-    AlphaNet: true,
-    BitPoint: false
-  }
+  const enabledFeatures: IFeaturesEnabled = useMemo(
+    () => ({
+      Staking: true,
+      AlphaNet: true,
+      BitPoint: !!enabledFeaturesData?.BitPoint
+    }),
+    [enabledFeaturesData?.BitPoint]
+  )
 
   return {
     isConnectedWithAA: !!(btcAccounts[0] as Address),
