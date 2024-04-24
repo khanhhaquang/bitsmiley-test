@@ -3,7 +3,7 @@ import { IMaskInput } from 'react-imask'
 
 import { InputIndicatorIcon } from '@/assets/icons'
 import { cn } from '@/utils/cn'
-import { formartNumberAsTrunc } from '@/utils/number'
+import { formatNumberAsTrunc } from '@/utils/number'
 
 export type NumberInputProps = {
   value?: string
@@ -66,10 +66,7 @@ export const NumberInput: React.FC<NumberInputProps> = ({
           onAccept={(_, mask) => {
             const rawValue = value
             const unMaskedValue = mask.unmaskedValue
-            const truncatedRawValue = formartNumberAsTrunc(
-              rawValue || '',
-              scale
-            )
+            const truncatedRawValue = formatNumberAsTrunc(rawValue || '', scale)
             const rawValueprecision = rawValue?.split('.')?.[1]?.length || 0
 
             // when 1234.5678904567 is passed, do not change to 1234.56

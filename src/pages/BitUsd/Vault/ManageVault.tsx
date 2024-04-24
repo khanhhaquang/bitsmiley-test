@@ -63,7 +63,7 @@ export const ManageVault: React.FC<{
     maxVault,
     setMaxVaultBitUsd,
     setMaxVaultCollateral
-  } = useVaultDetail()
+  } = useVaultDetail(collateral)
 
   const {
     wBtcAllowance,

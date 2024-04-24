@@ -29,17 +29,20 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   collateralId
 }) => {
   const navigate = useNavigate()
+
+  const { collateral, refetch: refetchCollateral } = useCollaterals(
+    chainId,
+    collateralId
+  )
+
   const {
     refreshVaultValues,
     tryOpenVaultInfo,
     setTryOpenVaultBitUsd,
     setTryOpenVaultCollateral,
     capturedMaxMint
-  } = useVaultDetail()
-  const { collateral, refetch: refetchCollateral } = useCollaterals(
-    chainId,
-    collateralId
-  )
+  } = useVaultDetail(collateral)
+
   const { blockExplorerUrl } = useUserInfo()
   const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
     address: collateral?.collateral?.tokenAddress
