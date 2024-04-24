@@ -151,8 +151,6 @@ export const useCollaterals = (chainId: number, collateralId?: string) => {
               data: collateralsRes
             })
 
-            console.log('🚀 ~ : ~ collaterals:', collaterals)
-
             // vaultAddress
             const vaultAddressRes = await client.request({
               method: 'eth_call',
