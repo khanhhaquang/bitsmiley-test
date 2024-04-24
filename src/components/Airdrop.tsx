@@ -23,6 +23,7 @@ import { chainsIconUrl } from '@/config/chain'
 import { useAirdrop } from '@/hooks/useAirdrop'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 
 type Token = {
@@ -33,6 +34,7 @@ type Token = {
 }
 
 export const Airdrop: React.FC = () => {
+  const { isConnected } = useUserInfo()
   const { projectInfo } = useProjectInfo()
 
   const airdropAddresses = projectInfo?.web3Info.reduce<string[]>(
@@ -45,7 +47,7 @@ export const Airdrop: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  if (!airdropAddresses?.length) return null
+  if (!airdropAddresses?.length || !isConnected) return null
 
   return (
     <>
