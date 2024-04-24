@@ -14,9 +14,10 @@ import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { TransactionStatus } from '@/types/common'
+import { IDetailedCollateral } from '@/types/vault'
 import { getTxnErrorMsg } from '@/utils/error'
 
-export const useManageVault = () => {
+export const useManageVault = (collateral?: IDetailedCollateral) => {
   const config = useConfig()
   const contractAddresses = useContractAddresses()
 
@@ -24,8 +25,9 @@ export const useManageVault = () => {
   const { writeContractAsync } = useWriteContract()
 
   const bitUsdAddress = contractAddresses?.BitUSDL2
-  const wBtcAddress = contractAddresses?.WBTC
   const bitSmileyAddress = contractAddresses?.BitSmiley
+
+  const wBtcAddress = collateral?.collateral?.tokenAddress
 
   const { refetchBalance: refetchWBtcBalance } = useTokenBalance(wBtcAddress)
   const { refetchBalance: refetchBitUsdBalance } =

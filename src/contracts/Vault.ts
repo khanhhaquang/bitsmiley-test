@@ -1,7 +1,8 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract
+  createUseSimulateContract,
+  createUseWatchContractEvent
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -819,4 +820,74 @@ export const useSimulateVaultUpgradeToAndCall =
   /*#__PURE__*/ createUseSimulateContract({
     abi: vaultAbi,
     functionName: 'upgradeToAndCall'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__
+ */
+export const useWatchVaultEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: vaultAbi
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__ and `eventName` set to `"AdminChanged"`
+ */
+export const useWatchVaultAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vaultAbi,
+    eventName: 'AdminChanged'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__ and `eventName` set to `"BeaconUpgraded"`
+ */
+export const useWatchVaultBeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vaultAbi,
+    eventName: 'BeaconUpgraded'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__ and `eventName` set to `"CollateralParameterUpdated"`
+ */
+export const useWatchVaultCollateralParameterUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vaultAbi,
+    eventName: 'CollateralParameterUpdated'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchVaultInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vaultAbi,
+    eventName: 'Initialized'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchVaultOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vaultAbi,
+    eventName: 'OwnershipTransferred'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__ and `eventName` set to `"SystemParameterUpdated"`
+ */
+export const useWatchVaultSystemParameterUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vaultAbi,
+    eventName: 'SystemParameterUpdated'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link vaultAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchVaultUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: vaultAbi,
+    eventName: 'Upgraded'
   })

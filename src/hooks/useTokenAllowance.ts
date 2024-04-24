@@ -1,6 +1,6 @@
-import { Address, formatEther, erc20Abi } from 'viem'
-import { useReadContract } from 'wagmi'
+import { Address, formatEther } from 'viem'
 
+import { useReadErc20Allowance } from '@/contracts/ERC20'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const useTokenAllowance = (contract?: Address, spender?: Address) => {
@@ -10,9 +10,7 @@ export const useTokenAllowance = (contract?: Address, spender?: Address) => {
     refetch: refetchAllowance,
     isLoading: isLoadingAllowance,
     ...rest
-  } = useReadContract({
-    abi: erc20Abi,
-    functionName: 'allowance',
+  } = useReadErc20Allowance({
     address: contract,
     args: spender && address && [address, spender],
     query: { select: (res) => (!res ? 0 : Number(formatEther(res))) }

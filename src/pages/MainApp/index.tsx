@@ -8,6 +8,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
+import { useContractAddresses } from '@/hooks/useContractAddresses'
 
 const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
   children
@@ -60,7 +61,8 @@ const ContentContainer: React.FC<{ children: React.ReactNode }> = ({
 }
 
 const BTCPrice = () => {
-  const wbtcPrice = useTokenPrice()
+  const contractAddresses = useContractAddresses()
+  const wbtcPrice = useTokenPrice(contractAddresses?.WBTC)
 
   return (
     <div className="absolute bottom-[29.5%] right-[24.7%] z-10 flex h-[3%] w-[14%] items-center justify-center gap-x-1 text-nowrap font-sdm text-[10px] text-white xl:text-base">

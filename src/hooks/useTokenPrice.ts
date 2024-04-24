@@ -5,13 +5,15 @@ import { useReadOracleGetPrice } from '@/contracts/Oracle'
 
 import { useContractAddresses } from './useContractAddresses'
 
-export const useTokenPrice = () => {
+export const useTokenPrice = (address?: Address) => {
   const { collateralId } = useParams()
   const contractAddresses = useContractAddresses()
 
+  const tokenAddress: Address = collateralId || address
+
   const { data } = useReadOracleGetPrice({
     address: contractAddresses?.oracle,
-    args: (collateralId as Address) && [collateralId as Address],
+    args: tokenAddress && [tokenAddress],
     query: {
       refetchInterval: 5 * 1000
     }

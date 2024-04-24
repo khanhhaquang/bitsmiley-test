@@ -1,4 +1,4 @@
-import { useReadRegiterBeneficiaries } from '@/contracts/Regiter'
+import { useReadRegisterBeneficiaries } from '@/contracts/Register'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
@@ -9,7 +9,7 @@ export const useRegister = () => {
     data: airdropState,
     refetch: refetchAirdropState,
     isFetching: isFetchingAirdropState
-  } = useReadRegiterBeneficiaries({
+  } = useReadRegisterBeneficiaries({
     address: contractAddresses?.register,
     args: address && [address]
   })

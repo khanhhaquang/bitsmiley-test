@@ -1,7 +1,8 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract
+  createUseSimulateContract,
+  createUseWatchContractEvent
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -821,4 +822,146 @@ export const useSimulateAirdropWithdraw =
   /*#__PURE__*/ createUseSimulateContract({
     abi: airdropAbi,
     functionName: 'withdraw'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__
+ */
+export const useWatchAirdropEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: airdropAbi
+})
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"AdminChanged"`
+ */
+export const useWatchAirdropAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'AdminChanged'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"AirdropCreated"`
+ */
+export const useWatchAirdropAirdropCreatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'AirdropCreated'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"AirdropRedeemed"`
+ */
+export const useWatchAirdropAirdropRedeemedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'AirdropRedeemed'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"BeaconUpgraded"`
+ */
+export const useWatchAirdropBeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'BeaconUpgraded'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"Claim"`
+ */
+export const useWatchAirdropClaimEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'Claim'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"IncrementAirdropAllocation"`
+ */
+export const useWatchAirdropIncrementAirdropAllocationEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'IncrementAirdropAllocation'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchAirdropInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'Initialized'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchAirdropOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'OwnershipTransferred'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"Paused"`
+ */
+export const useWatchAirdropPausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'Paused'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"TokenRegistered"`
+ */
+export const useWatchAirdropTokenRegisteredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'TokenRegistered'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"TokenRemoved"`
+ */
+export const useWatchAirdropTokenRemovedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'TokenRemoved'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"Unpaused"`
+ */
+export const useWatchAirdropUnpausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'Unpaused'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"UpdatedAirdropMerkleRoot"`
+ */
+export const useWatchAirdropUpdatedAirdropMerkleRootEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'UpdatedAirdropMerkleRoot'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"UpdatedAirdropTime"`
+ */
+export const useWatchAirdropUpdatedAirdropTimeEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'UpdatedAirdropTime'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link airdropAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchAirdropUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: airdropAbi,
+    eventName: 'Upgraded'
   })

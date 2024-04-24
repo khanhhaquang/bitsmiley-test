@@ -1,7 +1,8 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract
+  createUseSimulateContract,
+  createUseWatchContractEvent
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -980,4 +981,128 @@ export const useSimulateBitSmileyUpgradeToAndCall =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyAbi,
     functionName: 'upgradeToAndCall'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__
+ */
+export const useWatchBitSmileyEvent = /*#__PURE__*/ createUseWatchContractEvent(
+  { abi: bitSmileyAbi }
+)
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"AdminChanged"`
+ */
+export const useWatchBitSmileyAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'AdminChanged'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"BeaconUpgraded"`
+ */
+export const useWatchBitSmileyBeaconUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'BeaconUpgraded'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchBitSmileyInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'Initialized'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"Liquidated"`
+ */
+export const useWatchBitSmileyLiquidatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'Liquidated'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"ParameterUpdated"`
+ */
+export const useWatchBitSmileyParameterUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'ParameterUpdated'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"Paused"`
+ */
+export const useWatchBitSmileyPausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'Paused'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"RoleAdminChanged"`
+ */
+export const useWatchBitSmileyRoleAdminChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'RoleAdminChanged'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"RoleGranted"`
+ */
+export const useWatchBitSmileyRoleGrantedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'RoleGranted'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"RoleRevoked"`
+ */
+export const useWatchBitSmileyRoleRevokedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'RoleRevoked'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"Unpaused"`
+ */
+export const useWatchBitSmileyUnpausedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'Unpaused'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"Upgraded"`
+ */
+export const useWatchBitSmileyUpgradedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'Upgraded'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"VaultOpened"`
+ */
+export const useWatchBitSmileyVaultOpenedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'VaultOpened'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyAbi}__ and `eventName` set to `"VaultPosChanged"`
+ */
+export const useWatchBitSmileyVaultPosChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyAbi,
+    eventName: 'VaultPosChanged'
   })
