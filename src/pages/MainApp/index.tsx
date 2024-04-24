@@ -3,12 +3,12 @@ import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
 import { OnChainLoader } from '@/components/OnchainLoader'
+import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
-import { useContractAddresses } from '@/hooks/useContractAddresses'
 
 const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
   children

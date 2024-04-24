@@ -9,6 +9,7 @@ import {
   VaultChangesBorderIcon
 } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
+import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
@@ -40,7 +41,6 @@ import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayVaultValues } from '../display'
-import { useReadErc20Symbol } from '@/contracts/ERC20'
 
 export const ManageVault: React.FC<{
   chainId: number
