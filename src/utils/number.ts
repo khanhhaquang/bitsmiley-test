@@ -24,7 +24,7 @@ export const formatNumberAsCeil = (
   }).format(Number(value))
 }
 
-export const formartNumberAsTrunc = (
+export const formatNumberAsTrunc = (
   value: number | bigint | string,
   maximumFractionDigits: number = 2
 ) => {

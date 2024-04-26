@@ -1,5 +1,6 @@
-import { Address, erc20Abi, formatEther } from 'viem'
-import { useReadContract } from 'wagmi'
+import { Address, formatEther } from 'viem'
+
+import { useReadErc20BalanceOf } from '@/contracts/ERC20'
 
 import { useUserInfo } from './useUserInfo'
 
@@ -10,9 +11,7 @@ export const useTokenBalance = (tokenAddress?: Address) => {
     data: balance,
     refetch: refetchBalance,
     ...rest
-  } = useReadContract({
-    abi: erc20Abi,
-    functionName: 'balanceOf',
+  } = useReadErc20BalanceOf({
     address: tokenAddress,
     args: address && [address],
     query: { select: (res) => (res ? Number(formatEther(res)) : 0) }

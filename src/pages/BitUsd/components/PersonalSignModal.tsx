@@ -3,7 +3,7 @@ import { Hash, isAddress, isHash } from 'viem'
 import { useWaitForTransactionReceipt } from 'wagmi'
 
 import { AlertBg, CloseIcon } from '@/assets/icons'
-import { useWriteRegiterTransferBeneficiary } from '@/contracts/Regiter'
+import { useWriteRegisterTransferBeneficiary } from '@/contracts/Register'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useRegister } from '@/hooks/useRegister'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -20,7 +20,7 @@ const PersonalSignModal = () => {
   const { address, blockExplorerUrl } = useUserInfo()
 
   const contractAddresses = useContractAddresses()
-  const transferFromRegiter = useWriteRegiterTransferBeneficiary()
+  const transferFromRegister = useWriteRegisterTransferBeneficiary()
 
   const [to, setTo] = useState('')
   const [txnStatus, setTxnStatus] = useState(TransactionStatus.Idle)
@@ -51,7 +51,7 @@ const PersonalSignModal = () => {
     if (isAddress(to) && address && registerAddress) {
       try {
         setTxnStatus(TransactionStatus.Signing)
-        const txnHash = await transferFromRegiter.writeContractAsync({
+        const txnHash = await transferFromRegister.writeContractAsync({
           address: registerAddress,
           args: [to]
         })

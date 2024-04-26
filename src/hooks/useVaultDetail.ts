@@ -13,15 +13,16 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useTokenAllowance } from '@/hooks/useTokenAllowance'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IVault, IVaultFromChain } from '@/types/vault'
-import { formartNumberAsTrunc } from '@/utils/number'
+import { IDetailedCollateral, IVault, IVaultFromChain } from '@/types/vault'
+import { formatNumberAsTrunc } from '@/utils/number'
 
-export const useVaultDetail = () => {
+export const useVaultDetail = (collateral?: IDetailedCollateral) => {
   const { address } = useUserInfo()
   const contractAddresses = useContractAddresses()
 
   const bitSmileyAddress = contractAddresses?.BitSmiley
   const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery || undefined
+  const collateralTokenAddress = collateral?.collateral?.tokenAddress
 
   const {
     data: vaultAddress,
@@ -117,7 +118,7 @@ export const useVaultDetail = () => {
   const maxVault = useMemo(
     () => ({
       ...maxVaultData,
-      availableToMint: formartNumberAsTrunc(maxVaultData?.availableToMint || '')
+      availableToMint: formatNumberAsTrunc(maxVaultData?.availableToMint || '')
     }),
     [maxVaultData]
   )
@@ -153,7 +154,7 @@ export const useVaultDetail = () => {
   const {
     refetchAllowance: refetchWbtcAllowance,
     isFetching: isFetchingWbtcAllowance
-  } = useTokenAllowance(contractAddresses?.WBTC, contractAddresses?.BitSmiley)
+  } = useTokenAllowance(collateralTokenAddress, contractAddresses?.BitSmiley)
   const {
     refetchAllowance: refetchBitUsdAllowance,
     isFetching: isFetchingBitUsdAllowance
@@ -164,7 +165,7 @@ export const useVaultDetail = () => {
   const {
     refetchBalance: refetchWbtcBalance,
     isFetching: isFetchingWbtcBalance
-  } = useTokenBalance(contractAddresses?.WBTC)
+  } = useTokenBalance(collateralTokenAddress)
   const {
     refetchBalance: refetchBitUsdBalance,
     isFetching: isFetchingBitUsdBalance

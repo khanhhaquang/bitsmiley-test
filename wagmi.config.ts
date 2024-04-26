@@ -1,6 +1,6 @@
 import { defineConfig } from '@wagmi/cli'
 import { react } from '@wagmi/cli/plugins'
-import { Abi, erc721Abi } from 'viem'
+import { Abi, erc20Abi, erc721Abi } from 'viem'
 
 import bitSmileyAbi from './src/abi/BitSmiley.json'
 import BitSmileyMerkleErc20Airdrop from './src/abi/BitSmileyMerkleErc20Airdrop.json'
@@ -8,7 +8,7 @@ import bitSmileyQueryAbi from './src/abi/BitSmileyQuery.json'
 import bitUsdAbi from './src/abi/BitUsd.json'
 import bitUsdL2Abi from './src/abi/BitUsdL2.json'
 import oracleAbi from './src/abi/Oracle.json'
-import Regiter from './src/abi/Regiter.json'
+import registerAbi from './src/abi/Register.json'
 import erc721StakingAbi from './src/abi/Staking.json'
 import vaultManagerAbi from './src/abi/VaultManager.json'
 
@@ -19,6 +19,16 @@ export default defineConfig([
       {
         name: 'StakingContract',
         abi: erc721StakingAbi as Abi
+      }
+    ],
+    plugins: [react()]
+  },
+  {
+    out: 'src/contracts/ERC20.ts',
+    contracts: [
+      {
+        name: 'ERC20',
+        abi: erc20Abi
       }
     ],
     plugins: [react()]
@@ -94,11 +104,11 @@ export default defineConfig([
     plugins: [react()]
   },
   {
-    out: 'src/contracts/Regiter.ts',
+    out: 'src/contracts/Register.ts',
     contracts: [
       {
-        name: 'Regiter',
-        abi: Regiter as Abi
+        name: 'Register',
+        abi: registerAbi as Abi
       }
     ],
     plugins: [react()]

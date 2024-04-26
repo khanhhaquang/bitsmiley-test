@@ -6,10 +6,10 @@ import {
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Regiter
+// Register
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const regiterAbi = [
+export const registerAbi = [
   {
     type: 'event',
     anonymous: false,
@@ -50,64 +50,63 @@ export const regiterAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link regiterAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registerAbi}__
  */
-export const useReadRegiter = /*#__PURE__*/ createUseReadContract({
-  abi: regiterAbi
+export const useReadRegister = /*#__PURE__*/ createUseReadContract({
+  abi: registerAbi
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link regiterAbi}__ and `functionName` set to `"beneficiaries"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link registerAbi}__ and `functionName` set to `"beneficiaries"`
  */
-export const useReadRegiterBeneficiaries = /*#__PURE__*/ createUseReadContract({
-  abi: regiterAbi,
-  functionName: 'beneficiaries'
+export const useReadRegisterBeneficiaries = /*#__PURE__*/ createUseReadContract(
+  { abi: registerAbi, functionName: 'beneficiaries' }
+)
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registerAbi}__
+ */
+export const useWriteRegister = /*#__PURE__*/ createUseWriteContract({
+  abi: registerAbi
 })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link regiterAbi}__
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link registerAbi}__ and `functionName` set to `"transferBeneficiary"`
  */
-export const useWriteRegiter = /*#__PURE__*/ createUseWriteContract({
-  abi: regiterAbi
-})
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link regiterAbi}__ and `functionName` set to `"transferBeneficiary"`
- */
-export const useWriteRegiterTransferBeneficiary =
+export const useWriteRegisterTransferBeneficiary =
   /*#__PURE__*/ createUseWriteContract({
-    abi: regiterAbi,
+    abi: registerAbi,
     functionName: 'transferBeneficiary'
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link regiterAbi}__
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registerAbi}__
  */
-export const useSimulateRegiter = /*#__PURE__*/ createUseSimulateContract({
-  abi: regiterAbi
+export const useSimulateRegister = /*#__PURE__*/ createUseSimulateContract({
+  abi: registerAbi
 })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link regiterAbi}__ and `functionName` set to `"transferBeneficiary"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link registerAbi}__ and `functionName` set to `"transferBeneficiary"`
  */
-export const useSimulateRegiterTransferBeneficiary =
+export const useSimulateRegisterTransferBeneficiary =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: regiterAbi,
+    abi: registerAbi,
     functionName: 'transferBeneficiary'
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link regiterAbi}__
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registerAbi}__
  */
-export const useWatchRegiterEvent = /*#__PURE__*/ createUseWatchContractEvent({
-  abi: regiterAbi
+export const useWatchRegisterEvent = /*#__PURE__*/ createUseWatchContractEvent({
+  abi: registerAbi
 })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link regiterAbi}__ and `eventName` set to `"BeneficiaryTransferred"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link registerAbi}__ and `eventName` set to `"BeneficiaryTransferred"`
  */
-export const useWatchRegiterBeneficiaryTransferredEvent =
+export const useWatchRegisterBeneficiaryTransferredEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: regiterAbi,
+    abi: registerAbi,
     eventName: 'BeneficiaryTransferred'
   })

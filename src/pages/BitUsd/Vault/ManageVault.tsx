@@ -9,6 +9,7 @@ import {
   VaultChangesBorderIcon
 } from '@/assets/icons'
 import { InfoIndicator } from '@/components/InfoIndicator'
+import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
@@ -62,7 +63,7 @@ export const ManageVault: React.FC<{
     maxVault,
     setMaxVaultBitUsd,
     setMaxVaultCollateral
-  } = useVaultDetail()
+  } = useVaultDetail(collateral)
 
   const {
     wBtcAllowance,
@@ -80,7 +81,7 @@ export const ManageVault: React.FC<{
     setRepayToBtcTxnStatus,
     txnErrorMsg,
     setTxnErrorMsg
-  } = useManageVault()
+  } = useManageVault(collateral)
 
   const contractAddress = useContractAddresses()
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
@@ -91,7 +92,12 @@ export const ManageVault: React.FC<{
   const [repayBitUsd, setRepayBitUsd] = useState('')
 
   const wbtcPrice = useTokenPrice()
-  const { balance: wbtcBalance } = useTokenBalance(contractAddress?.WBTC)
+  const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
+    address: collateral?.collateral?.tokenAddress
+  })
+  const { balance: wbtcBalance } = useTokenBalance(
+    collateral?.collateral?.tokenAddress
+  )
   const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
 
   const depositInUsd = useMemo(() => {
@@ -456,7 +462,7 @@ export const ManageVault: React.FC<{
               onFocus={() => setIsMintFromBtc(true)}
               greyOut={isMintFromBtc === false}
               disabled={depositWBtcDisabled}
-              title="deposit wbtc"
+              title={`deposit ${deptTokenSymbol}`}
               inputSuffix={`~${depositInUsd}$`}
               titleSuffix={'Available: ' + formatNumberAsCompact(wbtcBalance)}
             />
@@ -473,7 +479,7 @@ export const ManageVault: React.FC<{
               disabled={withdrawWbtcDisabled}
               onFocus={() => setIsMintFromBtc(false)}
               greyOut={isMintFromBtc === true}
-              title="withdraw wbtc"
+              title={`withdraw ${deptTokenSymbol}`}
               titleSuffix={
                 <span className="flex items-center gap-x-2">
                   Max: {displayVaultValues(maxVault, false).availableToWithdraw}

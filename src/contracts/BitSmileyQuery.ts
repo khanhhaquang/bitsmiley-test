@@ -1,7 +1,8 @@
 import {
   createUseReadContract,
   createUseWriteContract,
-  createUseSimulateContract
+  createUseSimulateContract,
+  createUseWatchContractEvent
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -355,4 +356,28 @@ export const useSimulateBitSmileyQuerySetCollateralConfig =
   /*#__PURE__*/ createUseSimulateContract({
     abi: bitSmileyQueryAbi,
     functionName: 'setCollateralConfig'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyQueryAbi}__
+ */
+export const useWatchBitSmileyQueryEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: bitSmileyQueryAbi })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyQueryAbi}__ and `eventName` set to `"CallerUpdated"`
+ */
+export const useWatchBitSmileyQueryCallerUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyQueryAbi,
+    eventName: 'CallerUpdated'
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link bitSmileyQueryAbi}__ and `eventName` set to `"CollateralConfigUpdated"`
+ */
+export const useWatchBitSmileyQueryCollateralConfigUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: bitSmileyQueryAbi,
+    eventName: 'CollateralConfigUpdated'
   })

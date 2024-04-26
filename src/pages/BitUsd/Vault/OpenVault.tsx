@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
+import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useCollaterals } from '@/hooks/useCollaterals'
-import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
@@ -29,20 +29,28 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   collateralId
 }) => {
   const navigate = useNavigate()
+
+  const { collateral, refetch: refetchCollateral } = useCollaterals(
+    chainId,
+    collateralId
+  )
+
   const {
     refreshVaultValues,
     tryOpenVaultInfo,
     setTryOpenVaultBitUsd,
     setTryOpenVaultCollateral,
     capturedMaxMint
-  } = useVaultDetail()
-  const { collateral, refetch: refetchCollateral } = useCollaterals(
-    chainId,
-    collateralId
-  )
+  } = useVaultDetail(collateral)
+
   const { blockExplorerUrl } = useUserInfo()
-  const contractAddresses = useContractAddresses()
-  const { balance: wbtcBalance } = useTokenBalance(contractAddresses?.WBTC)
+  const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
+    address: collateral?.collateral?.tokenAddress
+  })
+
+  const { balance: wbtcBalance } = useTokenBalance(
+    collateral?.collateral?.tokenAddress
+  )
   const wbtcPrice = useTokenPrice()
 
   const [mint, setMint] = useState('')
@@ -58,7 +66,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     approvalVault,
     approvalTxnStatus,
     wBtcAllowance
-  } = useManageVault()
+  } = useManageVault(collateral)
 
   const isApproving =
     approvalTxnStatus === TransactionStatus.Signing ||
@@ -231,8 +239,12 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           greyOut={depositDisabled}
           disabled={depositDisabled}
           errorMessage={depositInputErrorMsg}
-          title="DEPOSIT WBTC"
-          titleSuffix={`Available: ${formatWBtc(wbtcBalance, true, true)}`}
+          title={`DEPOSIT ${deptTokenSymbol}`}
+          titleSuffix={`Available: ${formatWBtc(
+            wbtcBalance,
+            false,
+            true
+          )} ${deptTokenSymbol}`}
           inputSuffix={
             <div className="flex h-full items-center gap-x-1.5 py-1">
               {'~' + depositInUsd + '$'}

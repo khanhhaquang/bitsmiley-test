@@ -2,8 +2,7 @@ import { useParams } from 'react-router-dom'
 import { Address, formatEther } from 'viem'
 
 import { useReadOracleGetPrice } from '@/contracts/Oracle'
-
-import { useContractAddresses } from './useContractAddresses'
+import { useContractAddresses } from '@/hooks/useContractAddresses'
 
 export const useTokenPrice = () => {
   const { collateralId } = useParams()
