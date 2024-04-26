@@ -2,18 +2,15 @@ import { useParams } from 'react-router-dom'
 import { Address, formatEther } from 'viem'
 
 import { useReadOracleGetPrice } from '@/contracts/Oracle'
+import { useContractAddresses } from '@/hooks/useContractAddresses'
 
-import { useContractAddresses } from './useContractAddresses'
-
-export const useTokenPrice = (address?: Address) => {
+export const useTokenPrice = () => {
   const { collateralId } = useParams()
   const contractAddresses = useContractAddresses()
 
-  const tokenAddress: Address = (collateralId as Address) || address
-
   const { data } = useReadOracleGetPrice({
     address: contractAddresses?.oracle,
-    args: tokenAddress && [tokenAddress],
+    args: (collateralId as Address) && [collateralId as Address],
     query: {
       refetchInterval: 5 * 1000
     }
