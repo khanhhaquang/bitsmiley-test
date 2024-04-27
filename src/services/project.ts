@@ -3,6 +3,15 @@ import { Address } from 'viem'
 import { axiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
 
+export interface IAirdrop {
+  address: Address
+  airdropContractAddress: Address
+  icon: string
+  name: string
+  symbol: string
+  chainId: number
+}
+
 export interface IContractAddresses {
   BitSmiley: Address
   BitUSDL2: Address
@@ -13,7 +22,7 @@ export interface IContractAddresses {
   l2nft: Address | null
   bitSmileyQuery: Address | null
   register: Address
-  airdrop: Address[]
+  airdrop: IAirdrop[]
 }
 export interface INetworkInfo {
   network: string

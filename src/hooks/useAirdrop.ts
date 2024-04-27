@@ -1,13 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import {
-  Address,
-  decodeFunctionResult,
-  encodeFunctionData,
-  erc20Abi,
-  formatEther,
-  parseEther
-} from 'viem'
+import { formatEther, parseEther } from 'viem'
 import { useChainId, useWriteContract } from 'wagmi'
 
 import airdropAbi from '@/abi/BitSmileyMerkleErc20Airdrop.json'
@@ -15,124 +8,26 @@ import {
   useReadAirdropCanClaim,
   useReadAirdropClaimed
 } from '@/contracts/Airdrop'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useStoreActions } from '@/hooks/useStoreActions'
-import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { IAirdrop } from '@/services/project'
 import { UserService } from '@/services/user'
 
-export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
+export const useAirdrop = (airdrop?: IAirdrop) => {
   const currentChainId = useChainId()
+  const { projectInfo } = useProjectInfo()
   const { address: userAddress } = useUserInfo()
-  const { clients } = useSupportedChains()
-  const client = clients.find((c) => c.chain.id === chainId)
 
-  const { data: airdropInfo, isLoading: isLoadingAirdropInfo } = useQuery({
-    queryKey: [chainId, airdropAddress],
-    queryFn:
-      !client || !airdropAddress
-        ? undefined
-        : async () => {
-            const airdropRes = await client.request({
-              method: 'eth_call',
-              params: [
-                {
-                  data: encodeFunctionData({
-                    abi: airdropAbi,
-                    functionName: 'airdrop'
-                  }),
-                  to: airdropAddress
-                }
-              ]
-            })
-
-            const [
-              receivedUsers,
-              createdBy,
-              token,
-              startTime,
-              endTime,
-              merkleTreeRoot,
-              totalAllocation,
-              totalReceived
-            ] =
-              (decodeFunctionResult({
-                abi: airdropAbi,
-                functionName: 'airdrop',
-                data: airdropRes
-              }) as
-                | [
-                    number,
-                    Address,
-                    Address,
-                    bigint,
-                    bigint,
-                    Address,
-                    bigint,
-                    bigint
-                  ]
-                | undefined) || []
-
-            return {
-              token,
-              receivedUsers,
-              merkleTreeRoot,
-              endTime: endTime?.toString(),
-              createdBy: createdBy?.toString(),
-              startTime: startTime?.toString(),
-              totalReceived: formatEther(totalReceived || BigInt('0')),
-              totalAllocation: formatEther(totalAllocation || BigInt('0'))
-            }
-          }
-  })
-
-  const { data: tokenInfo, isLoading: isLoadingTokenInfo } = useQuery({
-    queryKey: [chainId, airdropInfo?.token],
-    enabled: !!client && !!airdropInfo?.token,
-    queryFn:
-      !client || !airdropInfo?.token
-        ? undefined
-        : async () => {
-            const nameRes = await client.request({
-              method: 'eth_call',
-              params: [
-                {
-                  data: encodeFunctionData({
-                    abi: erc20Abi,
-                    functionName: 'name'
-                  }),
-                  to: airdropInfo?.token
-                }
-              ]
-            })
-
-            const name = decodeFunctionResult({
-              abi: erc20Abi,
-              functionName: 'name',
-              data: nameRes
-            })
-
-            const symbolRes = await client.request({
-              method: 'eth_call',
-              params: [
-                {
-                  data: encodeFunctionData({
-                    abi: erc20Abi,
-                    functionName: 'symbol'
-                  }),
-                  to: airdropInfo?.token
-                }
-              ]
-            })
-
-            const symbol = decodeFunctionResult({
-              abi: erc20Abi,
-              functionName: 'symbol',
-              data: symbolRes
-            })
-
-            return { name, symbol }
-          }
-  })
+  const airdrops = useMemo(
+    () =>
+      projectInfo?.web3Info
+        ?.map((w) =>
+          w.contract.airdrop.map((a) => ({ ...a, chainId: w.chainId }))
+        )
+        .flatMap((i) => i),
+    [projectInfo?.web3Info]
+  )
 
   const {
     data: airdropProofAndAmount,
@@ -140,24 +35,23 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
   } = useQuery({
     queryKey: [
       UserService.getAirdropProofAndAmount.key,
-      chainId,
       currentChainId,
       userAddress,
-      airdropAddress
+      airdrop?.chainId,
+      airdrop?.airdropContractAddress
     ],
     queryFn: () =>
-      !!chainId && !!airdropAddress && !!userAddress
+      !!airdrop?.airdropContractAddress && !!userAddress
         ? UserService.getAirdropProofAndAmount.call(
-            chainId,
+            airdrop.chainId,
             userAddress,
-            airdropAddress
+            airdrop.airdropContractAddress
           )
         : undefined,
     enabled:
-      !!chainId &&
-      !!airdropAddress &&
+      !!airdrop?.airdropContractAddress &&
       !!userAddress &&
-      currentChainId === chainId,
+      currentChainId === airdrop.chainId,
     select: (res) =>
       !res
         ? undefined
@@ -173,10 +67,10 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
     refetch: refetchIsClaimed,
     isRefetching: isRefetchingIsClaimed
   } = useReadAirdropClaimed({
-    address: airdropAddress,
+    address: airdrop?.airdropContractAddress,
     args: userAddress && [userAddress],
     query: {
-      enabled: !!airdropInfo?.token && currentChainId === chainId
+      enabled: currentChainId === airdrop?.chainId
     }
   })
   const {
@@ -185,7 +79,7 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
     refetch: refetchCanClaim,
     isRefetching: isRefetchingCanClaim
   } = useReadAirdropCanClaim({
-    address: airdropAddress,
+    address: airdrop?.airdropContractAddress,
     args:
       !!userAddress &&
       !!airdropProofAndAmount?.amount &&
@@ -197,7 +91,7 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
           ]
         : undefined,
     query: {
-      enabled: !!airdropInfo?.token && currentChainId === chainId
+      enabled: currentChainId === airdrop?.chainId
     }
   })
 
@@ -206,13 +100,13 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
   const [isClaiming, setIsClaiming] = useState(false)
 
   const claim = async () => {
-    if (!airdropAddress || isClaiming) return
+    if (!airdrop?.airdropContractAddress || isClaiming) return
 
     try {
       setIsClaiming(true)
       const txId = await writeContractAsync({
         abi: airdropAbi,
-        address: airdropAddress,
+        address: airdrop.airdropContractAddress,
         functionName: 'claim',
         args:
           !!airdropProofAndAmount?.amount &&
@@ -235,19 +129,8 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
 
   const isLoading = useMemo(
     () =>
-      isLoadingAirdropProofAndAmount ||
-      isLoadingAirdropInfo ||
-      isLoadingTokenInfo ||
-      isLoadingClaimed ||
-      isLoadingTokenInfo ||
-      isLoadingCanClaim,
-    [
-      isLoadingAirdropInfo,
-      isLoadingAirdropProofAndAmount,
-      isLoadingCanClaim,
-      isLoadingClaimed,
-      isLoadingTokenInfo
-    ]
+      isLoadingAirdropProofAndAmount || isLoadingClaimed || isLoadingCanClaim,
+    [isLoadingAirdropProofAndAmount, isLoadingCanClaim, isLoadingClaimed]
   )
 
   const isRefetching = useMemo(
@@ -256,8 +139,7 @@ export const useAirdrop = (chainId?: number, airdropAddress?: Address) => {
   )
 
   return {
-    tokenInfo,
-    isLoadingTokenInfo,
+    airdrops,
     airdropProofAndAmount,
     isClaimed,
     canClaim,

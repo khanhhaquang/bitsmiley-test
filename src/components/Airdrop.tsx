@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Address, Chain } from 'viem'
+import { useEffect, useState } from 'react'
 import { useChainId, useSwitchChain } from 'wagmi'
 
 import {
@@ -19,35 +18,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { chainsIconUrl } from '@/config/chain'
 import { useAirdrop } from '@/hooks/useAirdrop'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
-import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
+import { IAirdrop } from '@/services/project'
 import { cn } from '@/utils/cn'
 
-type Token = {
-  chainId: number
-  airdropAddress: Address
-  name?: string
-  symbol?: string
-}
-
 export const Airdrop: React.FC = () => {
+  const { airdrops } = useAirdrop()
   const { isConnected } = useUserInfo()
-  const { projectInfo } = useProjectInfo()
-
-  const airdropAddresses = projectInfo?.web3Info.reduce<string[]>(
-    (pre, curr) => {
-      pre.push(...(curr?.contract?.airdrop || []))
-      return pre
-    },
-    []
-  )
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  if (!airdropAddresses?.length || !isConnected) return null
+  if (!airdrops?.length || !isConnected) return null
 
   return (
     <>
@@ -88,15 +70,10 @@ const AirdropModal: React.FC<{
 }> = ({ isOpen, onClose }) => {
   const chainId = useChainId()
   const { switchChain } = useSwitchChain()
-  const [token, setToken] = useState<Token>()
-
-  const { supportedChains } = useSupportedChains()
-  const chain = useMemo(
-    () => supportedChains.find((c) => c.id === token?.chainId),
-    [supportedChains, token?.chainId]
-  )
+  const [selectedAirdrop, setSelectedAirdrop] = useState<IAirdrop>()
 
   const {
+    airdrops,
     airdropProofAndAmount,
     isClaimed,
     canClaim,
@@ -105,15 +82,15 @@ const AirdropModal: React.FC<{
     isClaiming,
     isRefetching,
     claim
-  } = useAirdrop(token?.chainId, token?.airdropAddress)
+  } = useAirdrop(selectedAirdrop)
 
-  const handleOnSelect = (t: Token) => {
-    if (chainId !== t.chainId) {
+  const handleOnSelect = (i: IAirdrop) => {
+    if (chainId !== i.chainId) {
       switchChain(
-        { chainId: t.chainId },
+        { chainId: i.chainId },
         {
           onSuccess: () => {
-            setToken(t)
+            setSelectedAirdrop(i)
           },
           onError: () => {
             onClose()
@@ -123,7 +100,7 @@ const AirdropModal: React.FC<{
       )
       return
     }
-    setToken(t)
+    setSelectedAirdrop(i)
   }
 
   const onClaim = async () => {
@@ -133,7 +110,7 @@ const AirdropModal: React.FC<{
   }
 
   useEffect(() => {
-    if (!isOpen) setToken(undefined)
+    if (!isOpen) setSelectedAirdrop(undefined)
   }, [isOpen])
 
   return (
@@ -154,12 +131,44 @@ const AirdropModal: React.FC<{
         </div>
 
         <div className="flex flex-col items-center gap-y-6 border border-blue bg-black p-6">
-          <SelectToken
-            chain={chain}
-            selectedToken={token}
-            onSelect={handleOnSelect}
-          />
-          {!!token && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex w-[294px] cursor-pointer items-center justify-between border border-white/70 p-2 font-smb text-xs text-white/50 [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)] hover:border-white hover:text-white">
+                {selectedAirdrop?.name ? (
+                  <>
+                    <span className="flex items-center gap-x-1.5 font-smb text-xs">
+                      <Image
+                        src={selectedAirdrop.icon}
+                        width={16}
+                        height={16}
+                      />
+                      {selectedAirdrop.name}
+                    </span>
+                  </>
+                ) : (
+                  'select a token'
+                )}
+                <InputIndicatorIcon className="rotate-90" />
+              </div>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+              sideOffset={0}
+              className="w-[294px] cursor-default rounded-none border-none bg-black p-0">
+              {airdrops?.map((airdrop) => (
+                <DropdownMenuItem
+                  key={airdrop.address}
+                  onSelect={() => handleOnSelect(airdrop)}
+                  className="cursor-pointer rounded-none border border-white/70 bg-black px-2 py-1.5 text-white/50 hover:border-white hover:bg-black hover:text-white active:border-white active:bg-black active:text-white">
+                  <span className="flex min-h-4 items-center gap-x-1.5 font-smb text-xs">
+                    <Image src={airdrop.icon} width={16} height={16} />
+                    {airdrop.name}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {!!selectedAirdrop && (
             <div className="flex flex-col gap-y-3">
               <div className="font-ibmr text-sm text-white/70">
                 {isLoading || isRefetching
@@ -184,7 +193,7 @@ const AirdropModal: React.FC<{
                   ) : (
                     airdropProofAndAmount?.amount
                   )}{' '}
-                  {token?.symbol}
+                  {selectedAirdrop?.symbol}
                 </div>
               )}
             </div>
@@ -205,87 +214,5 @@ const AirdropModal: React.FC<{
         </div>
       </div>
     </Modal>
-  )
-}
-
-const SelectToken: React.FC<{
-  chain?: Chain
-  selectedToken?: Token
-  onSelect: (t: Token) => void
-}> = ({ chain, onSelect, selectedToken }) => {
-  const { projectInfo } = useProjectInfo()
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="flex w-[294px] cursor-pointer items-center justify-between border border-white/70 p-2 font-smb text-xs text-white/50 [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)] hover:border-white hover:text-white">
-          {selectedToken?.name && !!chain?.id ? (
-            <>
-              <span className="flex items-center gap-x-1.5 font-smb text-xs">
-                <Image src={chainsIconUrl[chain.id]} width={16} height={16} />
-                {selectedToken.name}
-              </span>
-            </>
-          ) : (
-            'select a toke'
-          )}
-          <InputIndicatorIcon className="rotate-90" />
-        </div>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        sideOffset={0}
-        className="w-[294px] cursor-default rounded-none border-none bg-black p-0">
-        {projectInfo?.web3Info
-          .filter((item) => !!item.contract.airdrop.length)
-          .map((item) =>
-            item.contract.airdrop.map((airdropAddress) => (
-              <SelectItem
-                key={airdropAddress}
-                chainId={item.chainId}
-                airdropAddress={airdropAddress}
-                onSelect={(t: Token) => onSelect(t)}
-              />
-            ))
-          )}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
-const SelectItem: React.FC<{
-  chainId: number
-  airdropAddress: Address
-  onSelect: (t: Token) => void
-}> = ({ chainId, airdropAddress, onSelect }) => {
-  const { tokenInfo } = useAirdrop(chainId, airdropAddress)
-
-  return (
-    <DropdownMenuItem
-      key={airdropAddress}
-      onSelect={() =>
-        onSelect({
-          chainId,
-          airdropAddress,
-          name: tokenInfo?.name,
-          symbol: tokenInfo?.symbol
-        })
-      }
-      className="cursor-pointer rounded-none border border-white/70 bg-black px-2 py-1.5 text-white/50 hover:border-white hover:bg-black hover:text-white active:border-white active:bg-black active:text-white">
-      <span className="flex min-h-4 items-center gap-x-1.5 font-smb text-xs">
-        <Image src={chainsIconUrl[chainId as number]} width={16} height={16} />
-        {!tokenInfo?.name ? (
-          <Typewriter
-            loop
-            wrapperClassName="min-w-10"
-            speed={300}
-            cursor={false}
-            renderNodes={() => '...'}
-          />
-        ) : (
-          tokenInfo?.name
-        )}
-      </span>
-    </DropdownMenuItem>
   )
 }
