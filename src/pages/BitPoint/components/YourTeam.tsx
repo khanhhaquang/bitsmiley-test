@@ -77,7 +77,7 @@ export const YourTeam: React.FC = () => {
         </div>
 
         <div className="flex items-center justify-center gap-x-2">
-          {Array(5)
+          {Array(6)
             .fill(1)
             .map((_, index) => (
               <StarIcon
