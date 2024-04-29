@@ -63,6 +63,7 @@ import Smiley3Icon from './smiley3.svg'
 import SpinIcon from './spin.svg'
 import StarIcon from './start.svg'
 import SuccessIcon from './success.svg'
+import TVLIndicatorIcon from './tvl-indicator.svg'
 import VaultChangesBorderIcon from './vault-changes-border.svg'
 import VaultInfoBorderIcon from './vault-info-border.svg'
 import ManageVaultInfoTitleIcon from './vault-info-title.svg'
@@ -71,6 +72,7 @@ import WarningOutline from './warning-outline.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
 
 export {
+  TVLIndicatorIcon,
   AirdropModalTitleLeftIcon,
   AirdropModalTitleRightIcon,
   AirdropIcon,

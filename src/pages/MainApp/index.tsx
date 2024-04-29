@@ -1,9 +1,11 @@
 import { Suspense, useMemo, useState } from 'react'
 import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
+import { TVLIndicatorIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { OnChainLoader } from '@/components/OnchainLoader'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
+import { useTVL } from '@/hooks/useTVL'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -39,6 +41,13 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
       <NavigationButton className="top-[38.2%]" />
       <NavigationButton className="top-[44.6%]" />
 
+      <TVLIndicator />
+
+      <Image
+        className="absolute left-[49.36%] top-[17.3%] z-50 w-[1.4%]"
+        src={getIllustrationUrl('bitsmiley-logo')}
+      />
+
       <Image
         className="absolute left-0 top-0 size-full"
         src={getIllustrationUrl('bitusd-machine', 'webp')}
@@ -55,6 +64,31 @@ const ContentContainer: React.FC<{ children: React.ReactNode }> = ({
       id="machine-content-container"
       className="scrollbar-none absolute left-[24%] top-[24%] z-50 size-full h-[40%] w-[51.2%] overflow-y-auto overflow-x-hidden overscroll-contain">
       {children}
+    </div>
+  )
+}
+
+const TVLIndicator: React.FC = () => {
+  const { formatedTvl } = useTVL()
+  return (
+    <div className="absolute left-[33%] top-[8.4%] z-50 h-[4.3%] w-[33.4%] overflow-hidden">
+      <div className="flex size-full items-center justify-between">
+        <Image
+          className="h-full opacity-50"
+          src={getIllustrationUrl('bitusd-machine-header-left', 'webp')}
+        />
+        <div className="flex items-center justify-center gap-x-1 xl:gap-x-3">
+          <TVLIndicatorIcon className="h-4 xl:h-6" />
+          <span className="text-nowrap stroke-green6 stroke-[0.2] font-sdm text-2xl text-green6 xl:text-[28px]">
+            TVL: {formatedTvl}
+          </span>
+          <TVLIndicatorIcon className="h-4 rotate-180 xl:h-6" />
+        </div>
+        <Image
+          className="h-full opacity-50"
+          src={getIllustrationUrl('bitusd-machine-header-right', 'webp')}
+        />
+      </div>
     </div>
   )
 }
