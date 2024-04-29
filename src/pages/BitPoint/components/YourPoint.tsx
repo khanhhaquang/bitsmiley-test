@@ -66,7 +66,7 @@ export const YourPoint: React.FC = () => {
                 />
               </div>
               <div className="w-full bg-blue/20 px-1.5 py-0.5 font-ibmr font-bold text-blue">
-                +{teamAddition}%
+                +{Number(teamAddition) * 100}%
               </div>
             </span>
 
@@ -83,7 +83,7 @@ export const YourPoint: React.FC = () => {
                 />
               </div>
               <div className="w-full bg-blue/20 px-1.5 py-0.5 font-ibmr font-bold text-blue">
-                +{bitDisc}%
+                +{Number(bitDisc) * 100}%
               </div>
             </span>
           </div>

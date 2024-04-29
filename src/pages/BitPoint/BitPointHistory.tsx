@@ -108,11 +108,12 @@ const BitPointHistory: React.FC = () => {
                     `+${formatNumberWithSeparator(v.liquidity)}`}
                 </TableCell>
                 <TableCell className="w-[72px]">
-                  {v.teamBoost !== TABLE_PLACE_HOLDER && `+${v.teamBoost}%`}
+                  {v.teamBoost !== TABLE_PLACE_HOLDER &&
+                    `+${Number(v.teamBoost) * 100}%`}
                 </TableCell>
                 <TableCell className="w-[94px]">
                   {v.bitDiscBoost !== TABLE_PLACE_HOLDER &&
-                    `+${v.bitDiscBoost}%`}
+                    `+${Number(v.bitDiscBoost) * 100}%`}
                 </TableCell>
                 <TableCell className="w-[72px] text-right">
                   {v.totalPoint !== TABLE_PLACE_HOLDER &&
