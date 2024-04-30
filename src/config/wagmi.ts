@@ -92,13 +92,32 @@ export const bitLayerTestnet = {
     }
   },
   testnet: true
-}
+} as const satisfies Chain
+
+export const bitLayerMainnet = {
+  id: 200901,
+  name: 'Bitlayer',
+  nativeCurrency: { name: 'Bitcoin', symbol: 'BTC', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://rpc.bitlayer.org']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Bitlayer Scan',
+      url: 'https://btrscan.com'
+    }
+  },
+  testnet: false
+} as const satisfies Chain
 
 //TODO: PARTICLE DOES NOT SUPPORT THESE CHAINS YET
 export const chainsNotSupportedByParticle: number[] = [
   botanixTestnet.id,
   bobTestnet.id,
-  bitLayerTestnet.id
+  bitLayerTestnet.id,
+  bitLayerMainnet.id
 ]
 
 export const customChains = [
@@ -106,5 +125,6 @@ export const customChains = [
   merlinMainnet,
   bobTestnet,
   bSquaredTestnet,
-  bitLayerTestnet
+  bitLayerTestnet,
+  bitLayerMainnet
 ] as Chain[]

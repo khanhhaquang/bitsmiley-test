@@ -60,14 +60,7 @@ export const useTVL = () => {
   )
 
   const formatedTvl = useMemo(
-    () =>
-      isFetching
-        ? '--'
-        : formatNumberAsCompact(formatEther(BigInt(tvl)))
-            .replace('k', ' tho')
-            .replace('m', ' mil')
-            .replace('b', ' bil')
-            .replace('t', ' til'),
+    () => (isFetching ? '--' : formatNumberAsCompact(formatEther(BigInt(tvl)))),
     [isFetching, tvl]
   )
 

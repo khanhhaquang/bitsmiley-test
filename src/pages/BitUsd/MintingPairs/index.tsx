@@ -23,6 +23,7 @@ import {
 import { chainsIconUrl } from '@/config/chain'
 import { chainsNotSupportedByParticle } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IDetailedCollateral } from '@/types/vault'
@@ -139,7 +140,20 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
+  const { projectInfo } = useProjectInfo()
   const { supportedChains } = useSupportedChains()
+
+  const filterSupportedChains = useMemo(
+    () =>
+      supportedChains.filter(
+        (s) =>
+          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+            ?.BitSmiley &&
+          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+            ?.bitSmileyQuery
+      ),
+    [projectInfo?.web3Info, supportedChains]
+  )
 
   return (
     <div className="w-full">
@@ -152,7 +166,7 @@ const MintingPairsTable: React.FC<{
       </div>
       <div className="w-full px-5">
         <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
-          {supportedChains.map((c, index) => (
+          {filterSupportedChains.map((c, index) => (
             <ChainPairsTable
               isOpenedVaults={isOpenedVaults}
               key={c.id}

@@ -97,7 +97,7 @@ const BTCPrice = () => {
   const wbtcPrice = useTokenPrice()
 
   return (
-    <div className="absolute bottom-[29.5%] right-[24.7%] z-10 flex h-[3%] w-[14%] items-center justify-center gap-x-1 text-nowrap font-sdm text-[10px] text-white xl:text-base">
+    <div className="absolute bottom-[29.75%] right-[24.92%] z-10 flex h-[3%] w-[14%] items-center justify-center gap-x-1 text-nowrap font-sdm text-[10px] text-white xl:text-base">
       Current BTC Price:
       <span className={cn(wbtcPrice && 'text-green')}>
         {wbtcPrice ? `$${formatNumberWithSeparator(wbtcPrice, 4)}` : '-'}

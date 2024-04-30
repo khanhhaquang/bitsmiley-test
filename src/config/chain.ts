@@ -1,6 +1,7 @@
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import {
+  bitLayerMainnet,
   bitLayerTestnet,
   bobTestnet,
   botanixTestnet,
@@ -15,5 +16,11 @@ export const chainsIconUrl: { [key: string]: string } = {
   [bobTestnet.id]: getIllustrationUrl('bob-chain-logo', 'webp'),
   [bSquaredTestnet.id]: getIllustrationUrl('bsquared-chain-logo', 'webp'),
   [botanixTestnet.id]: getIllustrationUrl('botanix-chain-logo', 'webp'),
-  [bitLayerTestnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp')
+  [bitLayerTestnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp'),
+  [bitLayerMainnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp')
 } as const
+
+export const stakeSupportedChainIds = [
+  merlinTestnet.id,
+  merlinMainnet.id
+] as const as number[]
