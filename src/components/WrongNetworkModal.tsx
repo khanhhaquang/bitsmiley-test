@@ -4,6 +4,7 @@ import { Button } from '@/components/Button'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import { chainsIconUrl } from '@/config/chain'
+import { customChains } from '@/config/wagmi'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 
 const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
@@ -56,7 +57,7 @@ const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                     width={36}
                     height={36}
                   />
-                  {v.name}
+                  {customChains.find((c) => c.id === v.id)?.name}
                 </button>
               ))}
             </div>

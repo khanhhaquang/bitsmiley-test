@@ -432,6 +432,7 @@ export const ManageVault: React.FC<{
     }
   }, [isMintFromBtc])
 
+  console.log(vault)
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
@@ -552,30 +553,20 @@ export const ManageVault: React.FC<{
                 'Available: ' + formatNumberWithSeparator(bitUsdBalance)
               }
               inputSuffix={
-                <div className="flex items-center gap-x-2">
-                  {!!minRepay && (
-                    <InputSuffixActionButton
-                      onClick={() => {
-                        handleInput('repayBitUsd', minRepay.toString())
-                        setIsMintFromBtc(false)
-                      }}
-                      disabled={repayBitUsdDisabled || isMintFromBtc === true}>
-                      Min
-                    </InputSuffixActionButton>
-                  )}
-                  <InputSuffixActionButton
-                    disabled={repayBitUsdDisabled || isMintFromBtc === true}
-                    className="w-[92px]"
-                    onClick={() => {
-                      handleInput(
-                        'repayBitUsd',
-                        formatNumberAsCeil(vault?.debtBitUSD || '') || ''
-                      )
-                      setIsMintFromBtc(false)
-                    }}>
-                    Repay all
-                  </InputSuffixActionButton>
-                </div>
+                <InputSuffixActionButton
+                  disabled={repayBitUsdDisabled || isMintFromBtc === true}
+                  className="w-[92px]"
+                  onClick={() => {
+                    handleInput(
+                      'repayBitUsd',
+                      !vault?.fee
+                        ? vault?.debtBitUSD
+                        : formatNumberAsCeil(vault?.debtBitUSD || '') || ''
+                    )
+                    setIsMintFromBtc(false)
+                  }}>
+                  Repay all
+                </InputSuffixActionButton>
               }
             />
           </div>

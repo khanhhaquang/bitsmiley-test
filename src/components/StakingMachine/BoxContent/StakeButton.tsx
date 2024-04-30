@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { useChainId, useSwitchChain } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
+import { merlinMainnet, merlinTestnet } from '@/config/wagmi'
+import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserNfts } from '@/hooks/useUserNfts'
 
 const NoNftModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
@@ -42,13 +45,47 @@ export const StakeButton: React.FC<StakeButtonProps> = ({
   const [isNoNftModalOpen, setIsNoNftModalOpen] = useState(false)
   const { nfts, isLoading: isFetchingNfts } = useUserNfts()
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    if (!nfts || nfts.length === 0) {
-      setIsNoNftModalOpen(true)
-      return
-    }
+  const currentChainId = useChainId()
+  const { switchChain } = useSwitchChain()
+  const { supportedChainIds } = useSupportedChains()
+  const stakeSupportedChainIds = [
+    merlinTestnet.id,
+    merlinMainnet.id
+  ] as number[]
 
-    onClick?.(e)
+  const stakeChainId = supportedChainIds.filter((c) =>
+    stakeSupportedChainIds.includes(c)
+  )?.[0]
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (!stakeChainId) return
+
+    if (currentChainId !== stakeChainId) {
+      switchChain(
+        { chainId: stakeChainId },
+        {
+          onSuccess: (data) => {
+            console.info(`Switching successfully to ${data.name}`)
+            if (!nfts || nfts.length === 0) {
+              setIsNoNftModalOpen(true)
+              return
+            }
+
+            onClick?.(e)
+          },
+          onError: () => {
+            console.error('Switching network failed')
+          }
+        }
+      )
+    } else {
+      if (!nfts || nfts.length === 0) {
+        setIsNoNftModalOpen(true)
+        return
+      }
+
+      onClick?.(e)
+    }
   }
 
   return (
@@ -58,7 +95,7 @@ export const StakeButton: React.FC<StakeButtonProps> = ({
         onClose={() => setIsNoNftModalOpen(false)}
       />
       <Button
-        disabled={isFetchingNfts}
+        disabled={isFetchingNfts || !stakeChainId}
         size="xs"
         className="w-[120px] shadow-stake-now-button hover:bg-green3 hover:shadow-stake-now-button active:bg-green2"
         onClick={(e) => handleClick(e)}>
