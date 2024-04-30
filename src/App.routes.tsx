@@ -26,11 +26,11 @@ const Routes = () => {
       children: [
         {
           index: true,
-          element: <Navigate to="./testnet" />
+          element: <Navigate to="./alphanet" />
         },
         {
-          path: 'testnet',
-          id: 'testNet',
+          path: 'alphanet',
+          id: 'alphanet',
           element: <MainBitUsd />,
           children: [
             {

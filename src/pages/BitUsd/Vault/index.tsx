@@ -20,7 +20,7 @@ const Vault: React.FC = () => {
   if (isLoading) return <OnChainLoader />
 
   if (!collateral || currentChainId !== Number(chainId))
-    return <Navigate to="/app/testnet" replace />
+    return <Navigate to="/app/alphanet" replace />
 
   return (
     <div className="relative size-full overflow-hidden pt-9">

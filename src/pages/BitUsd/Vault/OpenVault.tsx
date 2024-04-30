@@ -168,7 +168,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
               navigate(-1)
             }}
             message="You have successfully created a vault. Now you can see it in the
-        Testnet main page"
+        AlphaNet main page"
           />
         )
 

@@ -16,8 +16,8 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { enabledFeatures } = useUserInfo()
   const bitUsdPathPatterns = [
-    '/app/testnet',
-    '/app/testnet/vault/:chainId/:collateralId'
+    '/app/alphanet',
+    '/app/alphanet/vault/:chainId/:collateralId'
   ]
   const bitPointPathPattern = ['/app/bit-point', '/app/bit-point/history']
 
@@ -26,8 +26,8 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
       {children}
 
       <NavigationButton
-        title="TESTNET"
-        path="/app/testnet"
+        title="AlphaNet"
+        path="/app/alphanet"
         pathPatterns={bitUsdPathPatterns}
         disabled={!enabledFeatures?.AlphaNet}
       />
