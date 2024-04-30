@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useChainId, useSwitchChain } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
-import { merlinMainnet, merlinTestnet } from '@/config/wagmi'
+import { stakeSupportedChainIds } from '@/config/chain'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserNfts } from '@/hooks/useUserNfts'
 
@@ -48,14 +48,12 @@ export const StakeButton: React.FC<StakeButtonProps> = ({
   const currentChainId = useChainId()
   const { switchChain } = useSwitchChain()
   const { supportedChainIds } = useSupportedChains()
-  const stakeSupportedChainIds = [
-    merlinTestnet.id,
-    merlinMainnet.id
-  ] as number[]
 
-  const stakeChainId = supportedChainIds.filter((c) =>
-    stakeSupportedChainIds.includes(c)
-  )?.[0]
+  const stakeChainId = useMemo(
+    () =>
+      supportedChainIds.filter((c) => stakeSupportedChainIds.includes(c))?.[0],
+    [supportedChainIds]
+  )
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (!stakeChainId) return

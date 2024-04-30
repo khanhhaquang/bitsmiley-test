@@ -19,3 +19,8 @@ export const chainsIconUrl: { [key: string]: string } = {
   [bitLayerTestnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp'),
   [bitLayerMainnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp')
 } as const
+
+export const stakeSupportedChainIds = [
+  merlinTestnet.id,
+  merlinMainnet.id
+] as const as number[]

@@ -143,12 +143,16 @@ const MintingPairsTable: React.FC<{
   const { projectInfo } = useProjectInfo()
   const { supportedChains } = useSupportedChains()
 
-  const filterSupportedChains = supportedChains.filter(
-    (s) =>
-      !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-        ?.BitSmiley &&
-      !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-        ?.bitSmileyQuery
+  const filterSupportedChains = useMemo(
+    () =>
+      supportedChains.filter(
+        (s) =>
+          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+            ?.BitSmiley &&
+          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+            ?.bitSmileyQuery
+      ),
+    [projectInfo?.web3Info, supportedChains]
   )
 
   return (
