@@ -26,6 +26,8 @@ import { ProcessingModal } from './Processing'
 
 import { formatBitUsd, formatWBtc } from '../display'
 
+//TODO: will remove in the future, keeping for now for reference
+
 const TransferFromAA = () => {
   const { address, blockExplorerUrl } = useUserInfo()
   const { sendTransaction } = useSendTransaction()

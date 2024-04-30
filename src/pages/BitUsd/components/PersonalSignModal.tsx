@@ -14,7 +14,6 @@ import { getTxnErrorMsg } from '@/utils/error'
 import { ActionButton } from './ActionButton'
 import InputBlack from './InputBlack'
 import { ProcessingModal } from './Processing'
-import TransferFromAA from './TransferFromAA'
 
 const PersonalSignModal = () => {
   const { address, blockExplorerUrl } = useUserInfo()
@@ -136,7 +135,9 @@ const PersonalSignModal = () => {
       setTxnStatus(TransactionStatus.Failed)
     }
   }, [txnReceipt?.status, refetchAirdropState])
-  if (!isOpen) return <TransferFromAA />
+
+  if (!isOpen) return null
+
   return (
     <>
       {processingModal}
@@ -164,9 +165,8 @@ const PersonalSignModal = () => {
             )}>
             <h2 className="text-2xl font-semibold">Dear M-bitDisc Owner</h2>
             <p className="text-sm text-white">
-              We will conduct our testnet campaign on networks without AA wallet
-              capability. Please provide an alternative EVM wallet for future
-              exclusive testnet airdrops.
+              You will continue to enjoy the benefits of bitDisc on other L2s.
+              Please provide an alternative EVM wallet if you have not done so.
             </p>
             <div className="flex w-full flex-col gap-y-1.5">
               <p className=" text-left text-[12px]">
@@ -175,7 +175,7 @@ const PersonalSignModal = () => {
               </p>
               <InputBlack
                 errorMessage={addressInputError}
-                placeholder="Input wallet addres"
+                placeholder="Input wallet address"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
               />
