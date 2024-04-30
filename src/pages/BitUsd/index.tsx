@@ -1,13 +1,16 @@
 import { Suspense, useMemo } from 'react'
 import { Outlet } from 'react-router-dom'
 import { isAddressEqual } from 'viem'
+import { useChainId } from 'wagmi'
 
+import { aaSupportedChainIds } from '@/config/chain'
 import { useRegister } from '@/hooks/useRegister'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 import PersonalSignModal from './components/PersonalSignModal'
 
 const BitUsd: React.FC = () => {
+  const currentChainId = useChainId()
   const { enabledFeatures, isConnectedWithAA } = useUserInfo()
   const { airdropState } = useRegister()
 
@@ -33,7 +36,9 @@ const BitUsd: React.FC = () => {
   return (
     <Suspense fallback="...">
       <Outlet />
-      {isConnectedWithAA && airdropStateEqual && <PersonalSignModal />}
+      {isConnectedWithAA &&
+        airdropStateEqual &&
+        aaSupportedChainIds.includes(currentChainId) && <PersonalSignModal />}
     </Suspense>
   )
 }

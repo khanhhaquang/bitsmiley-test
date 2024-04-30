@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader
 } from '@/components/ui/table'
-import { chainsIconUrl } from '@/config/chain'
+import { chainsIconUrl, aaSupportedChainIds } from '@/config/chain'
 import { chainsNotSupportedByParticle } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
@@ -141,18 +141,23 @@ const MintingPairsTable: React.FC<{
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
   const { projectInfo } = useProjectInfo()
+  const { isConnectedWithAA } = useUserInfo()
   const { supportedChains } = useSupportedChains()
 
   const filterSupportedChains = useMemo(
     () =>
-      supportedChains.filter(
-        (s) =>
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.BitSmiley &&
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.bitSmileyQuery
-      ),
-    [projectInfo?.web3Info, supportedChains]
+      supportedChains
+        .filter(
+          (s) =>
+            !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+              ?.BitSmiley &&
+            !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+              ?.bitSmileyQuery
+        )
+        .filter((s) =>
+          isConnectedWithAA ? aaSupportedChainIds.includes(s.id) : true
+        ),
+    [isConnectedWithAA, projectInfo?.web3Info, supportedChains]
   )
 
   return (

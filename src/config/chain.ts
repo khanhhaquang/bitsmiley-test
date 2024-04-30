@@ -24,3 +24,8 @@ export const stakeSupportedChainIds = [
   merlinTestnet.id,
   merlinMainnet.id
 ] as const as number[]
+
+export const aaSupportedChainIds = [
+  merlinTestnet.id,
+  merlinMainnet.id
+] as const as number[]
