@@ -192,7 +192,7 @@ const AirdropModal: React.FC<{
                       renderNodes={() => '...'}
                     />
                   ) : (
-                    formatEther(BigInt(airdropProofAndAmount?.amount || ''))
+                    formatEther(BigInt(airdropProofAndAmount?.amountStr || ''))
                   )}{' '}
                   {selectedAirdrop?.symbol}
                 </div>

@@ -75,11 +75,11 @@ export const useAirdrop = (airdrop?: IAirdrop) => {
     address: airdrop?.airdropContractAddress,
     args:
       !!userAddress &&
-      !!airdropProofAndAmount?.amount &&
+      !!airdropProofAndAmount?.amountStr &&
       !!airdropProofAndAmount?.proof?.length
         ? [
             userAddress,
-            BigInt(airdropProofAndAmount.amount),
+            BigInt(airdropProofAndAmount.amountStr),
             airdropProofAndAmount.proof
           ]
         : undefined,
@@ -102,10 +102,10 @@ export const useAirdrop = (airdrop?: IAirdrop) => {
         address: airdrop.airdropContractAddress,
         functionName: 'claim',
         args:
-          !!airdropProofAndAmount?.amount &&
+          !!airdropProofAndAmount?.amountStr &&
           !!airdropProofAndAmount?.proof?.length
             ? [
-                BigInt(airdropProofAndAmount.amount),
+                BigInt(airdropProofAndAmount.amountStr),
                 airdropProofAndAmount.proof
               ]
             : undefined

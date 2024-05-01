@@ -51,7 +51,7 @@ export interface IFeaturesEnabled {
 export interface IAirdropProofAndAmount {
   airdropContractAddress: Address
   id: number
-  amount: number
+  amountStr: string
   chainId: number
   proof: Hash[]
   userAddress: Address
