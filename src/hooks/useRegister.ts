@@ -8,6 +8,7 @@ export const useRegister = () => {
   const {
     data: airdropState,
     refetch: refetchAirdropState,
+    isLoading: isLoadingAirdropState,
     isFetching: isFetchingAirdropState
   } = useReadRegisterBeneficiaries({
     address: contractAddresses?.register,
@@ -16,6 +17,7 @@ export const useRegister = () => {
   return {
     airdropState,
     refetchAirdropState,
+    isLoadingAirdropState,
     isFetchingAirdropState
   }
 }

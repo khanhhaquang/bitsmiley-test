@@ -154,7 +154,7 @@ const PersonalSignModal = () => {
             <AlertBg />
           </div>
           <button
-            className="absolute right-[13px] top-[11px] flex h-full w-6 shrink-0 justify-center"
+            className="absolute right-[13px] top-[11px] flex h-full w-6 shrink-0 cursor-pointer justify-center"
             onClick={() => setIsOpen(false)}>
             <CloseIcon height={13} width={13} />
           </button>
