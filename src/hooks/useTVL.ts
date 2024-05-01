@@ -3,11 +3,15 @@ import sum from 'lodash/sum'
 import { useMemo } from 'react'
 import { decodeFunctionResult, encodeFunctionData, formatEther } from 'viem'
 
+import { bitSmileyQueryAbi } from '@/contracts/BitSmileyQuery'
+import { erc20Abi } from '@/contracts/ERC20'
+import { oracleAbi } from '@/contracts/Oracle'
 import { vaultAbi } from '@/contracts/Vault'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { formatNumberAsCompact } from '@/utils/number'
 
+// wBtc * price + bitusd
 export const useTVL = () => {
   const { projectInfo } = useProjectInfo()
   const { clients } = useSupportedChains()
@@ -18,13 +22,89 @@ export const useTVL = () => {
       retryDelay: 10000,
       queryKey: ['tvl', client.chain.id],
       queryFn: async () => {
-        const contractAddress = projectInfo?.web3Info.find(
+        const contractAddresses = projectInfo?.web3Info.find(
           (w) => w.chainId === client.chain.id
-        )?.contract.VaultManager
+        )?.contract
+        const vaultManagerContractAddress = contractAddresses?.VaultManager
 
-        if (!contractAddress) return 0n
+        const wBtcAddress = contractAddresses?.WBTC
+        const bitSmileyAddress = contractAddresses?.BitSmiley
+        const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery
+        const oracleAddress = contractAddresses?.oracle
 
-        const debtRes = await client.request({
+        if (
+          !oracleAddress ||
+          !vaultManagerContractAddress ||
+          !wBtcAddress ||
+          !bitSmileyAddress
+        )
+          return 0n
+
+        const wBtcBalanceRes = await client.request({
+          method: 'eth_call',
+          params: [
+            {
+              data: encodeFunctionData({
+                abi: erc20Abi,
+                functionName: 'balanceOf',
+                args: [bitSmileyAddress]
+              }),
+              to: wBtcAddress
+            },
+            'latest'
+          ]
+        })
+
+        const wBtcBalance = decodeFunctionResult({
+          abi: erc20Abi,
+          functionName: 'balanceOf',
+          data: wBtcBalanceRes
+        })
+
+        const collateralsRes = await client.request({
+          method: 'eth_call',
+          params: [
+            {
+              data: encodeFunctionData({
+                abi: bitSmileyQueryAbi,
+                functionName: 'listCollaterals'
+              }),
+              to: bitSmileyQueryAddress
+            },
+            'latest'
+          ]
+        })
+
+        const collaterals = decodeFunctionResult({
+          abi: bitSmileyQueryAbi,
+          functionName: 'listCollaterals',
+          data: collateralsRes
+        })
+
+        const collateralId = collaterals[0]?.collateralId
+
+        const priceRes = await client.request({
+          method: 'eth_call',
+          params: [
+            {
+              data: encodeFunctionData({
+                abi: oracleAbi,
+                functionName: 'getPrice',
+                args: [collateralId]
+              }),
+              to: oracleAddress
+            },
+            'latest'
+          ]
+        })
+
+        const price = decodeFunctionResult({
+          abi: oracleAbi,
+          functionName: 'getPrice',
+          data: priceRes
+        })
+
+        const bitUsdRes = await client.request({
           method: 'eth_call',
           params: [
             {
@@ -32,19 +112,21 @@ export const useTVL = () => {
                 abi: vaultAbi,
                 functionName: 'debt'
               }),
-              to: contractAddress
+              to: vaultManagerContractAddress
             },
             'latest'
           ]
         })
 
-        const debt = decodeFunctionResult({
+        const bitusd = decodeFunctionResult({
           abi: vaultAbi,
           functionName: 'debt',
-          data: debtRes
+          data: bitUsdRes
         })
 
-        return debt
+        if (!price || !wBtcBalance || !bitusd) return 0n
+
+        return price * (wBtcBalance / BigInt(10 ** 18)) + bitusd
       }
     }))
   })
