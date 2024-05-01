@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { formatEther } from 'viem'
 import { useChainId, useSwitchChain } from 'wagmi'
 
 import {
@@ -191,7 +192,7 @@ const AirdropModal: React.FC<{
                       renderNodes={() => '...'}
                     />
                   ) : (
-                    airdropProofAndAmount?.amount
+                    formatEther(BigInt(airdropProofAndAmount?.amount || ''))
                   )}{' '}
                   {selectedAirdrop?.symbol}
                 </div>

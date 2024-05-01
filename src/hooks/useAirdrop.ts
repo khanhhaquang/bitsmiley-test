@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { formatEther, parseEther } from 'viem'
 import { useChainId, useWriteContract } from 'wagmi'
 
 import airdropAbi from '@/abi/BitSmileyMerkleErc20Airdrop.json'
@@ -52,13 +51,7 @@ export const useAirdrop = (airdrop?: IAirdrop) => {
       !!airdrop?.airdropContractAddress &&
       !!userAddress &&
       currentChainId === airdrop.chainId,
-    select: (res) =>
-      !res
-        ? undefined
-        : {
-            ...res.data,
-            amount: formatEther(BigInt(res?.data.amount || ''))
-          }
+    select: (res) => (!res ? undefined : res.data)
   })
 
   const {
@@ -86,7 +79,7 @@ export const useAirdrop = (airdrop?: IAirdrop) => {
       !!airdropProofAndAmount?.proof?.length
         ? [
             userAddress,
-            parseEther(airdropProofAndAmount.amount),
+            BigInt(airdropProofAndAmount.amount),
             airdropProofAndAmount.proof
           ]
         : undefined,
@@ -112,7 +105,7 @@ export const useAirdrop = (airdrop?: IAirdrop) => {
           !!airdropProofAndAmount?.amount &&
           !!airdropProofAndAmount?.proof?.length
             ? [
-                parseEther(airdropProofAndAmount.amount),
+                BigInt(airdropProofAndAmount.amount),
                 airdropProofAndAmount.proof
               ]
             : undefined
