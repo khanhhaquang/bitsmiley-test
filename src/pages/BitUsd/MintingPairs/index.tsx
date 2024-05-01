@@ -21,7 +21,7 @@ import {
   TableHeader
 } from '@/components/ui/table'
 import { chainsIconUrl, aaSupportedChainIds } from '@/config/chain'
-import { chainsNotSupportedByParticle } from '@/config/wagmi'
+import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
@@ -141,23 +141,18 @@ const MintingPairsTable: React.FC<{
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
   const { projectInfo } = useProjectInfo()
-  const { isConnectedWithAA } = useUserInfo()
   const { supportedChains } = useSupportedChains()
 
   const filterSupportedChains = useMemo(
     () =>
-      supportedChains
-        .filter(
-          (s) =>
-            !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-              ?.BitSmiley &&
-            !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-              ?.bitSmileyQuery
-        )
-        .filter((s) =>
-          isConnectedWithAA ? aaSupportedChainIds.includes(s.id) : true
-        ),
-    [isConnectedWithAA, projectInfo?.web3Info, supportedChains]
+      supportedChains.filter(
+        (s) =>
+          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+            ?.BitSmiley &&
+          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
+            ?.bitSmileyQuery
+      ),
+    [projectInfo?.web3Info, supportedChains]
   )
 
   return (
@@ -194,14 +189,25 @@ const MintingPairTableRow: React.FC<{
   table: TTable<IDetailedCollateral>
 }> = ({ collateral, table, isOpened }) => {
   const navigate = useNavigate()
-  const { evmChainId, isConnected } = useUserInfo()
+  const { evmChainId, isConnected, isConnectedWithAA } = useUserInfo()
   const { switchChain } = useSwitchChain()
 
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
 
+  const enterButtonDisabled = useMemo(
+    () =>
+      isConnectedWithAA && !aaSupportedChainIds.includes(collateral.chainId),
+    [collateral.chainId, isConnectedWithAA]
+  )
+
   const handleEnterVault = () => {
-    if (evmChainId && isConnected && collateral.chainId !== evmChainId) {
+    if (
+      !enterButtonDisabled &&
+      evmChainId &&
+      isConnected &&
+      collateral.chainId !== evmChainId
+    ) {
       switchChain(
         { chainId: collateral.chainId },
         {
@@ -257,10 +263,20 @@ const MintingPairTableRow: React.FC<{
           </TableCell>
         ))}
         <TableCell className="flex w-[150px] items-center justify-end gap-x-2">
-          <ActionButton onClick={() => handleEnterVault()}>
+          <ActionButton
+            onClick={() => handleEnterVault()}
+            disabled={enterButtonDisabled}>
             <span className="flex items-center gap-x-2">
               Enter
-              <ArrowRightDoubleIcon />
+              {enterButtonDisabled ? (
+                <InfoIndicator
+                  message={`AA wallet is not currently supported on ${customChains.find(
+                    (c) => c.id === collateral.chainId
+                  )?.name}`}
+                />
+              ) : (
+                <ArrowRightDoubleIcon />
+              )}
             </span>
           </ActionButton>
         </TableCell>
