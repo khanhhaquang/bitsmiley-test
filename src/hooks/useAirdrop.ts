@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { parseGwei } from 'viem'
 import { useChainId, useWriteContract } from 'wagmi'
 
 import airdropAbi from '@/abi/BitSmileyMerkleErc20Airdrop.json'
-import { HIGH_GAS_FEE_CHAIN_IDS } from '@/config/chain'
 import {
   useReadAirdropCanClaim,
   useReadAirdropClaimed
@@ -103,9 +101,6 @@ export const useAirdrop = (airdrop?: IAirdrop) => {
         abi: airdropAbi,
         address: airdrop.airdropContractAddress,
         functionName: 'claim',
-        maxPriorityFeePerGas: HIGH_GAS_FEE_CHAIN_IDS.includes(currentChainId)
-          ? parseGwei('0.1')
-          : undefined,
         args:
           !!airdropProofAndAmount?.amountStr &&
           !!airdropProofAndAmount?.proof?.length
