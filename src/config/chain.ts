@@ -29,3 +29,8 @@ export const aaSupportedChainIds = [
   merlinTestnet.id,
   merlinMainnet.id
 ] as const as number[]
+
+export const HIGH_GAS_FEE_CHAIN_IDS = [
+  bitLayerTestnet.id,
+  bitLayerMainnet.id
+] as const as number[]
