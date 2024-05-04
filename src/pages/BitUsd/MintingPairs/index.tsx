@@ -211,7 +211,8 @@ const MintingPairTableRow: React.FC<{
       switchChain(
         { chainId: collateral.chainId },
         {
-          onSuccess: () => {
+          onSuccess: (newChain) => {
+            console.log('Switched to: ', newChain.id)
             navigate(`./vault/${collateral.chainId}/${collateral.collateralId}`)
           },
           onError: () => {
@@ -236,7 +237,7 @@ const MintingPairTableRow: React.FC<{
     !isOpened || !collateral?.healthFactor ? 0 : Number(collateral.healthFactor)
 
   const isInLiquidationRisk = useMemo(
-    // TODO confirm when to show this message
+    //TODO: confirm when to show this message
     () => isOpened && !!healthFactor && healthFactor < 120,
     [healthFactor, isOpened]
   )
