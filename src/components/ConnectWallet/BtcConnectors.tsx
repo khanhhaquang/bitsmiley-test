@@ -2,7 +2,7 @@ import { useConnector, useETHProvider } from '@particle-network/btc-connectkit'
 import { useEffect, useMemo, useState } from 'react'
 import { useConnect } from 'wagmi'
 
-import { WALLETSITE } from '@/config/links'
+import { WALLET_SITE } from '@/config/links'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useEvmConnectors } from '@/hooks/useEvmConnectors'
 import { LoginType } from '@/types/common'
@@ -11,19 +11,17 @@ import { setLocalStorage } from '@/utils/storage'
 
 import { WalletItem } from '.'
 
-type EvmConnectorProps = {
+type BtcConnectorsProps = {
   onClose: () => void
-  hideParticle?: boolean
   expectedChainId?: number
 }
 
-const EvmConnector: React.FC<EvmConnectorProps> = ({
+const BtcConnectors: React.FC<BtcConnectorsProps> = ({
   onClose,
-  hideParticle,
   expectedChainId
 }) => {
   const { connect } = useConnect()
-  const { okxConnector, unisatConnector, metaMaskConnector } =
+  const { okxWithParticleConnector: okxConnector, unisatConnector } =
     useEvmConnectors()
   const { connect: connectParticle } = useConnector()
 
@@ -58,60 +56,34 @@ const EvmConnector: React.FC<EvmConnectorProps> = ({
 
   return (
     <>
-      {!hideParticle && (
-        <>
-          <WalletItem
-            iconName="okx"
-            name="OKX wallet"
-            connect={() => {
-              if (!window.okxwallet) {
-                openUrl(WALLETSITE.okx)
-                return
-              }
-
-              connectParticle(LoginType.OKX)
-              setLoginType(LoginType.OKX)
-            }}
-          />
-          <WalletItem
-            iconName="unisat"
-            name="UniSat wallet"
-            connect={async () => {
-              if (!window.unisat) {
-                openUrl(WALLETSITE.unisat)
-                return
-              }
-
-              connectParticle(LoginType.UNISAT)
-              setLoginType(LoginType.UNISAT)
-            }}
-          />
-        </>
-      )}
       <WalletItem
-        iconName="metamask"
-        name="MetaMask wallet"
+        iconName="okx"
+        name="OKX"
         connect={() => {
-          if (
-            typeof window.ethereum === 'undefined' ||
-            !window.ethereum?.isMetaMask
-          ) {
-            openUrl(WALLETSITE.metamask)
+          if (!window.okxwallet) {
+            openUrl(WALLET_SITE.okx)
             return
           }
 
-          if (!metaMaskConnector) return
+          connectParticle(LoginType.OKX)
+          setLoginType(LoginType.OKX)
+        }}
+      />
+      <WalletItem
+        iconName="unisat"
+        name="Unisat"
+        connect={async () => {
+          if (!window.unisat) {
+            openUrl(WALLET_SITE.unisat)
+            return
+          }
 
-          connect(
-            { connector: metaMaskConnector, chainId: expectedChainId },
-            { onError: (v) => console.log('connect error: ', v) }
-          )
-          setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.METAMASK)
-          onClose()
+          connectParticle(LoginType.UNISAT)
+          setLoginType(LoginType.UNISAT)
         }}
       />
     </>
   )
 }
 
-export default EvmConnector
+export default BtcConnectors

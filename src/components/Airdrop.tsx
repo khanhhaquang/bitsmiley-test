@@ -93,7 +93,8 @@ const AirdropModal: React.FC<{
           onSuccess: () => {
             setSelectedAirdrop(i)
           },
-          onError: () => {
+          onError: (e) => {
+            console.log('🚀 ~ handleOnSelect ~ e:', e)
             onClose()
             console.error('Switching network failed')
           }

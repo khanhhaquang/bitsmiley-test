@@ -5,7 +5,7 @@ export const MEDIA = {
   discord: 'https://t.co/aPAAAET2O3'
 }
 
-export const WALLETSITE = {
+export const WALLET_SITE = {
   okx: 'https://www.okx.com/help/use-the-okx-wallet-web-extension-to-easily-play-stader',
   unisat: 'https://unisat.io/',
   metamask: 'https://metamask.io/download/'
