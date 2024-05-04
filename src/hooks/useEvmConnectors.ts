@@ -39,12 +39,13 @@ export const useEvmConnectors = () => {
     chainId: evmChainId,
     provider: particleEvmProvider
   } = useETHProvider()
+  console.log('🚀 ~ useEvmConnectors ~ evmAccount:', evmAccount)
 
   const { getNetwork, switchNetwork } = useBTCProvider()
 
   const okxWithParticleConnector = useMemo(
     () =>
-      !particleEvmProvider || !evmAccount
+      !particleEvmProvider
         ? undefined
         : injected({
             target: () => ({
@@ -54,12 +55,12 @@ export const useEvmConnectors = () => {
               provider: particleEvmProvider as any
             })
           }),
-    [evmAccount, particleEvmProvider]
+    [particleEvmProvider]
   )
 
   const unisatConnector = useMemo(
     () =>
-      !particleEvmProvider || !evmAccount
+      !particleEvmProvider
         ? undefined
         : injected({
             target: () => ({
@@ -69,7 +70,7 @@ export const useEvmConnectors = () => {
               provider: particleEvmProvider as any
             })
           }),
-    [evmAccount, particleEvmProvider]
+    [particleEvmProvider]
   )
 
   const metaMaskConnector = useMemo(
@@ -82,12 +83,13 @@ export const useEvmConnectors = () => {
     [connectors]
   )
 
+  const chain = useMemo(
+    () => customChains.find((c) => c.id === evmChainId),
+    [evmChainId]
+  )
+
   useEffect(() => {
-    if (!evmAccount || !evmChainId) return
-
-    const chain = customChains.find((c) => c.id === evmChainId)
-
-    if (!chain) return
+    if (!evmAccount || !chain) return
 
     getNetwork().then((network) => {
       if (chain.testnet && network === 'livenet') {
@@ -99,12 +101,15 @@ export const useEvmConnectors = () => {
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evmAccount, evmChainId])
+  }, [evmAccount, chain])
 
   return {
-    okxConnector,
+    // FOR BTC
     okxWithParticleConnector,
+    unisatConnector,
+
+    // FOR EVM
     metaMaskConnector,
-    unisatConnector
+    okxConnector
   }
 }

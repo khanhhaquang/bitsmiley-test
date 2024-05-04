@@ -27,7 +27,8 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
 
   const [loginType, setLoginType] = useState<LoginType>()
 
-  const { evmAccount, provider: particleEvmProvider } = useETHProvider()
+  const { evmAccount: particleEvmAccount, provider: particleEvmProvider } =
+    useETHProvider()
 
   const connector = useMemo(() => {
     if (loginType === LoginType.OKX) return okxConnector
@@ -36,7 +37,8 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
   }, [loginType, okxConnector, unisatConnector])
 
   useEffect(() => {
-    if (!loginType || !evmAccount || !particleEvmProvider || !connector) return
+    if (!loginType || !particleEvmAccount || !particleEvmProvider || !connector)
+      return
 
     connect(
       { connector, chainId: expectedChainId },
@@ -47,10 +49,10 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
   }, [
     connect,
     connector,
-    evmAccount,
-    expectedChainId,
     loginType,
     onClose,
+    expectedChainId,
+    particleEvmAccount,
     particleEvmProvider
   ])
 

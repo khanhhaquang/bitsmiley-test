@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from 'react'
 import { useConnect } from 'wagmi'
 
 import { WALLET_SITE } from '@/config/links'
@@ -21,25 +20,6 @@ const EvmConnectors: React.FC<EvmConnectorProps> = ({
 }) => {
   const { connect } = useConnect()
   const { okxConnector, metaMaskConnector } = useEvmConnectors()
-
-  const [loginType] = useState<LoginType>()
-
-  const connector = useMemo(() => {
-    if (loginType === LoginType.OKX) return okxConnector
-    if (loginType === LoginType.METAMASK) return metaMaskConnector
-    return undefined
-  }, [loginType, metaMaskConnector, okxConnector])
-
-  useEffect(() => {
-    if (!loginType || !connector) return
-
-    connect(
-      { connector, chainId: expectedChainId },
-      { onError: (v) => console.log('connect error: ', v) }
-    )
-    setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, loginType)
-    onClose()
-  }, [connect, connector, expectedChainId, loginType, onClose])
 
   return (
     <>
@@ -81,7 +61,7 @@ const EvmConnectors: React.FC<EvmConnectorProps> = ({
             { connector: okxConnector, chainId: expectedChainId },
             { onError: (v) => console.log('connect error: ', v) }
           )
-          setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.OKX)
+          setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.OKX_EVM)
           onClose()
         }}
       />
