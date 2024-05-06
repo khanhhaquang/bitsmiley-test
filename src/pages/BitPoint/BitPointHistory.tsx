@@ -75,7 +75,7 @@ const BitPointHistory: React.FC = () => {
             <TableRow className="border-b border-white/20 px-3 py-2 text-white/50 [&_th]:p-0">
               <TableHead>bitPoint Sources</TableHead>
               <TableHead>Mint bitUSD</TableHead>
-              {/* <TableHead className="w-16">Stake</TableHead> */}
+              <TableHead className="w-16">Stake</TableHead>
               <TableHead>Liquidity</TableHead>
               <TableHead>Team boost</TableHead>
               <TableHead>bitDisc boost</TableHead>
@@ -99,10 +99,10 @@ const BitPointHistory: React.FC = () => {
                   {v.mintBitUSD !== TABLE_PLACE_HOLDER &&
                     `+${formatNumberWithSeparator(v.mintBitUSD)}`}
                 </TableCell>
-                {/* <TableCell className="w-16">
+                <TableCell className="w-16">
                   {v.stake !== TABLE_PLACE_HOLDER &&
                     `+${formatNumberWithSeparator(v.stake)}`}
-                </TableCell> */}
+                </TableCell>
                 <TableCell className="w-16">
                   {v.liquidity !== TABLE_PLACE_HOLDER &&
                     `+${formatNumberWithSeparator(v.liquidity)}`}
