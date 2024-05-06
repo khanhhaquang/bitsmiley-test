@@ -7,7 +7,7 @@ import { LoginType } from '@/types/common'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { setLocalStorage } from '@/utils/storage'
 
-import { WalletItem } from '.'
+import WalletItem from './WalletItem'
 
 type EvmConnectorProps = {
   onClose: () => void
