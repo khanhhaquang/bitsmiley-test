@@ -15,7 +15,8 @@
     "preview": "vite preview",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "analyze": "npx vite-bundle-visualizer"
+    "analyze": "npx vite-bundle-visualizer",
+    "generateContractHooks": "npx wagmi generate"
   },
   "simple-git-hooks": {
     "pre-commit": "npm run lint"
@@ -78,5 +79,9 @@
     "vite": "^5.0.8",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-svgr": "^4.2.0"
+  },
+  "engines": {
+    "npm": ">=9.0.0",
+    "node": ">=18.0.0"
   }
 }
