@@ -1,5 +1,12 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
-import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
+import {
+  CSSProperties,
+  Fragment,
+  memo,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import { useAccount } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
@@ -17,7 +24,8 @@ import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 
-import EvmConnector from './EvmConnector'
+import BtcConnectors from './BtcConnectors'
+import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
 
@@ -142,6 +150,22 @@ export const SelectWalletModal: React.FC<{
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
 
+  const WalletTitle = memo(({ title }: { title: string }) => {
+    return (
+      <div className="flex items-center justify-center gap-x-1">
+        <div className="flex w-[62px] flex-col gap-y-1">
+          <p className="h-[1px] w-full bg-white/50" />
+          <p className="h-[1px] w-full bg-white/50" />
+        </div>
+        <span className="font-psm text-lg ">{title}</span>
+        <div className="flex w-[62px] flex-col gap-y-1">
+          <p className="h-[1px] w-full bg-white/50" />
+          <p className="h-[1px] w-full bg-white/50" />
+        </div>
+      </div>
+    )
+  })
+
   useEffect(() => {
     if (isConfirmed) {
       setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER, 'true')
@@ -156,22 +180,26 @@ export const SelectWalletModal: React.FC<{
           className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
         />
         <div className="p-11">
-          <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
-          <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
-            We are working on adding more wallets. Don’t have any wallet listed
-            here? Select a provider below to create one.
-          </div>
-          {hideParticle && (
-            <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm text-yellow">
-              Unitsat and OKX wallets are not supported now for BOB network.
+          <h2 className="mb-9 text-center font-smb text-2xl text-white">
+            CONNECT WALLET
+          </h2>
+          <div className="flex gap-x-6">
+            {!hideParticle && (
+              <div className="flex flex-col items-center gap-y-6">
+                <WalletTitle title="BTC Wallet" />
+                <BtcConnectors
+                  onClose={onClose}
+                  expectedChainId={expectedChainId}
+                />
+              </div>
+            )}
+            <div className="flex flex-col items-center gap-y-6">
+              <WalletTitle title="EVM Wallet" />
+              <EvmConnectors
+                onClose={onClose}
+                expectedChainId={expectedChainId}
+              />
             </div>
-          )}
-          <div className="flex flex-col gap-y-6">
-            <EvmConnector
-              onClose={onClose}
-              hideParticle={hideParticle}
-              expectedChainId={expectedChainId}
-            />
           </div>
         </div>
       </>
@@ -223,43 +251,9 @@ export const SelectWalletModal: React.FC<{
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={!!isConfirmed}>
-      <div className="relative border border-white/50 bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+      <div className="relative border bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         {isConfirmed ? renderWallets() : renderDisclaimer()}
       </div>
     </Modal>
-  )
-}
-
-export const WalletItem: React.FC<{
-  connect: () => void
-  name: string
-  iconName: string
-}> = ({ connect, name, iconName }) => {
-  return (
-    <div
-      className="relative flex h-[58px] cursor-pointer items-center gap-x-3 border-y-2 border-white bg-black py-2.5 pl-5"
-      onClick={connect}>
-      <Image
-        src={getIllustrationUrl(iconName)}
-        className="aspect-square size-7"
-      />
-      <svg
-        className="absolute -left-2"
-        width="10"
-        height="56"
-        viewBox="0 0 10 58"
-        fill="none">
-        <path d="M5 0H10V58H5V53H0V5H5V0Z" fill="currentColor" />
-      </svg>
-      <svg
-        className="absolute -right-2"
-        width="10"
-        height="56"
-        viewBox="0 0 10 58"
-        fill="none">
-        <path d="M10 53V5H5.00037V0H0V58H5.00037V53H10Z" fill="currentColor" />
-      </svg>
-      <span className="font-psm text-2xl">{name}</span>
-    </div>
   )
 }

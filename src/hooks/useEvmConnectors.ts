@@ -3,6 +3,7 @@ import {
   useETHProvider
 } from '@particle-network/btc-connectkit'
 import { useEffect, useMemo, useSyncExternalStore } from 'react'
+import { useConnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 
 import { customChains } from '@/config/wagmi'
@@ -20,11 +21,18 @@ export const useSyncProviders = () =>
   )
 
 export const useEvmConnectors = () => {
-  const providersWithDetail = useSyncProviders()
+  const { connectors } = useConnect()
+  // const providersWithDetail = useSyncProviders()
 
-  const metamaskProviderWithDetail = providersWithDetail.find(
-    (p) => p.info.rdns === METAMASK_RDNS
-  )
+  // const metamaskProviderDetail = useMemo(
+  //   () => providersWithDetail.find((p) => p.info.rdns === METAMASK_RDNS),
+  //   [providersWithDetail]
+  // )
+
+  // const okxProviderDetail = useMemo(
+  //   () => providersWithDetail.find((p) => p.info.rdns === OKX_RDNS),
+  //   [providersWithDetail]
+  // )
 
   const {
     evmAccount,
@@ -34,9 +42,9 @@ export const useEvmConnectors = () => {
 
   const { getNetwork, switchNetwork } = useBTCProvider()
 
-  const okxConnector = useMemo(
+  const okxWithParticleConnector = useMemo(
     () =>
-      !particleEvmProvider || !evmAccount
+      !particleEvmProvider
         ? undefined
         : injected({
             target: () => ({
@@ -46,12 +54,12 @@ export const useEvmConnectors = () => {
               provider: particleEvmProvider as any
             })
           }),
-    [evmAccount, particleEvmProvider]
+    [particleEvmProvider]
   )
 
   const unisatConnector = useMemo(
     () =>
-      !particleEvmProvider || !evmAccount
+      !particleEvmProvider
         ? undefined
         : injected({
             target: () => ({
@@ -61,30 +69,26 @@ export const useEvmConnectors = () => {
               provider: particleEvmProvider as any
             })
           }),
-    [evmAccount, particleEvmProvider]
+    [particleEvmProvider]
   )
 
   const metaMaskConnector = useMemo(
-    () =>
-      !metamaskProviderWithDetail
-        ? undefined
-        : injected({
-            target: () => ({
-              id: METAMASK_RDNS,
-              name: metamaskProviderWithDetail.info.name,
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              provider: metamaskProviderWithDetail.provider as any
-            })
-          }),
-    [metamaskProviderWithDetail]
+    () => connectors.find((c) => c.id === METAMASK_RDNS),
+    [connectors]
+  )
+
+  const okxConnector = useMemo(
+    () => connectors.find((c) => c.id === OKX_RDNS),
+    [connectors]
+  )
+
+  const chain = useMemo(
+    () => customChains.find((c) => c.id === evmChainId),
+    [evmChainId]
   )
 
   useEffect(() => {
-    if (!evmAccount || !evmChainId) return
-
-    const chain = customChains.find((c) => c.id === evmChainId)
-
-    if (!chain) return
+    if (!evmAccount || !chain) return
 
     getNetwork().then((network) => {
       if (chain.testnet && network === 'livenet') {
@@ -96,11 +100,15 @@ export const useEvmConnectors = () => {
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evmAccount, evmChainId])
+  }, [evmAccount, chain])
 
   return {
-    okxConnector,
+    // FOR BTC
+    okxWithParticleConnector,
+    unisatConnector,
+
+    // FOR EVM
     metaMaskConnector,
-    unisatConnector
+    okxConnector
   }
 }

@@ -3,7 +3,7 @@ import {
   useConnector as useParticleConnector
 } from '@particle-network/btc-connectkit'
 import { useCallback, useEffect, useState } from 'react'
-import { CreateConnectorFn, useConfig } from 'wagmi'
+import { Connector, CreateConnectorFn, useConfig } from 'wagmi'
 import { reconnect as reconnectWagmi } from 'wagmi/actions'
 
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
@@ -17,15 +17,19 @@ const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
 
 export const useReconnectEvm = () => {
   const config = useConfig()
-  const { isConnected: isConnectedWagmi } = useUserInfo()
-  const { unisatConnector, okxConnector, metaMaskConnector } =
-    useEvmConnectors()
+  const { isConnected: isEvmConnected } = useUserInfo()
+  const {
+    unisatConnector,
+    okxWithParticleConnector,
+    okxConnector,
+    metaMaskConnector
+  } = useEvmConnectors()
   const [isError, setIsError] = useState(false)
   const { evmAccount: particleEvmAddress } = useETHProvider()
   const { connect: connectParticle } = useParticleConnector()
 
   const reconnect = useCallback(
-    (connector: CreateConnectorFn) => {
+    (connector: CreateConnectorFn | Connector) => {
       reconnectWagmi(config, { connectors: [connector] })
         .then((result) => {
           console.log('reconnect: ', result)
@@ -39,7 +43,9 @@ export const useReconnectEvm = () => {
   )
 
   useEffect(() => {
-    if (isConnectedWagmi || !!particleEvmAddress) return
+    console.log('🚀 ~ useEffect ~ isEvmConnected:', isEvmConnected)
+
+    if (isEvmConnected || !!particleEvmAddress) return
 
     if (localLoginType === LoginType.OKX) {
       connectParticle('okx')
@@ -53,31 +59,33 @@ export const useReconnectEvm = () => {
 
   useEffect(() => {
     if (
-      localLoginType !== LoginType.OKX ||
-      !okxConnector ||
-      !particleEvmAddress
+      localLoginType === LoginType.OKX &&
+      okxWithParticleConnector &&
+      particleEvmAddress
     )
-      return
-
-    reconnect(okxConnector)
-  }, [config, okxConnector, particleEvmAddress, reconnect])
+      reconnect(okxWithParticleConnector)
+  }, [config, okxWithParticleConnector, particleEvmAddress, reconnect])
 
   useEffect(() => {
     if (
-      localLoginType !== LoginType.UNISAT ||
-      !unisatConnector ||
-      !particleEvmAddress
+      localLoginType === LoginType.UNISAT &&
+      unisatConnector &&
+      particleEvmAddress
     )
-      return
-
-    reconnect(unisatConnector)
+      reconnect(unisatConnector)
   }, [particleEvmAddress, reconnect, unisatConnector])
 
   useEffect(() => {
-    if (localLoginType !== LoginType.METAMASK || !metaMaskConnector) return
+    if (localLoginType === LoginType.METAMASK && metaMaskConnector) {
+      reconnect(metaMaskConnector)
+      return
+    }
 
-    reconnect(metaMaskConnector)
-  }, [metaMaskConnector, reconnect])
+    if (localLoginType === LoginType.OKX_EVM && okxConnector) {
+      reconnect(okxConnector)
+      return
+    }
+  }, [metaMaskConnector, okxConnector, particleEvmAddress, reconnect])
 
   return { isError, setIsError }
 }
