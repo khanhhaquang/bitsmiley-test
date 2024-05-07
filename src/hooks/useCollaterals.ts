@@ -29,6 +29,7 @@ import { useProjectInfo } from './useProjectInfo'
 import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
 
+//TODO: change the way we'r fetching
 export const useCollaterals = (chainId: number, collateralId?: string) => {
   const { address } = useUserInfo()
   const { projectInfo } = useProjectInfo()
