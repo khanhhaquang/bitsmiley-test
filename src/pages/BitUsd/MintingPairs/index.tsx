@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Chain } from 'viem'
 import { useSwitchChain } from 'wagmi'
 
 import {
@@ -23,8 +22,6 @@ import {
 import { chainsIconUrl, aaSupportedChainIds } from '@/config/chain'
 import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
-import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IDetailedCollateral } from '@/types/vault'
 import { cn } from '@/utils/cn'
@@ -52,32 +49,29 @@ const MintingPairs: React.FC = () => {
 }
 
 const ChainPairsTable: React.FC<{
-  chain: Chain
   index: number
   table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
-}> = ({ chain, index, table, isOpenedVaults }) => {
+}> = ({ index, table, isOpenedVaults }) => {
+
   const {
-    isFetching,
     availableCollaterals,
     openedCollaterals,
-    isError,
-    isSuccess
-  } = useCollaterals(chain.id)
+  } = useCollaterals()
 
-  const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
+  const result = isOpenedVaults ? openedCollaterals[index] : availableCollaterals[index]
 
   const hideHeaderChainName = useMemo(
-    () => isSuccess && !collaterals.length,
-    [collaterals.length, isSuccess]
+    () => result.isSuccess && !result.collaterals.length,
+    [result.collaterals.length, result.isSuccess]
   )
 
   const rows = useMemo(() => {
-    if (!collaterals.length) {
+    if (!result.collaterals.length) {
       return null
     }
 
-    return collaterals.map((collateral) => (
+    return result.collaterals.map((collateral) => (
       <MintingPairTableRow
         key={collateral.collateralId}
         table={table}
@@ -85,7 +79,7 @@ const ChainPairsTable: React.FC<{
         collateral={collateral}
       />
     ))
-  }, [collaterals, table])
+  }, [result.collaterals, table])
 
   return (
     <Table
@@ -101,7 +95,7 @@ const ChainPairsTable: React.FC<{
           ).map(({ key, title, message, titleClassName, formatTitle }) => (
             <TableHead key={key} className={titleClassName}>
               {title ||
-                formatTitle?.(hideHeaderChainName ? undefined : chain.id)}{' '}
+                formatTitle?.(hideHeaderChainName ? undefined : result.chain!.id)}{' '}
               <InfoIndicator message={message} />
             </TableHead>
           ))}
@@ -109,7 +103,7 @@ const ChainPairsTable: React.FC<{
         </TableRow>
       </TableHeader>
       <TableBody>
-        {isFetching ? (
+        {result.isFetching ? (
           <TableRow className="my-6">
             <TableCell
               width="100%"
@@ -118,13 +112,13 @@ const ChainPairsTable: React.FC<{
               we are fetching more on-chain data...
             </TableCell>
           </TableRow>
-        ) : isError ? (
+        ) : result.isError ? (
           <TableRow className="my-6">
             <TableCell
               width="100%"
               align="center"
               className="text-sm text-white/70">
-              {chain.name} network is currently unreachable. All data will be
+              {result.chain!.name} network is currently unreachable. All data will be
               accessible once connected.
             </TableCell>
           </TableRow>
@@ -140,46 +134,41 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
-  const { projectInfo } = useProjectInfo()
-  const { supportedChains } = useSupportedChains()
+  const {
+    availableCollaterals,
+    openedCollaterals,
+  } = useCollaterals()
 
-  const filterSupportedChains = useMemo(
-    () =>
-      supportedChains.filter(
-        (s) =>
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.BitSmiley &&
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.bitSmileyQuery
-      ),
-    [projectInfo?.web3Info, supportedChains]
-  )
+  const result = isOpenedVaults ? openedCollaterals : availableCollaterals
 
   return (
-    <div className="w-full">
-      <div className="mb-6">
-        {isOpenedVaults ? (
-          <VaultTitleBlue>My Vaults</VaultTitleBlue>
-        ) : (
-          <VaultTitleWhite>Available minting pairs</VaultTitleWhite>
-        )}
-      </div>
-      <div className="w-full px-5">
-        <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
-          {filterSupportedChains.map((c, index) => (
-            <ChainPairsTable
-              isOpenedVaults={isOpenedVaults}
-              key={c.id}
-              index={index}
-              chain={c}
-              table={table}
-            />
-          ))}
-          <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
-          <RightAngleVaultIcon className="absolute bottom-1.5 right-1.5 -rotate-90 text-grey9" />
+    <>
+      {result.length > 0 && (
+        <div className="w-full">
+          <div className="mb-6">
+            {isOpenedVaults ? (
+              <VaultTitleBlue>My Vaults</VaultTitleBlue>
+            ) : (
+              <VaultTitleWhite>Available minting pairs</VaultTitleWhite>
+            )}
+          </div>
+          <div className="w-full px-5">
+            <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
+              {result.map((r, index) => (
+                <ChainPairsTable
+                  isOpenedVaults={isOpenedVaults}
+                  key={r.chainId}
+                  index={index}
+                  table={table}
+                />
+              ))}
+              <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
+              <RightAngleVaultIcon className="absolute bottom-1.5 right-1.5 -rotate-90 text-grey9" />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   )
 }
 
