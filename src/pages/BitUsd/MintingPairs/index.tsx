@@ -49,29 +49,26 @@ const MintingPairs: React.FC = () => {
 }
 
 const ChainPairsTable: React.FC<{
+  chainId?: number
   index: number
   table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
-}> = ({ index, table, isOpenedVaults }) => {
+}> = ({ chainId, index, table, isOpenedVaults }) => {
+  const { availableCollaterals, openedCollaterals } = useCollaterals()
+  const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
 
-  const {
-    availableCollaterals,
-    openedCollaterals,
-  } = useCollaterals()
-
-  const result = isOpenedVaults ? openedCollaterals[index] : availableCollaterals[index]
-
+  const chainCollerals = collaterals.find((c) => c.chainId === chainId)
   const hideHeaderChainName = useMemo(
-    () => result.isSuccess && !result.collaterals.length,
-    [result.collaterals.length, result.isSuccess]
+    () => chainCollerals?.isSuccess && !chainCollerals?.collaterals.length,
+    [chainCollerals?.collaterals.length, chainCollerals?.isSuccess]
   )
 
   const rows = useMemo(() => {
-    if (!result.collaterals.length) {
+    if (!chainCollerals?.collaterals.length) {
       return null
     }
 
-    return result.collaterals.map((collateral) => (
+    return chainCollerals?.collaterals.map((collateral) => (
       <MintingPairTableRow
         key={collateral.collateralId}
         table={table}
@@ -79,7 +76,7 @@ const ChainPairsTable: React.FC<{
         collateral={collateral}
       />
     ))
-  }, [result.collaterals, table])
+  }, [chainCollerals?.collaterals, table])
 
   return (
     <Table
@@ -95,7 +92,9 @@ const ChainPairsTable: React.FC<{
           ).map(({ key, title, message, titleClassName, formatTitle }) => (
             <TableHead key={key} className={titleClassName}>
               {title ||
-                formatTitle?.(hideHeaderChainName ? undefined : result.chain!.id)}{' '}
+                formatTitle?.(
+                  hideHeaderChainName ? undefined : chainCollerals?.chain?.id
+                )}{' '}
               <InfoIndicator message={message} />
             </TableHead>
           ))}
@@ -103,7 +102,7 @@ const ChainPairsTable: React.FC<{
         </TableRow>
       </TableHeader>
       <TableBody>
-        {result.isFetching ? (
+        {chainCollerals?.isFetching ? (
           <TableRow className="my-6">
             <TableCell
               width="100%"
@@ -112,14 +111,14 @@ const ChainPairsTable: React.FC<{
               we are fetching more on-chain data...
             </TableCell>
           </TableRow>
-        ) : result.isError ? (
+        ) : chainCollerals?.isError ? (
           <TableRow className="my-6">
             <TableCell
               width="100%"
               align="center"
               className="text-sm text-white/70">
-              {result.chain!.name} network is currently unreachable. All data will be
-              accessible once connected.
+              {chainCollerals?.chain?.name} network is currently unreachable.
+              All data will be accessible once connected.
             </TableCell>
           </TableRow>
         ) : (
@@ -134,16 +133,13 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
-  const {
-    availableCollaterals,
-    openedCollaterals,
-  } = useCollaterals()
+  const { availableCollaterals, openedCollaterals } = useCollaterals()
 
-  const result = isOpenedVaults ? openedCollaterals : availableCollaterals
+  const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
 
   return (
     <>
-      {result.length > 0 && (
+      {collaterals.length > 0 && (
         <div className="w-full">
           <div className="mb-6">
             {isOpenedVaults ? (
@@ -154,12 +150,13 @@ const MintingPairsTable: React.FC<{
           </div>
           <div className="w-full px-5">
             <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
-              {result.map((r, index) => (
+              {collaterals.map((c, index) => (
                 <ChainPairsTable
                   isOpenedVaults={isOpenedVaults}
-                  key={r.chainId}
+                  key={c.chainId}
                   index={index}
                   table={table}
+                  chainId={c.chainId}
                 />
               ))}
               <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
