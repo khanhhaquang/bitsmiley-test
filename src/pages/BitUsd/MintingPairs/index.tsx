@@ -39,13 +39,16 @@ import {
 } from '../tables'
 
 const MintingPairs: React.FC = () => {
+  const { hasOpenedCollaterals } = useCollaterals()
   return (
     <div
       className={cn(
         'scrollbar-none flex size-full flex-col items-center gap-y-12 overflow-y-auto overscroll-contain py-11',
         'pt-22'
       )}>
-      <MintingPairsTable isOpenedVaults table={MyVaultsMintingPairsTable} />
+      {hasOpenedCollaterals && (
+        <MintingPairsTable isOpenedVaults table={MyVaultsMintingPairsTable} />
+      )}
       <MintingPairsTable table={AvailableMintingPairsTable} />
     </div>
   )
@@ -140,8 +143,6 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
-  const { hasOpenedCollaterals } = useCollaterals()
-
   const { projectInfo } = useProjectInfo()
   const { supportedChains } = useSupportedChains()
 
@@ -158,34 +159,30 @@ const MintingPairsTable: React.FC<{
   )
 
   return (
-    <>
-      {((isOpenedVaults && hasOpenedCollaterals) || !isOpenedVaults) && (
-        <div className="w-full">
-          <div className="mb-6">
-            {isOpenedVaults ? (
-              <VaultTitleBlue>My Vaults</VaultTitleBlue>
-            ) : (
-              <VaultTitleWhite>Available minting pairs</VaultTitleWhite>
-            )}
-          </div>
-          <div className="w-full px-5">
-            <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
-              {filterSupportedChains.map((c, index) => (
-                <ChainPairsTable
-                  isOpenedVaults={isOpenedVaults}
-                  key={c.id}
-                  index={index}
-                  chain={c}
-                  table={table}
-                />
-              ))}
-              <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
-              <RightAngleVaultIcon className="absolute bottom-1.5 right-1.5 -rotate-90 text-grey9" />
-            </div>
-          </div>
+    <div className="w-full">
+      <div className="mb-6">
+        {isOpenedVaults ? (
+          <VaultTitleBlue>My Vaults</VaultTitleBlue>
+        ) : (
+          <VaultTitleWhite>Available minting pairs</VaultTitleWhite>
+        )}
+      </div>
+      <div className="w-full px-5">
+        <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
+          {filterSupportedChains.map((c, index) => (
+            <ChainPairsTable
+              isOpenedVaults={isOpenedVaults}
+              key={c.id}
+              index={index}
+              chain={c}
+              table={table}
+            />
+          ))}
+          <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
+          <RightAngleVaultIcon className="absolute bottom-1.5 right-1.5 -rotate-90 text-grey9" />
         </div>
-      )}
-    </>
+      </div>
+    </div>
   )
 }
 

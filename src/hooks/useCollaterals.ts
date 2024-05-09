@@ -1,4 +1,4 @@
-import { useQueries } from '@tanstack/react-query'
+import { useQueries, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useCallback } from 'react'
 import {
   decodeFunctionResult,
@@ -34,6 +34,7 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   const { address } = useUserInfo()
   const { projectInfo } = useProjectInfo()
   const { clients } = useSupportedChains()
+  const queryClient = useQueryClient()
 
   const filterClients = useMemo(
     () =>
@@ -349,28 +350,33 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
 
   const refetch = useCallback(() => {
     if (!chainId) return
-    queryRes.find((item) => item.data?.chainId === chainId)?.refetch()
-  }, [chainId, queryRes])
+    queryClient.refetchQueries({ queryKey: [chainId, 'collaterals', address] })
+  }, [chainId, queryClient, address])
 
   const isFetching = useMemo(() => {
     if (!chainId) return false
-    return queryRes.find((item) => item.data?.chainId === chainId)?.isFetching
-  }, [chainId, queryRes])
+    return queryClient.isFetching({
+      queryKey: [chainId, 'collaterals', address]
+    })
+  }, [chainId, queryClient, address])
 
   const isLoading = useMemo(() => {
     if (!chainId) return false
-    return queryRes.find((item) => item.data?.chainId === chainId)?.isLoading
-  }, [chainId, queryRes])
+    const state = queryClient.getQueryState([chainId, 'collaterals', address])
+    return state?.status == 'pending'
+  }, [chainId, queryClient, address])
 
   const isError = useMemo(() => {
     if (!chainId) return false
-    return queryRes.find((item) => item.data?.chainId === chainId)?.isError
-  }, [chainId, queryRes])
+    const state = queryClient.getQueryState([chainId, 'collaterals', address])
+    return state?.status == 'error'
+  }, [chainId, queryClient, address])
 
   const isSuccess = useMemo(() => {
     if (!chainId) return false
-    return queryRes.find((item) => item.data?.chainId === chainId)?.isSuccess
-  }, [chainId, queryRes])
+    const state = queryClient.getQueryState([chainId, 'collaterals', address])
+    return state?.status == 'success'
+  }, [chainId, queryClient, address])
 
   return {
     collaterals,
