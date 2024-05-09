@@ -355,9 +355,11 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
 
   const isFetching = useMemo(() => {
     if (!chainId) return false
-    return queryClient.isFetching({
-      queryKey: [chainId, 'collaterals', address]
-    })
+    return (
+      queryClient.isFetching({
+        queryKey: [chainId, 'collaterals', address]
+      }) > 0
+    )
   }, [chainId, queryClient, address])
 
   const isLoading = useMemo(() => {
