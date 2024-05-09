@@ -1,8 +1,8 @@
 import dayjs from 'dayjs'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSwitchChain } from 'wagmi'
 import { Chain } from 'viem'
+import { useSwitchChain } from 'wagmi'
 
 import {
   ArrowRightDoubleIcon,
@@ -101,9 +101,7 @@ const ChainPairsTable: React.FC<{
           ).map(({ key, title, message, titleClassName, formatTitle }) => (
             <TableHead key={key} className={titleClassName}>
               {title ||
-                formatTitle?.(
-                  hideHeaderChainName ? undefined : chain.id
-                )}{' '}
+                formatTitle?.(hideHeaderChainName ? undefined : chain.id)}{' '}
               <InfoIndicator message={message} />
             </TableHead>
           ))}
@@ -126,8 +124,8 @@ const ChainPairsTable: React.FC<{
               width="100%"
               align="center"
               className="text-sm text-white/70">
-              {chain.name} network is currently unreachable.
-              All data will be accessible once connected.
+              {chain.name} network is currently unreachable. All data will be
+              accessible once connected.
             </TableCell>
           </TableRow>
         ) : (
