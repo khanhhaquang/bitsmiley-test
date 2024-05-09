@@ -1,4 +1,4 @@
-import { Address, Chain } from 'viem'
+import { Address } from 'viem'
 
 import { ILiquidatedDetail } from '@/services/user'
 
@@ -87,14 +87,12 @@ export interface IDetailedCollateral {
 
 export interface ICollateralFromChain {
   chainId: number
-  chain?: Chain
   vaultAddress?: Address
   collaterals?: IDetailedCollateralFromChain[]
 }
 
 export interface ICollateral {
   chainId: number
-  chain?: Chain
   vaultAddress?: Address
   collaterals?: IDetailedCollateral[]
 }

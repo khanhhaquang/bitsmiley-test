@@ -80,7 +80,6 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
       if (!res) return undefined
       return {
         chainId: res?.chainId,
-        chain: res?.chain,
         vaultAddress: res?.vaultAddress,
         collaterals: res?.collaterals?.map((c) => ({
           name: c.name,
@@ -139,159 +138,157 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
         !client || !address
           ? undefined
           : async () => {
-              const contractAddresses = projectInfo?.web3Info.find(
-                (w) => w.chainId === client.chain.id
-              )?.contract
-              const bitSmileyAddress = contractAddresses?.BitSmiley
-              const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery
+            const contractAddresses = projectInfo?.web3Info.find(
+              (w) => w.chainId === client.chain.id
+            )?.contract
+            const bitSmileyAddress = contractAddresses?.BitSmiley
+            const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery
 
-              // if (
-              //   !bitSmileyQueryAddress ||
-              //   !bitSmileyAddress
-              //   ){
-              //   return {
-              //     chainId,
-              //     vaultAddress: undefined,
-              //     // collaterals: collaterals.map((c) => ({
-              //     //   ...c,
-              //     //   isOpenVault: false
-              //     // }))
-              //   }
-              // }
+            // if (
+            //   !bitSmileyQueryAddress ||
+            //   !bitSmileyAddress
+            //   ){
+            //   return {
+            //     chainId,
+            //     vaultAddress: undefined,
+            //     // collaterals: collaterals.map((c) => ({
+            //     //   ...c,
+            //     //   isOpenVault: false
+            //     // }))
+            //   }
+            // }
 
-              // collaterals information
-              const collateralsRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyQueryAbi,
-                      functionName: 'listCollaterals'
-                    }),
-                    to: bitSmileyQueryAddress
-                  },
-                  'latest'
-                ]
-              })
+            // collaterals information
+            const collateralsRes = await client.request({
+              method: 'eth_call',
+              params: [
+                {
+                  data: encodeFunctionData({
+                    abi: bitSmileyQueryAbi,
+                    functionName: 'listCollaterals'
+                  }),
+                  to: bitSmileyQueryAddress
+                },
+                'latest'
+              ]
+            })
 
-              const collaterals = decodeFunctionResult({
-                abi: bitSmileyQueryAbi,
-                functionName: 'listCollaterals',
-                data: collateralsRes
-              })
+            const collaterals = decodeFunctionResult({
+              abi: bitSmileyQueryAbi,
+              functionName: 'listCollaterals',
+              data: collateralsRes
+            })
 
-              // vaultAddress
-              const vaultAddressRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyAbi,
-                      functionName: 'owners',
-                      args: [address]
-                    }),
-                    to: bitSmileyAddress
-                  },
-                  'latest'
-                ]
-              })
+            // vaultAddress
+            const vaultAddressRes = await client.request({
+              method: 'eth_call',
+              params: [
+                {
+                  data: encodeFunctionData({
+                    abi: bitSmileyAbi,
+                    functionName: 'owners',
+                    args: [address]
+                  }),
+                  to: bitSmileyAddress
+                },
+                'latest'
+              ]
+            })
 
-              const vaultAddress = decodeFunctionResult({
-                abi: bitSmileyAbi,
-                functionName: 'owners',
-                data: vaultAddressRes
-              })
+            const vaultAddress = decodeFunctionResult({
+              abi: bitSmileyAbi,
+              functionName: 'owners',
+              data: vaultAddressRes
+            })
 
-              if (
-                isAddressEqual(
-                  vaultAddress,
-                  '0x0000000000000000000000000000000000000000'
-                )
-              ) {
-                return {
-                  chainId: client.chain.id,
-                  chain: client.chain,
-                  vaultAddress: undefined,
-                  collaterals: collaterals.map((c) => ({
-                    ...c,
-                    isOpenVault: false
-                  }))
-                }
-              }
-
-              // get vault liquidated info
-              const liquidatedRes = await UserService.getLiquidated.call({
-                vault: [
-                  {
-                    network: chainIdToNetwork[client.chain.id],
-                    vaultAddress
-                  }
-                ]
-              })
-
-              // getVault collateralId
-              const bitSmileyVaultRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyAbi,
-                      functionName: 'vaults',
-                      args: [vaultAddress]
-                    }),
-                    to: bitSmileyAddress
-                  },
-                  'latest'
-                ]
-              })
-
-              const bitSmileyVault = decodeFunctionResult({
-                abi: bitSmileyAbi,
-                functionName: 'vaults',
-                data: bitSmileyVaultRes
-              })
-              const collateralId = bitSmileyVault?.[1]
-
-              // vault details
-              const vaultDetailRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyQueryAbi,
-                      functionName: 'getVaultDetail',
-                      args: [vaultAddress, BigInt(0), BigInt(0)]
-                    }),
-                    to: bitSmileyQueryAddress
-                  },
-                  'latest'
-                ]
-              })
-
-              const vaultDetail = decodeFunctionResult({
-                abi: bitSmileyQueryAbi,
-                functionName: 'getVaultDetail',
-                data: vaultDetailRes
-              })
-
-              const filteredCollaterals = (
-                collateralId
-                  ? collaterals.filter((c) => c.collateralId === collateralId)
-                  : collaterals
-              ).map((c) => ({
-                ...c,
-                isOpenVault: !!collateralId && c.collateralId === collateralId,
-                ...(c.collateralId === collateralId ? vaultDetail : {}),
-                liquidated: liquidatedRes?.data?.liquidated
-              }))
-
+            if (
+              isAddressEqual(
+                vaultAddress,
+                '0x0000000000000000000000000000000000000000'
+              )
+            ) {
               return {
                 chainId: client.chain.id,
-                chain: client.chain,
-                vaultAddress,
-                collaterals: filteredCollaterals
+                vaultAddress: undefined,
+                collaterals: collaterals.map((c) => ({
+                  ...c,
+                  isOpenVault: false
+                }))
               }
             }
+
+            // get vault liquidated info
+            const liquidatedRes = await UserService.getLiquidated.call({
+              vault: [
+                {
+                  network: chainIdToNetwork[client.chain.id],
+                  vaultAddress
+                }
+              ]
+            })
+
+            // getVault collateralId
+            const bitSmileyVaultRes = await client.request({
+              method: 'eth_call',
+              params: [
+                {
+                  data: encodeFunctionData({
+                    abi: bitSmileyAbi,
+                    functionName: 'vaults',
+                    args: [vaultAddress]
+                  }),
+                  to: bitSmileyAddress
+                },
+                'latest'
+              ]
+            })
+
+            const bitSmileyVault = decodeFunctionResult({
+              abi: bitSmileyAbi,
+              functionName: 'vaults',
+              data: bitSmileyVaultRes
+            })
+            const collateralId = bitSmileyVault?.[1]
+
+            // vault details
+            const vaultDetailRes = await client.request({
+              method: 'eth_call',
+              params: [
+                {
+                  data: encodeFunctionData({
+                    abi: bitSmileyQueryAbi,
+                    functionName: 'getVaultDetail',
+                    args: [vaultAddress, BigInt(0), BigInt(0)]
+                  }),
+                  to: bitSmileyQueryAddress
+                },
+                'latest'
+              ]
+            })
+
+            const vaultDetail = decodeFunctionResult({
+              abi: bitSmileyQueryAbi,
+              functionName: 'getVaultDetail',
+              data: vaultDetailRes
+            })
+
+            const filteredCollaterals = (
+              collateralId
+                ? collaterals.filter((c) => c.collateralId === collateralId)
+                : collaterals
+            ).map((c) => ({
+              ...c,
+              isOpenVault: !!collateralId && c.collateralId === collateralId,
+              ...(c.collateralId === collateralId ? vaultDetail : {}),
+              liquidated: liquidatedRes?.data?.liquidated
+            }))
+
+            return {
+              chainId: client.chain.id,
+              vaultAddress,
+              collaterals: filteredCollaterals
+            }
+          }
     }))
   })
 
@@ -313,31 +310,27 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   )
 
   const availableCollaterals = useMemo(
-    () =>
-      chainWithCollaterals
-        ?.map((item) => ({
-          ...item,
-          collaterals: item?.collaterals?.filter((c) => !c.isOpenVault) || []
-        }))
-        .filter((item) => item.collaterals.length > 0),
-    [chainWithCollaterals]
+    () => {
+      if (!chainId) return []
+      return chainWithCollaterals?.find((c) => c.chainId === chainId)?.
+        collaterals?.filter((item) => !item.isOpenVault) || []
+    },
+    [collaterals]
   )
 
   const openedCollaterals = useMemo(
-    () =>
-      chainWithCollaterals
-        ?.map((item) => ({
-          ...item,
-          collaterals: item?.collaterals?.filter((c) => c.isOpenVault) || []
-        }))
-        .filter((item) => item.collaterals.length > 0),
-    [chainWithCollaterals]
+    () => {
+      if (!chainId) return []
+      return chainWithCollaterals?.find((c) => c.chainId === chainId)?.
+        collaterals?.filter((item) => item.isOpenVault) || []
+    },
+    [collaterals]
   )
 
-  // const hasOpenedCollaterals = useMemo(
-  //   () => openedCollaterals.length > 0,
-  //   [openedCollaterals.length]
-  // )
+  const hasOpenedCollaterals = useMemo(
+    () => collaterals.some((item) => item.isOpenVault),
+    [collaterals.length]
+  )
 
   const isMyVault = useMemo(() => {
     if (!chainId || !collateralId) return false
@@ -369,14 +362,27 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     return queryRes.find((item) => item.data?.chainId === chainId)?.isLoading
   }, [chainId, queryRes])
 
+  const isError = useMemo(() => {
+    if (!chainId) return false
+    return queryRes.find((item) => item.data?.chainId === chainId)?.isError
+  }, [chainId, queryRes])
+
+  const isSuccess = useMemo(() => {
+    if (!chainId) return false
+    return queryRes.find((item) => item.data?.chainId === chainId)?.isSuccess
+  }, [chainId, queryRes])
+
   return {
     collaterals,
+    hasOpenedCollaterals,
     availableCollaterals,
     openedCollaterals,
     collateral,
     isMyVault,
     refetch,
     isFetching,
-    isLoading
+    isLoading,
+    isError,
+    isSuccess
   }
 }
