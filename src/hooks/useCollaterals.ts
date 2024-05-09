@@ -365,19 +365,19 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   const isLoading = useMemo(() => {
     if (!chainId) return false
     const state = queryClient.getQueryState([chainId, 'collaterals', address])
-    return state?.status == 'pending'
+    return state?.status === 'pending'
   }, [chainId, queryClient, address])
 
   const isError = useMemo(() => {
     if (!chainId) return false
     const state = queryClient.getQueryState([chainId, 'collaterals', address])
-    return state?.status == 'error'
+    return state?.status === 'error'
   }, [chainId, queryClient, address])
 
   const isSuccess = useMemo(() => {
     if (!chainId) return false
     const state = queryClient.getQueryState([chainId, 'collaterals', address])
-    return state?.status == 'success'
+    return state?.status === 'success'
   }, [chainId, queryClient, address])
 
   return {
