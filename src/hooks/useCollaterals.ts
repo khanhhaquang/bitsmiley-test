@@ -1,6 +1,7 @@
 import { useQueries, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useCallback } from 'react'
 import {
+  Address,
   decodeFunctionResult,
   encodeFunctionData,
   formatEther,
@@ -28,6 +29,14 @@ import {
 import { useProjectInfo } from './useProjectInfo'
 import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
+
+export const queryKeys = {
+  collaterals: (chainId?: number, userAddress?: Address) => [
+    'collaterals',
+    chainId,
+    userAddress
+  ]
+}
 
 //TODO: change the way we'r fetching
 export const useCollaterals = (chainId?: number, collateralId?: string) => {
@@ -134,7 +143,7 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
       ...query,
       retry: 5,
       retryDelay: 10000,
-      queryKey: [client.chain.id, 'collaterals', address],
+      queryKey: queryKeys.collaterals(client.chain.id, address),
       queryFn:
         !client || !address
           ? undefined
@@ -350,35 +359,32 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
 
   const refetch = useCallback(() => {
     if (!chainId) return
-    queryClient.refetchQueries({ queryKey: [chainId, 'collaterals', address] })
+    queryClient.refetchQueries({
+      queryKey: queryKeys.collaterals(chainId, address)
+    })
   }, [chainId, queryClient, address])
+
+  const queryState = queryClient.getQueryState(
+    queryKeys.collaterals(chainId, address)
+  )
 
   const isFetching = useMemo(() => {
-    if (!chainId) return false
     return (
-      queryClient.isFetching({
-        queryKey: [chainId, 'collaterals', address]
-      }) > 0
+      queryState?.fetchStatus === 'fetching' || queryState?.status === 'pending'
     )
-  }, [chainId, queryClient, address])
+  }, [queryState?.fetchStatus, queryState?.status])
 
   const isLoading = useMemo(() => {
-    if (!chainId) return false
-    const state = queryClient.getQueryState([chainId, 'collaterals', address])
-    return state?.status === 'pending'
-  }, [chainId, queryClient, address])
+    return queryState?.status === 'pending'
+  }, [queryState?.status])
 
   const isError = useMemo(() => {
-    if (!chainId) return false
-    const state = queryClient.getQueryState([chainId, 'collaterals', address])
-    return state?.status === 'error'
-  }, [chainId, queryClient, address])
+    return queryState?.status === 'error'
+  }, [queryState?.status])
 
   const isSuccess = useMemo(() => {
-    if (!chainId) return false
-    const state = queryClient.getQueryState([chainId, 'collaterals', address])
-    return state?.status === 'success'
-  }, [chainId, queryClient, address])
+    return queryState?.status === 'success'
+  }, [queryState?.status])
 
   return {
     collaterals,
