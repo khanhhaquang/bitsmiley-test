@@ -39,13 +39,16 @@ import {
 } from '../tables'
 
 const MintingPairs: React.FC = () => {
+  const { hasOpenedCollaterals } = useCollaterals()
   return (
     <div
       className={cn(
         'scrollbar-none flex size-full flex-col items-center gap-y-12 overflow-y-auto overscroll-contain py-11',
         'pt-22'
       )}>
-      <MintingPairsTable isOpenedVaults table={MyVaultsMintingPairsTable} />
+      {hasOpenedCollaterals && (
+        <MintingPairsTable isOpenedVaults table={MyVaultsMintingPairsTable} />
+      )}
       <MintingPairsTable table={AvailableMintingPairsTable} />
     </div>
   )
