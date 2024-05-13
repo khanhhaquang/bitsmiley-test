@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 import { DollarShadowIcon } from '@/assets/icons'
 import { OnChainLoader } from '@/components/OnchainLoader'
 import { usePointAirdrop } from '@/hooks/usePointAirdrop'
-import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 
 import AirdropCard from './components/AirdropCard'
@@ -11,12 +10,11 @@ import AirdropCard from './components/AirdropCard'
 import { VaultTitleBlue } from '../BitUsd/components/VaultTitle'
 
 const Claim: React.FC = () => {
-  const { evmChainId } = useUserInfo()
   const { isLoading, data: pointAirdrops } = usePointAirdrop()
 
   const airdrops = useMemo(
-    () => pointAirdrops?.filter((i) => i.chainID === evmChainId) || [],
-    [evmChainId, pointAirdrops]
+    () => (pointAirdrops ? pointAirdrops : []),
+    [pointAirdrops]
   )
 
   return (
