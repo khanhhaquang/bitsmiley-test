@@ -35,7 +35,7 @@ const AirdropCard: React.FC<{
   const isActive = !!airdropContract && !isLoading
 
   const handleClaim = () => {
-    if (canClaim) {
+    if (!canClaim) {
       toast({
         variant: 'destructive',
         title: `Airdrop ${title}`,
