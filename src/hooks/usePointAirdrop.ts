@@ -8,7 +8,7 @@ export const usePointAirdrop = () => {
   const { address } = useUserInfo()
 
   const data = useQuery({
-    queryKey: ['pointAirdrop', address],
+    queryKey: [PointService.getPointAirdrop.key, address],
     queryFn: () =>
       address ? PointService.getPointAirdrop.call(address) : undefined,
     select: (res) => (!res ? undefined : res.data)

@@ -1,7 +1,10 @@
 import { formatEther } from 'viem'
+import { useSwitchChain } from 'wagmi'
 
 import { Image } from '@/components/Image'
+import { useToast } from '@/components/ui/use-toast'
 import { useAirdrop } from '@/hooks/useAirdrop'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { IPointAirdrop } from '@/services/point'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -10,6 +13,10 @@ import { formatNumberAsCompact } from '@/utils/number'
 const AirdropCard: React.FC<{
   airdrop: IPointAirdrop
 }> = ({ airdrop }) => {
+  const { toast } = useToast()
+  const { evmChainId, isConnected } = useUserInfo()
+  const { switchChain } = useSwitchChain()
+
   const {
     chainID,
     airdropContract,
@@ -19,16 +26,55 @@ const AirdropCard: React.FC<{
     totalPoint,
     airDropToken
   } = airdrop
-  const { canClaim, claim, isClaiming, isClaimed } = useAirdrop({
+  const { canClaim, claim, isLoading, isClaiming, isClaimed } = useAirdrop({
     chainId: chainID,
     airdropContractAddress: airdropContract,
     address
   })
   const title = season > 0 ? `Season ${season}` : 'Pre season'
-  const isActive = !!airdropContract && canClaim
+  const isActive = !!airdropContract && !isLoading
 
   const handleClaim = () => {
+    if (canClaim) {
+      toast({
+        variant: 'destructive',
+        title: `Airdrop ${title}`,
+        description: 'Can not claim.',
+        duration: 2000
+      })
+
+      return
+    }
+
+    if (isClaimed) {
+      toast({
+        title: `Airdrop ${title}`,
+        description: 'This airdrop is already claimed.',
+        duration: 2000
+      })
+    }
+
     claim()
+  }
+
+  const handleClickClaim = () => {
+    if (evmChainId && isConnected && chainID !== evmChainId) {
+      switchChain(
+        { chainId: chainID },
+        {
+          onSuccess: (newChain) => {
+            console.log('Switched to: ', newChain.id)
+            handleClaim()
+          },
+          onError: () => {
+            console.error('Switching network failed')
+          }
+        }
+      )
+      return
+    }
+
+    handleClaim()
   }
 
   return (
@@ -76,13 +122,15 @@ const AirdropCard: React.FC<{
             />
           </p>
           <span className="flex items-center justify-center font-ibmb text-2xl text-yellow2">
-            {formatNumberAsCompact(formatEther(BigInt(airDropToken)))}
+            {airDropToken
+              ? formatNumberAsCompact(formatEther(BigInt(airDropToken)))
+              : 'Coming soon'}
           </span>
         </div>
         <ClaimButton
           className="relative"
-          disabled={isClaiming || !isActive || isClaimed}
-          onClick={handleClaim}>
+          disabled={isClaiming || !isActive}
+          onClick={handleClickClaim}>
           {isClaiming ? 'Claiming...' : 'Claim'}
         </ClaimButton>
       </div>
