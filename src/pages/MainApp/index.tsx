@@ -20,6 +20,7 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
     '/app/alphanet/vault/:chainId/:collateralId'
   ]
   const bitPointPathPattern = ['/app/bit-point', '/app/bit-point/history']
+  const claimPathPattern = ['/app/claim']
 
   return (
     <div className="relative -top-8 left-1/2 aspect-[1960/1273] w-[1280px] -translate-x-1/2 xl:w-[1960px] 3xl:w-full">
@@ -38,7 +39,12 @@ const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
         disabled={!enabledFeatures?.BitPoint}
         pathPatterns={bitPointPathPattern}
       />
-      <NavigationButton className="top-[38.2%]" />
+      <NavigationButton
+        className="top-[38.2%]"
+        pathPatterns={claimPathPattern}
+        title="Claim"
+        path="/app/claim"
+      />
       <NavigationButton className="top-[44.6%]" />
 
       <TVLIndicator />

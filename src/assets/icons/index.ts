@@ -26,6 +26,7 @@ import CopyIcon from './copy.svg'
 import CopyrightIcon from './copyright.svg'
 import CrownYellowIcon from './crown-yellow.svg'
 import CrownIcon from './crown.svg'
+import DollarShadowIcon from './dollar-shadow.svg'
 import DollarIcon from './dollar.svg'
 import DotIcon from './dot.svg'
 import FailIcon from './fail.svg'
@@ -80,6 +81,7 @@ export {
   BitUsdIcon,
   OrIcon,
   DollarIcon,
+  DollarShadowIcon,
   VaultInfoIcon,
   DotIcon,
   CoinIcon,

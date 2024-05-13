@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
+import { Address } from 'viem'
 import { useChainId, useWriteContract } from 'wagmi'
 
 import airdropAbi from '@/abi/BitSmileyMerkleErc20Airdrop.json'
@@ -10,10 +11,15 @@ import {
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IAirdrop } from '@/services/project'
 import { UserService } from '@/services/user'
 
-export const useAirdrop = (airdrop?: IAirdrop) => {
+interface IAirdropInput {
+  address: Address
+  airdropContractAddress: Address
+  chainId: number
+}
+
+export const useAirdrop = (airdrop?: IAirdropInput) => {
   const currentChainId = useChainId()
   const { projectInfo } = useProjectInfo()
   const { address: userAddress } = useUserInfo()

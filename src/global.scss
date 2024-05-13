@@ -51,6 +51,7 @@
   font-weight: 400;
   font-style: normal;
 }
+
 @font-face {
   font-family: 'ibmb';
   src: url('./assets/fonts/ibmb/IBMPlexMono-Bold.ttf') format('truetype');
@@ -91,6 +92,7 @@ a {
     url('./assets/icons/cursor-pointer.svg') 8 0,
     pointer;
 }
+
 .no-scroll {
   overflow: hidden !important;
 }
@@ -101,8 +103,10 @@ a {
 }
 
 .scrollbar-none {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 input::-webkit-outer-spin-button,
@@ -128,4 +132,33 @@ input[type='number'] {
 ::-webkit-scrollbar-thumb {
   /* Customize the scrollbar thumb */
   background: rgba(255, 255, 255, 0.2);
+}
+
+.blue-border-dashed-animation {
+  background:
+    linear-gradient(90deg, #2563eb 50%, transparent 0) repeat-x,
+    linear-gradient(90deg, #2563eb 50%, transparent 0) repeat-x,
+    linear-gradient(0deg, #2563eb 50%, transparent 0) repeat-y,
+    linear-gradient(0deg, #2563eb 50%, transparent 0) repeat-y;
+  background-size:
+    4px 1px,
+    4px 1px,
+    1px 4px,
+    1px 4px;
+  background-position:
+    0 0,
+    0 100%,
+    0 0,
+    100% 0;
+  animation: linearGradientMove 0.3s infinite linear;
+}
+
+@keyframes linearGradientMove {
+  100% {
+    background-position:
+      4px 0,
+      -4px 100%,
+      0 -4px,
+      100% 4px;
+  }
 }

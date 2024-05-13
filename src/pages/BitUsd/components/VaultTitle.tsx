@@ -6,14 +6,20 @@ import {
   MyVaultsPairsTitleLeftIcon,
   MyVaultsPairsTitleRightIcon
 } from '@/assets/icons'
+import { cn } from '@/utils/cn'
 
-export const VaultTitleBlue: React.FC<{ children: ReactNode }> = ({
-  children
-}) => {
+export const VaultTitleBlue: React.FC<{
+  className?: string
+  children: ReactNode
+}> = ({ children, className }) => {
   return (
     <div className="flex w-full items-center justify-between gap-x-3">
       <MyVaultsPairsTitleLeftIcon className="w-full flex-1" />
-      <span className="font-smb text-2xl text-blue [text-shadow:-2px_0_0_#FF64AE]">
+      <span
+        className={cn(
+          'flex items-center font-smb text-2xl text-blue [text-shadow:-2px_0_0_#FF64AE]',
+          className
+        )}>
         {children}
       </span>
       <MyVaultsPairsTitleRightIcon className="w-full flex-1" />
