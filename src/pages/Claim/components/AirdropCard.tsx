@@ -42,7 +42,6 @@ const AirdropCard: React.FC<{
         description: 'Can not claim.',
         duration: 2000
       })
-
       return
     }
 
@@ -52,6 +51,7 @@ const AirdropCard: React.FC<{
         description: 'This airdrop is already claimed.',
         duration: 2000
       })
+      return
     }
 
     claim()
