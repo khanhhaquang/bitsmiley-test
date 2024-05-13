@@ -33,9 +33,23 @@ const AirdropCard: React.FC<{
     airdropContractAddress: airdropContract,
     address
   })
+
   const title = useMemo(
     () => (season > 0 ? `Season ${season}` : 'Pre season'),
     [season]
+  )
+
+  const tokenAmount = useMemo(
+    () =>
+      Number(airDropToken)
+        ? formatNumberAsCompact(formatEther(BigInt(airDropToken)))
+        : 'Coming Soon',
+    [airDropToken]
+  )
+
+  const isStarted = useMemo(
+    () => isToday(presentDate) || isBeforeNow(presentDate),
+    [presentDate]
   )
 
   const isAmountValid = useMemo(() => {
@@ -44,9 +58,9 @@ const AirdropCard: React.FC<{
 
   const isActive = useMemo(() => {
     if (isLoading) return false
-    if (!isToday(presentDate) && !isBeforeNow(presentDate)) return false
+    if (!isStarted) return false
     return true
-  }, [isLoading, presentDate])
+  }, [isLoading, isStarted])
 
   const handleClaim = () => {
     if (!canClaim) {
@@ -109,10 +123,12 @@ const AirdropCard: React.FC<{
           <h2 className="flex items-center justify-center font-smb text-2xl text-white [text-shadow:-2px_0_0_#2648EF]">
             {title}
           </h2>
-          <div className="flex items-center justify-center gap-x-1 font-ibmr text-sm text-white/70">
-            <div className="h-[1px] flex-1 bg-white/70" />
-            <span>{presentDate} - present</span>
-            <div className="h-[1px] flex-1 bg-white/70" />
+          <div className="flex items-center justify-center gap-x-1 font-ibmr text-sm">
+            {isStarted && <div className="h-[1px] flex-1 bg-white/70" />}
+            <span className={cn(isStarted ? 'text-white/70' : 'text-blue')}>
+              {isStarted ? `${presentDate} - present` : 'Upcoming...'}
+            </span>
+            {isStarted && <div className="h-[1px] flex-1 bg-white/70" />}
           </div>
         </div>
         <div className="relative flex w-full flex-col gap-y-3">
@@ -124,7 +140,7 @@ const AirdropCard: React.FC<{
             />
           </p>
           <span className="flex items-center justify-center font-ibmr text-2xl text-white">
-            {formatNumberAsCompact(totalPoint)}
+            {isStarted ? formatNumberAsCompact(totalPoint) : '--'}
           </span>
         </div>
         <div className="relative flex w-full flex-col gap-y-3">
@@ -140,9 +156,7 @@ const AirdropCard: React.FC<{
               'flex items-center justify-center  text-2xl text-yellow2',
               Number(airDropToken) ? 'font-ibmb' : 'font-ibmr'
             )}>
-            {Number(airDropToken)
-              ? formatNumberAsCompact(formatEther(BigInt(airDropToken)))
-              : 'Coming Soon'}
+            {isStarted ? tokenAmount : '--'}
           </span>
         </div>
         <ClaimButton
