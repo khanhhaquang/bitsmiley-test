@@ -1,6 +1,8 @@
-import { Image } from '@/components/Image'
+import {
+  MachineTitleLeftWhiteIcon,
+  MachineTitleRightWhiteIcon
+} from '@/assets/icons'
 import { cn } from '@/utils/cn'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 export const BitPointTitle: React.FC<{ title: string; className?: string }> = ({
   title,
@@ -12,17 +14,11 @@ export const BitPointTitle: React.FC<{ title: string; className?: string }> = ({
         'mb-8 flex w-full items-center justify-center gap-x-1.5',
         className
       )}>
-      <Image
-        src={getIllustrationUrl('join-team-left-dashes')}
-        className="w-full flex-1 shrink-0"
-      />
-      <span className="text-nowrap font-smb text-2xl [text-shadow:-2px_0_0_rgba(255,255,255,0.45)]">
+      <MachineTitleLeftWhiteIcon className="h-5 flex-1" />
+      <span className="shrink-0 text-nowrap font-smb text-2xl [text-shadow:-2px_0_0_rgba(255,255,255,0.45)]">
         {title}
       </span>
-      <Image
-        src={getIllustrationUrl('join-team-right-dashes')}
-        className="w-full flex-1 shrink-0"
-      />
+      <MachineTitleRightWhiteIcon className="h-5 flex-1" />
     </div>
   )
 }

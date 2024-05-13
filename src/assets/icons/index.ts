@@ -39,12 +39,12 @@ import LevelIcon from './level.svg'
 import LineIcon from './line.svg'
 import LinkOutIcon from './link-out.svg'
 import LoadingLineIcon from './loading-line.svg'
+import MachineTitleLeftBlueIcon from './machine-title-left-blue.svg'
+import MachineTitleLeftWhiteIcon from './machine-title-left-white.svg'
+import MachineTitleRightBlueIcon from './machine-title-right-blue.svg'
+import MachineTitleRightWhiteIcon from './machine-title-right-white.svg'
 import ManageVaultSectionTitleIcon from './manage-vault-section-title.svg'
 import MetamaskIcon from './metamask.svg'
-import MintingPairsTitleLeftIcon from './minting-pairs-title-left.svg'
-import MintingPairsTitleRightIcon from './minting-pairs-title-right.svg'
-import MyVaultsPairsTitleLeftIcon from './my-vaults-pairs-title-left.svg'
-import MyVaultsPairsTitleRightIcon from './my-vaults-pairs-title-right.svg'
 import OrIcon from './or.svg'
 import OvalCoinBlueIcon from './oval-coin-blue.svg'
 import OvalCoinGoldIcon from './oval-coin-gold.svg'
@@ -128,10 +128,10 @@ export {
   LevelIcon,
   YourPointHeaderIcon,
   BoostIcon,
-  MintingPairsTitleLeftIcon,
-  MintingPairsTitleRightIcon,
-  MyVaultsPairsTitleLeftIcon,
-  MyVaultsPairsTitleRightIcon,
+  MachineTitleLeftWhiteIcon,
+  MachineTitleRightWhiteIcon,
+  MachineTitleLeftBlueIcon,
+  MachineTitleRightBlueIcon,
   RightAngleVaultIcon,
   ArrowRightDoubleIcon,
   ArrowDownDoubleIcon,

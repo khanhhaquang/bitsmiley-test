@@ -22,7 +22,7 @@ const BitPoint: React.FC = () => {
   if (isLoading) return <OnChainLoader />
 
   return (
-    <div className="flex size-full flex-col items-center overflow-x-hidden py-10">
+    <div className="flex size-full flex-col items-center overflow-x-hidden pb-10 pt-7">
       {isCaptain ? (
         <>
           <BitPointTitle title="Hello captain" className="mb-4" />

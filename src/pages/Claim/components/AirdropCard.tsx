@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import { useSwitchChain } from 'wagmi'
 
@@ -7,6 +8,7 @@ import { useAirdrop } from '@/hooks/useAirdrop'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IPointAirdrop } from '@/services/point'
 import { cn } from '@/utils/cn'
+import { isBeforeNow, isToday } from '@/utils/date'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberAsCompact } from '@/utils/number'
 
@@ -31,8 +33,20 @@ const AirdropCard: React.FC<{
     airdropContractAddress: airdropContract,
     address
   })
-  const title = season > 0 ? `Season ${season}` : 'Pre season'
-  const isActive = !!airdropContract && !isLoading
+  const title = useMemo(
+    () => (season > 0 ? `Season ${season}` : 'Pre season'),
+    [season]
+  )
+
+  const isAmountValid = useMemo(() => {
+    return totalPoint > 0 || Number(airDropToken) > 0
+  }, [airDropToken, totalPoint])
+
+  const isActive = useMemo(() => {
+    if (isLoading) return false
+    if (!isToday || !isBeforeNow(presentDate)) return false
+    return true
+  }, [isLoading, presentDate])
 
   const handleClaim = () => {
     if (!canClaim) {
@@ -82,9 +96,9 @@ const AirdropCard: React.FC<{
       className={cn(
         'relative w-[324px] h-[406px] p-1 flex',
         isActive && 'blue-border-dashed-animation',
-        !isActive && 'border border-dashed border-blue/60 opacity-50'
+        !isActive && 'border-none opacity-30'
       )}>
-      <div className="relative flex size-full shrink-0 flex-col items-center gap-y-9 overflow-hidden border border-blue/60 bg-black px-9 py-6">
+      <div className="relative flex size-full shrink-0 flex-col items-center gap-y-9 overflow-hidden border border-blue bg-black px-9 py-6">
         <Image
           width={162}
           height={203}
@@ -121,15 +135,19 @@ const AirdropCard: React.FC<{
               src={getIllustrationUrl('airdrop-claim-session-bg')}
             />
           </p>
-          <span className="flex items-center justify-center font-ibmb text-2xl text-yellow2">
-            {airDropToken
+          <span
+            className={cn(
+              'flex items-center justify-center  text-2xl text-yellow2',
+              Number(airDropToken) ? 'font-ibmb' : 'font-ibmr'
+            )}>
+            {Number(airDropToken)
               ? formatNumberAsCompact(formatEther(BigInt(airDropToken)))
-              : 'Coming soon'}
+              : 'Coming Soon'}
           </span>
         </div>
         <ClaimButton
           className="relative"
-          disabled={isClaiming || !isActive}
+          disabled={!isAmountValid || isClaiming || !isActive}
           onClick={handleClickClaim}>
           {isClaiming ? 'Claiming...' : 'Claim'}
         </ClaimButton>

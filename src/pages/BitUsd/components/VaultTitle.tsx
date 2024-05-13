@@ -1,10 +1,10 @@
 import { ReactNode } from 'react'
 
 import {
-  MintingPairsTitleLeftIcon,
-  MintingPairsTitleRightIcon,
-  MyVaultsPairsTitleLeftIcon,
-  MyVaultsPairsTitleRightIcon
+  MachineTitleLeftWhiteIcon,
+  MachineTitleRightWhiteIcon,
+  MachineTitleLeftBlueIcon,
+  MachineTitleRightBlueIcon
 } from '@/assets/icons'
 import { cn } from '@/utils/cn'
 
@@ -14,15 +14,15 @@ export const VaultTitleBlue: React.FC<{
 }> = ({ children, className }) => {
   return (
     <div className="flex w-full items-center justify-between gap-x-3">
-      <MyVaultsPairsTitleLeftIcon className="w-full flex-1" />
+      <MachineTitleLeftBlueIcon className="h-5 flex-1" />
       <span
         className={cn(
-          'flex items-center font-smb text-2xl text-blue [text-shadow:-2px_0_0_#FF64AE]',
+          'flex shrink-0 items-center font-smb text-2xl text-blue [text-shadow:-2px_0_0_#FF64AE]',
           className
         )}>
         {children}
       </span>
-      <MyVaultsPairsTitleRightIcon className="w-full flex-1" />
+      <MachineTitleRightBlueIcon className="h-5 flex-1" />
     </div>
   )
 }
@@ -32,9 +32,9 @@ export const VaultTitleWhite: React.FC<{ children: ReactNode }> = ({
 }) => {
   return (
     <div className="flex w-full items-center justify-between gap-x-3">
-      <MintingPairsTitleLeftIcon className="w-full flex-1" />
-      <span className="font-smb text-2xl">{children}</span>
-      <MintingPairsTitleRightIcon className="w-full flex-1" />
+      <MachineTitleLeftWhiteIcon className="h-5 flex-1" />
+      <span className="shrink-0 font-smb text-2xl">{children}</span>
+      <MachineTitleRightWhiteIcon className="h-5 flex-1" />
     </div>
   )
 }
