@@ -44,7 +44,7 @@ const AirdropCard: React.FC<{
 
   const isActive = useMemo(() => {
     if (isLoading) return false
-    if (!isToday || !isBeforeNow(presentDate)) return false
+    if (!isToday(presentDate) && !isBeforeNow(presentDate)) return false
     return true
   }, [isLoading, presentDate])
 
