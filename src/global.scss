@@ -18,8 +18,7 @@
 
 @font-face {
   font-family: 'smb';
-  src: url('./assets/fonts/smb/super-mario-bros-the-lost-levels-font.ttf')
-    format('truetype');
+  src: url('./assets/fonts/smb/super-mario-bros-the-lost-levels-font.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
@@ -141,10 +140,10 @@ input[type='number'] {
     linear-gradient(0deg, #2563eb 50%, transparent 0) repeat-y,
     linear-gradient(0deg, #2563eb 50%, transparent 0) repeat-y;
   background-size:
-    4px 1px,
-    4px 1px,
-    1px 4px,
-    1px 4px;
+    8px 1px,
+    8px 1px,
+    1px 8px,
+    1px 8px;
   background-position:
     0 0,
     0 100%,
@@ -156,9 +155,9 @@ input[type='number'] {
 @keyframes linearGradientMove {
   100% {
     background-position:
-      4px 0,
-      -4px 100%,
-      0 -4px,
-      100% 4px;
+      8px 0,
+      -8px 100%,
+      0 -8px,
+      100% 8px;
   }
 }
