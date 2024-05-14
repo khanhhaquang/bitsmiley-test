@@ -19,8 +19,6 @@ const AirdropCard: React.FC<{
   const { evmChainId, isConnected } = useUserInfo()
   const { switchChain } = useSwitchChain()
 
-  const isReady = false
-
   const {
     chainID,
     airdropContract,
@@ -53,6 +51,8 @@ const AirdropCard: React.FC<{
     () => isToday(presentDate) || isBeforeNow(presentDate),
     [presentDate]
   )
+
+  const isContractValid = useMemo(() => !!airdropContract, [airdropContract])
 
   const isAmountValid = useMemo(() => {
     return totalPoint > 0 || Number(airDropToken) > 0
@@ -163,9 +163,15 @@ const AirdropCard: React.FC<{
         </div>
         <ClaimButton
           className="relative"
-          disabled={!isReady || !isAmountValid || isClaiming || !isActive}
+          disabled={
+            !isContractValid || !isAmountValid || isClaiming || !isActive
+          }
           onClick={handleClickClaim}>
-          {!isReady ? 'Claim upon TGE' : isClaiming ? 'Claiming...' : 'Claim'}
+          {!isContractValid
+            ? 'Claim upon TGE'
+            : isClaiming
+              ? 'Claiming...'
+              : 'Claim'}
         </ClaimButton>
       </div>
     </div>
