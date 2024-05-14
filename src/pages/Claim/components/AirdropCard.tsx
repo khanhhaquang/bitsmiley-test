@@ -52,14 +52,11 @@ const AirdropCard: React.FC<{
     [presentDate]
   )
 
-  const isTokenAmountValid = useMemo(
-    () => Number(airDropToken) > 0,
-    [airDropToken]
-  )
+  const isContractValid = useMemo(() => !!airdropContract, [airdropContract])
 
   const isAmountValid = useMemo(() => {
-    return totalPoint > 0 || isTokenAmountValid
-  }, [isTokenAmountValid, totalPoint])
+    return totalPoint > 0 || Number(airDropToken) > 0
+  }, [airDropToken, totalPoint])
 
   const isActive = useMemo(() => {
     if (isLoading) return false
@@ -167,10 +164,10 @@ const AirdropCard: React.FC<{
         <ClaimButton
           className="relative"
           disabled={
-            !isTokenAmountValid || !isAmountValid || isClaiming || !isActive
+            !isContractValid || !isAmountValid || isClaiming || !isActive
           }
           onClick={handleClickClaim}>
-          {!isTokenAmountValid
+          {!isContractValid
             ? 'Claim upon TGE'
             : isClaiming
               ? 'Claiming...'
