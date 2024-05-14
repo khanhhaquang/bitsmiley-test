@@ -33,7 +33,9 @@ export const VaultTitleWhite: React.FC<{ children: ReactNode }> = ({
   return (
     <div className="flex w-full items-center justify-between gap-x-3">
       <MachineTitleLeftWhiteIcon className="h-5 flex-1" />
-      <span className="shrink-0 font-smb text-2xl">{children}</span>
+      <span className="shrink-0 font-smb text-2xl [text-shadow:-2px_0_0_rgba(255,255,255,0.45)]">
+        {children}
+      </span>
       <MachineTitleRightWhiteIcon className="h-5 flex-1" />
     </div>
   )
