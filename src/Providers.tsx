@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ReactNode } from 'react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
+import { hashFn } from 'wagmi/query'
 
 import { ModalsContainer } from '@/components/Modal'
 import { Toaster } from '@/components/ui/toaster'
@@ -18,7 +19,8 @@ const queryClient = new QueryClient({
       retry: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
-      refetchOnWindowFocus: false
+      refetchOnWindowFocus: false,
+      queryKeyHashFn: hashFn
     }
   }
 })
