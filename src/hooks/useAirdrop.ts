@@ -27,11 +27,12 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
   const airdrops = useMemo(
     () =>
       projectInfo?.web3Info
-        ?.map((w) =>
+        ?.filter((item) => item.chainId === currentChainId)
+        .map((w) =>
           w.contract.airdrop.map((a) => ({ ...a, chainId: w.chainId }))
         )
         .flatMap((i) => i),
-    [projectInfo?.web3Info]
+    [projectInfo?.web3Info, currentChainId]
   )
 
   const {
