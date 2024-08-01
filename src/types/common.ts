@@ -5,10 +5,17 @@ export interface IResponse<T> {
 }
 
 export enum LoginType {
-  OKX = 'okx',
+  //EVM
   OKX_EVM = 'okx_evm',
+  BYBIT_EVM = 'bybit_evm',
+  BITGET_EVM = 'bitget_evm',
   METAMASK = 'metamask',
-  UNISAT = 'unisat'
+
+  //Bitcoin
+  OKX = 'okx',
+  UNISAT = 'unisat',
+  BYBIT = 'bybit',
+  BITGET = 'bitget'
 }
 
 export enum TransactionStatus {

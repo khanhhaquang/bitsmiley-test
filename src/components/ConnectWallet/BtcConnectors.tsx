@@ -4,7 +4,7 @@ import { useConnect } from 'wagmi'
 
 import { WALLET_SITE } from '@/config/links'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { useEvmConnectors } from '@/hooks/useEvmConnectors'
+import { useBtcConnectors } from '@/hooks/useBtcConnectors'
 import { LoginType } from '@/types/common'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { setLocalStorage } from '@/utils/storage'
@@ -21,8 +21,12 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
   expectedChainId
 }) => {
   const { connect } = useConnect()
-  const { okxWithParticleConnector: okxConnector, unisatConnector } =
-    useEvmConnectors()
+  const {
+    okxWithParticleConnector: okxConnector,
+    unisatConnector,
+    bybitWithParticleConnector: bybitConnector,
+    bitgetWithParticleConnector: bitgetConnector
+  } = useBtcConnectors()
   const { connect: connectParticle } = useConnector()
 
   const [loginType, setLoginType] = useState<LoginType>()
@@ -31,10 +35,25 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
     useETHProvider()
 
   const connector = useMemo(() => {
-    if (loginType === LoginType.OKX) return okxConnector
-    if (loginType === LoginType.UNISAT) return unisatConnector
-    return undefined
-  }, [loginType, okxConnector, unisatConnector])
+    switch (loginType) {
+      case LoginType.OKX:
+        return okxConnector
+      case LoginType.UNISAT:
+        return unisatConnector
+      case LoginType.BYBIT:
+        return bybitConnector
+      case LoginType.BITGET:
+        return bitgetConnector
+      default:
+        return undefined
+    }
+  }, [
+    bitgetConnector,
+    bybitConnector,
+    loginType,
+    okxConnector,
+    unisatConnector
+  ])
 
   useEffect(() => {
     if (!loginType || !particleEvmAccount || !particleEvmProvider || !connector)
@@ -82,6 +101,32 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
 
           connectParticle(LoginType.UNISAT)
           setLoginType(LoginType.UNISAT)
+        }}
+      />
+      <WalletItem
+        iconName="bybit"
+        name="Bybit"
+        connect={async () => {
+          if (!window.bybitWallet) {
+            openUrl(WALLET_SITE.bybit)
+            return
+          }
+
+          connectParticle(LoginType.BYBIT)
+          setLoginType(LoginType.BYBIT)
+        }}
+      />
+      <WalletItem
+        iconName="bitget"
+        name="Bitget"
+        connect={async () => {
+          if (!window.bitgetWallet) {
+            openUrl(WALLET_SITE.bitget)
+            return
+          }
+
+          connectParticle(LoginType.BITGET)
+          setLoginType(LoginType.BITGET)
         }}
       />
     </>

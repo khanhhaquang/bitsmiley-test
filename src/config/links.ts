@@ -8,7 +8,17 @@ export const MEDIA = {
 export const WALLET_SITE = {
   okx: 'https://www.okx.com/help/use-the-okx-wallet-web-extension-to-easily-play-stader',
   unisat: 'https://unisat.io/',
-  metamask: 'https://metamask.io/download/'
+  metamask: 'https://metamask.io/download/',
+  bybit: 'https://www.bybit.com/en/web3/home',
+  bitget: 'https://web3.bitget.com/en/'
+}
+
+export const WALLET_ID = {
+  OKX: 'com.okex.wallet',
+  METAMASK: 'io.metamask',
+  BYBIT: 'com.bybit',
+  BITGET: 'com.bitget.web3',
+  UNISAT: 'unisat.io'
 }
 
 export const INSCRIPTION_CHECKER_LINK = {

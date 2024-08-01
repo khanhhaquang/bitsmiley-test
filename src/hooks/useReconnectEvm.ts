@@ -7,6 +7,7 @@ import { Connector, CreateConnectorFn, useConfig } from 'wagmi'
 import { reconnect as reconnectWagmi } from 'wagmi/actions'
 
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { useBtcConnectors } from '@/hooks/useBtcConnectors'
 import { LoginType } from '@/types/common'
 import { getLocalStorage } from '@/utils/storage'
 
@@ -21,9 +22,11 @@ export const useReconnectEvm = () => {
   const {
     unisatConnector,
     okxWithParticleConnector,
-    okxConnector,
-    metaMaskConnector
-  } = useEvmConnectors()
+    bitgetWithParticleConnector,
+    bybitWithParticleConnector
+  } = useBtcConnectors()
+  const { okxConnector, metaMaskConnector, bitgetConnector, bybitConnector } =
+    useEvmConnectors()
   const [isError, setIsError] = useState(false)
   const { evmAccount: particleEvmAddress } = useETHProvider()
   const { connect: connectParticle } = useParticleConnector()
@@ -47,12 +50,21 @@ export const useReconnectEvm = () => {
 
     if (isEvmConnected || !!particleEvmAddress) return
 
-    if (localLoginType === LoginType.OKX) {
-      connectParticle('okx')
-    }
-
-    if (localLoginType === LoginType.UNISAT) {
-      connectParticle('unisat')
+    switch (localLoginType) {
+      case LoginType.OKX:
+        connectParticle('okx')
+        break
+      case LoginType.UNISAT:
+        connectParticle('unisat')
+        break
+      case LoginType.BYBIT:
+        connectParticle('bybit')
+        break
+      case LoginType.BITGET:
+        connectParticle('bitget')
+        break
+      default:
+        break
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -76,16 +88,48 @@ export const useReconnectEvm = () => {
   }, [particleEvmAddress, reconnect, unisatConnector])
 
   useEffect(() => {
+    if (
+      localLoginType === LoginType.BITGET &&
+      bitgetWithParticleConnector &&
+      particleEvmAddress
+    )
+      reconnect(bitgetWithParticleConnector)
+  }, [particleEvmAddress, reconnect, bitgetWithParticleConnector])
+
+  useEffect(() => {
+    if (
+      localLoginType === LoginType.BYBIT &&
+      bybitWithParticleConnector &&
+      particleEvmAddress
+    )
+      reconnect(bybitWithParticleConnector)
+  }, [particleEvmAddress, reconnect, bybitWithParticleConnector])
+
+  useEffect(() => {
     if (localLoginType === LoginType.METAMASK && metaMaskConnector) {
       reconnect(metaMaskConnector)
       return
     }
-
     if (localLoginType === LoginType.OKX_EVM && okxConnector) {
       reconnect(okxConnector)
       return
     }
-  }, [metaMaskConnector, okxConnector, particleEvmAddress, reconnect])
+    if (localLoginType === LoginType.BITGET_EVM && bitgetConnector) {
+      reconnect(bitgetConnector)
+      return
+    }
+    if (localLoginType === LoginType.BYBIT_EVM && bybitConnector) {
+      reconnect(bybitConnector)
+      return
+    }
+  }, [
+    bitgetConnector,
+    bybitConnector,
+    metaMaskConnector,
+    okxConnector,
+    particleEvmAddress,
+    reconnect
+  ])
 
   return { isError, setIsError }
 }

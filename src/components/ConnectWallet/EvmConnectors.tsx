@@ -19,7 +19,8 @@ const EvmConnectors: React.FC<EvmConnectorProps> = ({
   expectedChainId
 }) => {
   const { connect } = useConnect()
-  const { okxConnector, metaMaskConnector } = useEvmConnectors()
+  const { okxConnector, bitgetConnector, bybitConnector, metaMaskConnector } =
+    useEvmConnectors()
 
   return (
     <>
@@ -62,6 +63,46 @@ const EvmConnectors: React.FC<EvmConnectorProps> = ({
             { onError: (v) => console.log('connect error: ', v) }
           )
           setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.OKX_EVM)
+          onClose()
+        }}
+      />
+
+      <WalletItem
+        iconName="bybit"
+        name="Bybit"
+        connect={() => {
+          if (!window.bybitWallet) {
+            openUrl(WALLET_SITE.bybit)
+            return
+          }
+
+          if (!bybitConnector) return
+
+          connect(
+            { connector: bybitConnector, chainId: expectedChainId },
+            { onError: (v) => console.log('connect error: ', v) }
+          )
+          setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.BYBIT_EVM)
+          onClose()
+        }}
+      />
+
+      <WalletItem
+        iconName="bitget"
+        name="Bitget"
+        connect={() => {
+          if (!window.bitgetWallet) {
+            openUrl(WALLET_SITE.bitget)
+            return
+          }
+
+          if (!bitgetConnector) return
+
+          connect(
+            { connector: bitgetConnector, chainId: expectedChainId },
+            { onError: (v) => console.log('connect error: ', v) }
+          )
+          setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, LoginType.BITGET_EVM)
           onClose()
         }}
       />

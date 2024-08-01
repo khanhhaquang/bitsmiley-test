@@ -12,7 +12,7 @@ const WalletItem: React.FC<{
         className="flex size-full items-center gap-x-3 border-y-2  border-white bg-black py-2.5 pl-5"
         onClick={connect}>
         <Image
-          src={getIllustrationUrl(iconName)}
+          src={getIllustrationUrl(iconName, 'webp')}
           className="aspect-square size-7"
         />
         <svg
