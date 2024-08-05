@@ -47,18 +47,19 @@ export const CopyRightAndLinks: React.FC<{
       <div
         className={cn(
           'pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white px-12 font-bold',
+          'sm:flex-col-reverse sm:items-center sm:gap-y-12 sm:px-6',
           className
         )}>
-        <div className="flex items-center gap-x-1.5">
+        <div className="flex items-center gap-x-1.5 sm:text-xs">
           <CopyrightIcon />
           <span className="cursor-default">bitSmiley team 2024</span>
         </div>
 
-        <div className="pointer-events-auto flex flex-col items-end gap-y-1.5">
+        <div className="pointer-events-auto flex flex-col items-end gap-y-1.5 sm:w-full sm:flex-row sm:items-start sm:justify-between sm:text-xs">
           {musicControl && (
             <span
               className={cn(
-                'flex cursor-pointer items-center text-green',
+                'flex cursor-pointer items-center text-green sm:hidden',
                 !isPlayingMusic && 'text-red'
               )}
               onClick={() => {

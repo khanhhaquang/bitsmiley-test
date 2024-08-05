@@ -1,10 +1,12 @@
 import { useMemo } from 'react'
 
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useUserStakes } from '@/hooks/useUserStakes'
 
 import { ConnectedNotStaked } from './ConnectedNotStaked'
 import { History } from './History'
+import { MobileNotSupported } from './MobileNotSupported'
 import { NotConnected } from './NotConnected'
 import { OnChainLoading } from './OnchainLoading'
 import { StakingFinished } from './StakingFinished'
@@ -19,10 +21,12 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   onBackClick,
   isHistoryPage
 }) => {
+  const { isMobile } = useMediaQuery()
   const { address, isLoading: isConnecting } = useUserInfo()
   const { userStakes, isFetchingAll, isStakingEnded } = useUserStakes()
 
   const renderContent = useMemo(() => {
+    if (isMobile) return <MobileNotSupported />
     if (isConnecting) return <OnChainLoading />
 
     if (address) {
