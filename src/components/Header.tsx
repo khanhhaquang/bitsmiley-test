@@ -8,13 +8,13 @@ import { ConnectWallet } from './ConnectWallet'
 
 export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
   return (
-    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-12 text-white">
+    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-12 text-white sm:justify-center">
       <Link to="/">
         <HeaderIcon />
       </Link>
 
       {!!wallet && (
-        <div className="flex items-center gap-x-9">
+        <div className="flex items-center gap-x-9 sm:hidden">
           <div className="relative">
             <ConnectWallet />
             <EnterAppButton />

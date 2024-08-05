@@ -18,6 +18,7 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   const { width } = useWindowSize()
 
   const responsiveScaling = useMemo(() => {
+    if (width <= 639) return 0.4
     if (width <= 1200) return 0.7
     if (width <= 1600) return 0.85
     return 0.89
@@ -25,7 +26,7 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
 
   return (
     <div
-      className="relative z-10 flex h-[995px] w-[1423px] shrink-0 items-center justify-center"
+      className="relative z-10 flex h-[995px] w-[1423px] shrink-0 items-center justify-center sm:mt-[-150px]"
       style={{
         transform: `scale(${responsiveScaling})`
       }}>

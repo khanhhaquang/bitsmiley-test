@@ -13,6 +13,7 @@ import AsteriskIcon from './asterisk.svg'
 import BitGold from './bit-gold.svg'
 import BitJadeBlack from './bit-jade-black.svg'
 import BitJade from './bit-jade.svg'
+import BitUsdPixelIcon from './bit-usd-pixel.svg'
 import BitUsdIcon from './bit-usd.svg'
 import BitCoinIcon from './bitcoin.svg'
 import BitDiscBlackIcon from './bitDiskBlack.svg'
@@ -145,5 +146,6 @@ export {
   ReturnUpIcon,
   RefreshIcon,
   ArrowLeftDoubleIcon,
-  AlertBg
+  AlertBg,
+  BitUsdPixelIcon
 }

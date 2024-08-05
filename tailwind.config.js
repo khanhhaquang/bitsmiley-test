@@ -44,6 +44,7 @@ export default {
     extend: {
       colors: colors,
       screens: {
+        sm: { max: '639px' },
         '3xl': '1960px'
       },
       keyframes: () => ({
