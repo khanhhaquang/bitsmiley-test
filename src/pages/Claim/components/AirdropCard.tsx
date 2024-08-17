@@ -43,7 +43,7 @@ const AirdropCard: React.FC<{
     () =>
       Number(airDropToken)
         ? formatNumberAsCompact(formatEther(BigInt(airDropToken)))
-        : '0',
+        : 'Calculation in progress',
     [airDropToken]
   )
 
