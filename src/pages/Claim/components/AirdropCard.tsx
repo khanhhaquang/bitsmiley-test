@@ -156,7 +156,7 @@ const AirdropCard: React.FC<{
           <span
             className={cn(
               'flex items-center justify-center  text-2xl text-yellow2',
-              Number(airDropToken) ? 'font-ibmb' : 'font-ibmr'
+              Number(airDropToken) ? 'font-ibmb' : 'font-ibmr text-sm'
             )}>
             {isStarted ? tokenAmount : '--'}
           </span>
