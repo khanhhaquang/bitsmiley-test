@@ -22,7 +22,7 @@ export const usePreloadResources = () => {
       })
     })
 
-    const mediumImgs = items?.slice(0, 3)?.map((i) => {
+    const mediumImgs = items?.slice(0, 4)?.map((i) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
         img.src = i.img as string

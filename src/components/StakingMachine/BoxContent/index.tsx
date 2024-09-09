@@ -53,7 +53,8 @@ export const BoxContent: React.FC<BoxContentProps> = ({
     isHistoryPage,
     isStakingEnded,
     userStakes?.length,
-    onBackClick
+    onBackClick,
+    isMobile
   ])
 
   return (

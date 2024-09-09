@@ -45,7 +45,7 @@ export const StakingPage: React.FC = () => {
             className="mb-[200px] mt-[400px] sm:mb-20 sm:mt-[140px]"
           />
         </div>
-        <div className="pb-[280px] sm:px-6">
+        <div className="flex w-[1423px]  justify-center pb-[280px] sm:w-full sm:px-6 sm:pb-[100px]">
           <Articles />
         </div>
       </div>
@@ -181,20 +181,23 @@ const Articles: React.FC = () => {
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-center gap-10',
-        'sm:w-screen sm:flex-nowrap sm:justify-start sm:gap-x-6 sm:overflow-x-auto sm:px-6 scrollbar-none'
+        'flex flex-wrap items-center justify-center gap-12',
+        'sm:w-screen sm:gap-x-6 sm:overflow-x-auto sm:px-0 scrollbar-none sm:flex-nowrap justify-start'
       )}>
-      {items?.slice(0, 3).map((i, idx) => (
+      {items?.slice(0, 4).map((i, idx) => (
         <div
           key={idx}
-          className="aspect-square w-[370px] shrink-0 cursor-pointer sm:w-[200px]"
+          className="flex aspect-square w-[379px] shrink-0 cursor-pointer flex-col justify-between border-4 border-blue/40 p-7 hover:bg-blue/20 sm:w-[210px] sm:p-4"
           onClick={() => openUrl(i.link)}>
           {i.img && (
             <Image
-              className="aspect-square w-[370px] object-cover sm:w-[200px]"
+              className="aspect-[320/168] w-[full] object-cover"
               src={i.img}
             />
           )}
+          <div className="line-clamp-4 text-ellipsis text-2xl text-blue sm:text-sm">
+            {i.title}
+          </div>
         </div>
       ))}
     </div>

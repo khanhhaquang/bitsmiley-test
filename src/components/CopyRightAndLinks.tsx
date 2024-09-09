@@ -47,7 +47,7 @@ export const CopyRightAndLinks: React.FC<{
       <div
         className={cn(
           'pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white px-12 font-bold',
-          'sm:flex-col-reverse sm:items-center sm:gap-y-12 sm:px-6',
+          'sm:flex-col-reverse sm:items-center sm:gap-y-12 sm:px-6 sm:relative sm:bottom-0',
           className
         )}>
         <div className="flex items-center gap-x-1.5 sm:text-xs">
@@ -55,7 +55,7 @@ export const CopyRightAndLinks: React.FC<{
           <span className="cursor-default">bitSmiley team 2024</span>
         </div>
 
-        <div className="pointer-events-auto flex flex-col items-end gap-y-1.5 sm:w-full sm:flex-row sm:items-start sm:justify-between sm:text-xs">
+        <div className="pointer-events-auto flex flex-col items-end gap-y-1.5 sm:w-full sm:flex-row sm:items-start sm:justify-between sm:text-xs sm:text-green">
           {musicControl && (
             <span
               className={cn(
