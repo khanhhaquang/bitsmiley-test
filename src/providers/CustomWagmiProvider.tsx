@@ -1,7 +1,10 @@
 import {
   ConnectProvider as BTCConnectProvider,
   OKXConnector,
-  UnisatConnector
+  UnisatConnector,
+  BybitConnector,
+  BitgetConnector,
+  XverseConnector
 } from '@particle-network/btc-connectkit'
 import { ReactNode, useMemo, useState } from 'react'
 import { Transport } from 'viem'
@@ -71,7 +74,13 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
           visible: import.meta.env.VITE_PARTICLE_WALLET_VISIBLE === 'true'
         }
       }}
-      connectors={[new OKXConnector(), new UnisatConnector()]}>
+      connectors={[
+        new OKXConnector(),
+        new UnisatConnector(),
+        new BybitConnector(),
+        new BitgetConnector(),
+        new XverseConnector()
+      ]}>
       <WagmiProvider reconnectOnMount={false} config={config}>
         {children}
       </WagmiProvider>
