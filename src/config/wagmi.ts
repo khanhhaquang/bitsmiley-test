@@ -112,12 +112,50 @@ export const bitLayerMainnet = {
   testnet: false
 } as const satisfies Chain
 
+export const zetaTestnet = {
+  id: 7001,
+  name: 'Zeta Testnet',
+  nativeCurrency: { name: 'ZETA', symbol: 'ZETA', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://zeta-chain-testnet.drpc.org']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Zeta Testnet Scan',
+      url: 'https://athens.explorer.zetachain.com'
+    }
+  },
+  testnet: true
+} as const satisfies Chain
+
+export const zetaMainnet = {
+  id: 7000,
+  name: 'Zeta Mainnet',
+  nativeCurrency: { name: 'ZETA', symbol: 'ZETA', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://zeta-chain.drpc.org	']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Zeta Testnet Scan',
+      url: 'https://explorer.zetachain.com'
+    }
+  },
+  testnet: true
+} as const satisfies Chain
+
 //TODO: PARTICLE DOES NOT SUPPORT THESE CHAINS YET
 export const chainsNotSupportedByParticle: number[] = [
   botanixTestnet.id,
   bobTestnet.id,
   bitLayerTestnet.id,
-  bitLayerMainnet.id
+  bitLayerMainnet.id,
+  zetaTestnet.id,
+  zetaMainnet.id
 ]
 
 export const customChains = [
@@ -126,5 +164,7 @@ export const customChains = [
   bobTestnet,
   bSquaredTestnet,
   bitLayerTestnet,
-  bitLayerMainnet
+  bitLayerMainnet,
+  zetaTestnet,
+  zetaMainnet
 ] as Chain[]
