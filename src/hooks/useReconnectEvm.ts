@@ -23,12 +23,13 @@ export const useReconnectEvm = () => {
     unisatConnector,
     okxWithParticleConnector,
     bitgetWithParticleConnector,
-    bybitWithParticleConnector
+    bybitWithParticleConnector,
+    xverseWithParticleConnector
   } = useBtcConnectors()
   const { okxConnector, metaMaskConnector, bitgetConnector, bybitConnector } =
     useEvmConnectors()
   const [isError, setIsError] = useState(false)
-  const { evmAccount: particleEvmAddress } = useETHProvider()
+  const { account: particleEvmAddress } = useETHProvider()
   const { connect: connectParticle } = useParticleConnector()
 
   const reconnect = useCallback(
@@ -46,22 +47,23 @@ export const useReconnectEvm = () => {
   )
 
   useEffect(() => {
-    console.log('🚀 ~ useEffect ~ isEvmConnected:', isEvmConnected)
-
     if (isEvmConnected || !!particleEvmAddress) return
 
     switch (localLoginType) {
       case LoginType.OKX:
-        connectParticle('okx')
+        connectParticle(LoginType.OKX)
         break
       case LoginType.UNISAT:
-        connectParticle('unisat')
+        connectParticle(LoginType.UNISAT)
         break
       case LoginType.BYBIT:
-        connectParticle('bybit')
+        connectParticle(LoginType.BYBIT)
         break
       case LoginType.BITGET:
-        connectParticle('bitget')
+        connectParticle(LoginType.BITGET)
+        break
+      case LoginType.XVERSE:
+        connectParticle(LoginType.XVERSE)
         break
       default:
         break
@@ -104,6 +106,15 @@ export const useReconnectEvm = () => {
     )
       reconnect(bybitWithParticleConnector)
   }, [particleEvmAddress, reconnect, bybitWithParticleConnector])
+
+  useEffect(() => {
+    if (
+      localLoginType === LoginType.XVERSE &&
+      xverseWithParticleConnector &&
+      particleEvmAddress
+    )
+      reconnect(xverseWithParticleConnector)
+  }, [particleEvmAddress, reconnect, xverseWithParticleConnector])
 
   useEffect(() => {
     if (localLoginType === LoginType.METAMASK && metaMaskConnector) {

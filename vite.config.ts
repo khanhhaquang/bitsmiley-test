@@ -9,7 +9,11 @@ import path from 'path'
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      'sats-connect': path.resolve(
+        __dirname,
+        './node_modules/@sats-connect/core'
+      )
     }
   },
   build: {

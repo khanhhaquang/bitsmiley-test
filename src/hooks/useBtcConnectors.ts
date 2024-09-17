@@ -53,6 +53,11 @@ export const useBtcConnectors = () => {
     [generateConnector]
   )
 
+  const xverseWithParticleConnector = useMemo(
+    () => generateConnector(WALLET_ID.XVERSE, 'Xverse Wallet'),
+    [generateConnector]
+  )
+
   const chain = useMemo(
     () => customChains.find((c) => c.id === evmChainId),
     [evmChainId]
@@ -77,6 +82,7 @@ export const useBtcConnectors = () => {
     okxWithParticleConnector,
     bitgetWithParticleConnector,
     bybitWithParticleConnector,
+    xverseWithParticleConnector,
     unisatConnector
   }
 }

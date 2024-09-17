@@ -11,7 +11,7 @@ export const useDisconnectAccount = () => {
   const { disconnect: disconnectEvm } = useDisconnect()
 
   const disconnect = useCallback(() => {
-    disConnectParticle()
+    disConnectParticle?.()
     disconnectEvm(
       {},
       {

@@ -25,7 +25,8 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
     okxWithParticleConnector: okxConnector,
     unisatConnector,
     bybitWithParticleConnector: bybitConnector,
-    bitgetWithParticleConnector: bitgetConnector
+    bitgetWithParticleConnector: bitgetConnector,
+    xverseWithParticleConnector: xverseConnector
   } = useBtcConnectors()
   const { connect: connectParticle } = useConnector()
 
@@ -44,6 +45,8 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
         return bybitConnector
       case LoginType.BITGET:
         return bitgetConnector
+      case LoginType.XVERSE:
+        return xverseConnector
       default:
         return undefined
     }
@@ -52,7 +55,8 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
     bybitConnector,
     loginType,
     okxConnector,
-    unisatConnector
+    unisatConnector,
+    xverseConnector
   ])
 
   useEffect(() => {
@@ -127,6 +131,18 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
 
           connectParticle(LoginType.BITGET)
           setLoginType(LoginType.BITGET)
+        }}
+      />
+      <WalletItem
+        iconName="xverse"
+        name="Xverse"
+        connect={async () => {
+          if (!window.XverseProviders) {
+            openUrl(WALLET_SITE.xverse)
+            return
+          }
+          connectParticle(LoginType.XVERSE)
+          setLoginType(LoginType.XVERSE)
         }}
       />
     </>

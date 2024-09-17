@@ -15,7 +15,8 @@ export enum LoginType {
   OKX = 'okx',
   UNISAT = 'unisat',
   BYBIT = 'bybit',
-  BITGET = 'bitget'
+  BITGET = 'bitget',
+  XVERSE = 'xverse'
 }
 
 export enum TransactionStatus {

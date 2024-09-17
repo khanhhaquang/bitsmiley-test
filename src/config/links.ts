@@ -10,7 +10,8 @@ export const WALLET_SITE = {
   unisat: 'https://unisat.io/',
   metamask: 'https://metamask.io/download/',
   bybit: 'https://www.bybit.com/en/web3/home',
-  bitget: 'https://web3.bitget.com/en/'
+  bitget: 'https://web3.bitget.com/en/',
+  xverse: 'https://www.xverse.app/download'
 }
 
 export const WALLET_ID = {
@@ -18,7 +19,8 @@ export const WALLET_ID = {
   METAMASK: 'io.metamask',
   BYBIT: 'com.bybit',
   BITGET: 'com.bitget.web3',
-  UNISAT: 'unisat.io'
+  UNISAT: 'unisat.io',
+  XVERSE: 'xverse'
 }
 
 export const INSCRIPTION_CHECKER_LINK = {
