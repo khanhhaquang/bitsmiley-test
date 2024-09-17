@@ -136,7 +136,7 @@ export const zetaMainnet = {
   nativeCurrency: { name: 'ZETA', symbol: 'ZETA', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://zeta-chain.drpc.org	']
+      http: ['https://zeta-chain.drpc.org']
     }
   },
   blockExplorers: {
