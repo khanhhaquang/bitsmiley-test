@@ -42,8 +42,8 @@ const BitUsd: React.FC = () => {
         airdropStateEqual &&
         aaSupportedChainIds.includes(currentChainId) && <PersonalSignModal />}
       <ZetaProcessing
-        status="error"
-        step={TxnStep.Two}
+        status="processing"
+        step={TxnStep.One}
         txnHash="xxxxxxxxxx"></ZetaProcessing>
     </Suspense>
   )

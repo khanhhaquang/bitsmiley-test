@@ -68,7 +68,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     if (status === 'error') {
       return 'error'
     }
-    return 'info'
+    return 'processing'
   }, [step, status])
   const actionButtonText = useMemo(() => {
     if (type === 'success' || type === 'error') {
@@ -88,15 +88,31 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     }
     return 'none'
   }, [step, status])
+  const borderColorClassName = useMemo(() => {
+    if (stepTwoStatus === 'success') {
+      return 'border-green'
+    }
+    if (stepTwoStatus === 'processing') {
+      return 'border-blue'
+    }
+    if (stepTwoStatus === 'error') {
+      return 'border-warning'
+    }
+    return 'border-white/50'
+  }, [stepTwoStatus])
   return (
     <ProcessingModal
       type={type}
       actionButtonText={actionButtonText}
       message={
         <div className="flex flex-col gap-6">
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <ZetaStep step={TxnStep.One} status={stepOneStatus}></ZetaStep>
-            <div className="text-white/50">------</div>
+            <div
+              className={cn(
+                'border-dotted border-t-2 w-12 h-[2px]',
+                borderColorClassName
+              )}></div>
             <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
           </div>
           <div className="flex flex-col gap-2">

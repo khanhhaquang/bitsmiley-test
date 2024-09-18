@@ -19,7 +19,7 @@ type ProcessingProps = {
   onClickActionButton?: () => void
   titleClassName?: string
   actionButtonClassName?: string
-  type?: 'info' | 'success' | 'error'
+  type?: 'info' | 'success' | 'error' | 'processing'
   link?: string
 }
 
