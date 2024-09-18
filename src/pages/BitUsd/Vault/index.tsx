@@ -6,6 +6,8 @@ import { useCollaterals } from '@/hooks/useCollaterals'
 
 import { ManageVault } from './ManageVault'
 import { OpenVault } from './OpenVault'
+import { isZetaChain } from '@/utils/chain'
+import { ZetaOpenVault } from './ZetaOpenVault'
 
 const Vault: React.FC = () => {
   const currentChainId = useChainId()
@@ -26,6 +28,8 @@ const Vault: React.FC = () => {
     <div className="relative size-full overflow-hidden pt-9">
       {isMyVault ? (
         <ManageVault chainId={Number(chainId)} collateralId={collateralId} />
+      ) : isZetaChain(Number(chainId)) ? (
+        <ZetaOpenVault chainId={Number(chainId)} collateralId={collateralId} />
       ) : (
         <OpenVault chainId={Number(chainId)} collateralId={collateralId} />
       )}

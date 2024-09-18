@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
+import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useManageVault } from '@/hooks/useManageVault'
@@ -9,6 +10,7 @@ import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
+import { useZetaClient } from '@/hooks/useZetaClient'
 import { TransactionStatus } from '@/types/common'
 
 import VaultHeader from './component/VaultHeader'
@@ -24,10 +26,10 @@ import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { formatBitUsd, formatWBtc } from '../display'
 
-export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
-  chainId,
-  collateralId
-}) => {
+export const ZetaOpenVault: React.FC<{
+  chainId: number
+  collateralId: string
+}> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
 
   const { collateral, refetch: refetchCollateral } = useCollaterals(
@@ -55,6 +57,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
+  const [btcWalletOpen, setBtcWalletOpen] = useState(false)
 
   const {
     txnErrorMsg,
@@ -67,6 +70,8 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     approvalTxnStatus,
     wBtcAllowance
   } = useManageVault(collateral)
+
+  const { tapRootAddress } = useZetaClient(chainId, collateralId)
 
   const isApproving = useMemo(
     () =>
@@ -236,6 +241,14 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
       {processingModal}
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader collateral={collateral} />
+
+      <NativeBtcWalletModal
+        onClose={() => setBtcWalletOpen(false)}
+        isOpen={btcWalletOpen}
+      />
+      <div className="mt-4 flex flex-col items-center gap-y-2 text-xs">
+        <span>To taproot address: {tapRootAddress}</span>
+      </div>
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput

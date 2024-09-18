@@ -26,12 +26,14 @@ export const NativeBtcWalletModal: React.FC<{
           <div className="flex flex-col items-center gap-y-6">
             {connectors.map((c) => (
               <WalletItem
+                key={c.metadata.id}
                 iconName={c.metadata.id}
-                name={c.metadata.id}
+                name={c.metadata.name}
                 connect={async () => {
                   if (c.isReady()) {
                     try {
                       await connect(c.metadata.id)
+                      onClose()
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     } catch (error: any) {
                       console.error('onConnect error', error)

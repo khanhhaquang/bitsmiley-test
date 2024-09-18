@@ -28,7 +28,7 @@ export default defineConfig({
     }
   },
   define: {
-    global: {}
+    global: 'globalThis'
   },
   esbuild: {
     drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
@@ -41,5 +41,11 @@ export default defineConfig({
     }),
     svgr({ include: '**/*.svg' }),
     react()
-  ]
+  ],
+  worker: {
+    plugins: () => [wasm(), topLevelAwait()]
+  },
+  optimizeDeps: {
+    exclude: ['tiny-secp256k1']
+  }
 })
