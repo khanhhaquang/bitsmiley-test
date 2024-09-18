@@ -1,6 +1,9 @@
 import { ReactNode, useEffect, useMemo } from 'react'
 
 import {
+  CrossGreenIcon,
+  CrossRedIcon,
+  MinimizeIcon,
   ProcessingInfoModalTitleIcon,
   ProcessingInfoTitleIcon
 } from '@/assets/icons'
@@ -21,6 +24,7 @@ type ProcessingProps = {
   actionButtonClassName?: string
   type?: 'info' | 'success' | 'error' | 'processing'
   link?: string
+  onClickRightButton?: () => void
 }
 
 const ProcessingLoader = () => {
@@ -76,7 +80,8 @@ export const Processing: React.FC<ProcessingProps> = ({
   titleClassName,
   actionButtonClassName,
   className,
-  link
+  link,
+  onClickRightButton
 }) => {
   const borderColorClassName = useMemo(() => {
     if (type === 'success') return 'border-green/70'
@@ -98,6 +103,13 @@ export const Processing: React.FC<ProcessingProps> = ({
     if (type === 'error') return 'Failed'
     return 'Processing'
   }, [type])
+  const rightButton = useMemo(() => {
+    if (type === 'success')
+      return <CrossGreenIcon width={14} height={14}></CrossGreenIcon>
+    if (type === 'error')
+      return <CrossRedIcon width={14} height={14}></CrossRedIcon>
+    return <MinimizeIcon width={14} height={14}></MinimizeIcon>
+  }, [type])
 
   return (
     <div
@@ -108,7 +120,7 @@ export const Processing: React.FC<ProcessingProps> = ({
       )}>
       <div
         className={cn(
-          'flex w-full items-center justify-center border border-blue px-0.5 py-[1px] text-blue',
+          'flex w-full items-center justify-center border border-blue px-0.5 py-[1px] text-blue relative',
           borderColorClassName,
           titleColorClassName
         )}>
@@ -129,6 +141,11 @@ export const Processing: React.FC<ProcessingProps> = ({
           <ProcessingInfoModalTitleIcon className="w-full" />
         ) : (
           <ProcessingInfoTitleIcon className="w-full" />
+        )}
+        {onClickRightButton && (
+          <div className="absolute right-1 top-1 w-[23px] h-[23px] bg-black flex items-center justify-center">
+            {rightButton}
+          </div>
         )}
       </div>
 

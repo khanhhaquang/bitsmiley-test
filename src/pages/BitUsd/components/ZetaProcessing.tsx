@@ -100,10 +100,12 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     }
     return 'border-white/50'
   }, [stepTwoStatus])
+  const onClickRightButton = () => {}
   return (
     <ProcessingModal
       type={type}
       actionButtonText={actionButtonText}
+      onClickRightButton={onClickRightButton}
       message={
         <div className="flex flex-col gap-6">
           <div className="flex gap-2 items-center">

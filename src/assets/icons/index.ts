@@ -26,6 +26,8 @@ import CloseIcon from './close.svg'
 import CoinIcon from './coin.svg'
 import CopyIcon from './copy.svg'
 import CopyrightIcon from './copyright.svg'
+import MinimizeIcon from './minimize-icon.svg'
+import CrossGreenIcon from './cross-green-icon.svg'
 import CrossRedIcon from './cross-red-icon.svg'
 import CrownYellowIcon from './crown-yellow.svg'
 import CrownIcon from './crown.svg'
@@ -150,6 +152,8 @@ export {
   ArrowLeftDoubleIcon,
   AlertBg,
   BitUsdPixelIcon,
+  CrossGreenIcon,
   CrossRedIcon,
-  CheckGreenIcon
+  CheckGreenIcon,
+  MinimizeIcon
 }
