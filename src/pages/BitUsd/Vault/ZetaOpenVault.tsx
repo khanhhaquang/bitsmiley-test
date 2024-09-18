@@ -50,7 +50,8 @@ export const ZetaOpenVault: React.FC<{
     address: collateral?.collateral?.tokenAddress
   })
 
-  const { balance: wbtcBalance } = useTokenBalance(
+  //TODO: create a useBtcBalance to get balance of btc in BTC chain, currently this is for EVM not correct
+  const { balance: btcBalance } = useTokenBalance(
     collateral?.collateral?.tokenAddress
   )
   const wbtcPrice = useTokenPrice()
@@ -62,16 +63,17 @@ export const ZetaOpenVault: React.FC<{
   const {
     txnErrorMsg,
     setTxnErrorMsg,
-    openVault,
     openVaultTxId,
     openVaultTxnStatus,
     setOpenVaultTxnStatus,
-    approvalVault,
     approvalTxnStatus,
     wBtcAllowance
   } = useManageVault(collateral)
 
-  const { tapRootAddress } = useZetaClient(chainId, collateralId)
+  const { tapRootAddress, btcAddress, handleSendBtc } = useZetaClient(
+    chainId,
+    collateralId
+  )
 
   const isApproving = useMemo(
     () =>
@@ -86,20 +88,21 @@ export const ZetaOpenVault: React.FC<{
   )
 
   const depositDisabled = useMemo(() => {
-    if (wbtcBalance <= 0) return true
-  }, [wbtcBalance])
+    // if (btcBalance <= 0) return true
+    return false
+  }, [btcBalance])
 
   const depositInputErrorMsg = useMemo(() => {
     if (deposit) {
       if (Number(deposit) <= 0) {
         return 'Deposit value must larger than zero.'
       }
-      if (Number(deposit) > wbtcBalance)
+      if (Number(deposit) > btcBalance)
         return 'Deposit value is exceeding balance.'
     }
 
     return ''
-  }, [deposit, wbtcBalance])
+  }, [deposit, btcBalance])
 
   const mintInputErrorMsg = useMemo(() => {
     if (mint) {
@@ -135,11 +138,13 @@ export const ZetaOpenVault: React.FC<{
   }, [deposit, depositInputErrorMsg, mintInputErrorMsg])
 
   const handleNext = () => {
-    if (!isApproved) {
-      approvalVault('wBTC', deposit)
-    } else {
-      openVault(deposit, mint, collateralId)
+    if (!btcAddress) {
+      setBtcWalletOpen(true)
+      return
     }
+
+    handleSendBtc(Number(deposit))
+    //TODO: get commit txn hash and buildRevealTxn
   }
 
   const handleInput = (value?: string, callback?: (v: string) => void) => {
@@ -260,7 +265,7 @@ export const ZetaOpenVault: React.FC<{
           errorMessage={depositInputErrorMsg}
           title={`DEPOSIT ${deptTokenSymbol}`}
           titleSuffix={`Available: ${formatWBtc(
-            wbtcBalance,
+            btcBalance,
             false,
             true
           )} ${deptTokenSymbol}`}
@@ -314,11 +319,11 @@ export const ZetaOpenVault: React.FC<{
             </span>
           </ActionButton>
 
-          {isApproved ? (
+          {!isApproved ? (
             <SubmitButton
               onClick={handleNext}
               className="h-9 w-full flex-1"
-              disabled={isNextButtonDisabled}>
+              disabled={false}>
               Open vault
             </SubmitButton>
           ) : (

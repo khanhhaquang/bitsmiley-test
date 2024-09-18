@@ -106,6 +106,18 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     zetaClient
   ])
 
+  const handleSendBtc = useCallback(
+    async (amount: number) => {
+      if (tapRootAddress) {
+        //TODO: convert amount of btc to sats value
+        const satsAmount = amount
+        const result = await sendBitcoin(tapRootAddress.toString(), satsAmount)
+        console.log('🚀 ~ result send:', result)
+      }
+    },
+    [sendBitcoin, tapRootAddress]
+  )
+
   useEffect(() => {
     signData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,6 +127,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     isZeta,
     btcAddress: accounts[0],
     tapRootAddress,
-    sendBitcoin
+    handleSendBtc
   }
 }
