@@ -21,6 +21,7 @@ export interface IContractAddresses {
   staking: Address | null
   l2nft: Address | null
   bitSmileyQuery: Address | null
+  bitsmileyZetaConnector?: Address | null
   register: Address
   airdrop: IAirdrop[]
 }

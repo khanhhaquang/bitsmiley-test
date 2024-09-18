@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
+import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useManageVault } from '@/hooks/useManageVault'
@@ -9,6 +10,7 @@ import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
+import { useZetaClient } from '@/hooks/useZetaClient'
 import { TransactionStatus } from '@/types/common'
 
 import VaultHeader from './component/VaultHeader'
@@ -23,7 +25,6 @@ import { ProcessingModal } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { formatBitUsd, formatWBtc } from '../display'
-
 export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   chainId,
   collateralId
@@ -55,6 +56,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
+  const [btcWalletOpen, setBtcWalletOpen] = useState(true)
 
   const {
     txnErrorMsg,
@@ -68,10 +70,22 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     wBtcAllowance
   } = useManageVault(collateral)
 
-  const isApproving =
-    approvalTxnStatus === TransactionStatus.Signing ||
-    approvalTxnStatus === TransactionStatus.Processing
-  const isApproved = Number(wBtcAllowance) >= Number(deposit)
+  const { isZeta, btcAddress, tapRootAddress } = useZetaClient(
+    chainId,
+    collateralId
+  )
+
+  const isApproving = useMemo(
+    () =>
+      approvalTxnStatus === TransactionStatus.Signing ||
+      approvalTxnStatus === TransactionStatus.Processing,
+    [approvalTxnStatus]
+  )
+
+  const isApproved = useMemo(
+    () => Number(wBtcAllowance) >= Number(deposit),
+    [deposit, wBtcAllowance]
+  )
 
   const depositDisabled = useMemo(() => {
     if (wbtcBalance <= 0) return true
@@ -227,9 +241,19 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
-
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader collateral={collateral} />
+
+      {isZeta && (
+        <>
+          <NativeBtcWalletModal
+            onClose={() => setBtcWalletOpen(false)}
+            isOpen={btcWalletOpen}
+          />
+          <span>BTC: {btcAddress}</span>
+          <span>Taproot Address: {tapRootAddress}</span>
+        </>
+      )}
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
