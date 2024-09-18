@@ -50,7 +50,7 @@ const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
 
   return (
     <div
-      className={cn('flex px-3 py-2 items-center gap-2', borderColorClassName)}>
+      className={cn('flex px-3 py-2 items-center gap-2 uppercase', borderColorClassName)}>
       <div>{step}</div>
       {icon}
     </div>
