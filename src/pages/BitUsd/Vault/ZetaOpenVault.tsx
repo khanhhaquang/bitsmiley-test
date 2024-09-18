@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
+import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useManageVault } from '@/hooks/useManageVault'
@@ -9,6 +10,7 @@ import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
+import { useZetaClient } from '@/hooks/useZetaClient'
 import { TransactionStatus } from '@/types/common'
 
 import VaultHeader from './component/VaultHeader'
@@ -24,10 +26,10 @@ import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { formatBitUsd, formatWBtc } from '../display'
 
-export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
-  chainId,
-  collateralId
-}) => {
+export const ZetaOpenVault: React.FC<{
+  chainId: number
+  collateralId: string
+}> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
 
   const { collateral, refetch: refetchCollateral } = useCollaterals(
@@ -48,25 +50,30 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     address: collateral?.collateral?.tokenAddress
   })
 
-  const { balance: wbtcBalance } = useTokenBalance(
+  //TODO: create a useBtcBalance to get balance of btc in BTC chain, currently this is for EVM not correct
+  const { balance: btcBalance } = useTokenBalance(
     collateral?.collateral?.tokenAddress
   )
   const wbtcPrice = useTokenPrice()
 
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
+  const [btcWalletOpen, setBtcWalletOpen] = useState(false)
 
   const {
     txnErrorMsg,
     setTxnErrorMsg,
-    openVault,
     openVaultTxId,
     openVaultTxnStatus,
     setOpenVaultTxnStatus,
-    approvalVault,
     approvalTxnStatus,
     wBtcAllowance
   } = useManageVault(collateral)
+
+  const { tapRootAddress, btcAddress, handleSendBtc } = useZetaClient(
+    chainId,
+    collateralId
+  )
 
   const isApproving = useMemo(
     () =>
@@ -81,20 +88,21 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   )
 
   const depositDisabled = useMemo(() => {
-    if (wbtcBalance <= 0) return true
-  }, [wbtcBalance])
+    // if (btcBalance <= 0) return true
+    return false
+  }, [btcBalance])
 
   const depositInputErrorMsg = useMemo(() => {
     if (deposit) {
       if (Number(deposit) <= 0) {
         return 'Deposit value must larger than zero.'
       }
-      if (Number(deposit) > wbtcBalance)
+      if (Number(deposit) > btcBalance)
         return 'Deposit value is exceeding balance.'
     }
 
     return ''
-  }, [deposit, wbtcBalance])
+  }, [deposit, btcBalance])
 
   const mintInputErrorMsg = useMemo(() => {
     if (mint) {
@@ -130,11 +138,13 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   }, [deposit, depositInputErrorMsg, mintInputErrorMsg])
 
   const handleNext = () => {
-    if (!isApproved) {
-      approvalVault('wBTC', deposit)
-    } else {
-      openVault(deposit, mint, collateralId)
+    if (!btcAddress) {
+      setBtcWalletOpen(true)
+      return
     }
+
+    handleSendBtc(Number(deposit))
+    //TODO: get commit txn hash and buildRevealTxn
   }
 
   const handleInput = (value?: string, callback?: (v: string) => void) => {
@@ -237,6 +247,14 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader collateral={collateral} />
 
+      <NativeBtcWalletModal
+        onClose={() => setBtcWalletOpen(false)}
+        isOpen={btcWalletOpen}
+      />
+      <div className="mt-4 flex flex-col items-center gap-y-2 text-xs">
+        <span>To taproot address: {tapRootAddress}</span>
+      </div>
+
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
           scale={8}
@@ -247,7 +265,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           errorMessage={depositInputErrorMsg}
           title={`DEPOSIT ${deptTokenSymbol}`}
           titleSuffix={`Available: ${formatWBtc(
-            wbtcBalance,
+            btcBalance,
             false,
             true
           )} ${deptTokenSymbol}`}
@@ -301,11 +319,11 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             </span>
           </ActionButton>
 
-          {isApproved ? (
+          {!isApproved ? (
             <SubmitButton
               onClick={handleNext}
               className="h-9 w-full flex-1"
-              disabled={isNextButtonDisabled}>
+              disabled={false}>
               Open vault
             </SubmitButton>
           ) : (

@@ -23,6 +23,9 @@ export interface IContractAddresses {
   bitSmileyQuery: Address | null
   register: Address
   airdrop: IAirdrop[]
+
+  bitsmileyZetaConnector?: Address | null
+  signatureUtil?: Address | null
 }
 export interface INetworkInfo {
   network: string
