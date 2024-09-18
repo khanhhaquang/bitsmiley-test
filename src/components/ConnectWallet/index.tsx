@@ -28,6 +28,7 @@ import BtcConnectors from './BtcConnectors'
 import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
+// eslint-disable-next-line import/order
 import { isZetaChain } from '@/utils/chain'
 
 const DISCLAIMER_TEXTS = [

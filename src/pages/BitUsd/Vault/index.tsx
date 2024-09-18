@@ -3,10 +3,10 @@ import { useChainId } from 'wagmi'
 
 import { OnChainLoader } from '@/components/OnchainLoader'
 import { useCollaterals } from '@/hooks/useCollaterals'
+import { isZetaChain } from '@/utils/chain'
 
 import { ManageVault } from './ManageVault'
 import { OpenVault } from './OpenVault'
-import { isZetaChain } from '@/utils/chain'
 import { ZetaOpenVault } from './ZetaOpenVault'
 
 const Vault: React.FC = () => {
