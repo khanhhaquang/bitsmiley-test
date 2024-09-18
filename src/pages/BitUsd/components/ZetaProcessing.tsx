@@ -118,10 +118,10 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   const onClickRightButton = () => {
     let statusText = 'getting processed'
     let textClassName = 'text-white/50'
-    if (type === 'success') {
+    if (type === ProcessingType.Success) {
       statusText = 'successfull'
       textClassName = 'text-green'
-    } else if (type === 'error') {
+    } else if (type === ProcessingType.Error) {
       statusText = 'failed'
       textClassName = 'text-warning'
     }
