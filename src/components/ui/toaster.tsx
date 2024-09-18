@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import { FailIcon, SmileyIcon } from '@/assets/icons'
 import {
   Toast,
@@ -9,10 +11,10 @@ import {
 } from '@/components//ui/toast'
 import { useToast } from '@/components//ui/use-toast'
 import { Image } from '@/components/Image'
-import { TransactionToasts } from './TransactionToasts'
-import { useCallback } from 'react'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
+import { TransactionToasts } from './TransactionToasts'
 
 export function Toaster() {
   const { toasts } = useToast()
@@ -54,7 +56,10 @@ export function Toaster() {
         ...props
       }) {
         return (
-          <Toast key={id} {...props} className={cn('flex gap-x-4 px-4', className)}>
+          <Toast
+            key={id}
+            {...props}
+            className={cn('flex gap-x-4 px-4', className)}>
             {getIcon(variant)}
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}

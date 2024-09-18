@@ -2,11 +2,11 @@ import { useMemo } from 'react'
 
 import { CheckGreenIcon, CrossRedIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
+import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ProcessingModal } from './Processing'
-import { useToast } from '@/components/ui/use-toast'
 
 export enum TxnStep {
   One = 'Step 1',
@@ -106,15 +106,15 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   const onClickRightButton = () => {
     let statusText = 'getting processed'
     let textClassName = 'text-white/50'
-    if(type === 'success'){
+    if (type === 'success') {
       statusText = 'successfull'
       textClassName = 'text-green'
-    }else if(type === 'error'){
+    } else if (type === 'error') {
       statusText = 'failed'
       textClassName = 'text-warning'
     }
     toast({
-      variant: 'processing',
+      variant: type,
       className: 'w-[380px]',
       description: (
         <div className={textClassName}>
@@ -138,7 +138,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
       onClickRightButton={onClickRightButton}
       message={
         <div className="flex flex-col gap-6">
-          <div className="flex gap-2 items-center">
+          <div className="flex items-center gap-2">
             <ZetaStep step={TxnStep.One} status={stepOneStatus}></ZetaStep>
             <div
               className={cn(
