@@ -19,6 +19,7 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useReconnectEvm } from '@/hooks/useReconnectEvm'
+import { isZetaChain } from '@/utils/chain'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -28,8 +29,6 @@ import BtcConnectors from './BtcConnectors'
 import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
-// eslint-disable-next-line import/order
-import { isZetaChain } from '@/utils/chain'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
