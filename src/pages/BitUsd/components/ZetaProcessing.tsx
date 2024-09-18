@@ -1,24 +1,26 @@
 import { useMemo } from 'react'
-import { ProcessingModal } from './Processing'
-import { cn } from '@/utils/cn'
-import { Image } from '@/components/Image'
+
 import { CheckGreenIcon, CrossRedIcon } from '@/assets/icons'
+import { Image } from '@/components/Image'
+import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-export enum ZetaTransactionStep {
+import { ProcessingModal } from './Processing'
+
+export enum TxnStep {
   One = 'Step 1',
   Two = 'Step 2'
 }
 
 type ZetaProcessingProps = {
   status: 'processing' | 'success' | 'error'
-  step: ZetaTransactionStep
+  step: TxnStep
   txnHash?: string
 }
 
 type ZetaStepProps = {
   status: 'processing' | 'success' | 'error' | 'none'
-  step: ZetaTransactionStep
+  step: TxnStep
 }
 
 const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
@@ -60,28 +62,28 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   txnHash
 }) => {
   const type = useMemo(() => {
-    if (step === ZetaTransactionStep.Two && status === 'success') {
+    if (step === TxnStep.Two && status === 'success') {
       return 'success'
     }
-    if(status === 'error'){
+    if (status === 'error') {
       return 'error'
     }
     return 'info'
   }, [step, status])
   const actionButtonText = useMemo(() => {
-    if (status === 'success' || status === 'error') {
+    if (type === 'success' || type === 'error') {
       return 'Ok'
     }
     return undefined
   }, [type])
   const stepOneStatus = useMemo(() => {
-    if (step === ZetaTransactionStep.One) {
+    if (step === TxnStep.One) {
       return status
     }
     return 'success'
   }, [step, status])
   const stepTwoStatus = useMemo(() => {
-    if (step === ZetaTransactionStep.Two) {
+    if (step === TxnStep.Two) {
       return status
     }
     return 'none'
@@ -93,13 +95,9 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
       message={
         <div className="flex flex-col gap-6">
           <div className="flex gap-2">
-            <ZetaStep
-              step={ZetaTransactionStep.One}
-              status={stepOneStatus}></ZetaStep>
+            <ZetaStep step={TxnStep.One} status={stepOneStatus}></ZetaStep>
             <div className="text-white/50">------</div>
-            <ZetaStep
-              step={ZetaTransactionStep.Two}
-              status={stepTwoStatus}></ZetaStep>
+            <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
           </div>
           <div className="flex flex-col gap-2">
             {status === 'error' ? (

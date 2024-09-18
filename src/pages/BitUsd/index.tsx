@@ -9,10 +9,7 @@ import { useRegister } from '@/hooks/useRegister'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 import PersonalSignModal from './components/PersonalSignModal'
-import {
-  ZetaProcessing,
-  ZetaTransactionStep
-} from './components/ZetaProcessing'
+import { ZetaProcessing, TxnStep } from './components/ZetaProcessing'
 
 const BitUsd: React.FC = () => {
   const currentChainId = useChainId()
@@ -46,7 +43,7 @@ const BitUsd: React.FC = () => {
         aaSupportedChainIds.includes(currentChainId) && <PersonalSignModal />}
       <ZetaProcessing
         status="error"
-        step={ZetaTransactionStep.Two}
+        step={TxnStep.Two}
         txnHash="xxxxxxxxxx"></ZetaProcessing>
     </Suspense>
   )
