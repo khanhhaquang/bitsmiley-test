@@ -37,7 +37,11 @@ import {
   SubmitButton
 } from '../components/ActionButton'
 import { NumberInput } from '../components/NumberInput'
-import { ProcessingModal } from '../components/Processing'
+import {
+  Processing,
+  ProcessingModal,
+  ProcessingType
+} from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayVaultValues } from '../display'
@@ -279,11 +283,11 @@ export const ManageVault: React.FC<{
     (status: TransactionStatus) => {
       switch (status) {
         case TransactionStatus.Success:
-          return 'success'
+          return ProcessingType.Success
         case TransactionStatus.Failed:
-          return 'error'
+          return ProcessingType.Error
         default:
-          return 'info'
+          return ProcessingType.Info
       }
     },
     []
