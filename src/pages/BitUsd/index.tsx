@@ -9,6 +9,10 @@ import { useRegister } from '@/hooks/useRegister'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 import PersonalSignModal from './components/PersonalSignModal'
+import {
+  ZetaProcessing,
+  ZetaTransactionStep
+} from './components/ZetaProcessing'
 
 const BitUsd: React.FC = () => {
   const currentChainId = useChainId()
@@ -40,6 +44,10 @@ const BitUsd: React.FC = () => {
       {isConnectedWithAA &&
         airdropStateEqual &&
         aaSupportedChainIds.includes(currentChainId) && <PersonalSignModal />}
+      <ZetaProcessing
+        status="error"
+        step={ZetaTransactionStep.Two}
+        txnHash="xxxxxxxxxx"></ZetaProcessing>
     </Suspense>
   )
 }

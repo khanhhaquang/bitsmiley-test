@@ -72,6 +72,8 @@ import ManageVaultInfoTitleIcon from './vault-info-title.svg'
 import VaultInfoIcon from './vault-info.svg'
 import WarningOutline from './warning-outline.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
+import CrossRedIcon from './cross-red-icon.svg'
+import CheckGreenIcon from './check-green-icon.svg'
 
 export {
   TVLIndicatorIcon,
@@ -147,5 +149,7 @@ export {
   RefreshIcon,
   ArrowLeftDoubleIcon,
   AlertBg,
-  BitUsdPixelIcon
+  BitUsdPixelIcon,
+  CrossRedIcon,
+  CheckGreenIcon
 }
