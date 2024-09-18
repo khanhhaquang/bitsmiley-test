@@ -44,7 +44,7 @@ const BitUsd: React.FC = () => {
       <ZetaProcessing
         status="processing"
         step={TxnStep.One}
-        txnHash="xxxxxxxxxx"></ZetaProcessing>
+        txnId="xxxxxxxxxx"></ZetaProcessing>
     </Suspense>
   )
 }

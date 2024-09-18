@@ -6,6 +6,7 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ProcessingModal } from './Processing'
+import { useToast } from '@/components/ui/use-toast'
 
 export enum TxnStep {
   One = 'Step 1',
@@ -15,7 +16,7 @@ export enum TxnStep {
 type ZetaProcessingProps = {
   status: 'processing' | 'success' | 'error'
   step: TxnStep
-  txnHash?: string
+  txnId?: string
 }
 
 type ZetaStepProps = {
@@ -59,8 +60,10 @@ const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
 export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   step,
   status,
-  txnHash
+  txnId
 }) => {
+  const explorerUrl = ''
+  const { toast } = useToast()
   const type = useMemo(() => {
     if (step === TxnStep.Two && status === 'success') {
       return 'success'
@@ -100,7 +103,34 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     }
     return 'border-white/50'
   }, [stepTwoStatus])
-  const onClickRightButton = () => {}
+  const onClickRightButton = () => {
+    let statusText = 'getting processed'
+    let textClassName = 'text-white/50'
+    if(type === 'success'){
+      statusText = 'successfull'
+      textClassName = 'text-green'
+    }else if(type === 'error'){
+      statusText = 'failed'
+      textClassName = 'text-warning'
+    }
+    toast({
+      variant: 'processing',
+      className: 'w-[380px]',
+      description: (
+        <div className={textClassName}>
+          Your transaction is {statusText}.{' '}
+          <a
+            className="hover:underline"
+            target="_blank"
+            href={`${explorerUrl}/tx/${txnId}`}>
+            [Click here]
+          </a>{' '}
+          to check
+        </div>
+      )
+    })
+    return
+  }
   return (
     <ProcessingModal
       type={type}
@@ -118,15 +148,13 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
             <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
           </div>
           <div className="flex flex-col gap-2">
-            {status === 'error' ? (
+            {status === 'error' && (
               <div className="text-warning">Transaction Failed</div>
-            ) : (
-              <div>Transaction</div>
             )}
             <div>
-              Tx hash:
+              Transaction hash:
               <br />
-              {txnHash}
+              {txnId}
             </div>
           </div>
         </div>

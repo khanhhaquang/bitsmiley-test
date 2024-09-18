@@ -143,7 +143,9 @@ export const Processing: React.FC<ProcessingProps> = ({
           <ProcessingInfoTitleIcon className="w-full" />
         )}
         {onClickRightButton && (
-          <div className="absolute right-1 top-1 w-[23px] h-[23px] bg-black flex items-center justify-center">
+          <div
+            className="absolute right-1 top-1 w-[23px] h-[23px] bg-black flex items-center justify-center"
+            onClick={onClickRightButton}>
             {rightButton}
           </div>
         )}
