@@ -6,38 +6,47 @@ import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-import { ProcessingModal } from './Processing'
+import { ProcessingModal, ProcessingType } from './Processing'
 
 export enum TxnStep {
   One = 'Step 1',
   Two = 'Step 2'
 }
 
+export enum ProcessingStatus {
+  Processing = 'processing',
+  Success = 'success',
+  Error = 'error'
+}
+
 type ZetaProcessingProps = {
-  status: 'processing' | 'success' | 'error'
+  status: ProcessingStatus
   step: TxnStep
   txnId?: string
 }
 
 type ZetaStepProps = {
-  status: 'processing' | 'success' | 'error' | 'none'
+  status: ProcessingStatus | 'none'
   step: TxnStep
 }
 
 const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
   const borderColorClassName = useMemo(() => {
-    if (status === 'success') return 'border-2 border-green/60 text-green'
-    if (status === 'error') return 'border-2 border-warning/60 text-warning'
-    if (status === 'processing') return 'border-2 border-blue/60 text-blue'
+    if (status === ProcessingStatus.Success)
+      return 'border-2 border-green/60 text-green'
+    if (status === ProcessingStatus.Error)
+      return 'border-2 border-warning/60 text-warning'
+    if (status === ProcessingStatus.Processing)
+      return 'border-2 border-blue/60 text-blue'
     return 'text-white/50'
   }, [status])
 
   const icon = useMemo(() => {
-    if (status === 'success')
+    if (status === ProcessingStatus.Success)
       return <CheckGreenIcon width={14} height={14}></CheckGreenIcon>
-    if (status === 'error')
+    if (status === ProcessingStatus.Error)
       return <CrossRedIcon width={14} height={14}></CrossRedIcon>
-    if (status === 'processing')
+    if (status === ProcessingStatus.Processing)
       return (
         <Image
           src={getIllustrationUrl('loading-blue-icon', 'webp')}
@@ -68,16 +77,16 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   const explorerUrl = ''
   const { toast } = useToast()
   const type = useMemo(() => {
-    if (step === TxnStep.Two && status === 'success') {
-      return 'success'
+    if (step === TxnStep.Two && status === ProcessingStatus.Success) {
+      return ProcessingType.Success
     }
-    if (status === 'error') {
-      return 'error'
+    if (status === ProcessingStatus.Error) {
+      return ProcessingType.Error
     }
-    return 'processing'
+    return ProcessingType.Processing
   }, [step, status])
   const actionButtonText = useMemo(() => {
-    if (type === 'success' || type === 'error') {
+    if (type === ProcessingType.Success || type === ProcessingType.Error) {
       return 'Ok'
     }
     return undefined
@@ -86,7 +95,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     if (step === TxnStep.One) {
       return status
     }
-    return 'success'
+    return ProcessingStatus.Success
   }, [step, status])
   const stepTwoStatus = useMemo(() => {
     if (step === TxnStep.Two) {
@@ -95,13 +104,13 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     return 'none'
   }, [step, status])
   const borderColorClassName = useMemo(() => {
-    if (stepTwoStatus === 'success') {
+    if (stepTwoStatus === ProcessingStatus.Success) {
       return 'border-green'
     }
-    if (stepTwoStatus === 'processing') {
+    if (stepTwoStatus === ProcessingStatus.Processing) {
       return 'border-blue'
     }
-    if (stepTwoStatus === 'error') {
+    if (stepTwoStatus === ProcessingStatus.Error) {
       return 'border-warning'
     }
     return 'border-white/50'

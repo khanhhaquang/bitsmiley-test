@@ -13,6 +13,13 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
 
+export enum ProcessingType {
+  Processing = 'processing',
+  Success = 'success',
+  Error = 'error',
+  Info = 'info'
+}
+
 type ProcessingProps = {
   className?: string
   title?: string
@@ -22,7 +29,7 @@ type ProcessingProps = {
   onClickActionButton?: () => void
   titleClassName?: string
   actionButtonClassName?: string
-  type?: 'info' | 'success' | 'error' | 'processing'
+  type?: ProcessingType
   link?: string
   onClickRightButton?: () => void
 }
@@ -71,7 +78,7 @@ export const ProcessingModal: React.FC<Omit<ProcessingProps, 'isModal'>> = ({
 }
 
 export const Processing: React.FC<ProcessingProps> = ({
-  type = 'info',
+  type = ProcessingType.Info,
   title,
   message,
   isModal,

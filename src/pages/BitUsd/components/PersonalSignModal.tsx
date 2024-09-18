@@ -13,7 +13,7 @@ import { getTxnErrorMsg } from '@/utils/error'
 
 import { ActionButton } from './ActionButton'
 import InputBlack from './InputBlack'
-import { ProcessingModal } from './Processing'
+import { ProcessingModal, ProcessingType } from './Processing'
 
 const PersonalSignModal = () => {
   const { address, blockExplorerUrl } = useUserInfo()
@@ -83,7 +83,7 @@ const PersonalSignModal = () => {
       case TransactionStatus.Success:
         return (
           <ProcessingModal
-            type="success"
+            type={ProcessingType.Success}
             actionButtonText="Ok"
             message="Your transfer has been successful."
             onClickActionButton={() => {
@@ -100,7 +100,7 @@ const PersonalSignModal = () => {
       case TransactionStatus.Failed:
         return (
           <ProcessingModal
-            type="error"
+            type={ProcessingType.Error}
             actionButtonText="Ok"
             onClickActionButton={() => {
               setTxnStatus(TransactionStatus.Idle)
