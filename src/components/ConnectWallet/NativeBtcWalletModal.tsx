@@ -5,6 +5,7 @@ import { CloseIcon } from '@/assets/icons'
 import WalletItem from './WalletItem'
 
 import { Modal } from '../Modal'
+import { openUrl } from '@/utils/getAssetsUrl'
 
 export const NativeBtcWalletModal: React.FC<{
   isOpen: boolean
@@ -38,6 +39,8 @@ export const NativeBtcWalletModal: React.FC<{
                     } catch (error: any) {
                       console.error('onConnect error', error)
                     }
+                  } else {
+                    openUrl(c.metadata.downloadUrl)
                   }
                 }}
               />
