@@ -140,7 +140,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         console.log('rawTx:', rawTx)
         //push result
         try {
-          const txid = await (window as any).unisat.pushTx(rawTx)
+          const txid = await window.unisat.pushTx(rawTx)
           console.log('txid:', txid)
           const intervalId = setInterval(() => {
             ZetaService.inboundHashToCctx
@@ -161,8 +161,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           console.log(e)
         }
       }
-
-      return ''
     },
     [callData, zetaClient, zetaConnectorAddress]
   )

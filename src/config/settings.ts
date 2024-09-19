@@ -9,5 +9,8 @@ export const LOCAL_STORAGE_KEYS = {
   CONFIRMED_DISCLAIMER: 'confirmed_disclaimer',
   TXIDS: 'txids',
   LOGIN_TYPE: 'login_type',
-  BTC_LOGIN_TYPE: 'btc_login_type'
+  BTC_LOGIN_TYPE: 'btc_login_type',
+  ZETA_PROCESSING_STATUS: 'zeta_prcessing_status',
+  ZETA_PROCESSING_STEP: 'zeta_prcessing_step',
+  ZETA_PROCESSING_TXN: 'zeta_prcessing_txn'
 }

@@ -1,10 +1,9 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Hash, isHash } from 'viem'
-import { useWaitForTransactionReceipt } from 'wagmi'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useBTCBalance } from '@/hooks/useBTCBalance'
 import { useCollaterals } from '@/hooks/useCollaterals'
@@ -13,6 +12,7 @@ import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
 import { MempoolService } from '@/services/mempool'
+import { setLocalStorage } from '@/utils/storage'
 
 import VaultHeader from './component/VaultHeader'
 
@@ -64,15 +64,15 @@ export const OpenVault: React.FC<{
     ProcessingStatus.Processing
   )
   const [processingTxn, setProcessingTxn] = useState('')
-  const { data: txnReceipt } = useWaitForTransactionReceipt({
-    hash: processingTxn as Hash,
-    query: {
-      enabled:
-        isHash(processingTxn) &&
-        processingStep === TxnStep.Two &&
-        processingStatus === ProcessingStatus.Processing
-    }
-  })
+  // const { data: txnReceipt } = useWaitForTransactionReceipt({
+  //   hash: processingTxn as Hash,
+  //   query: {
+  //     enabled:
+  //       isHash(processingTxn) &&
+  //       processingStep === TxnStep.Two &&
+  //       processingStatus === ProcessingStatus.Processing
+  //   }
+  // })
 
   const { wBtcAllowance } = useManageVault(collateral)
 
@@ -151,6 +151,7 @@ export const OpenVault: React.FC<{
       .then((res) => {
         if (res) {
           setProcessingTxn(res)
+          setLocalStorage(LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN, res)
         } else {
           setProcessingStatus(ProcessingStatus.Error)
         }
@@ -197,7 +198,7 @@ export const OpenVault: React.FC<{
           .then((response) => {
             if (response?.data?.status.confirmed) {
               setProcessingStatus(ProcessingStatus.Success)
-            }else{
+            } else {
               console.log('waiting txn confirm')
             }
           })
@@ -218,7 +219,7 @@ export const OpenVault: React.FC<{
       processingStep === TxnStep.One &&
       processingStatus === ProcessingStatus.Success
     ) {
-      handleRevealTxn(processingTxn, Number(deposit), (hash)=>{
+      handleRevealTxn(processingTxn, Number(deposit), (hash) => {
         console.log(hash)
         setProcessingStep(TxnStep.Two)
         if (hash) {
@@ -227,35 +228,24 @@ export const OpenVault: React.FC<{
         } else {
           setProcessingStatus(ProcessingStatus.Error)
         }
-      })
-        // .then((hash) => {
-        //   console.log(hash)
-        //   setProcessingStep(TxnStep.Two)
-        //   if (hash) {
-        //     setProcessingTxn(hash)
-        //     setProcessingStatus(ProcessingStatus.Processing)
-        //   } else {
-        //     setProcessingStatus(ProcessingStatus.Error)
-        //   }
-        // })
-        .catch((e) => {
-          console.log('handleRevealTxn error:', e)
-          setProcessingStep(TxnStep.Two)
-          setProcessingStatus(ProcessingStatus.Error)
-        })
-    }
-  }, [processingTxn, processingStatus, processingStep])
-
-  useEffect(() => {
-    if (processingStep === TxnStep.Two) {
-      if (txnReceipt?.status === 'success') {
-        setProcessingStatus(ProcessingStatus.Success)
-      }
-      if (txnReceipt?.status === 'reverted') {
+      }).catch((e) => {
+        console.log('handleRevealTxn error:', e)
+        setProcessingStep(TxnStep.Two)
         setProcessingStatus(ProcessingStatus.Error)
-      }
+      })
     }
-  }, [txnReceipt?.status, processingStep])
+  }, [processingTxn, processingStatus, processingStep, deposit])
+
+  // useEffect(() => {
+  //   if (processingStep === TxnStep.Two) {
+  //     if (txnReceipt?.status === 'success') {
+  //       setProcessingStatus(ProcessingStatus.Success)
+  //     }
+  //     if (txnReceipt?.status === 'reverted') {
+  //       setProcessingStatus(ProcessingStatus.Error)
+  //     }
+  //   }
+  // }, [txnReceipt?.status, processingStep])
 
   return (
     <div className="size-full overflow-y-auto pb-12">
