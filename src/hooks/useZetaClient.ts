@@ -4,9 +4,9 @@ import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
 import { isZetaChain } from '@/utils/chain'
-import mempoolJS from '@mempool/mempool.js'
 import { useProjectInfo } from './useProjectInfo'
 import { ZetaService } from '@/services/zeta'
+import { useMempool } from './useMempool'
 
 export interface VerifyInfo {
   user: Address
@@ -23,16 +23,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
 
   const zetaClient = useMemo(() => ZetaBtcClient.testnet(), [])
 
-  const {
-    bitcoin: { fees, transactions }
-  } = useMemo(
-    () =>
-      mempoolJS({
-        hostname: 'mempool.space',
-        network: 'testnet'
-      }),
-    []
-  )
+  const { fees } = useMempool()
 
   const {
     data: signature,
@@ -153,6 +144,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     isZeta,
     btcAddress: accounts[0],
     tapRootAddress,
-    handleSendBtc
+    handleSendBtc,
+    handleRevealTxn
   }
 }
