@@ -1,5 +1,5 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
@@ -118,12 +118,8 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     [sendBitcoin, tapRootAddress]
   )
 
-  useEffect(() => {
-    signData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   return {
+    signData,
     isZeta,
     btcAddress: accounts[0],
     tapRootAddress,

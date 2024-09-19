@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
@@ -26,7 +26,7 @@ import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { formatBitUsd, formatWBtc } from '../display'
 
-export const ZetaOpenVault: React.FC<{
+export const OpenVault: React.FC<{
   chainId: number
   collateralId: string
 }> = ({ chainId, collateralId }) => {
@@ -70,7 +70,7 @@ export const ZetaOpenVault: React.FC<{
     wBtcAllowance
   } = useManageVault(collateral)
 
-  const { tapRootAddress, btcAddress, handleSendBtc } = useZetaClient(
+  const { tapRootAddress, btcAddress, handleSendBtc, signData } = useZetaClient(
     chainId,
     collateralId
   )
@@ -241,6 +241,11 @@ export const ZetaOpenVault: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deposit])
 
+  useEffect(() => {
+    signData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
@@ -339,3 +344,5 @@ export const ZetaOpenVault: React.FC<{
     </div>
   )
 }
+
+export const ZetaOpenVault = memo(OpenVault)

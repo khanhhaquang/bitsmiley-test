@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
@@ -24,7 +24,7 @@ import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { formatBitUsd, formatWBtc } from '../display'
 
-export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
+const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   chainId,
   collateralId
 }) => {
@@ -321,3 +321,5 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     </div>
   )
 }
+
+export const MemoizedOpenVault = memo(OpenVault)

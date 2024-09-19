@@ -1,11 +1,11 @@
 import { useConnector } from '@particle-network/btc-connectkit'
 
 import { CloseIcon } from '@/assets/icons'
+import { openUrl } from '@/utils/getAssetsUrl'
 
 import WalletItem from './WalletItem'
 
 import { Modal } from '../Modal'
-import { openUrl } from '@/utils/getAssetsUrl'
 
 export const NativeBtcWalletModal: React.FC<{
   isOpen: boolean

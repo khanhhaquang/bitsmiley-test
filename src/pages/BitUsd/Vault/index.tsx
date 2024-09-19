@@ -6,7 +6,7 @@ import { useCollaterals } from '@/hooks/useCollaterals'
 import { isZetaChain } from '@/utils/chain'
 
 import { ManageVault } from './ManageVault'
-import { OpenVault } from './OpenVault'
+import { MemoizedOpenVault as OpenVault } from './OpenVault'
 import { ZetaOpenVault } from './ZetaOpenVault'
 
 const Vault: React.FC = () => {
