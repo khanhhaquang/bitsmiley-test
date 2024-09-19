@@ -50,11 +50,6 @@ export const OpenVault: React.FC<{
     address: collateral?.collateral?.tokenAddress
   })
 
-  //TODO: create a useBtcBalance to get balance of btc in BTC chain, currently this is for EVM not correct
-  // const { balance: btcBalance } = useTokenBalance(
-  //   collateral?.collateral?.tokenAddress
-  // )
-
   const { balance: btcBalance } = useBTCBalance(
     collateral?.collateral?.tokenAddress
   )
