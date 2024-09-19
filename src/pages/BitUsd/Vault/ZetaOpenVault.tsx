@@ -146,6 +146,7 @@ export const OpenVault: React.FC<{
     setShowProcessing(true)
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
+
     handleSendBtc(Number(deposit))
       .then((res) => {
         if (res) {
@@ -191,17 +192,19 @@ export const OpenVault: React.FC<{
       processingStatus === ProcessingStatus.Processing
     ) {
       const intervalId = setInterval(() => {
-        MempoolService.getTransaction.call(processingTxn).then((response) => {
-          console.log(response)
-          if (response?.data?.status.confirmed) {
-            setProcessingStatus(ProcessingStatus.Success)
-          }
-        })
-        // .catch((e) => {
-        //   console.log(e)
-        //   setProcessingStatus(ProcessingStatus.Error)
-        // })
-      }, 500)
+        MempoolService.getTransaction
+          .call(processingTxn)
+          .then((response) => {
+            if (response?.data?.status.confirmed) {
+              setProcessingStatus(ProcessingStatus.Success)
+            }else{
+              console.log('waiting txn confirm')
+            }
+          })
+          .catch(() => {
+            console.log('waiting txn')
+          })
+      }, 1000)
 
       return () => {
         clearInterval(intervalId)
@@ -215,17 +218,26 @@ export const OpenVault: React.FC<{
       processingStep === TxnStep.One &&
       processingStatus === ProcessingStatus.Success
     ) {
-      handleRevealTxn(processingTxn, 100)
-        .then((hash) => {
-          console.log(hash)
-          setProcessingStep(TxnStep.Two)
-          if (hash) {
-            setProcessingTxn(hash)
-            setProcessingStatus(ProcessingStatus.Processing)
-          } else {
-            setProcessingStatus(ProcessingStatus.Error)
-          }
-        })
+      handleRevealTxn(processingTxn, Number(deposit), (hash)=>{
+        console.log(hash)
+        setProcessingStep(TxnStep.Two)
+        if (hash) {
+          setProcessingTxn(hash)
+          setProcessingStatus(ProcessingStatus.Success)
+        } else {
+          setProcessingStatus(ProcessingStatus.Error)
+        }
+      })
+        // .then((hash) => {
+        //   console.log(hash)
+        //   setProcessingStep(TxnStep.Two)
+        //   if (hash) {
+        //     setProcessingTxn(hash)
+        //     setProcessingStatus(ProcessingStatus.Processing)
+        //   } else {
+        //     setProcessingStatus(ProcessingStatus.Error)
+        //   }
+        // })
         .catch((e) => {
           console.log('handleRevealTxn error:', e)
           setProcessingStep(TxnStep.Two)

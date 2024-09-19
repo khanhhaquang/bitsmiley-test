@@ -4,7 +4,6 @@ import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
 
-import { MempoolService } from '@/services/mempool'
 import { ZetaService } from '@/services/zeta'
 import { isZetaChain } from '@/utils/chain'
 
@@ -112,7 +111,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       if (tapRootAddress) {
         //TODO: convert amount of btc to sats value
         const satsAmount = amount
-        console.log('sendBitcoin', tapRootAddress)
+        console.log('sendBitcoin', tapRootAddress, satsAmount)
         const result = await sendBitcoin(tapRootAddress.toString(), satsAmount)
         console.log('🚀 ~ result send:', result)
         return result
@@ -122,21 +121,45 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   )
 
   const handleRevealTxn = useCallback(
-    async (commitTxn: string, commitAmount: number) => {
+    async (
+      commitTxn: string,
+      commitAmount: number,
+      onFinish: (hash: string) => void
+    ) => {
       if (zetaConnectorAddress && callData) {
-        const feesRecommended = await MempoolService.getRecommendedFees.call()
-        console.log('fees:', feesRecommended)
-        zetaClient.call(zetaConnectorAddress, Buffer.from(callData, 'hex'))
+        // const feesRecommended = await MempoolService.getRecommendedFees.call()
+        // console.log('fees:', feesRecommended)
+        // zetaClient.call(zetaConnectorAddress, Buffer.from(callData, 'hex'))
+        console.log('buildRevealTxn:', commitTxn, commitAmount)
         const buffer = zetaClient.buildRevealTxn(
           { txn: commitTxn, idx: 0 },
           commitAmount,
-          feesRecommended.data.economyFee
+          50 //feesRecommended.data.economyFee
         )
-        const result = Buffer.from(buffer).toString('hex')
-        console.log(result)
-        const cctxRes = await ZetaService.inboundHashToCctx.call(result)
-        console.log(cctxRes)
-        return cctxRes?.data?.inboundHashToCctx.inbound_hash || ''
+        const rawTx = Buffer.from(buffer).toString('hex')
+        console.log('rawTx:', rawTx)
+        //push result
+        try {
+          const txid = await (window as any).unisat.pushTx(rawTx)
+          console.log('txid:', txid)
+          const intervalId = setInterval(() => {
+            ZetaService.inboundHashToCctx
+              .call(txid)
+              .then((res) => {
+                if (res?.data?.inboundHashToCctx.inbound_hash) {
+                  clearInterval(intervalId)
+                  onFinish(res?.data?.inboundHashToCctx.inbound_hash)
+                } else {
+                  console.log('waiting txn inbound_hash')
+                }
+              })
+              .catch(() => {
+                console.log('waiting txn')
+              })
+          }, 1000)
+        } catch (e) {
+          console.log(e)
+        }
       }
 
       return ''
