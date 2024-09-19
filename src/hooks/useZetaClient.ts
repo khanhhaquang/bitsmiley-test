@@ -3,10 +3,10 @@ import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
-
 import { isZetaChain } from '@/utils/chain'
-
+import mempoolJS from '@mempool/mempool.js'
 import { useProjectInfo } from './useProjectInfo'
+import { ZetaService } from '@/services/zeta'
 
 export interface VerifyInfo {
   user: Address
@@ -22,6 +22,17 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const isZeta = useMemo(() => isZetaChain(chain), [chain])
 
   const zetaClient = useMemo(() => ZetaBtcClient.testnet(), [])
+
+  const {
+    bitcoin: { fees, transactions }
+  } = useMemo(
+    () =>
+      mempoolJS({
+        hostname: 'mempool.space',
+        network: 'testnet'
+      }),
+    []
+  )
 
   const {
     data: signature,
@@ -113,9 +124,28 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         const satsAmount = amount
         const result = await sendBitcoin(tapRootAddress.toString(), satsAmount)
         console.log('🚀 ~ result send:', result)
+        return result
       }
     },
     [sendBitcoin, tapRootAddress]
+  )
+
+  const handleRevealTxn = useCallback(
+    async (commitTxn: string, commitAmount: number) => {
+      const feesRecommended = await fees.getFeesRecommended()
+      console.log(feesRecommended)
+      const buffer = zetaClient.buildRevealTxn(
+        { txn: commitTxn, idx: 0 },
+        commitAmount,
+        feesRecommended.halfHourFee
+      )
+      const result = Buffer.from(buffer).toString('hex')
+      console.log(result)
+      const cctxRes = await ZetaService.inboundHashToCctx.call(result)
+      console.log(cctxRes)
+      return cctxRes?.data?.inboundHashToCctx.inbound_hash
+    },
+    []
   )
 
   return {
