@@ -2,13 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { LoginType } from '@/types/common'
-import { isTestnet } from '@/utils/chain'
 import { getLocalStorage } from '@/utils/storage'
+import { useAccount } from 'wagmi'
 
-export const useBTCBalance = (chainId?: number, walletAddress?: string) => {
+export const useBTCBalance = (walletAddress?: string) => {
   const [balance, setBalance] = useState<bigint>(BigInt(0))
   const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
-  const isMainnet = useMemo(() => chainId && !isTestnet(chainId), [chainId])
+  const { chain } = useAccount()
+
+  const isMainnet = useMemo(() => chain && !chain.testnet, [chain])
 
   const getOKXBTCBalance = async () => {
     try {
@@ -24,7 +26,9 @@ export const useBTCBalance = (chainId?: number, walletAddress?: string) => {
     }
   }
 
-  const getMetamaskBalance = async () => {}
+  const getMempoolBalance = async () => {
+    // will update with mempool.js
+  }
 
   const getBybitBalance = async () => {
     try {
@@ -63,7 +67,7 @@ export const useBTCBalance = (chainId?: number, walletAddress?: string) => {
         getBitgetBalance()
         break
       case LoginType.METAMASK:
-        getMetamaskBalance()
+        getMempoolBalance()
         break
       default: {
         break
@@ -75,6 +79,5 @@ export const useBTCBalance = (chainId?: number, walletAddress?: string) => {
     getBTCWallet()
   }, [getBTCWallet])
 
-  console.log('balance', balance)
   return { balance }
 }
