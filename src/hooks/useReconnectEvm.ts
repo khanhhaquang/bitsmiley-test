@@ -138,7 +138,6 @@ export const useReconnectEvm = () => {
     bybitConnector,
     metaMaskConnector,
     okxConnector,
-    particleEvmAddress,
     reconnect
   ])
 
