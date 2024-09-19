@@ -197,7 +197,8 @@ export const OpenVault: React.FC<{
           .call(processingTxn)
           .then((response) => {
             if (response?.data?.status.confirmed) {
-              setProcessingStatus(ProcessingStatus.Success)
+              // setProcessingStatus(ProcessingStatus.Success)
+              setProcessingStep(TxnStep.Two)
             } else {
               console.log('waiting txn confirm')
             }
@@ -216,12 +217,12 @@ export const OpenVault: React.FC<{
   useEffect(() => {
     if (
       processingTxn &&
-      processingStep === TxnStep.One &&
-      processingStatus === ProcessingStatus.Success
+      processingStep === TxnStep.Two &&
+      processingStatus === ProcessingStatus.Processing
     ) {
       handleRevealTxn(processingTxn, Number(deposit), (hash) => {
         console.log(hash)
-        setProcessingStep(TxnStep.Two)
+        // setProcessingStep(TxnStep.Two)
         if (hash) {
           setProcessingTxn(hash)
           setProcessingStatus(ProcessingStatus.Success)
@@ -230,7 +231,7 @@ export const OpenVault: React.FC<{
         }
       }).catch((e) => {
         console.log('handleRevealTxn error:', e)
-        setProcessingStep(TxnStep.Two)
+        // setProcessingStep(TxnStep.Two)
         setProcessingStatus(ProcessingStatus.Error)
       })
     }

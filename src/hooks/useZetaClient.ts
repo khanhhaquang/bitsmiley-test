@@ -124,7 +124,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (
       commitTxn: string,
       commitAmount: number,
-      onFinish: (hash: string) => void
+      onSuccess: (hash: string) => void
     ) => {
       if (zetaConnectorAddress && callData) {
         // const feesRecommended = await MempoolService.getRecommendedFees.call()
@@ -134,7 +134,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         const buffer = zetaClient.buildRevealTxn(
           { txn: commitTxn, idx: 0 },
           commitAmount,
-          50 //feesRecommended.data.economyFee
+          2 //feesRecommended.data.economyFee
         )
         const rawTx = Buffer.from(buffer).toString('hex')
         console.log('rawTx:', rawTx)
@@ -148,7 +148,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
               .then((res) => {
                 if (res?.data?.inboundHashToCctx.inbound_hash) {
                   clearInterval(intervalId)
-                  onFinish(res?.data?.inboundHashToCctx.inbound_hash)
+                  onSuccess(res?.data?.inboundHashToCctx.inbound_hash)
                 } else {
                   console.log('waiting txn inbound_hash')
                 }
