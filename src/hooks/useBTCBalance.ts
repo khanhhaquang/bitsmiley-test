@@ -10,7 +10,6 @@ export const useBTCBalance = (walletAddress?: string) => {
   const [balance, setBalance] = useState<number>(0) // btc
   const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
   const { chain } = useAccount()
-
   const isMainnet = useMemo(() => chain && !chain.testnet, [chain])
 
   const getOKXBTCBalance = async () => {
@@ -26,11 +25,6 @@ export const useBTCBalance = (walletAddress?: string) => {
       console.log(e)
       return 0
     }
-  }
-
-  const getMempoolBalance = async () => {
-    // will update with mempool.js
-    return 0
   }
 
   const getBybitBalance = async () => {
@@ -68,9 +62,6 @@ export const useBTCBalance = (walletAddress?: string) => {
       }
       case LoginType.BITGET_EVM:
         total = await getBitgetBalance()
-        break
-      case LoginType.METAMASK:
-        total = await getMempoolBalance()
         break
       default: {
         break

@@ -37,7 +37,7 @@ export default defineConfig({
     wasm(),
     topLevelAwait(),
     nodePolyfills({
-      include: ['process']
+      include: ['process', 'stream']
     }),
     svgr({ include: '**/*.svg' }),
     react()
