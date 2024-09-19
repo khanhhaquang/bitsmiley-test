@@ -1,3 +1,4 @@
+import { useBTCProvider } from '@particle-network/btc-connectkit'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 
@@ -8,9 +9,11 @@ import { getLocalStorage } from '@/utils/storage'
 
 export const useBTCBalance = () => {
   const [balance, setBalance] = useState<number>(0) // btc
-  const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
+  const btcLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
   const { chain } = useAccount()
-  const isMainnet = useMemo(() => chain && !chain.testnet, [chain])
+  const { accounts, provider } = useBTCProvider()
+
+  const isMainnet = useMemo(() => chain && !chain.testnet, [chain]) // temporary solution
 
   const getOKXBTCBalance = async () => {
     try {
@@ -48,27 +51,61 @@ export const useBTCBalance = () => {
     }
   }
 
+  const getUnisatBalance = async () => {
+    try {
+      const unisatBalance = await window?.unisat?.getBalance()
+      return unisatBalance?.total
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const getXverseBalance = async () => {
+    try {
+      let xverseBalance = await provider.request('getBalance', undefined)
+      if (xverseBalance.status === 'error') {
+        // Retry with requestPermission
+        const retryRequest = await provider.request(
+          'wallet_requestPermissions',
+          undefined
+        )
+        if (retryRequest.status !== 'error') {
+          xverseBalance = await provider.request('getBalance', undefined)
+        }
+      }
+      return xverseBalance?.result?.total
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const getBTCWallet = useCallback(async () => {
-    if (!chain) return
+    if (!accounts?.length) return
     let total = 0
-    switch (localLoginType) {
-      case LoginType.OKX_EVM: {
+    switch (btcLoginType) {
+      case LoginType.OKX: {
         total = await getOKXBTCBalance()
         break
       }
-      case LoginType.BYBIT_EVM: {
+      case LoginType.BYBIT: {
         total = await getBybitBalance()
         break
       }
-      case LoginType.BITGET_EVM:
+      case LoginType.BITGET:
         total = await getBitgetBalance()
+        break
+      case LoginType.UNISAT:
+        total = await getUnisatBalance()
+        break
+      case LoginType.XVERSE:
+        total = await getXverseBalance()
         break
       default: {
         break
       }
     }
     setBalance(satsToBTC(total || 0))
-  }, [localLoginType, isMainnet, chain])
+  }, [btcLoginType, accounts])
 
   useEffect(() => {
     getBTCWallet()
