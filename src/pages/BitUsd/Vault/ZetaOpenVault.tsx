@@ -1,5 +1,7 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Hash, isHash } from 'viem'
+import { useWaitForTransactionReceipt } from 'wagmi'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
@@ -8,10 +10,9 @@ import { useBTCBalance } from '@/hooks/useBTCBalance'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
-import { useUserInfo } from '@/hooks/useUserInfo'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
-import { TransactionStatus } from '@/types/common'
+import { MempoolService } from '@/services/mempool'
 
 import VaultHeader from './component/VaultHeader'
 
@@ -21,11 +22,14 @@ import {
   SubmitButton
 } from '../components/ActionButton'
 import { NumberInput } from '../components/NumberInput'
-import { ProcessingModal, ProcessingType } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
+import {
+  ProcessingStatus,
+  TxnStep,
+  ZetaProcessing
+} from '../components/ZetaProcessing'
 import { formatBitUsd, formatWBtc } from '../display'
-import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
 
 export const OpenVault: React.FC<{
   chainId: number
@@ -33,20 +37,16 @@ export const OpenVault: React.FC<{
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
 
-  const { collateral, refetch: refetchCollateral } = useCollaterals(
-    chainId,
-    collateralId
-  )
+  const { collateral } = useCollaterals(chainId, collateralId)
 
   const {
-    refreshVaultValues,
     tryOpenVaultInfo,
     setTryOpenVaultBitUsd,
     setTryOpenVaultCollateral,
     capturedMaxMint
   } = useVaultDetail(collateral)
 
-  const { blockExplorerUrl } = useUserInfo()
+  // const { blockExplorerUrl } = useUserInfo()
   const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
     address: collateral?.collateral?.tokenAddress
   })
@@ -58,29 +58,31 @@ export const OpenVault: React.FC<{
   const [deposit, setDeposit] = useState('')
   const [btcWalletOpen, setBtcWalletOpen] = useState(false)
 
+  const [showProcessing, setShowProcessing] = useState(false)
+  const [processingStep, setProcessingStep] = useState(TxnStep.One)
+  const [processingStatus, setProcessingStatus] = useState(
+    ProcessingStatus.Processing
+  )
+  const [processingTxn, setProcessingTxn] = useState('')
+  const { data: txnReceipt } = useWaitForTransactionReceipt({
+    hash: processingTxn as Hash,
+    query: {
+      enabled:
+        isHash(processingTxn) &&
+        processingStep === TxnStep.Two &&
+        processingStatus === ProcessingStatus.Processing
+    }
+  })
+
+  const { wBtcAllowance } = useManageVault(collateral)
+
   const {
-    txnErrorMsg,
-    setTxnErrorMsg,
-    openVaultTxId,
-    openVaultTxnStatus,
-    setOpenVaultTxnStatus,
-    approvalTxnStatus,
-    wBtcAllowance
-  } = useManageVault(collateral)
-
-  useNativeBtcProvider()
-
-  const { tapRootAddress, btcAddress, handleSendBtc, signData } = useZetaClient(
-    chainId,
-    collateralId
-  )
-
-  const isApproving = useMemo(
-    () =>
-      approvalTxnStatus === TransactionStatus.Signing ||
-      approvalTxnStatus === TransactionStatus.Processing,
-    [approvalTxnStatus]
-  )
+    tapRootAddress,
+    btcAddress,
+    handleSendBtc,
+    signData,
+    handleRevealTxn
+  } = useZetaClient(chainId, collateralId)
 
   const isApproved = useMemo(
     () => Number(wBtcAllowance) >= Number(deposit),
@@ -88,8 +90,7 @@ export const OpenVault: React.FC<{
   )
 
   const depositDisabled = useMemo(() => {
-    // if (btcBalance <= 0) return true
-    return false
+    if (btcBalance <= 0) return true
   }, [btcBalance])
 
   const depositInputErrorMsg = useMemo(() => {
@@ -142,9 +143,21 @@ export const OpenVault: React.FC<{
       setBtcWalletOpen(true)
       return
     }
-
+    setShowProcessing(true)
+    setProcessingStep(TxnStep.One)
+    setProcessingStatus(ProcessingStatus.Processing)
     handleSendBtc(Number(deposit))
-    //TODO: get commit txn hash and buildRevealTxn
+      .then((res) => {
+        if (res) {
+          setProcessingTxn(res)
+        } else {
+          setProcessingStatus(ProcessingStatus.Error)
+        }
+      })
+      .catch((e) => {
+        console.log('handleSendBtc error:', e)
+        setProcessingStatus(ProcessingStatus.Error)
+      })
   }
 
   const handleInput = (value?: string, callback?: (v: string) => void) => {
@@ -154,81 +167,6 @@ export const OpenVault: React.FC<{
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(deposit)).toFixed(2)
   }, [deposit, wbtcPrice])
-
-  const processingModal = useMemo(() => {
-    if (isApproving)
-      return <ProcessingModal message="Waiting for approval from wallet..." />
-
-    switch (openVaultTxnStatus) {
-      case TransactionStatus.Signing:
-        return <ProcessingModal message="Waiting for wallet signature..." />
-
-      case TransactionStatus.Processing:
-        return (
-          <ProcessingModal
-            message="Your transaction is getting processed on-chain."
-            link={
-              !!blockExplorerUrl && !!openVaultTxId
-                ? `${blockExplorerUrl}/tx/${openVaultTxId}`
-                : ''
-            }
-          />
-        )
-      case TransactionStatus.Success:
-        return (
-          <ProcessingModal
-            type={ProcessingType.Success}
-            actionButtonText="Ok"
-            onClickActionButton={() => {
-              refetchCollateral()
-              refreshVaultValues()
-              navigate(-1)
-            }}
-            message="You have successfully created a vault. Now you can see it in the
-        AlphaNet main page"
-          />
-        )
-
-      case TransactionStatus.Failed:
-        return (
-          <ProcessingModal
-            type={ProcessingType.Error}
-            actionButtonText="Ok"
-            onClickActionButton={() => {
-              setOpenVaultTxnStatus(TransactionStatus.Idle)
-              setTxnErrorMsg('')
-            }}
-            message={
-              !blockExplorerUrl || !openVaultTxId ? (
-                <span>{txnErrorMsg}</span>
-              ) : (
-                <span>
-                  The transaction has failed. You can check it on-chain{' '}
-                  <a
-                    className="cursor-pointer text-green hover:underline"
-                    href={`${blockExplorerUrl}/tx/${openVaultTxId}`}>
-                    here
-                  </a>
-                </span>
-              )
-            }
-          />
-        )
-      default:
-        return null
-    }
-  }, [
-    isApproving,
-    openVaultTxnStatus,
-    blockExplorerUrl,
-    openVaultTxId,
-    txnErrorMsg,
-    refetchCollateral,
-    refreshVaultValues,
-    navigate,
-    setOpenVaultTxnStatus,
-    setTxnErrorMsg
-  ])
 
   useEffect(() => {
     setTryOpenVaultBitUsd(mint)
@@ -246,9 +184,76 @@ export const OpenVault: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    if (
+      processingTxn &&
+      processingStep === TxnStep.One &&
+      processingStatus === ProcessingStatus.Processing
+    ) {
+      const intervalId = setInterval(() => {
+        MempoolService.getTransaction.call(processingTxn).then((response) => {
+          console.log(response)
+          if (response?.data?.status.confirmed) {
+            setProcessingStatus(ProcessingStatus.Success)
+          }
+        })
+        // .catch((e) => {
+        //   console.log(e)
+        //   setProcessingStatus(ProcessingStatus.Error)
+        // })
+      }, 500)
+
+      return () => {
+        clearInterval(intervalId)
+      }
+    }
+  }, [processingTxn, processingStatus, processingStep])
+
+  useEffect(() => {
+    if (
+      processingTxn &&
+      processingStep === TxnStep.One &&
+      processingStatus === ProcessingStatus.Success
+    ) {
+      handleRevealTxn(processingTxn, 100)
+        .then((hash) => {
+          console.log(hash)
+          setProcessingStep(TxnStep.Two)
+          if (hash) {
+            setProcessingTxn(hash)
+            setProcessingStatus(ProcessingStatus.Processing)
+          } else {
+            setProcessingStatus(ProcessingStatus.Error)
+          }
+        })
+        .catch((e) => {
+          console.log('handleRevealTxn error:', e)
+          setProcessingStep(TxnStep.Two)
+          setProcessingStatus(ProcessingStatus.Error)
+        })
+    }
+  }, [processingTxn, processingStatus, processingStep])
+
+  useEffect(() => {
+    if (processingStep === TxnStep.Two) {
+      if (txnReceipt?.status === 'success') {
+        setProcessingStatus(ProcessingStatus.Success)
+      }
+      if (txnReceipt?.status === 'reverted') {
+        setProcessingStatus(ProcessingStatus.Error)
+      }
+    }
+  }, [txnReceipt?.status, processingStep])
+
   return (
     <div className="size-full overflow-y-auto pb-12">
-      {processingModal}
+      {showProcessing && (
+        <ZetaProcessing
+          status={processingStatus}
+          step={processingStep}
+          txnId={processingTxn}
+          onClose={() => setShowProcessing(false)}></ZetaProcessing>
+      )}
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader collateral={collateral} />
 
