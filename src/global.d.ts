@@ -6,6 +6,7 @@ declare interface Window {
   unisat?: any
   bybitWallet?: any
   bitgetWallet?: any
+  bitkeep?: any
 }
 
 declare interface WindowEventMap {
