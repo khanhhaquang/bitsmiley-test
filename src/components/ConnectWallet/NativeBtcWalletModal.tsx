@@ -16,10 +16,11 @@ export const NativeBtcWalletModal: React.FC<{
   const renderWallets = () => {
     return (
       <>
-        <CloseIcon
+        <button
           onClick={onClose}
-          className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
-        />
+          className="absolute right-2.5 top-2.5 z-[100]">
+          <CloseIcon />
+        </button>
         <div className="p-11">
           <h2 className="mb-9 text-center font-smb text-2xl text-white">
             CONNECT BTC WALLET
