@@ -35,9 +35,8 @@ export const NativeBtcWalletModal: React.FC<{
                     try {
                       await connect(c.metadata.id)
                       onClose()
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    } catch (error: any) {
-                      console.error('onConnect error', error)
+                    } catch (error: unknown) {
+                      console.error('BTC connect error: ', error)
                     }
                   } else {
                     openUrl(c.metadata.downloadUrl)
