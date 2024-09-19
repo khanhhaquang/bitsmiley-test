@@ -6,7 +6,7 @@ import { LoginType } from '@/types/common'
 import { satsToBTC } from '@/utils/formatter'
 import { getLocalStorage } from '@/utils/storage'
 
-export const useBTCBalance = (walletAddress?: string) => {
+export const useBTCBalance = () => {
   const [balance, setBalance] = useState<number>(0) // btc
   const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
   const { chain } = useAccount()
@@ -49,7 +49,7 @@ export const useBTCBalance = (walletAddress?: string) => {
   }
 
   const getBTCWallet = useCallback(async () => {
-    if (!walletAddress) return
+    if (!chain) return
     let total = 0
     switch (localLoginType) {
       case LoginType.OKX_EVM: {
@@ -68,7 +68,7 @@ export const useBTCBalance = (walletAddress?: string) => {
       }
     }
     setBalance(satsToBTC(total || 0))
-  }, [localLoginType, isMainnet, walletAddress])
+  }, [localLoginType, isMainnet, chain])
 
   useEffect(() => {
     getBTCWallet()
