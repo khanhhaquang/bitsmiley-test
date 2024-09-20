@@ -8,6 +8,7 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ProcessingModal, ProcessingType } from './Processing'
+import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
 
 export enum TxnStep {
   One = 'Step 1',
@@ -81,7 +82,8 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
 }) => {
   const { toast, dismiss } = useToast()
   const { blockExplorerUrl } = useUserInfo()
-  const mempoolExplorerUrl = 'https://mempool.space/zh/testnet'
+  const { btcNetwork } = useNativeBtcProvider()
+  const mempoolExplorerUrl = `https://mempool.space/zh/${btcNetwork}`
   const type = useMemo(() => {
     if (step === TxnStep.Two && status === ProcessingStatus.Success) {
       return ProcessingType.Success
