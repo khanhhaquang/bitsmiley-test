@@ -34,6 +34,7 @@ import {
   ZetaProcessing
 } from '../components/ZetaProcessing'
 import { formatBitUsd, formatWBtc } from '../display'
+import { useAccount } from 'wagmi'
 
 export const OpenVault: React.FC<{
   chainId: number
@@ -53,6 +54,8 @@ export const OpenVault: React.FC<{
   const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
     address: collateral?.collateral?.tokenAddress
   })
+
+  const { address: evmAddress } = useAccount()
 
   const { balanceAsBtc: btcBalance } = useBTCBalance()
   const wbtcPrice = useTokenPrice()
@@ -141,7 +144,7 @@ export const OpenVault: React.FC<{
     //reset status
     setProcessingTxn('')
     deleteLocalStorage(
-      `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`
+      `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
     )
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
@@ -151,7 +154,7 @@ export const OpenVault: React.FC<{
         if (res) {
           setProcessingTxn(res)
           setLocalStorage(
-            `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`,
+            `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
             res
           )
         } else {
@@ -185,21 +188,27 @@ export const OpenVault: React.FC<{
 
   useEffect(() => {
     if (btcAddress) {
+      signData()
+    }
+  }, [btcAddress, signData])
+
+  useEffect(() => {
+    if (evmAddress) {
       setProcessingTxn(
         getLocalStorage(
-          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`
+          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
         ) ?? ''
       )
       setProcessingStep(
         getLocalStorage(
-          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${btcAddress}`
+          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`
         ) === '2'
           ? TxnStep.Two
           : TxnStep.One
       )
       signData()
     }
-  }, [btcAddress, signData])
+  }, [evmAddress])
 
   useEffect(() => {
     if (
@@ -215,7 +224,7 @@ export const OpenVault: React.FC<{
             if (response?.data?.status.confirmed) {
               setProcessingStep(TxnStep.Two)
               setLocalStorage(
-                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${btcAddress}`,
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`,
                 TxnStep.Two
               )
               setShowProcessing(true)
@@ -257,10 +266,10 @@ export const OpenVault: React.FC<{
               setProcessingStatus(ProcessingStatus.Success)
               setShowProcessing(true)
               deleteLocalStorage(
-                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
               )
               deleteLocalStorage(
-                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${btcAddress}`
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`
               )
             } else {
               console.log('waiting txn inbound_hash')
