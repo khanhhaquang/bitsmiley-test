@@ -3,7 +3,6 @@ import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
 
-import { ZetaService } from '@/services/zeta'
 import { isZetaChain } from '@/utils/chain'
 import { btcToSats } from '@/utils/formatter'
 
@@ -122,61 +121,29 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       try {
         if (tapRootAddress) {
           const satsAmount = btcToSats(amount)
-          const result = await sendBitcoin(
+          const commitTxn = await sendBitcoin(
             tapRootAddress.toString(),
             satsAmount
           )
-          console.log('🚀 ~ btc commit txn:', result)
-          return result
+          console.log('🚀 ~ btc commit txn:', commitTxn)
+          // const feesRecommended = await MempoolService.getRecommendedFees.call()
+          const buffer = zetaClient.buildRevealTxn(
+            { txn: commitTxn, idx: 0 },
+            satsAmount,
+            2 //feesRecommended.data.economyFee
+          )
+          const rawTx = Buffer.from(buffer).toString('hex')
+          console.log('rawTx:', rawTx)
+          const txid = await pushTx(rawTx)
+          console.log('txid:', txid)
+          return txid
         }
       } catch (error) {
         console.log('🚀 ~ sendBtc error:', error)
+        return ''
       }
     },
     [sendBitcoin, tapRootAddress]
-  )
-
-  const handleRevealTxn = useCallback(
-    async (
-      commitTxn: string,
-      commitAmount: number,
-      onSuccess: (hash: string) => void
-    ) => {
-      if (zetaConnectorAddress && callData) {
-        // const feesRecommended = await MempoolService.getRecommendedFees.call()
-        console.log('buildRevealTxn:', commitTxn, commitAmount)
-        const buffer = zetaClient.buildRevealTxn(
-          { txn: commitTxn, idx: 0 },
-          commitAmount,
-          2 //feesRecommended.data.economyFee
-        )
-        const rawTx = Buffer.from(buffer).toString('hex')
-        console.log('rawTx:', rawTx)
-        //push result
-        try {
-          const txid = await pushTx(rawTx)
-          console.log('txid:', txid)
-          const intervalId = setInterval(() => {
-            ZetaService.inboundHashToCctx
-              .call(txid)
-              .then((res) => {
-                if (res?.data?.inboundHashToCctx.inbound_hash) {
-                  clearInterval(intervalId)
-                  onSuccess(res?.data?.inboundHashToCctx.inbound_hash)
-                } else {
-                  console.log('waiting txn inbound_hash')
-                }
-              })
-              .catch(() => {
-                console.log('waiting txn')
-              })
-          }, 1000)
-        } catch (e) {
-          console.log(e)
-        }
-      }
-    },
-    [callData, pushTx, zetaClient, zetaConnectorAddress]
   )
 
   return {
@@ -184,7 +151,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     isZeta,
     btcAddress: btcAccounts[0],
     tapRootAddress,
-    handleSendBtc,
-    handleRevealTxn
+    handleSendBtc
   }
 }
