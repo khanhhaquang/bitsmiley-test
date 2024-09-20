@@ -53,7 +53,6 @@ export const OpenVault: React.FC<{
 
   const { balanceAsBtc: btcBalance } = useBTCBalance()
   const wbtcPrice = useTokenPrice()
-
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
   const [btcWalletOpen, setBtcWalletOpen] = useState(false)
@@ -90,7 +89,8 @@ export const OpenVault: React.FC<{
   )
 
   const depositDisabled = useMemo(() => {
-    if (btcBalance <= 0) return true
+    // if (btcBalance <= 0) return true
+    return false
   }, [btcBalance])
 
   const depositInputErrorMsg = useMemo(() => {
