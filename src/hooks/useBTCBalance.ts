@@ -43,10 +43,7 @@ export const useBTCBalance = () => {
 
   const getUnisatBalance = async () => {
     try {
-      console.log('🚀 ~ getUnisatBalance ~ provider:', provider)
-
       const unisatBalance = await provider?.getBalance()
-      console.log('🚀 ~ getUnisatBalance ~ unisatBalance:', unisatBalance)
       return unisatBalance?.total
     } catch (e) {
       console.log('unisat error', e)

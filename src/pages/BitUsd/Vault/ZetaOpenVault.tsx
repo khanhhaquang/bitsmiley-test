@@ -11,6 +11,7 @@ import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
 import { MempoolService } from '@/services/mempool'
+import { btcToSats } from '@/utils/formatter'
 import { setLocalStorage } from '@/utils/storage'
 
 import VaultHeader from './component/VaultHeader'
@@ -29,7 +30,6 @@ import {
   ZetaProcessing
 } from '../components/ZetaProcessing'
 import { formatBitUsd, formatWBtc } from '../display'
-import { btcToSats } from '@/utils/formatter'
 
 export const OpenVault: React.FC<{
   chainId: number
