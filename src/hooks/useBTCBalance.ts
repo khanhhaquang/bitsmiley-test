@@ -1,5 +1,5 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
-import { useCallback, useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { LoginType } from '@/types/common'
@@ -8,8 +8,6 @@ import { getLocalStorage } from '@/utils/storage'
 
 export const useBTCBalance = () => {
   const { accounts, provider } = useBTCProvider()
-
-  const [balance, setBalance] = useState(0)
 
   const btcLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
 
@@ -45,11 +43,13 @@ export const useBTCBalance = () => {
 
   const getUnisatBalance = async () => {
     try {
+      console.log('🚀 ~ getUnisatBalance ~ provider:', provider)
+
       const unisatBalance = await provider?.getBalance()
       console.log('🚀 ~ getUnisatBalance ~ unisatBalance:', unisatBalance)
       return unisatBalance?.total
     } catch (e) {
-      console.log(e)
+      console.log('unisat error', e)
       return 0
     }
   }
@@ -74,8 +74,9 @@ export const useBTCBalance = () => {
     }
   }
 
-  const getBalance = useCallback(async () => {
+  const getBalance = async () => {
     if (!accounts?.length) return // not connect btc yet
+    console.log(btcLoginType)
     let total = 0
     switch (btcLoginType) {
       case LoginType.OKX: {
@@ -100,16 +101,18 @@ export const useBTCBalance = () => {
         break
       }
     }
-    setBalance(total || 0)
-  }, [accounts?.length, btcLoginType])
 
-  useEffect(() => {
-    getBalance()
-  }, [getBalance])
+    return total || 0
+  }
+
+  const { data: balance, refetch: getBalanceRequest } = useQuery({
+    queryKey: ['btc-balance'],
+    queryFn: () => getBalance()
+  })
 
   return {
-    getBalance,
+    getBalanceRequest,
     balanceAsSats: balance,
-    balanceAsBtc: satsToBTC(balance)
+    balanceAsBtc: satsToBTC(balance ?? 0)
   }
 }

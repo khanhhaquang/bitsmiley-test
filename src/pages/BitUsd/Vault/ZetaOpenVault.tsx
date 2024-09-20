@@ -29,6 +29,7 @@ import {
   ZetaProcessing
 } from '../components/ZetaProcessing'
 import { formatBitUsd, formatWBtc } from '../display'
+import { btcToSats } from '@/utils/formatter'
 
 export const OpenVault: React.FC<{
   chainId: number
@@ -212,7 +213,7 @@ export const OpenVault: React.FC<{
       processingStep === TxnStep.Two &&
       processingStatus === ProcessingStatus.Processing
     ) {
-      handleRevealTxn(processingTxn, Number(deposit), (hash) => {
+      handleRevealTxn(processingTxn, btcToSats(Number(deposit)), (hash) => {
         console.log(hash)
         // setProcessingStep(TxnStep.Two)
         if (hash) {
@@ -227,7 +228,13 @@ export const OpenVault: React.FC<{
         setProcessingStatus(ProcessingStatus.Error)
       })
     }
-  }, [processingTxn, processingStatus, processingStep, deposit])
+  }, [
+    processingTxn,
+    processingStatus,
+    processingStep,
+    deposit,
+    handleRevealTxn
+  ])
 
   // useEffect(() => {
   //   if (processingStep === TxnStep.Two) {
