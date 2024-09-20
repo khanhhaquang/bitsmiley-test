@@ -1,4 +1,3 @@
-import { useBTCProvider } from '@particle-network/btc-connectkit'
 import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
@@ -6,7 +5,9 @@ import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
 
 import { ZetaService } from '@/services/zeta'
 import { isZetaChain } from '@/utils/chain'
+import { btcToSats } from '@/utils/formatter'
 
+import { useNativeBtcProvider } from './useNativeBtcProvider'
 import { useProjectInfo } from './useProjectInfo'
 
 export interface VerifyInfo {
@@ -17,7 +18,7 @@ export interface VerifyInfo {
 
 export const useZetaClient = (chain: number, collateralId: string) => {
   const { address: evmAddress } = useAccount()
-  const { accounts, sendBitcoin } = useBTCProvider()
+  const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
   const { projectInfo } = useProjectInfo()
 
   const isZeta = useMemo(() => isZetaChain(chain), [chain])
@@ -118,13 +119,18 @@ export const useZetaClient = (chain: number, collateralId: string) => {
 
   const handleSendBtc = useCallback(
     async (amount: number) => {
-      if (tapRootAddress) {
-        //TODO: convert amount of btc to sats value
-        const satsAmount = amount
-        console.log('sendBitcoin', tapRootAddress, satsAmount)
-        const result = await sendBitcoin(tapRootAddress.toString(), satsAmount)
-        console.log('🚀 ~ result send:', result)
-        return result
+      try {
+        if (tapRootAddress) {
+          const satsAmount = btcToSats(amount)
+          const result = await sendBitcoin(
+            tapRootAddress.toString(),
+            satsAmount
+          )
+          console.log('🚀 ~ btc commit txn:', result)
+          return result
+        }
+      } catch (error) {
+        console.log('🚀 ~ sendBtc error:', error)
       }
     },
     [sendBitcoin, tapRootAddress]
@@ -138,8 +144,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     ) => {
       if (zetaConnectorAddress && callData) {
         // const feesRecommended = await MempoolService.getRecommendedFees.call()
-        // console.log('fees:', feesRecommended)
-        // zetaClient.call(zetaConnectorAddress, Buffer.from(callData, 'hex'))
         console.log('buildRevealTxn:', commitTxn, commitAmount)
         const buffer = zetaClient.buildRevealTxn(
           { txn: commitTxn, idx: 0 },
@@ -150,7 +154,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         console.log('rawTx:', rawTx)
         //push result
         try {
-          const txid = await window.unisat.pushTx(rawTx)
+          const txid = await pushTx(rawTx)
           console.log('txid:', txid)
           const intervalId = setInterval(() => {
             ZetaService.inboundHashToCctx
@@ -172,13 +176,13 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         }
       }
     },
-    [callData, zetaClient, zetaConnectorAddress]
+    [callData, pushTx, zetaClient, zetaConnectorAddress]
   )
 
   return {
     signData,
     isZeta,
-    btcAddress: accounts[0],
+    btcAddress: btcAccounts[0],
     tapRootAddress,
     handleSendBtc,
     handleRevealTxn
