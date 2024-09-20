@@ -11,47 +11,17 @@ export const useBTCBalance = () => {
 
   const btcLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
 
-  const getOkxBalance = async () => {
+  const getCommonWalletsBalance = async (): Promise<number> => {
     try {
-      const okxBalance = await provider?.getBalance()
-      return okxBalance?.total
+      const result = await provider?.getBalance()
+      return result?.total ?? 0
     } catch (e) {
       console.log(e)
       return 0
     }
   }
 
-  const getBybitBalance = async () => {
-    try {
-      const bybitBalance = await window?.bybitWallet?.bitcoin?.getBalance()
-      return bybitBalance?.total
-    } catch (e) {
-      console.log(e)
-      return 0
-    }
-  }
-
-  const getBitgetBalance = async () => {
-    try {
-      const bitgetBalance = await window?.bitkeep?.unisat?.getBalance()
-      return bitgetBalance?.total
-    } catch (e) {
-      console.log(e)
-      return 0
-    }
-  }
-
-  const getUnisatBalance = async () => {
-    try {
-      const unisatBalance = await provider?.getBalance()
-      return unisatBalance?.total
-    } catch (e) {
-      console.log('unisat error', e)
-      return 0
-    }
-  }
-
-  const getXverseBalance = async () => {
+  const getXverseBalance = async (): Promise<number> => {
     try {
       let xverseBalance = await provider.request('getBalance', undefined)
       if (xverseBalance.status === 'error') {
@@ -64,7 +34,7 @@ export const useBTCBalance = () => {
           xverseBalance = await provider.request('getBalance', undefined)
         }
       }
-      return xverseBalance?.result?.total
+      return xverseBalance?.result?.total ?? 0
     } catch (e) {
       console.log(e)
       return 0
@@ -72,34 +42,14 @@ export const useBTCBalance = () => {
   }
 
   const getBalance = async () => {
-    if (!accounts?.length) return // not connect btc yet
-    console.log(btcLoginType)
-    let total = 0
+    if (!accounts?.length) return 0 // not connect btc yet
     switch (btcLoginType) {
-      case LoginType.OKX: {
-        total = await getOkxBalance()
-        break
-      }
-      case LoginType.BYBIT: {
-        total = await getBybitBalance()
-        break
-      }
-      case LoginType.BITGET: {
-        total = await getBitgetBalance()
-        break
-      }
-      case LoginType.UNISAT:
-        total = await getUnisatBalance()
-        break
       case LoginType.XVERSE:
-        total = await getXverseBalance()
-        break
+        return await getXverseBalance()
       default: {
-        break
+        return await getCommonWalletsBalance()
       }
     }
-
-    return total || 0
   }
 
   const { data: balance, refetch: getBalanceRequest } = useQuery({
