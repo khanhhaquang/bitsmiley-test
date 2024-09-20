@@ -19,6 +19,7 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useReconnectEvm } from '@/hooks/useReconnectEvm'
+import { isZetaChain } from '@/utils/chain'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -112,7 +113,12 @@ export const ConnectWallet: React.FC<{
               <Image
                 width={15}
                 height={15}
-                src={getIllustrationUrl('particle')}
+                src={getIllustrationUrl(
+                  isZetaChain(evmChain?.id || -1)
+                    ? 'zeta-chain-logo'
+                    : 'particle',
+                  'webp'
+                )}
               />
               {displayAddress(evmAddress, 3, 3)}
             </CopyButton>

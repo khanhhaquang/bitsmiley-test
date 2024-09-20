@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
@@ -19,12 +19,12 @@ import {
   SubmitButton
 } from '../components/ActionButton'
 import { NumberInput } from '../components/NumberInput'
-import { ProcessingModal } from '../components/Processing'
+import { ProcessingModal, ProcessingType } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { formatBitUsd, formatWBtc } from '../display'
 
-export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
+const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   chainId,
   collateralId
 }) => {
@@ -68,10 +68,17 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     wBtcAllowance
   } = useManageVault(collateral)
 
-  const isApproving =
-    approvalTxnStatus === TransactionStatus.Signing ||
-    approvalTxnStatus === TransactionStatus.Processing
-  const isApproved = Number(wBtcAllowance) >= Number(deposit)
+  const isApproving = useMemo(
+    () =>
+      approvalTxnStatus === TransactionStatus.Signing ||
+      approvalTxnStatus === TransactionStatus.Processing,
+    [approvalTxnStatus]
+  )
+
+  const isApproved = useMemo(
+    () => Number(wBtcAllowance) >= Number(deposit),
+    [deposit, wBtcAllowance]
+  )
 
   const depositDisabled = useMemo(() => {
     if (wbtcBalance <= 0) return true
@@ -160,7 +167,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
       case TransactionStatus.Success:
         return (
           <ProcessingModal
-            type="success"
+            type={ProcessingType.Success}
             actionButtonText="Ok"
             onClickActionButton={() => {
               refetchCollateral()
@@ -175,7 +182,7 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
       case TransactionStatus.Failed:
         return (
           <ProcessingModal
-            type="error"
+            type={ProcessingType.Error}
             actionButtonText="Ok"
             onClickActionButton={() => {
               setOpenVaultTxnStatus(TransactionStatus.Idle)
@@ -227,7 +234,6 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
-
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader collateral={collateral} />
 
@@ -315,3 +321,5 @@ export const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     </div>
   )
 }
+
+export const MemoizedOpenVault = memo(OpenVault)

@@ -1,6 +1,9 @@
 import { ReactNode, useEffect, useMemo } from 'react'
 
 import {
+  CrossGreenIcon,
+  CrossRedIcon,
+  MinimizeIcon,
   ProcessingInfoModalTitleIcon,
   ProcessingInfoTitleIcon
 } from '@/assets/icons'
@@ -9,6 +12,13 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
+
+export enum ProcessingType {
+  Processing = 'processing',
+  Success = 'success',
+  Error = 'error',
+  Info = 'info'
+}
 
 type ProcessingProps = {
   className?: string
@@ -19,8 +29,9 @@ type ProcessingProps = {
   onClickActionButton?: () => void
   titleClassName?: string
   actionButtonClassName?: string
-  type?: 'info' | 'success' | 'error'
+  type?: ProcessingType
   link?: string
+  onClickRightButton?: () => void
 }
 
 const ProcessingLoader = () => {
@@ -67,7 +78,7 @@ export const ProcessingModal: React.FC<Omit<ProcessingProps, 'isModal'>> = ({
 }
 
 export const Processing: React.FC<ProcessingProps> = ({
-  type = 'info',
+  type = ProcessingType.Info,
   title,
   message,
   isModal,
@@ -76,7 +87,8 @@ export const Processing: React.FC<ProcessingProps> = ({
   titleClassName,
   actionButtonClassName,
   className,
-  link
+  link,
+  onClickRightButton
 }) => {
   const borderColorClassName = useMemo(() => {
     if (type === 'success') return 'border-green/70'
@@ -98,6 +110,13 @@ export const Processing: React.FC<ProcessingProps> = ({
     if (type === 'error') return 'Failed'
     return 'Processing'
   }, [type])
+  const rightButton = useMemo(() => {
+    if (type === 'success')
+      return <CrossGreenIcon width={14} height={14}></CrossGreenIcon>
+    if (type === 'error')
+      return <CrossRedIcon width={14} height={14}></CrossRedIcon>
+    return <MinimizeIcon width={14} height={14}></MinimizeIcon>
+  }, [type])
 
   return (
     <div
@@ -108,7 +127,7 @@ export const Processing: React.FC<ProcessingProps> = ({
       )}>
       <div
         className={cn(
-          'flex w-full items-center justify-center border border-blue px-0.5 py-[1px] text-blue',
+          'flex w-full items-center justify-center border border-blue px-0.5 py-[1px] text-blue relative',
           borderColorClassName,
           titleColorClassName
         )}>
@@ -129,6 +148,13 @@ export const Processing: React.FC<ProcessingProps> = ({
           <ProcessingInfoModalTitleIcon className="w-full" />
         ) : (
           <ProcessingInfoTitleIcon className="w-full" />
+        )}
+        {onClickRightButton && (
+          <button
+            className="absolute right-1 top-1 flex size-[23px] items-center justify-center bg-black"
+            onClick={onClickRightButton}>
+            {rightButton}
+          </button>
         )}
       </div>
 

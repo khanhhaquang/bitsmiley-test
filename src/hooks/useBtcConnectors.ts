@@ -10,7 +10,7 @@ import { customChains } from '@/config/wagmi'
 
 export const useBtcConnectors = () => {
   const {
-    evmAccount,
+    account: evmAccount,
     chainId: evmChainId,
     provider: particleEvmProvider
   } = useETHProvider()

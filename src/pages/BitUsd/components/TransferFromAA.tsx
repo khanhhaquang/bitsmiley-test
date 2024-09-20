@@ -22,7 +22,7 @@ import { getTxnErrorMsg } from '@/utils/error'
 import { ActionButton, InputSuffixActionButton } from './ActionButton'
 import BitUsdInput from './Input'
 import { NumberInput } from './NumberInput'
-import { ProcessingModal } from './Processing'
+import { ProcessingModal, ProcessingType } from './Processing'
 
 import { formatBitUsd, formatWBtc } from '../display'
 
@@ -167,7 +167,7 @@ const TransferFromAA = () => {
       case TransactionStatus.Success:
         return (
           <ProcessingModal
-            type="success"
+            type={ProcessingType.Success}
             actionButtonText="Ok"
             message="Your transfer has been successful."
             onClickActionButton={() => {
@@ -184,7 +184,7 @@ const TransferFromAA = () => {
       case TransactionStatus.Failed:
         return (
           <ProcessingModal
-            type="error"
+            type={ProcessingType.Error}
             actionButtonText="Ok"
             onClickActionButton={() => {
               setTxnStatus(TransactionStatus.Idle)

@@ -7,7 +7,9 @@ import {
   botanixTestnet,
   bSquaredTestnet,
   merlinMainnet,
-  merlinTestnet
+  merlinTestnet,
+  zetaMainnet,
+  zetaTestnet
 } from './wagmi'
 
 export const chainsIconUrl: { [key: string]: string } = {
@@ -17,7 +19,9 @@ export const chainsIconUrl: { [key: string]: string } = {
   [bSquaredTestnet.id]: getIllustrationUrl('bsquared-chain-logo', 'webp'),
   [botanixTestnet.id]: getIllustrationUrl('botanix-chain-logo', 'webp'),
   [bitLayerTestnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp'),
-  [bitLayerMainnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp')
+  [bitLayerMainnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp'),
+  [zetaTestnet.id]: getIllustrationUrl('zeta-chain-logo', 'webp'),
+  [zetaMainnet.id]: getIllustrationUrl('zeta-chain-logo', 'webp')
 } as const
 
 export const stakeSupportedChainIds = [

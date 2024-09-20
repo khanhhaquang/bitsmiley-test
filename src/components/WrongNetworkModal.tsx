@@ -19,7 +19,8 @@ const WrongNetworkModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       { chainId: chainId },
       {
         onSuccess: (data) => {
-          console.info(`Switching successfully to ${data.name}`), onClose()
+          console.info(`Switching successfully to ${data.name}`)
+          onClose()
         },
         onError: () => {
           disconnect()

@@ -1,7 +1,9 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig, splitVendorChunkPlugin } from 'vite'
+import { defineConfig } from 'vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import svgr from 'vite-plugin-svgr'
+import topLevelAwait from 'vite-plugin-top-level-await'
+import wasm from 'vite-plugin-wasm'
 
 import path from 'path'
 
@@ -26,17 +28,24 @@ export default defineConfig({
     }
   },
   define: {
-    global: {}
+    global: 'globalThis'
   },
   esbuild: {
     drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
   },
   plugins: [
+    wasm(),
+    topLevelAwait(),
     nodePolyfills({
-      include: ['process']
+      include: ['process', 'stream']
     }),
-    splitVendorChunkPlugin(),
     svgr({ include: '**/*.svg' }),
     react()
-  ]
+  ],
+  worker: {
+    plugins: () => [wasm(), topLevelAwait()]
+  },
+  optimizeDeps: {
+    exclude: ['tiny-secp256k1']
+  }
 })

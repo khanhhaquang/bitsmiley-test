@@ -29,7 +29,6 @@ import {
 import { useProjectInfo } from './useProjectInfo'
 import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
-
 export const queryKeys = {
   collaterals: (chainId?: number, userAddress?: Address) => [
     'collaterals',
@@ -74,7 +73,6 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     },
     [projectInfo?.web3Info]
   )
-
   const chainIdToNetwork: { [key: number]: string } = {
     [merlinMainnet.id]: 'Merlin',
     [merlinTestnet.id]: 'Merlin',

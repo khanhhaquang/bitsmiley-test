@@ -18,6 +18,7 @@ import BitUsdIcon from './bit-usd.svg'
 import BitCoinIcon from './bitcoin.svg'
 import BitDiscBlackIcon from './bitDiskBlack.svg'
 import BoostIcon from './boost.svg'
+import CheckGreenIcon from './check-green-icon.svg'
 import ChevronLeftIcon from './chevron-left.svg'
 import ChevronRightIcon from './chevron-right.svg'
 import CloseSolidIcon from './close-solid.svg'
@@ -25,6 +26,8 @@ import CloseIcon from './close.svg'
 import CoinIcon from './coin.svg'
 import CopyIcon from './copy.svg'
 import CopyrightIcon from './copyright.svg'
+import CrossGreenIcon from './cross-green-icon.svg'
+import CrossRedIcon from './cross-red-icon.svg'
 import CrownYellowIcon from './crown-yellow.svg'
 import CrownIcon from './crown.svg'
 import DollarShadowIcon from './dollar-shadow.svg'
@@ -46,6 +49,7 @@ import MachineTitleRightBlueIcon from './machine-title-right-blue.svg'
 import MachineTitleRightWhiteIcon from './machine-title-right-white.svg'
 import ManageVaultSectionTitleIcon from './manage-vault-section-title.svg'
 import MetamaskIcon from './metamask.svg'
+import MinimizeIcon from './minimize-icon.svg'
 import OrIcon from './or.svg'
 import OvalCoinBlueIcon from './oval-coin-blue.svg'
 import OvalCoinGoldIcon from './oval-coin-gold.svg'
@@ -147,5 +151,9 @@ export {
   RefreshIcon,
   ArrowLeftDoubleIcon,
   AlertBg,
-  BitUsdPixelIcon
+  BitUsdPixelIcon,
+  CrossGreenIcon,
+  CrossRedIcon,
+  CheckGreenIcon,
+  MinimizeIcon
 }
