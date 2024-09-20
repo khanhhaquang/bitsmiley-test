@@ -7,7 +7,6 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useBTCBalance } from '@/hooks/useBTCBalance'
 import { useCollaterals } from '@/hooks/useCollaterals'
-import { useManageVault } from '@/hooks/useManageVault'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
@@ -46,7 +45,6 @@ export const OpenVault: React.FC<{
     capturedMaxMint
   } = useVaultDetail(collateral)
 
-  // const { blockExplorerUrl } = useUserInfo()
   const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
     address: collateral?.collateral?.tokenAddress
   })
@@ -73,8 +71,6 @@ export const OpenVault: React.FC<{
   //   }
   // })
 
-  const { wBtcAllowance } = useManageVault(collateral)
-
   const {
     tapRootAddress,
     btcAddress,
@@ -83,13 +79,8 @@ export const OpenVault: React.FC<{
     handleRevealTxn
   } = useZetaClient(chainId, collateralId)
 
-  const isApproved = useMemo(
-    () => Number(wBtcAllowance) >= Number(deposit),
-    [deposit, wBtcAllowance]
-  )
-
   const depositDisabled = useMemo(() => {
-    // if (btcBalance <= 0) return true
+    if (btcBalance <= 0) return true
     return false
   }, [btcBalance])
 
@@ -182,7 +173,8 @@ export const OpenVault: React.FC<{
   }, [deposit])
 
   useEffect(() => {
-    signData()
+    signData(() => setBtcWalletOpen(true))
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -332,21 +324,12 @@ export const OpenVault: React.FC<{
             </span>
           </ActionButton>
 
-          {!isApproved ? (
-            <SubmitButton
-              onClick={handleNext}
-              className="h-9 w-full flex-1"
-              disabled={false}>
-              Open vault
-            </SubmitButton>
-          ) : (
-            <ActionButton
-              onClick={handleNext}
-              className="h-9 w-full flex-1"
-              disabled={isNextButtonDisabled}>
-              Give permission to use BTC
-            </ActionButton>
-          )}
+          <SubmitButton
+            onClick={handleNext}
+            className="h-9 w-full flex-1"
+            disabled={isNextButtonDisabled}>
+            Open vault
+          </SubmitButton>
         </div>
       </div>
     </div>

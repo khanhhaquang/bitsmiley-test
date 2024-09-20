@@ -51,15 +51,18 @@ export const useBTCBalance = () => {
       return bitgetBalance?.total
     } catch (e) {
       console.log(e)
+      return 0
     }
   }
 
   const getUnisatBalance = async () => {
     try {
       const unisatBalance = await window?.unisat?.getBalance()
+      console.log('🚀 ~ getUnisatBalance ~ unisatBalance:', unisatBalance)
       return unisatBalance?.total
     } catch (e) {
       console.log(e)
+      return 0
     }
   }
 
@@ -79,6 +82,7 @@ export const useBTCBalance = () => {
       return xverseBalance?.result?.total
     } catch (e) {
       console.log(e)
+      return 0
     }
   }
 
@@ -86,18 +90,15 @@ export const useBTCBalance = () => {
     if (!accounts?.length) return // not connect btc yet
     let total = 0
     switch (btcLoginType) {
-      case LoginType.OKX:
-      case LoginType.OKX_EVM: {
+      case LoginType.OKX: {
         total = await getOkxBalance()
         break
       }
-      case LoginType.BYBIT:
-      case LoginType.BYBIT_EVM: {
+      case LoginType.BYBIT: {
         total = await getBybitBalance()
         break
       }
-      case LoginType.BITGET:
-      case LoginType.BITGET_EVM: {
+      case LoginType.BITGET: {
         total = await getBitgetBalance()
         break
       }

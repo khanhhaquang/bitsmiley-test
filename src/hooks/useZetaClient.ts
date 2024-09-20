@@ -64,41 +64,51 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     return null
   }, [callDataInstance, collateralId, evmAddress, signature])
 
-  const signData = useCallback(() => {
-    if (!isSigning && !signature && evmAddress && signatureUtilAddress) {
-      const message = { user: evmAddress, chainId: BigInt(chain) }
-      const domain = {
-        name: 'bitsmiley.io',
-        version: 'v0.0.1',
-        verifyingContract: signatureUtilAddress,
-        chainId: chain
-      }
-      signTypedData({
-        domain,
-        types: {
-          VerifyInfo: [
-            {
-              name: 'user',
-              type: 'address'
+  const signData = useCallback(
+    (onSuccessCallback: () => void) => {
+      if (!isSigning && !signature && evmAddress && signatureUtilAddress) {
+        const message = { user: evmAddress, chainId: BigInt(chain) }
+        const domain = {
+          name: 'bitsmiley.io',
+          version: 'v0.0.1',
+          verifyingContract: signatureUtilAddress,
+          chainId: chain
+        }
+        signTypedData(
+          {
+            domain,
+            types: {
+              VerifyInfo: [
+                {
+                  name: 'user',
+                  type: 'address'
+                },
+                {
+                  name: 'chainId',
+                  type: 'uint256'
+                }
+              ]
             },
-            {
-              name: 'chainId',
-              type: 'uint256'
+            primaryType: 'VerifyInfo',
+            message
+          },
+          {
+            onSuccess: () => {
+              onSuccessCallback()
             }
-          ]
-        },
-        primaryType: 'VerifyInfo',
-        message
-      })
-    }
-  }, [
-    isSigning,
-    signature,
-    evmAddress,
-    signatureUtilAddress,
-    chain,
-    signTypedData
-  ])
+          }
+        )
+      }
+    },
+    [
+      isSigning,
+      signature,
+      evmAddress,
+      signatureUtilAddress,
+      chain,
+      signTypedData
+    ]
+  )
 
   const tapRootAddress = useMemo(() => {
     if (callData && zetaConnectorAddress) {

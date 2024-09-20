@@ -1,7 +1,9 @@
 import { useConnector } from '@particle-network/btc-connectkit'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useAccount } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
+import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
 import { openUrl } from '@/utils/getAssetsUrl'
 
 import WalletItem from './WalletItem'
@@ -12,12 +14,30 @@ export const NativeBtcWalletModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
+  const { getNetwork, switchNetwork, provider } = useNativeBtcProvider()
   const { connectors, connect } = useConnector()
+  const { chain: evmChain, address: evmAddress } = useAccount()
 
   const filteredConnectors = useMemo(() => {
     //TODO: temporarily disable XVERSE due to pushTx issue
     return connectors.filter((c) => c.metadata.id !== 'xverse')
   }, [connectors])
+
+  useEffect(() => {
+    if (!evmAddress || !evmChain || !provider) return
+
+    getNetwork().then((network) => {
+      if (evmChain.testnet && network === 'livenet') {
+        switchNetwork('testnet')
+      }
+
+      if (!evmChain.testnet && network === 'testnet') {
+        switchNetwork('livenet')
+      }
+
+      onClose()
+    })
+  }, [evmAddress, evmChain, getNetwork, onClose, provider, switchNetwork])
 
   const renderWallets = () => {
     return (
@@ -41,7 +61,6 @@ export const NativeBtcWalletModal: React.FC<{
                   if (c.isReady()) {
                     try {
                       await connect(c.metadata.id)
-                      onClose()
                     } catch (error: unknown) {
                       console.error('BTC connect error: ', error)
                     }

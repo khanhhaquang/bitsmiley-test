@@ -1,7 +1,7 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
 
 export const useNativeBtcProvider = () => {
-  const { accounts, provider, getNetwork } = useBTCProvider()
+  const { accounts, provider, getNetwork, ...rest } = useBTCProvider()
 
   const pushTx = async (rawTx: string) => {
     if (provider && accounts.length > 0)
@@ -16,6 +16,7 @@ export const useNativeBtcProvider = () => {
   return {
     pushTx,
     getNetwork,
-    provider
+    provider,
+    ...rest
   }
 }
