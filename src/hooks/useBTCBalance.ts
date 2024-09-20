@@ -53,7 +53,7 @@ export const useBTCBalance = () => {
   }
 
   const { data: balance, refetch: getBalanceRequest } = useQuery({
-    queryKey: ['btc-balance'],
+    queryKey: ['btc-balance', btcLoginType, accounts?.[0]],
     queryFn: () => getBalance()
   })
 
