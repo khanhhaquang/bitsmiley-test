@@ -50,7 +50,7 @@ export const OpenVault: React.FC<{
     address: collateral?.collateral?.tokenAddress
   })
 
-  const { balance: btcBalance } = useBTCBalance()
+  const { balanceAsBtc: btcBalance } = useBTCBalance()
   const wbtcPrice = useTokenPrice()
 
   const [mint, setMint] = useState('')
