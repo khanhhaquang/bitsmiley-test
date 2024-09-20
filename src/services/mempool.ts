@@ -35,5 +35,10 @@ export const MempoolService = {
   getTransaction: {
     key: 'mempool.getTransaction',
     call: (txId: string) => axios.get<TxResponse>(`${MEMPOOL_URL}/tx/${txId}`)
+  },
+  postTransaction: {
+    key: 'mempool.broadcastTx',
+    call: (txnHex: string) =>
+      axios.post<string>(`${MEMPOOL_URL}/tx`, txnHex).then((data) => data.data)
   }
 }
