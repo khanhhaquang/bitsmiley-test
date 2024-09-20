@@ -12,7 +12,11 @@ import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
 import { MempoolService } from '@/services/mempool'
 import { ZetaService } from '@/services/zeta'
-import { setLocalStorage } from '@/utils/storage'
+import {
+  deleteLocalStorage,
+  getLocalStorage,
+  setLocalStorage
+} from '@/utils/storage'
 
 import VaultHeader from './component/VaultHeader'
 
@@ -136,6 +140,9 @@ export const OpenVault: React.FC<{
     setShowProcessing(true)
     //reset status
     setProcessingTxn('')
+    deleteLocalStorage(
+      `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`
+    )
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
 
@@ -143,7 +150,10 @@ export const OpenVault: React.FC<{
       .then((res) => {
         if (res) {
           setProcessingTxn(res)
-          setLocalStorage(LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN, res)
+          setLocalStorage(
+            `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`,
+            res
+          )
         } else {
           setProcessingStatus(ProcessingStatus.Error)
         }
@@ -174,7 +184,20 @@ export const OpenVault: React.FC<{
   }, [deposit])
 
   useEffect(() => {
+    console.log('btcAddress:', btcAddress)
     if (btcAddress) {
+      setProcessingTxn(
+        getLocalStorage(
+          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`
+        ) ?? ''
+      )
+      setProcessingStep(
+        getLocalStorage(
+          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${btcAddress}`
+        ) === '2'
+          ? TxnStep.Two
+          : TxnStep.One
+      )
       signData()
     }
   }, [btcAddress, signData])
@@ -185,12 +208,17 @@ export const OpenVault: React.FC<{
       processingStep === TxnStep.One &&
       processingStatus === ProcessingStatus.Processing
     ) {
+      setShowProcessing(true)
       const intervalId = setInterval(() => {
         MempoolService.getTransaction
           .call(processingTxn)
           .then((response) => {
             if (response?.data?.status.confirmed) {
               setProcessingStep(TxnStep.Two)
+              setLocalStorage(
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${btcAddress}`,
+                TxnStep.Two
+              )
               setShowProcessing(true)
             } else {
               console.log('waiting txn confirm')
@@ -213,6 +241,7 @@ export const OpenVault: React.FC<{
       processingStep === TxnStep.Two &&
       processingStatus === ProcessingStatus.Processing
     ) {
+      setShowProcessing(true)
       const intervalId = setInterval(() => {
         ZetaService.inboundHashToCctx
           .call(processingTxn)
@@ -228,6 +257,12 @@ export const OpenVault: React.FC<{
               setProcessingTxn(res?.data?.inboundHashToCctx.cctx_index[0])
               setProcessingStatus(ProcessingStatus.Success)
               setShowProcessing(true)
+              deleteLocalStorage(
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${btcAddress}`
+              )
+              deleteLocalStorage(
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${btcAddress}`
+              )
             } else {
               console.log('waiting txn inbound_hash')
             }
@@ -257,14 +292,14 @@ export const OpenVault: React.FC<{
 
   return (
     <div className="size-full overflow-y-auto pb-12">
-      {showProcessing && (
-        <ZetaProcessing
-          status={processingStatus}
-          step={processingStep}
-          txnId={processingTxn}
-          onOpen={() => setShowProcessing(true)}
-          onClose={() => setShowProcessing(false)}></ZetaProcessing>
-      )}
+      <ZetaProcessing
+        status={processingStatus}
+        step={processingStep}
+        txnId={processingTxn}
+        open={showProcessing}
+        onOpen={() => setShowProcessing(true)}
+        onClose={() => setShowProcessing(false)}></ZetaProcessing>
+
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader collateral={collateral} />
 

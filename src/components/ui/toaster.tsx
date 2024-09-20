@@ -53,6 +53,7 @@ export function Toaster() {
         description,
         action,
         className,
+        disableClose,
         ...props
       }) {
         return (
@@ -68,7 +69,7 @@ export function Toaster() {
               )}
             </div>
             {action}
-            <ToastClose className="right-4 top-3" />
+            {!disableClose && <ToastClose className="right-4 top-3" />}
           </Toast>
         )
       })}

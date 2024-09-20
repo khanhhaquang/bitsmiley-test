@@ -1,18 +1,18 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { CheckGreenIcon, CrossRedIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { useToast } from '@/components/ui/use-toast'
+import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ProcessingModal, ProcessingType } from './Processing'
-import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
 
 export enum TxnStep {
-  One = 'Step 1',
-  Two = 'Step 2'
+  One = '1',
+  Two = '2'
 }
 
 export enum ProcessingStatus {
@@ -25,6 +25,7 @@ type ZetaProcessingProps = {
   status: ProcessingStatus
   step: TxnStep
   txnId?: string
+  open: boolean
   onOpen: () => void
   onClose: () => void
 }
@@ -67,7 +68,7 @@ const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
         'flex px-3 py-2 items-center gap-2 uppercase',
         borderColorClassName
       )}>
-      <div>{step}</div>
+      <div>STEP {step}</div>
       {icon}
     </div>
   )
@@ -77,6 +78,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   step,
   status,
   txnId,
+  open,
   onOpen,
   onClose
 }) => {
@@ -137,15 +139,12 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     toast({
       variant: type,
       className: 'w-[380px]',
+      disableClose: type === ProcessingType.Processing,
+      duration: 360000000,
       description: (
         <div className={textClassName}>
           Your transaction is {statusText}.{' '}
-          <span
-            className="cursor-pointer hover:underline"
-            onClick={() => {
-              dismiss()
-              onOpen()
-            }}>
+          <span className="cursor-pointer hover:underline" onClick={onOpen}>
             [Click here]
           </span>{' '}
           to check
@@ -154,52 +153,63 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     })
     return
   }
+  useEffect(() => {
+    if (open) {
+      console.log('onOpen dismiss')
+      dismiss()
+    }
+  }, [open])
   return (
-    <ProcessingModal
-      type={type}
-      actionButtonText={actionButtonText}
-      onClickRightButton={onClickRightButton}
-      onClickActionButton={onClose}
-      message={
-        <div className="flex flex-col items-center gap-6">
-          <div className="flex items-center gap-2">
-            <ZetaStep step={TxnStep.One} status={stepOneStatus}></ZetaStep>
-            <div
-              className={cn(
-                'border-dotted border-t-2 w-12 h-[2px]',
-                borderColorClassName
-              )}></div>
-            <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
-          </div>
-          <div className="flex w-[380px] flex-col gap-2">
-            {status === 'error' && (
-              <div className="text-warning">Transaction Failed</div>
-            )}
-            <div>
-              {type === ProcessingType.Success ? 'Zeta ' : 'BTC '}Transaction
-            </div>
-            {txnId && (
-              <div className="break-words">
-                {type === ProcessingType.Success ? (
-                  <a
-                    className="underline"
-                    target="_blank"
-                    href={`${blockExplorerUrl}/cc/tx/${txnId}`}>
-                    {txnId}
-                  </a>
-                ) : (
-                  <a
-                    className="underline"
-                    target="_blank"
-                    href={`${mempoolExplorerUrl}/tx/${txnId}`}>
-                    {txnId}
-                  </a>
+    <>
+      {open && (
+        <ProcessingModal
+          type={type}
+          actionButtonText={actionButtonText}
+          onClickRightButton={onClickRightButton}
+          onClickActionButton={onClose}
+          message={
+            <div className="flex flex-col items-center gap-6">
+              <div className="flex items-center gap-2">
+                <ZetaStep step={TxnStep.One} status={stepOneStatus}></ZetaStep>
+                <div
+                  className={cn(
+                    'border-dotted border-t-2 w-12 h-[2px]',
+                    borderColorClassName
+                  )}></div>
+                <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
+              </div>
+              <div className="flex w-[380px] flex-col gap-2">
+                {status === 'error' && (
+                  <div className="text-warning">Transaction Failed</div>
+                )}
+                <div>
+                  {type === ProcessingType.Success ? 'Zeta ' : 'BTC '}
+                  Transaction
+                </div>
+                {txnId && (
+                  <div className="break-words">
+                    {type === ProcessingType.Success ? (
+                      <a
+                        className="underline"
+                        target="_blank"
+                        href={`${blockExplorerUrl}/cc/tx/${txnId}`}>
+                        {txnId}
+                      </a>
+                    ) : (
+                      <a
+                        className="underline"
+                        target="_blank"
+                        href={`${mempoolExplorerUrl}/tx/${txnId}`}>
+                        {txnId}
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-        </div>
-      }
-    />
+            </div>
+          }
+        />
+      )}
+    </>
   )
 }
