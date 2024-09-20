@@ -23,6 +23,7 @@ type ZetaProcessingProps = {
   status: ProcessingStatus
   step: TxnStep
   txnId?: string
+  onClose: () => void
 }
 
 type ZetaStepProps = {
@@ -72,7 +73,8 @@ const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
 export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   step,
   status,
-  txnId
+  txnId,
+  onClose
 }) => {
   const explorerUrl = ''
   const { toast } = useToast()
@@ -116,6 +118,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     return 'border-white/50'
   }, [stepTwoStatus])
   const onClickRightButton = () => {
+    onClose()
     let statusText = 'getting processed'
     let textClassName = 'text-white/50'
     if (type === ProcessingType.Success) {
@@ -148,8 +151,9 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
       type={type}
       actionButtonText={actionButtonText}
       onClickRightButton={onClickRightButton}
+      onClickActionButton={onClose}
       message={
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col items-center gap-6">
           <div className="flex items-center gap-2">
             <ZetaStep step={TxnStep.One} status={stepOneStatus}></ZetaStep>
             <div
@@ -159,15 +163,12 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
               )}></div>
             <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex w-[380px] flex-col gap-2">
             {status === 'error' && (
               <div className="text-warning">Transaction Failed</div>
             )}
-            <div>
-              Transaction hash:
-              <br />
-              {txnId}
-            </div>
+            <div>Transaction hash:</div>
+            <div className="break-words">{txnId}</div>
           </div>
         </div>
       }

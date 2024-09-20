@@ -38,7 +38,7 @@ export const formatWBtc = (
   if (!v || !Number(v)) return DEFAULT_TEXT
   return (
     `${
-      compact ? formatNumberAsCompact(v, 4) : formatNumberWithSeparator(v, 4)
+      compact ? formatNumberAsCompact(v, 6) : formatNumberWithSeparator(v, 6)
     }` + `${withUnit ? WBTC_UNIT : ''}`
   )
 }
