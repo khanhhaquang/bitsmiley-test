@@ -65,6 +65,12 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     return null
   }, [callDataInstance, collateralId, evmAddress, signature])
 
+  const tapRootAddress = useMemo(() => {
+    if (callData && zetaConnectorAddress) {
+      return zetaClient.call(zetaConnectorAddress, Buffer.from(callData, 'hex'))
+    }
+  }, [callData, zetaConnectorAddress, zetaClient])
+
   const signData = useCallback(
     (onSuccessCallback?: () => void) => {
       if (!isSigning && !signature && evmAddress && signatureUtilAddress) {
@@ -110,12 +116,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       signTypedData
     ]
   )
-
-  const tapRootAddress = useMemo(() => {
-    if (callData && zetaConnectorAddress) {
-      return zetaClient.call(zetaConnectorAddress, Buffer.from(callData, 'hex'))
-    }
-  }, [callData, zetaConnectorAddress, zetaClient])
 
   const handleSendBtc = useCallback(
     async (amount: number) => {
