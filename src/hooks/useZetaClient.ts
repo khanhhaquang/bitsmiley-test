@@ -66,7 +66,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   }, [callDataInstance, collateralId, evmAddress, signature])
 
   const signData = useCallback(
-    (onSuccessCallback: () => void) => {
+    (onSuccessCallback?: () => void) => {
       if (!isSigning && !signature && evmAddress && signatureUtilAddress) {
         const message = { user: evmAddress, chainId: BigInt(chain) }
         const domain = {
@@ -95,7 +95,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           },
           {
             onSuccess: () => {
-              onSuccessCallback()
+              onSuccessCallback?.()
             }
           }
         )
