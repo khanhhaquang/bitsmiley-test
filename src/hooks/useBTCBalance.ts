@@ -1,6 +1,5 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useCallback, useEffect, useState } from 'react'
 
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { LoginType } from '@/types/common'
@@ -8,23 +7,15 @@ import { satsToBTC } from '@/utils/formatter'
 import { getLocalStorage } from '@/utils/storage'
 
 export const useBTCBalance = () => {
-  const { chain } = useAccount()
   const { accounts, provider } = useBTCProvider()
 
   const [balance, setBalance] = useState(0)
 
   const btcLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
 
-  const isMainnet = useMemo(() => !chain?.testnet, [chain]) // temporary solution
-
   const getOkxBalance = async () => {
     try {
-      let okxBalance
-      if (isMainnet) {
-        okxBalance = await window?.okxwallet?.bitcoin?.getBalance()
-      } else {
-        okxBalance = await window.okxwallet.bitcoinTestnet.getBalance()
-      }
+      const okxBalance = await provider?.getBalance()
       return okxBalance?.total
     } catch (e) {
       console.log(e)
@@ -34,11 +25,8 @@ export const useBTCBalance = () => {
 
   const getBybitBalance = async () => {
     try {
-      if (isMainnet) {
-        // bybit only support mainnet
-        const bybitBalance = await window?.bybitWallet?.bitcoin?.getBalance()
-        return bybitBalance?.total
-      }
+      const bybitBalance = await window?.bybitWallet?.bitcoin?.getBalance()
+      return bybitBalance?.total
     } catch (e) {
       console.log(e)
       return 0
@@ -57,7 +45,7 @@ export const useBTCBalance = () => {
 
   const getUnisatBalance = async () => {
     try {
-      const unisatBalance = await window?.unisat?.getBalance()
+      const unisatBalance = await provider?.getBalance()
       console.log('🚀 ~ getUnisatBalance ~ unisatBalance:', unisatBalance)
       return unisatBalance?.total
     } catch (e) {
