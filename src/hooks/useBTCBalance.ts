@@ -8,14 +8,16 @@ import { satsToBTC } from '@/utils/formatter'
 import { getLocalStorage } from '@/utils/storage'
 
 export const useBTCBalance = () => {
-  const [balance, setBalance] = useState<number>(0) // btc
-  const btcLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
   const { chain } = useAccount()
   const { accounts, provider } = useBTCProvider()
 
-  const isMainnet = useMemo(() => chain && !chain.testnet, [chain]) // temporary solution
+  const [balance, setBalance] = useState(0)
 
-  const getOKXBTCBalance = async () => {
+  const btcLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
+
+  const isMainnet = useMemo(() => !!chain?.testnet, [chain]) // temporary solution
+
+  const getOkxBalance = async () => {
     try {
       let okxBalance
       if (isMainnet) {
@@ -39,6 +41,7 @@ export const useBTCBalance = () => {
       }
     } catch (e) {
       console.log(e)
+      return 0
     }
   }
 
@@ -79,12 +82,12 @@ export const useBTCBalance = () => {
     }
   }
 
-  const getBTCWallet = useCallback(async () => {
+  const getBalance = useCallback(async () => {
     if (!accounts?.length) return
     let total = 0
     switch (btcLoginType) {
       case LoginType.OKX: {
-        total = await getOKXBTCBalance()
+        total = await getOkxBalance()
         break
       }
       case LoginType.BYBIT: {
@@ -105,11 +108,15 @@ export const useBTCBalance = () => {
       }
     }
     setBalance(satsToBTC(total || 0))
-  }, [btcLoginType, accounts])
+  }, [accounts?.length, btcLoginType])
 
   useEffect(() => {
-    getBTCWallet()
-  }, [getBTCWallet])
+    getBalance()
+  }, [getBalance])
 
-  return { balance }
+  return {
+    getBalance,
+    balanceAsSats: balance,
+    balanceAsBtc: satsToBTC(balance)
+  }
 }
