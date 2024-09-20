@@ -1,9 +1,8 @@
 import { useConnector } from '@particle-network/btc-connectkit'
+import { useMemo } from 'react'
 
 import { CloseIcon } from '@/assets/icons'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { openUrl } from '@/utils/getAssetsUrl'
-import { setLocalStorage } from '@/utils/storage'
 
 import WalletItem from './WalletItem'
 
@@ -14,6 +13,11 @@ export const NativeBtcWalletModal: React.FC<{
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
   const { connectors, connect } = useConnector()
+
+  const filteredConnectors = useMemo(() => {
+    //TODO: temporarily disable XVERSE due to pushTx issue
+    return connectors.filter((c) => c.metadata.id !== 'xverse')
+  }, [connectors])
 
   const renderWallets = () => {
     return (
@@ -28,7 +32,7 @@ export const NativeBtcWalletModal: React.FC<{
             CONNECT BTC WALLET
           </h2>
           <div className="flex flex-col items-center gap-y-6">
-            {connectors.map((c) => (
+            {filteredConnectors.map((c) => (
               <WalletItem
                 key={c.metadata.id}
                 iconName={c.metadata.id}
@@ -37,10 +41,6 @@ export const NativeBtcWalletModal: React.FC<{
                   if (c.isReady()) {
                     try {
                       await connect(c.metadata.id)
-                      setLocalStorage(
-                        LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE,
-                        c.metadata.id
-                      )
                       onClose()
                     } catch (error: unknown) {
                       console.error('BTC connect error: ', error)
