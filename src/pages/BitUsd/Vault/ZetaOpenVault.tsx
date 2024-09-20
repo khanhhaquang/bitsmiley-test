@@ -82,6 +82,8 @@ export const OpenVault: React.FC<{
 
   const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
 
+  const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
+
   const depositDisabled = useMemo(() => {
     if (btcBalance <= 0) return true
     return false
@@ -184,7 +186,6 @@ export const OpenVault: React.FC<{
   }, [deposit])
 
   useEffect(() => {
-    console.log('btcAddress:', btcAddress)
     if (btcAddress) {
       setProcessingTxn(
         getLocalStorage(

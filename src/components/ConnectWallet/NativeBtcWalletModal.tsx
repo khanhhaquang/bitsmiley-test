@@ -1,5 +1,5 @@
 import { useConnector } from '@particle-network/btc-connectkit'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
@@ -19,11 +19,6 @@ export const NativeBtcWalletModal: React.FC<{
   const { btcNetwork, switchNetwork, provider } = useNativeBtcProvider()
   const { connectors, connect } = useConnector()
   const { chain: evmChain, address: evmAddress } = useAccount()
-
-  const filteredConnectors = useMemo(() => {
-    //TODO: temporarily disable XVERSE due to pushTx issue
-    return connectors.filter((c) => c.metadata.id !== 'xverse')
-  }, [connectors])
 
   useEffect(() => {
     if (!evmAddress || !evmChain || !provider) return
@@ -54,7 +49,7 @@ export const NativeBtcWalletModal: React.FC<{
             CONNECT BTC WALLET
           </h2>
           <div className="flex flex-col items-center gap-y-6">
-            {filteredConnectors.map((c) => (
+            {connectors.map((c) => (
               <WalletItem
                 key={c.metadata.id}
                 iconName={c.metadata.id}
@@ -83,7 +78,7 @@ export const NativeBtcWalletModal: React.FC<{
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
       <div className="relative border bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         {renderWallets()}
       </div>
