@@ -54,7 +54,6 @@ export const OpenVault: React.FC<{
   const wbtcPrice = useTokenPrice()
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
-  const [btcWalletOpen, setBtcWalletOpen] = useState(false)
 
   const [showProcessing, setShowProcessing] = useState(false)
   const [processingStep, setProcessingStep] = useState(TxnStep.One)
@@ -76,6 +75,8 @@ export const OpenVault: React.FC<{
     chainId,
     collateralId
   )
+
+  const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
 
   const depositDisabled = useMemo(() => {
     if (btcBalance <= 0) return true
@@ -173,10 +174,10 @@ export const OpenVault: React.FC<{
   }, [deposit])
 
   useEffect(() => {
-    signData(() => setBtcWalletOpen(true))
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    if (btcAddress) {
+      signData()
+    }
+  }, [btcAddress, signData])
 
   useEffect(() => {
     if (
