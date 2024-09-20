@@ -8,12 +8,12 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ProcessingModal, ProcessingType } from './Processing'
 
-enum TxnStep {
+export enum TxnStep {
   One = 'Step 1',
   Two = 'Step 2'
 }
 
-enum ProcessingStatus {
+export enum ProcessingStatus {
   Processing = 'processing',
   Success = 'success',
   Error = 'error'
