@@ -1,4 +1,5 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
+import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 export const useNativeBtcProvider = () => {
@@ -17,8 +18,15 @@ export const useNativeBtcProvider = () => {
     [accounts.length, provider]
   )
 
+  const { data: btcNetwork, refetch: getNetworkRefetch } = useQuery({
+    queryKey: ['btc-connected-network'],
+    queryFn: () => getNetwork()
+  })
+
   return {
     pushTx,
+    btcNetwork,
+    getNetworkRefetch,
     getNetwork,
     provider,
     accounts,
