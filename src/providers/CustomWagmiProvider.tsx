@@ -16,8 +16,6 @@ import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import LoadingResourcesPage from '@/pages/LoadingResources'
 import NetworkErrorPage from '@/pages/NetworkError'
-import { getLocalStorage } from '@/utils/storage'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 
 const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
   const [isEntered, setIsEntered] = useState(false)
@@ -73,9 +71,7 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
           }
         },
         walletOptions: {
-          visible:
-            import.meta.env.VITE_PARTICLE_WALLET_VISIBLE === 'true' &&
-            !getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
+          visible: import.meta.env.VITE_PARTICLE_WALLET_VISIBLE === 'true'
         }
       }}
       connectors={[
