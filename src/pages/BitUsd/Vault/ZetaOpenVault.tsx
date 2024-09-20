@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
+import { useBTCBalance } from '@/hooks/useBTCBalance'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useManageVault } from '@/hooks/useManageVault'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
@@ -50,10 +50,7 @@ export const OpenVault: React.FC<{
     address: collateral?.collateral?.tokenAddress
   })
 
-  //TODO: create a useBtcBalance to get balance of btc in BTC chain, currently this is for EVM not correct
-  const { balance: btcBalance } = useTokenBalance(
-    collateral?.collateral?.tokenAddress
-  )
+  const { balance: btcBalance } = useBTCBalance()
   const wbtcPrice = useTokenPrice()
 
   const [mint, setMint] = useState('')

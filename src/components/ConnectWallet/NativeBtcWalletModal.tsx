@@ -1,7 +1,9 @@
 import { useConnector } from '@particle-network/btc-connectkit'
 
 import { CloseIcon } from '@/assets/icons'
+import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { openUrl } from '@/utils/getAssetsUrl'
+import { setLocalStorage } from '@/utils/storage'
 
 import WalletItem from './WalletItem'
 
@@ -35,6 +37,10 @@ export const NativeBtcWalletModal: React.FC<{
                   if (c.isReady()) {
                     try {
                       await connect(c.metadata.id)
+                      setLocalStorage(
+                        LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE,
+                        c.metadata.id
+                      )
                       onClose()
                     } catch (error: unknown) {
                       console.error('BTC connect error: ', error)
