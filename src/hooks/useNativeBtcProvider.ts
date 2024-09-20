@@ -11,8 +11,10 @@ export const useNativeBtcProvider = () => {
     async (rawTx: string) => {
       if (provider && accounts.length > 0)
         try {
+          const caller = provider?.pushTx || MempoolService.postTransaction.call
           let txn = ''
-          txn = await provider?.pushTx(rawTx)
+          txn = await caller(rawTx)
+
           if (!txn) {
             txn = await MempoolService.postTransaction.call(rawTx)
           }
