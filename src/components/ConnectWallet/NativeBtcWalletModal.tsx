@@ -16,7 +16,7 @@ export const NativeBtcWalletModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
-  const { getNetwork, switchNetwork, provider } = useNativeBtcProvider()
+  const { btcNetwork, switchNetwork, provider } = useNativeBtcProvider()
   const { connectors, connect } = useConnector()
   const { chain: evmChain, address: evmAddress } = useAccount()
 
@@ -28,18 +28,16 @@ export const NativeBtcWalletModal: React.FC<{
   useEffect(() => {
     if (!evmAddress || !evmChain || !provider) return
 
-    getNetwork().then((network) => {
-      if (evmChain.testnet && network === 'livenet') {
-        switchNetwork('testnet')
-      }
+    if (evmChain.testnet && btcNetwork === 'livenet') {
+      switchNetwork('testnet')
+    }
 
-      if (!evmChain.testnet && network === 'testnet') {
-        switchNetwork('livenet')
-      }
+    if (!evmChain.testnet && btcNetwork === 'testnet') {
+      switchNetwork('livenet')
+    }
 
-      onClose()
-    })
-  }, [evmAddress, evmChain, getNetwork, onClose, provider, switchNetwork])
+    onClose()
+  }, [evmAddress, evmChain, btcNetwork, onClose, provider, switchNetwork])
 
   const renderWallets = () => {
     return (
