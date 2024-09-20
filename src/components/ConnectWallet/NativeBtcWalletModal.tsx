@@ -78,7 +78,7 @@ export const NativeBtcWalletModal: React.FC<{
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
       <div className="relative border bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         {renderWallets()}
       </div>
