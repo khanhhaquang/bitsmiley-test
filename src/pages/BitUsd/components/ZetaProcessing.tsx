@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { CheckGreenIcon, CrossRedIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { useToast } from '@/components/ui/use-toast'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
@@ -23,6 +24,7 @@ type ZetaProcessingProps = {
   status: ProcessingStatus
   step: TxnStep
   txnId?: string
+  onOpen: () => void
   onClose: () => void
 }
 
@@ -74,10 +76,12 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   step,
   status,
   txnId,
+  onOpen,
   onClose
 }) => {
-  const explorerUrl = ''
-  const { toast } = useToast()
+  const { toast, dismiss } = useToast()
+  const { blockExplorerUrl } = useUserInfo()
+  const mempoolExplorerUrl = 'https://mempool.space/zh/testnet'
   const type = useMemo(() => {
     if (step === TxnStep.Two && status === ProcessingStatus.Success) {
       return ProcessingType.Success
@@ -134,12 +138,14 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
       description: (
         <div className={textClassName}>
           Your transaction is {statusText}.{' '}
-          <a
-            className="hover:underline"
-            target="_blank"
-            href={`${explorerUrl}/tx/${txnId}`}>
+          <span
+            className="cursor-pointer hover:underline"
+            onClick={() => {
+              dismiss()
+              onOpen()
+            }}>
             [Click here]
-          </a>{' '}
+          </span>{' '}
           to check
         </div>
       )
@@ -167,8 +173,28 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
             {status === 'error' && (
               <div className="text-warning">Transaction Failed</div>
             )}
-            <div>Transaction hash:</div>
-            <div className="break-words">{txnId}</div>
+            <div>
+              {type === ProcessingType.Success ? 'Zeta ' : 'BTC '}Transaction
+            </div>
+            {txnId && (
+              <div className="break-words">
+                {type === ProcessingType.Success ? (
+                  <a
+                    className="underline"
+                    target="_blank"
+                    href={`${blockExplorerUrl}/cc/tx/${txnId}`}>
+                    {txnId}
+                  </a>
+                ) : (
+                  <a
+                    className="underline"
+                    target="_blank"
+                    href={`${mempoolExplorerUrl}/tx/${txnId}`}>
+                    {txnId}
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
       }

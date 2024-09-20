@@ -11,7 +11,7 @@ import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
 import { MempoolService } from '@/services/mempool'
-import { btcToSats } from '@/utils/formatter'
+import { ZetaService } from '@/services/zeta'
 import { setLocalStorage } from '@/utils/storage'
 
 import VaultHeader from './component/VaultHeader'
@@ -63,22 +63,19 @@ export const OpenVault: React.FC<{
   )
   const [processingTxn, setProcessingTxn] = useState('')
   // const { data: txnReceipt } = useWaitForTransactionReceipt({
-  //   hash: processingTxn as Hash,
+  //   hash: zetaTxn as Hash,
   //   query: {
   //     enabled:
-  //       isHash(processingTxn) &&
+  //       isHash(zetaTxn) &&
   //       processingStep === TxnStep.Two &&
   //       processingStatus === ProcessingStatus.Processing
   //   }
   // })
 
-  const {
-    tapRootAddress,
-    btcAddress,
-    handleSendBtc,
-    signData,
-    handleRevealTxn
-  } = useZetaClient(chainId, collateralId)
+  const { tapRootAddress, btcAddress, handleSendBtc, signData } = useZetaClient(
+    chainId,
+    collateralId
+  )
 
   const depositDisabled = useMemo(() => {
     if (btcBalance <= 0) return true
@@ -136,6 +133,8 @@ export const OpenVault: React.FC<{
       return
     }
     setShowProcessing(true)
+    //reset status
+    setProcessingTxn('')
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
 
@@ -190,8 +189,8 @@ export const OpenVault: React.FC<{
           .call(processingTxn)
           .then((response) => {
             if (response?.data?.status.confirmed) {
-              // setProcessingStatus(ProcessingStatus.Success)
               setProcessingStep(TxnStep.Two)
+              setShowProcessing(true)
             } else {
               console.log('waiting txn confirm')
             }
@@ -199,7 +198,7 @@ export const OpenVault: React.FC<{
           .catch(() => {
             console.log('waiting txn')
           })
-      }, 1000)
+      }, 3000)
 
       return () => {
         clearInterval(intervalId)
@@ -213,31 +212,39 @@ export const OpenVault: React.FC<{
       processingStep === TxnStep.Two &&
       processingStatus === ProcessingStatus.Processing
     ) {
-      handleRevealTxn(processingTxn, btcToSats(Number(deposit)), (hash) => {
-        console.log(hash)
-        // setProcessingStep(TxnStep.Two)
-        if (hash) {
-          setProcessingTxn(hash)
-          setProcessingStatus(ProcessingStatus.Success)
-        } else {
-          setProcessingStatus(ProcessingStatus.Error)
-        }
-      }).catch((e) => {
-        console.log('handleRevealTxn error:', e)
-        // setProcessingStep(TxnStep.Two)
-        setProcessingStatus(ProcessingStatus.Error)
-      })
+      const intervalId = setInterval(() => {
+        ZetaService.inboundHashToCctx
+          .call(processingTxn)
+          .then((res) => {
+            if (
+              res?.data?.inboundHashToCctx.cctx_index &&
+              res?.data?.inboundHashToCctx.cctx_index.length > 0
+            ) {
+              console.log(
+                'zetaTxn:',
+                res?.data?.inboundHashToCctx.cctx_index[0]
+              )
+              setProcessingTxn(res?.data?.inboundHashToCctx.cctx_index[0])
+              setProcessingStatus(ProcessingStatus.Success)
+              setShowProcessing(true)
+            } else {
+              console.log('waiting txn inbound_hash')
+            }
+          })
+          .catch(() => {
+            console.log('waiting txn')
+          })
+      }, 3000)
+
+      return () => {
+        clearInterval(intervalId)
+      }
     }
-  }, [
-    processingTxn,
-    processingStatus,
-    processingStep,
-    deposit,
-    handleRevealTxn
-  ])
+  }, [processingTxn, processingStatus, processingStep])
 
   // useEffect(() => {
   //   if (processingStep === TxnStep.Two) {
+  //     console.log('txnReceipt: ', txnReceipt?.status)
   //     if (txnReceipt?.status === 'success') {
   //       setProcessingStatus(ProcessingStatus.Success)
   //     }
@@ -245,7 +252,7 @@ export const OpenVault: React.FC<{
   //       setProcessingStatus(ProcessingStatus.Error)
   //     }
   //   }
-  // }, [txnReceipt?.status, processingStep])
+  // }, [txnReceipt, processingStep])
 
   return (
     <div className="size-full overflow-y-auto pb-12">
@@ -254,6 +261,7 @@ export const OpenVault: React.FC<{
           status={processingStatus}
           step={processingStep}
           txnId={processingTxn}
+          onOpen={() => setShowProcessing(true)}
           onClose={() => setShowProcessing(false)}></ZetaProcessing>
       )}
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
