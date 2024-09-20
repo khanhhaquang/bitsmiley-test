@@ -30,10 +30,12 @@ export const NativeBtcWalletModal: React.FC<{
 
     if (evmChain.testnet && btcNetwork === 'livenet') {
       switchNetwork('testnet')
+      return
     }
 
     if (!evmChain.testnet && btcNetwork === 'testnet') {
       switchNetwork('livenet')
+      return
     }
 
     onClose()

@@ -19,7 +19,7 @@ export const useNativeBtcProvider = () => {
   )
 
   const { data: btcNetwork, refetch: getNetworkRefetch } = useQuery({
-    queryKey: ['btc-connected-network'],
+    queryKey: ['btc-connected-network', accounts[0]],
     queryFn: () => getNetwork()
   })
 
