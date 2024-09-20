@@ -25,6 +25,7 @@ import { ProcessingModal, ProcessingType } from '../components/Processing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { formatBitUsd, formatWBtc } from '../display'
+import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
 
 export const OpenVault: React.FC<{
   chainId: number
@@ -66,6 +67,8 @@ export const OpenVault: React.FC<{
     approvalTxnStatus,
     wBtcAllowance
   } = useManageVault(collateral)
+
+  useNativeBtcProvider()
 
   const { tapRootAddress, btcAddress, handleSendBtc, signData } = useZetaClient(
     chainId,

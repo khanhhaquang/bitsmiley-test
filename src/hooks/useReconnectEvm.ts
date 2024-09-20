@@ -14,8 +14,9 @@ import { getLocalStorage } from '@/utils/storage'
 import { useEvmConnectors } from './useEvmConnectors'
 import { useUserInfo } from './useUserInfo'
 
+const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
+
 export const useReconnectEvm = () => {
-  const localLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
   const config = useConfig()
   const { isConnected: isEvmConnected } = useUserInfo()
   const {

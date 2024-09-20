@@ -3,10 +3,12 @@ import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
-import { isZetaChain } from '@/utils/chain'
-import { useProjectInfo } from './useProjectInfo'
+
 import { ZetaService } from '@/services/zeta'
+import { isZetaChain } from '@/utils/chain'
+
 import { useMempool } from './useMempool'
+import { useProjectInfo } from './useProjectInfo'
 
 export interface VerifyInfo {
   user: Address
