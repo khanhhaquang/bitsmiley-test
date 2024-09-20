@@ -22,7 +22,6 @@
     "pre-commit": "npm run lint"
   },
   "dependencies": {
-    "@mempool/mempool.js": "^2.3.0",
     "@particle-network/btc-connectkit": "^1.0.0-alpha.26",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

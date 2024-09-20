@@ -15,7 +15,7 @@ export const useBTCBalance = () => {
 
   const btcLoginType = getLocalStorage(LOCAL_STORAGE_KEYS.BTC_LOGIN_TYPE)
 
-  const isMainnet = useMemo(() => !!chain?.testnet, [chain]) // temporary solution
+  const isMainnet = useMemo(() => !chain?.testnet, [chain]) // temporary solution
 
   const getOkxBalance = async () => {
     try {
@@ -83,20 +83,24 @@ export const useBTCBalance = () => {
   }
 
   const getBalance = useCallback(async () => {
-    if (!accounts?.length) return
+    if (!accounts?.length) return // not connect btc yet
     let total = 0
     switch (btcLoginType) {
-      case LoginType.OKX: {
+      case LoginType.OKX:
+      case LoginType.OKX_EVM: {
         total = await getOkxBalance()
         break
       }
-      case LoginType.BYBIT: {
+      case LoginType.BYBIT:
+      case LoginType.BYBIT_EVM: {
         total = await getBybitBalance()
         break
       }
       case LoginType.BITGET:
+      case LoginType.BITGET_EVM: {
         total = await getBitgetBalance()
         break
+      }
       case LoginType.UNISAT:
         total = await getUnisatBalance()
         break
@@ -107,7 +111,7 @@ export const useBTCBalance = () => {
         break
       }
     }
-    setBalance(satsToBTC(total || 0))
+    setBalance(total || 0)
   }, [accounts?.length, btcLoginType])
 
   useEffect(() => {
