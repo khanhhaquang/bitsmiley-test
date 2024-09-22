@@ -203,9 +203,8 @@ export const OpenVault: React.FC<{
           ? TxnStep.Two
           : TxnStep.One
       )
-      signData()
     }
-  }, [evmAddress, signData])
+  }, [evmAddress])
 
   useEffect(() => {
     if (

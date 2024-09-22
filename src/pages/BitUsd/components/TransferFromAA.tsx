@@ -22,7 +22,8 @@ import { getTxnErrorMsg } from '@/utils/error'
 import { ActionButton, InputSuffixActionButton } from './ActionButton'
 import BitUsdInput from './Input'
 import { NumberInput } from './NumberInput'
-import { ProcessingModal, ProcessingType } from './Processing'
+import { ProcessingModal } from './Processing'
+import { ProcessingType } from './Processing.types'
 
 import { formatBitUsd, formatWBtc } from '../display'
 

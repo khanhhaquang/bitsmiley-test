@@ -42,7 +42,7 @@ export const formatWBtc = (
       compact ? formatNumberAsCompact(v, 6) : formatNumberWithSeparator(v, 6)
     }` +
     `${withUnit ? WBTC_UNIT : ''}` +
-    symbol
+    ` ${symbol}`
   )
 }
 

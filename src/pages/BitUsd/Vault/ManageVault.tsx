@@ -37,7 +37,8 @@ import {
   SubmitButton
 } from '../components/ActionButton'
 import { NumberInput } from '../components/NumberInput'
-import { ProcessingModal, ProcessingType } from '../components/Processing'
+import { ProcessingModal } from '../components/Processing'
+import { ProcessingType } from '../components/Processing.types'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { displayVaultValues } from '../display'
