@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
@@ -7,10 +8,10 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useBTCBalance } from '@/hooks/useBTCBalance'
 import { useCollaterals } from '@/hooks/useCollaterals'
+import { useMempool } from '@/hooks/useMempool'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
-import { MempoolService } from '@/services/mempool'
 import { ZetaService } from '@/services/zeta'
 import {
   deleteLocalStorage,
@@ -28,20 +29,16 @@ import {
 import { NumberInput } from '../components/NumberInput'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import {
-  ProcessingStatus,
-  TxnStep,
-  ZetaProcessing
-} from '../components/ZetaProcessing'
+import { ZetaProcessing } from '../components/ZetaProcessing'
+import { ProcessingStatus, TxnStep } from '../components/ZetaProcessing.types'
 import { formatBitUsd, formatWBtc } from '../display'
-import { useAccount } from 'wagmi'
 
 export const OpenVault: React.FC<{
   chainId: number
   collateralId: string
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
-
+  const MempoolService = useMempool()
   const { collateral } = useCollaterals(chainId, collateralId)
 
   const {
@@ -208,7 +205,7 @@ export const OpenVault: React.FC<{
       )
       signData()
     }
-  }, [evmAddress])
+  }, [evmAddress, signData])
 
   useEffect(() => {
     if (
@@ -241,7 +238,13 @@ export const OpenVault: React.FC<{
         clearInterval(intervalId)
       }
     }
-  }, [processingTxn, processingStatus, processingStep])
+  }, [
+    processingTxn,
+    processingStatus,
+    processingStep,
+    MempoolService.getTransaction,
+    evmAddress
+  ])
 
   useEffect(() => {
     if (
@@ -284,7 +287,7 @@ export const OpenVault: React.FC<{
         clearInterval(intervalId)
       }
     }
-  }, [processingTxn, processingStatus, processingStep])
+  }, [processingTxn, processingStatus, processingStep, evmAddress])
 
   // useEffect(() => {
   //   if (processingStep === TxnStep.Two) {

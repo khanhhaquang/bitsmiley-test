@@ -3,23 +3,13 @@ import { useEffect, useMemo } from 'react'
 import { CheckGreenIcon, CrossRedIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { useToast } from '@/components/ui/use-toast'
-import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
+import { useBtcNetwork } from '@/hooks/useBtcNetwork'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ProcessingModal, ProcessingType } from './Processing'
-
-export enum TxnStep {
-  One = '1',
-  Two = '2'
-}
-
-export enum ProcessingStatus {
-  Processing = 'processing',
-  Success = 'success',
-  Error = 'error'
-}
+import { ProcessingStatus, TxnStep } from './ZetaProcessing.types'
 
 type ZetaProcessingProps = {
   status: ProcessingStatus
@@ -84,8 +74,10 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
 }) => {
   const { toast, dismiss } = useToast()
   const { blockExplorerUrl } = useUserInfo()
-  const { btcNetwork } = useNativeBtcProvider()
+  const { btcNetwork } = useBtcNetwork()
+
   const mempoolExplorerUrl = `https://mempool.space/zh/${btcNetwork}`
+
   const type = useMemo(() => {
     if (step === TxnStep.Two && status === ProcessingStatus.Success) {
       return ProcessingType.Success
@@ -95,24 +87,28 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     }
     return ProcessingType.Processing
   }, [step, status])
+
   const actionButtonText = useMemo(() => {
     if (type === ProcessingType.Success || type === ProcessingType.Error) {
       return 'Ok'
     }
     return undefined
   }, [type])
+
   const stepOneStatus = useMemo(() => {
     if (step === TxnStep.One) {
       return status
     }
     return ProcessingStatus.Success
   }, [step, status])
+
   const stepTwoStatus = useMemo(() => {
     if (step === TxnStep.Two) {
       return status
     }
     return 'none'
   }, [step, status])
+
   const borderColorClassName = useMemo(() => {
     if (stepTwoStatus === ProcessingStatus.Success) {
       return 'border-green'
@@ -125,12 +121,13 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     }
     return 'border-white/50'
   }, [stepTwoStatus])
+
   const onClickRightButton = () => {
     onClose()
     let statusText = 'getting processed'
     let textClassName = 'text-white/50'
     if (type === ProcessingType.Success) {
-      statusText = 'successfull'
+      statusText = 'successful'
       textClassName = 'text-green'
     } else if (type === ProcessingType.Error) {
       statusText = 'failed'
@@ -144,21 +141,23 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
       description: (
         <div className={textClassName}>
           Your transaction is {statusText}.{' '}
-          <span className="cursor-pointer hover:underline" onClick={onOpen}>
+          <button className="hover:underline" onClick={onOpen}>
             [Click here]
-          </span>{' '}
+          </button>{' '}
           to check
         </div>
       )
     })
     return
   }
+
   useEffect(() => {
     if (open) {
       console.log('onOpen dismiss')
       dismiss()
     }
   }, [open])
+
   return (
     <>
       {open && (

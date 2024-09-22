@@ -143,7 +143,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         return ''
       }
     },
-    [sendBitcoin, tapRootAddress]
+    [pushTx, sendBitcoin, tapRootAddress, zetaClient]
   )
 
   return {

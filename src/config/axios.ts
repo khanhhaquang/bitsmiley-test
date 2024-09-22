@@ -41,4 +41,4 @@ function backOff(ax: AxiosInstance | AxiosStatic) {
   })
 }
 
-export { axios, axiosInstance }
+export { backOff, axios, axiosInstance }
