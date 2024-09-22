@@ -132,7 +132,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             satsAmount,
             2 //feesRecommended.data.economyFee
           )
-          const rawTx = Buffer.from(buffer).toString('hex')
+          const rawTx = buffer.toString('hex')
           console.log('rawTx:', rawTx)
           const txid = await pushTx(rawTx)
           console.log('txid:', txid)

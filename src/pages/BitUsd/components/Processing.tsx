@@ -12,13 +12,7 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
-
-export enum ProcessingType {
-  Processing = 'processing',
-  Success = 'success',
-  Error = 'error',
-  Info = 'info'
-}
+import { ProcessingType } from './Processing.types'
 
 type ProcessingProps = {
   className?: string

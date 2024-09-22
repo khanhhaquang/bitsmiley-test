@@ -8,7 +8,8 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-import { ProcessingModal, ProcessingType } from './Processing'
+import { ProcessingModal } from './Processing'
+import { ProcessingType } from './Processing.types'
 import { ProcessingStatus, TxnStep } from './ZetaProcessing.types'
 
 type ZetaProcessingProps = {
@@ -156,7 +157,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
       console.log('onOpen dismiss')
       dismiss()
     }
-  }, [open])
+  }, [dismiss, open])
 
   return (
     <>
