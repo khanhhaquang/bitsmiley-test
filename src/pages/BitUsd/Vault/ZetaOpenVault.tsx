@@ -371,7 +371,8 @@ export const OpenVault: React.FC<{
           vault={{
             ...tryOpenVaultInfo,
             debtBitUSD: mint,
-            lockedCollateral: deposit
+            lockedCollateral: deposit,
+            collateralSymbol: deptTokenSymbol
           }}
           collateral={collateral}
           borderSvg={
