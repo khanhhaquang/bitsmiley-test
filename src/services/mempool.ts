@@ -1,6 +1,4 @@
-import { axios } from '@/config/axios'
-
-const MEMPOOL_URL = 'https://mempool.space/testnet/api'
+import { AxiosInstance } from 'axios'
 
 interface RecommendedFees {
   fastestFee: number
@@ -18,7 +16,7 @@ interface TxResponse {
   size: number
   weight: number
   fee: number
-  status: TxStatus
+  status?: TxStatus
 }
 interface TxStatus {
   confirmed: boolean
@@ -27,18 +25,22 @@ interface TxStatus {
   block_time: number
 }
 
-export const MempoolService = {
+export const MempoolService = (axiosInstance: AxiosInstance) => ({
   getRecommendedFees: {
     key: 'mempool.getRecommendedFees',
-    call: () => axios.get<RecommendedFees>(`${MEMPOOL_URL}/v1/fees/recommended`)
+    call: () =>
+      axiosInstance
+        .get<RecommendedFees>('/v1/fees/recommended')
+        .then((data) => data.data)
   },
   getTransaction: {
     key: 'mempool.getTransaction',
-    call: (txId: string) => axios.get<TxResponse>(`${MEMPOOL_URL}/tx/${txId}`)
+    call: (txId: string) =>
+      axiosInstance.get<TxResponse>(`/tx/${txId}`).then((data) => data.data)
   },
   postTransaction: {
     key: 'mempool.broadcastTx',
     call: (txnHex: string) =>
-      axios.post<string>(`${MEMPOOL_URL}/tx`, txnHex).then((data) => data.data)
+      axiosInstance.post<string>('/tx', txnHex).then((data) => data.data)
   }
-}
+})

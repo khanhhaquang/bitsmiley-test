@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { useBtcNetwork } from '@/hooks/useBtcNetwork'
 import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
 import { openUrl } from '@/utils/getAssetsUrl'
 import { setLocalStorage } from '@/utils/storage'
@@ -16,7 +17,8 @@ export const NativeBtcWalletModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
-  const { btcNetwork, switchNetwork, provider } = useNativeBtcProvider()
+  const { switchNetwork, provider } = useNativeBtcProvider()
+  const { btcNetwork } = useBtcNetwork()
   const { connectors, connect } = useConnector()
   const { chain: evmChain, address: evmAddress } = useAccount()
 

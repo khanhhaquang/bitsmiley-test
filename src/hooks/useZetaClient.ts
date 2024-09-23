@@ -6,6 +6,7 @@ import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
 import { isZetaChain } from '@/utils/chain'
 import { btcToSats } from '@/utils/formatter'
 
+import { useBtcFee } from './useBtcFee'
 import { useNativeBtcProvider } from './useNativeBtcProvider'
 import { useProjectInfo } from './useProjectInfo'
 
@@ -16,6 +17,7 @@ export interface VerifyInfo {
 }
 
 export const useZetaClient = (chain: number, collateralId: string) => {
+  const { recommendedFee } = useBtcFee()
   const { address: evmAddress } = useAccount()
   const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
   const { projectInfo } = useProjectInfo()
@@ -116,6 +118,20 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     ]
   )
 
+  const broadcastTxn = useCallback(
+    async (rawTx: string) => {
+      try {
+        const btcTxn = await pushTx(rawTx)
+        console.log('btcTxn:', btcTxn)
+        return btcTxn ?? ''
+      } catch (error) {
+        console.log('🚀 ~ broadcastTxn ~ error:', error)
+        return ''
+      }
+    },
+    [pushTx]
+  )
+
   const handleSendBtc = useCallback(
     async (amount: number) => {
       try {
@@ -126,24 +142,21 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             satsAmount
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
-          // const feesRecommended = await MempoolService.getRecommendedFees.call()
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
             satsAmount,
-            2 //feesRecommended.data.economyFee
+            recommendedFee?.halfHourFee || 2
           )
-          const rawTx = Buffer.from(buffer).toString('hex')
+          const rawTx = buffer.toString('hex')
           console.log('rawTx:', rawTx)
-          const txid = await pushTx(rawTx)
-          console.log('txid:', txid)
-          return txid
+          return rawTx
         }
       } catch (error) {
         console.log('🚀 ~ sendBtc error:', error)
         return ''
       }
     },
-    [sendBitcoin, tapRootAddress]
+    [tapRootAddress, sendBitcoin, zetaClient, recommendedFee?.halfHourFee]
   )
 
   return {
@@ -151,6 +164,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     isZeta,
     btcAddress: btcAccounts[0],
     tapRootAddress,
-    handleSendBtc
+    handleSendBtc,
+    broadcastTxn
   }
 }

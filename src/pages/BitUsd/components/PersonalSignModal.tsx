@@ -13,7 +13,8 @@ import { getTxnErrorMsg } from '@/utils/error'
 
 import { ActionButton } from './ActionButton'
 import InputBlack from './InputBlack'
-import { ProcessingModal, ProcessingType } from './Processing'
+import { ProcessingModal } from './Processing'
+import { ProcessingType } from './Processing.types'
 
 const PersonalSignModal = () => {
   const { address, blockExplorerUrl } = useUserInfo()

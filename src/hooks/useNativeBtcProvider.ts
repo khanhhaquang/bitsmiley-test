@@ -1,10 +1,10 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
-import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
-import { MempoolService } from '@/services/mempool'
+import { useMempool } from './useMempool'
 
 export const useNativeBtcProvider = () => {
+  const MempoolService = useMempool()
   const { accounts, provider, getNetwork, ...rest } = useBTCProvider()
 
   const pushTx = useCallback(
@@ -24,18 +24,11 @@ export const useNativeBtcProvider = () => {
           console.log(e)
         }
     },
-    [accounts.length, provider]
+    [MempoolService.postTransaction, accounts.length, provider]
   )
-
-  const { data: btcNetwork, refetch: getNetworkRefetch } = useQuery({
-    queryKey: ['btc-connected-network', accounts[0]],
-    queryFn: () => getNetwork()
-  })
 
   return {
     pushTx,
-    btcNetwork,
-    getNetworkRefetch,
     getNetwork,
     provider,
     accounts,

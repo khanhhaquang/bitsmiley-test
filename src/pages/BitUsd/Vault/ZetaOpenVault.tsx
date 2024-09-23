@@ -1,5 +1,7 @@
+import { isAxiosError } from 'axios'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
@@ -7,10 +9,10 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useBTCBalance } from '@/hooks/useBTCBalance'
 import { useCollaterals } from '@/hooks/useCollaterals'
+import { useMempool } from '@/hooks/useMempool'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
-import { MempoolService } from '@/services/mempool'
 import { ZetaService } from '@/services/zeta'
 import {
   deleteLocalStorage,
@@ -28,20 +30,16 @@ import {
 import { NumberInput } from '../components/NumberInput'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import {
-  ProcessingStatus,
-  TxnStep,
-  ZetaProcessing
-} from '../components/ZetaProcessing'
+import { ZetaProcessing } from '../components/ZetaProcessing'
+import { ProcessingStatus, TxnStep } from '../components/ZetaProcessing.types'
 import { formatBitUsd, formatWBtc } from '../display'
-import { useAccount } from 'wagmi'
 
 export const OpenVault: React.FC<{
   chainId: number
   collateralId: string
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
-
+  const MempoolService = useMempool()
   const { collateral } = useCollaterals(chainId, collateralId)
 
   const {
@@ -78,7 +76,7 @@ export const OpenVault: React.FC<{
   //   }
   // })
 
-  const { tapRootAddress, btcAddress, handleSendBtc, signData } = useZetaClient(
+  const { btcAddress, handleSendBtc, signData, broadcastTxn } = useZetaClient(
     chainId,
     collateralId
   )
@@ -135,7 +133,26 @@ export const OpenVault: React.FC<{
     return false
   }, [deposit, depositInputErrorMsg, mintInputErrorMsg])
 
-  const handleNext = () => {
+  const handleBroadcasting = async (rawTxn: string | null) => {
+    console.log('🚀 ~ handleBroadcasting ~ rawTxn:', rawTxn)
+    if (rawTxn) {
+      console.log('broadcasting...')
+      const btcTxn = await broadcastTxn(rawTxn)
+      if (btcTxn) {
+        setProcessingTxn(btcTxn)
+        setLocalStorage(
+          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
+          btcTxn
+        )
+      } else {
+        setProcessingStatus(ProcessingStatus.Error)
+      }
+    } else {
+      setProcessingStatus(ProcessingStatus.Error)
+    }
+  }
+
+  const handleNext = async () => {
     if (!btcAddress) {
       setBtcWalletOpen(true)
       return
@@ -149,22 +166,16 @@ export const OpenVault: React.FC<{
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
 
-    handleSendBtc(Number(deposit))
-      .then((res) => {
-        if (res) {
-          setProcessingTxn(res)
-          setLocalStorage(
-            `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
-            res
-          )
-        } else {
-          setProcessingStatus(ProcessingStatus.Error)
-        }
-      })
-      .catch((e) => {
-        console.log('handleSendBtc error:', e)
-        setProcessingStatus(ProcessingStatus.Error)
-      })
+    const rawTx = await handleSendBtc(Number(deposit))
+    if (rawTx) {
+      setLocalStorage(
+        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`,
+        rawTx
+      )
+      handleBroadcasting(rawTx)
+    } else {
+      setProcessingStatus(ProcessingStatus.Error)
+    }
   }
 
   const handleInput = (value?: string, callback?: (v: string) => void) => {
@@ -206,7 +217,6 @@ export const OpenVault: React.FC<{
           ? TxnStep.Two
           : TxnStep.One
       )
-      signData()
     }
   }, [evmAddress])
 
@@ -221,7 +231,7 @@ export const OpenVault: React.FC<{
         MempoolService.getTransaction
           .call(processingTxn)
           .then((response) => {
-            if (response?.data?.status.confirmed) {
+            if (response?.status?.confirmed) {
               setProcessingStep(TxnStep.Two)
               setLocalStorage(
                 `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`,
@@ -232,8 +242,20 @@ export const OpenVault: React.FC<{
               console.log('waiting txn confirm')
             }
           })
-          .catch(() => {
-            console.log('waiting txn')
+          .catch((e) => {
+            if (isAxiosError(e) && e.response?.status === 404) {
+              clearInterval(intervalId)
+              setProcessingTxn('')
+              deleteLocalStorage(
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
+              )
+              handleBroadcasting(
+                getLocalStorage(
+                  `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`
+                )
+              )
+            }
+            console.log('get onchain btc txn error: ', e)
           })
       }, 3000)
 
@@ -241,7 +263,13 @@ export const OpenVault: React.FC<{
         clearInterval(intervalId)
       }
     }
-  }, [processingTxn, processingStatus, processingStep])
+  }, [
+    processingTxn,
+    processingStatus,
+    processingStep,
+    MempoolService.getTransaction,
+    evmAddress
+  ])
 
   useEffect(() => {
     if (
@@ -284,7 +312,7 @@ export const OpenVault: React.FC<{
         clearInterval(intervalId)
       }
     }
-  }, [processingTxn, processingStatus, processingStep])
+  }, [processingTxn, processingStatus, processingStep, evmAddress])
 
   // useEffect(() => {
   //   if (processingStep === TxnStep.Two) {
@@ -315,9 +343,6 @@ export const OpenVault: React.FC<{
         onClose={() => setBtcWalletOpen(false)}
         isOpen={btcWalletOpen}
       />
-      <div className="mt-4 flex flex-col items-center gap-y-2 text-xs">
-        <span>To taproot address: {tapRootAddress}</span>
-      </div>
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
@@ -368,7 +393,8 @@ export const OpenVault: React.FC<{
           vault={{
             ...tryOpenVaultInfo,
             debtBitUSD: mint,
-            lockedCollateral: deposit
+            lockedCollateral: deposit,
+            collateralSymbol: deptTokenSymbol
           }}
           collateral={collateral}
           borderSvg={

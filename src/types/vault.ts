@@ -11,6 +11,8 @@ export interface IVault {
   lockedCollateral?: string
   availableToWithdraw?: string
   availableToMint?: string
+
+  collateralSymbol?: string
 }
 
 export interface IVaultFromChain {

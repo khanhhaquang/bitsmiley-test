@@ -33,13 +33,16 @@ export const formatBitUsd = (
 export const formatWBtc = (
   v?: string | number,
   withUnit = true,
-  compact: boolean = false
+  compact: boolean = false,
+  symbol = ''
 ) => {
   if (!v || !Number(v)) return DEFAULT_TEXT
   return (
     `${
       compact ? formatNumberAsCompact(v, 6) : formatNumberWithSeparator(v, 6)
-    }` + `${withUnit ? WBTC_UNIT : ''}`
+    }` +
+    `${withUnit ? WBTC_UNIT : ''}` +
+    ` ${symbol}`
   )
 }
 
@@ -77,7 +80,12 @@ export const displayVaultValues = (
   liquidationPrice: formatMoney(vault?.liquidationPrice, withUnit),
   healthFactor: formatPercentage(vault?.healthFactor, withUnit),
   debtBitUSD: formatBitUsd(vault?.debtBitUSD, withUnit),
-  lockedCollateral: formatWBtc(vault?.lockedCollateral, withUnit),
+  lockedCollateral: formatWBtc(
+    vault?.lockedCollateral,
+    vault?.collateralSymbol ? false : true,
+    undefined,
+    vault?.collateralSymbol
+  ),
   availableToWithdraw: formatWBtc(vault?.availableToWithdraw, withUnit),
   availableToMint: formatBitUsd(vault?.availableToMint, withUnit)
 })
