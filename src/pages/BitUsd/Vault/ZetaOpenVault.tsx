@@ -134,7 +134,9 @@ export const OpenVault: React.FC<{
   }, [deposit, depositInputErrorMsg, mintInputErrorMsg])
 
   const handleBroadcasting = async (rawTxn: string | null) => {
+    console.log('🚀 ~ handleBroadcasting ~ rawTxn:', rawTxn)
     if (rawTxn) {
+      console.log('broadcasting...')
       const btcTxn = await broadcastTxn(rawTxn)
       if (btcTxn) {
         setProcessingTxn(btcTxn)
@@ -244,8 +246,13 @@ export const OpenVault: React.FC<{
             if (isAxiosError(e) && e.response?.status === 404) {
               clearInterval(intervalId)
               setProcessingTxn('')
+              deleteLocalStorage(
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
+              )
               handleBroadcasting(
-                getLocalStorage(LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN)
+                getLocalStorage(
+                  `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`
+                )
               )
             }
             console.log('get onchain btc txn error: ', e)

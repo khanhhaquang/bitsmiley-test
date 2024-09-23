@@ -188,28 +188,31 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                 {status === 'error' && (
                   <div className="text-warning">Transaction Failed</div>
                 )}
-                <div>
-                  {type === ProcessingType.Success ? 'Zeta ' : 'BTC '}
-                  Transaction
-                </div>
+
                 {txnId && (
-                  <div className="break-words">
-                    {type === ProcessingType.Success ? (
-                      <a
-                        className="underline"
-                        target="_blank"
-                        href={`${blockExplorerUrl}/cc/tx/${txnId}`}>
-                        {txnId}
-                      </a>
-                    ) : (
-                      <a
-                        className="underline"
-                        target="_blank"
-                        href={`${mempoolExplorerUrl}/tx/${txnId}`}>
-                        {txnId}
-                      </a>
-                    )}
-                  </div>
+                  <>
+                    <p>
+                      {type === ProcessingType.Success ? 'Zeta ' : 'BTC '}
+                      Transaction
+                    </p>
+                    <div className="break-words">
+                      {type === ProcessingType.Success ? (
+                        <a
+                          className="underline"
+                          target="_blank"
+                          href={`${blockExplorerUrl}/cc/tx/${txnId}`}>
+                          {txnId}
+                        </a>
+                      ) : (
+                        <a
+                          className="underline"
+                          target="_blank"
+                          href={`${mempoolExplorerUrl}/tx/${txnId}`}>
+                          {txnId}
+                        </a>
+                      )}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
