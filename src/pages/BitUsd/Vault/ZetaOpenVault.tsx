@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
@@ -32,7 +33,6 @@ import { VaultTitleBlue } from '../components/VaultTitle'
 import { ZetaProcessing } from '../components/ZetaProcessing'
 import { ProcessingStatus, TxnStep } from '../components/ZetaProcessing.types'
 import { formatBitUsd, formatWBtc } from '../display'
-import { isAxiosError } from 'axios'
 
 export const OpenVault: React.FC<{
   chainId: number
