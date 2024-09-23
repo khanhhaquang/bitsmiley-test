@@ -118,6 +118,20 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     ]
   )
 
+  const broadcastTxn = useCallback(
+    async (rawTx: string) => {
+      try {
+        const btcTxn = await pushTx(rawTx)
+        console.log('btcTxn:', btcTxn)
+        return btcTxn ?? ''
+      } catch (error) {
+        console.log('🚀 ~ broadcastTxn ~ error:', error)
+        return ''
+      }
+    },
+    [pushTx]
+  )
+
   const handleSendBtc = useCallback(
     async (amount: number) => {
       try {
@@ -135,22 +149,14 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           )
           const rawTx = buffer.toString('hex')
           console.log('rawTx:', rawTx)
-          const txid = await pushTx(rawTx)
-          console.log('txid:', txid)
-          return txid
+          return rawTx
         }
       } catch (error) {
         console.log('🚀 ~ sendBtc error:', error)
         return ''
       }
     },
-    [
-      pushTx,
-      sendBitcoin,
-      recommendedFee?.economyFee,
-      tapRootAddress,
-      zetaClient
-    ]
+    [sendBitcoin, recommendedFee?.economyFee, tapRootAddress, zetaClient]
   )
 
   return {
@@ -158,6 +164,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     isZeta,
     btcAddress: btcAccounts[0],
     tapRootAddress,
-    handleSendBtc
+    handleSendBtc,
+    broadcastTxn
   }
 }

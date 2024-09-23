@@ -35,7 +35,8 @@ export const MempoolService = (axiosInstance: AxiosInstance) => ({
   },
   getTransaction: {
     key: 'mempool.getTransaction',
-    call: (txId: string) => axiosInstance.get<TxResponse>(`/tx/${txId}`)
+    call: (txId: string) =>
+      axiosInstance.get<TxResponse>(`/tx/${txId}`).then((data) => data.data)
   },
   postTransaction: {
     key: 'mempool.broadcastTx',

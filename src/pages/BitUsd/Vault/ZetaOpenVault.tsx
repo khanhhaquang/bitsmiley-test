@@ -32,6 +32,7 @@ import { VaultTitleBlue } from '../components/VaultTitle'
 import { ZetaProcessing } from '../components/ZetaProcessing'
 import { ProcessingStatus, TxnStep } from '../components/ZetaProcessing.types'
 import { formatBitUsd, formatWBtc } from '../display'
+import { isAxiosError } from 'axios'
 
 export const OpenVault: React.FC<{
   chainId: number
@@ -75,7 +76,7 @@ export const OpenVault: React.FC<{
   //   }
   // })
 
-  const { btcAddress, handleSendBtc, signData } = useZetaClient(
+  const { btcAddress, handleSendBtc, signData, broadcastTxn } = useZetaClient(
     chainId,
     collateralId
   )
@@ -132,7 +133,24 @@ export const OpenVault: React.FC<{
     return false
   }, [deposit, depositInputErrorMsg, mintInputErrorMsg])
 
-  const handleNext = () => {
+  const handleBroadcasting = async (rawTxn: string | null) => {
+    if (rawTxn) {
+      const btcTxn = await broadcastTxn(rawTxn)
+      if (btcTxn) {
+        setProcessingTxn(btcTxn)
+        setLocalStorage(
+          `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
+          btcTxn
+        )
+      } else {
+        setProcessingStatus(ProcessingStatus.Error)
+      }
+    } else {
+      setProcessingStatus(ProcessingStatus.Error)
+    }
+  }
+
+  const handleNext = async () => {
     if (!btcAddress) {
       setBtcWalletOpen(true)
       return
@@ -146,22 +164,16 @@ export const OpenVault: React.FC<{
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
 
-    handleSendBtc(Number(deposit))
-      .then((res) => {
-        if (res) {
-          setProcessingTxn(res)
-          setLocalStorage(
-            `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
-            res
-          )
-        } else {
-          setProcessingStatus(ProcessingStatus.Error)
-        }
-      })
-      .catch((e) => {
-        console.log('handleSendBtc error:', e)
-        setProcessingStatus(ProcessingStatus.Error)
-      })
+    const rawTx = await handleSendBtc(Number(deposit))
+    if (rawTx) {
+      setLocalStorage(
+        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`,
+        rawTx
+      )
+      handleBroadcasting(rawTx)
+    } else {
+      setProcessingStatus(ProcessingStatus.Error)
+    }
   }
 
   const handleInput = (value?: string, callback?: (v: string) => void) => {
@@ -217,7 +229,7 @@ export const OpenVault: React.FC<{
         MempoolService.getTransaction
           .call(processingTxn)
           .then((response) => {
-            if (response?.data?.status.confirmed) {
+            if (response?.status.confirmed) {
               setProcessingStep(TxnStep.Two)
               setLocalStorage(
                 `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`,
@@ -228,7 +240,14 @@ export const OpenVault: React.FC<{
               console.log('waiting txn confirm')
             }
           })
-          .catch(() => {
+          .catch((e) => {
+            if (isAxiosError(e) && e.response?.status === 404) {
+              clearInterval(intervalId)
+              setProcessingTxn('')
+              handleBroadcasting(
+                getLocalStorage(LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN)
+              )
+            }
             console.log('waiting txn')
           })
       }, 3000)

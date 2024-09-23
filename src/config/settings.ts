@@ -10,6 +10,7 @@ export const LOCAL_STORAGE_KEYS = {
   TXIDS: 'txids',
   LOGIN_TYPE: 'login_type',
   BTC_LOGIN_TYPE: 'native_btc_login_type',
-  ZETA_PROCESSING_STEP: 'zeta_prcessing_step',
-  ZETA_PROCESSING_TXN: 'zeta_prcessing_txn'
+  ZETA_PROCESSING_STEP: 'zeta_processing_step',
+  ZETA_PROCESSING_TXN: 'zeta_processing_txn',
+  ZETA_PROCESSING_RAW_BTC_TXN: 'zeta_processing_btc_raw_txn'
 }
