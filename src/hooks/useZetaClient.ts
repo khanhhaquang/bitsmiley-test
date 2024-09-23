@@ -60,6 +60,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         evmAddress,
         signature
       )
+      console.log('🚀 ~ callData ~ callData:', callData)
       return callData
     }
 
@@ -67,10 +68,10 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   }, [callDataInstance, collateralId, evmAddress, signature])
 
   const tapRootAddress = useMemo(() => {
-    if (callData && zetaConnectorAddress) {
-      return zetaClient.call(zetaConnectorAddress, Buffer.from(callData, 'hex'))
+    if (callData) {
+      return zetaClient.call(Buffer.from(callData, 'hex'))
     }
-  }, [callData, zetaConnectorAddress, zetaClient])
+  }, [callData, zetaClient])
 
   const signData = useCallback(
     (onSuccessCallback?: () => void) => {
