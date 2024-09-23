@@ -50,7 +50,7 @@
     "tailwindcss-animate": "^1.0.7",
     "viem": "^2.9.15",
     "wagmi": "^2.12.12",
-    "zeta-btc-client": "^0.0.4"
+    "zeta-btc-client": "^0.0.5"
   },
   "devDependencies": {
     "@types/fontfaceobserver": "^2.1.3",

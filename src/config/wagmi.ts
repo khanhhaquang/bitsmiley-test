@@ -145,7 +145,7 @@ export const zetaMainnet = {
       url: 'https://explorer.zetachain.com'
     }
   },
-  testnet: true
+  testnet: false
 } as const satisfies Chain
 
 //TODO: PARTICLE DOES NOT SUPPORT THESE CHAINS YET

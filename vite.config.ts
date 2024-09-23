@@ -8,44 +8,46 @@ import wasm from 'vite-plugin-wasm'
 import path from 'path'
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      'sats-connect': path.resolve(
-        __dirname,
-        './node_modules/@sats-connect/core'
-      )
-    }
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        chunkFileNames: 'static/js/[name]-[hash].js',
-        entryFileNames: 'static/js/[name]-[hash].js',
-        assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+export default ({ mode }) => {
+  return defineConfig({
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        'sats-connect': path.resolve(
+          __dirname,
+          './node_modules/@sats-connect/core'
+        )
       }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'static/js/[name]-[hash].js',
+          entryFileNames: 'static/js/[name]-[hash].js',
+          assetFileNames: 'static/[ext]/[name]-[hash].[ext]'
+        }
+      }
+    },
+    define: {
+      global: 'globalThis'
+    },
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : []
+    },
+    plugins: [
+      wasm(),
+      topLevelAwait(),
+      nodePolyfills({
+        include: ['process', 'stream']
+      }),
+      svgr({ include: '**/*.svg' }),
+      react()
+    ],
+    worker: {
+      plugins: () => [wasm(), topLevelAwait()]
+    },
+    optimizeDeps: {
+      exclude: ['tiny-secp256k1']
     }
-  },
-  define: {
-    global: 'globalThis'
-  },
-  esbuild: {
-    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
-  },
-  plugins: [
-    wasm(),
-    topLevelAwait(),
-    nodePolyfills({
-      include: ['process', 'stream']
-    }),
-    svgr({ include: '**/*.svg' }),
-    react()
-  ],
-  worker: {
-    plugins: () => [wasm(), topLevelAwait()]
-  },
-  optimizeDeps: {
-    exclude: ['tiny-secp256k1']
-  }
-})
+  })
+}
