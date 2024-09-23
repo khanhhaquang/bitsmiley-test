@@ -17,7 +17,7 @@ export const useMempool = () => {
 
   const caller = useMemo(() => {
     const instance = axios.create({
-      url: mempoolDomain
+      baseURL: mempoolDomain
     })
     backOff(instance)
     return instance
