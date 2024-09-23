@@ -28,7 +28,10 @@ interface TxStatus {
 export const MempoolService = (axiosInstance: AxiosInstance) => ({
   getRecommendedFees: {
     key: 'mempool.getRecommendedFees',
-    call: () => axiosInstance.get<RecommendedFees>('/v1/fees/recommended')
+    call: () =>
+      axiosInstance
+        .get<RecommendedFees>('/v1/fees/recommended')
+        .then((data) => data.data)
   },
   getTransaction: {
     key: 'mempool.getTransaction',

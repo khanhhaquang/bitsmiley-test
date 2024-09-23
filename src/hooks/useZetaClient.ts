@@ -6,6 +6,7 @@ import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
 import { isZetaChain } from '@/utils/chain'
 import { btcToSats } from '@/utils/formatter'
 
+import { useBtcFee } from './useBtcFee'
 import { useNativeBtcProvider } from './useNativeBtcProvider'
 import { useProjectInfo } from './useProjectInfo'
 
@@ -16,6 +17,7 @@ export interface VerifyInfo {
 }
 
 export const useZetaClient = (chain: number, collateralId: string) => {
+  const { recommendedFee } = useBtcFee()
   const { address: evmAddress } = useAccount()
   const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
   const { projectInfo } = useProjectInfo()
@@ -126,11 +128,10 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             satsAmount
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
-          // const feesRecommended = await MempoolService.getRecommendedFees.call()
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
             satsAmount,
-            2 //feesRecommended.data.economyFee
+            recommendedFee?.economyFee || 2
           )
           const rawTx = buffer.toString('hex')
           console.log('rawTx:', rawTx)
@@ -143,7 +144,13 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         return ''
       }
     },
-    [pushTx, sendBitcoin, tapRootAddress, zetaClient]
+    [
+      pushTx,
+      sendBitcoin,
+      recommendedFee?.economyFee,
+      tapRootAddress,
+      zetaClient
+    ]
   )
 
   return {
