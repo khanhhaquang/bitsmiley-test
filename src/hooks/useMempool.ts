@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { axios, backOff } from '@/config/axios'
+import { axios } from '@/config/axios'
 import { MempoolService } from '@/services/mempool'
 
 import { useBtcNetwork } from './useBtcNetwork'
@@ -16,11 +16,9 @@ export const useMempool = () => {
   }, [btcNetwork])
 
   const caller = useMemo(() => {
-    const instance = axios.create({
+    return axios.create({
       baseURL: mempoolDomain
     })
-    backOff(instance)
-    return instance
   }, [mempoolDomain])
 
   const service = useMemo(() => MempoolService(caller), [caller])

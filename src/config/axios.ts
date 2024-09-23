@@ -14,9 +14,6 @@ const axiosInstance = axios.create({
   }
 })
 
-backOff(axios)
-backOff(axiosInstance)
-
 function backOff(ax: AxiosInstance | AxiosStatic) {
   axiosRetry(ax, {
     retries: 4,
@@ -41,4 +38,7 @@ function backOff(ax: AxiosInstance | AxiosStatic) {
   })
 }
 
-export { backOff, axios, axiosInstance }
+backOff(axios)
+backOff(axiosInstance)
+
+export { axios, axiosInstance }
