@@ -160,10 +160,10 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
 
   useEffect(() => {
     if (open) {
-      console.log('onOpen dismiss')
       dismiss()
     }
-  }, [dismiss, open])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
 
   return (
     <>

@@ -16,7 +16,7 @@ interface TxResponse {
   size: number
   weight: number
   fee: number
-  status: TxStatus
+  status?: TxStatus
 }
 interface TxStatus {
   confirmed: boolean

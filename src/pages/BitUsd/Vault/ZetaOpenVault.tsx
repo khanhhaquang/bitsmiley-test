@@ -229,7 +229,7 @@ export const OpenVault: React.FC<{
         MempoolService.getTransaction
           .call(processingTxn)
           .then((response) => {
-            if (response?.status.confirmed) {
+            if (response?.status?.confirmed) {
               setProcessingStep(TxnStep.Two)
               setLocalStorage(
                 `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`,
@@ -248,7 +248,7 @@ export const OpenVault: React.FC<{
                 getLocalStorage(LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN)
               )
             }
-            console.log('waiting txn')
+            console.log('get onchain btc txn error: ', e)
           })
       }, 3000)
 
