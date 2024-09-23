@@ -75,7 +75,7 @@ export const OpenVault: React.FC<{
   //   }
   // })
 
-  const { tapRootAddress, btcAddress, handleSendBtc, signData } = useZetaClient(
+  const { btcAddress, handleSendBtc, signData } = useZetaClient(
     chainId,
     collateralId
   )
@@ -317,9 +317,6 @@ export const OpenVault: React.FC<{
         onClose={() => setBtcWalletOpen(false)}
         isOpen={btcWalletOpen}
       />
-      <div className="mt-4 flex flex-col items-center gap-y-2 text-xs">
-        <span>To taproot address: {tapRootAddress}</span>
-      </div>
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
