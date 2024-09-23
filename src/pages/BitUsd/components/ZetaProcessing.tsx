@@ -77,7 +77,13 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   const { blockExplorerUrl } = useUserInfo()
   const { btcNetwork } = useBtcNetwork()
 
-  const mempoolExplorerUrl = `https://mempool.space/zh/${btcNetwork}`
+  const mempoolExplorerUrl = useMemo(
+    () =>
+      btcNetwork === 'livenet'
+        ? 'https://mempool.space'
+        : 'https://mempool.space/testnet',
+    [btcNetwork]
+  )
 
   const type = useMemo(() => {
     if (step === TxnStep.Two && status === ProcessingStatus.Success) {
