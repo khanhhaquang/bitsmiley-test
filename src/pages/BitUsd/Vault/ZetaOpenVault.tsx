@@ -1,7 +1,8 @@
 import { isAxiosError } from 'axios'
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAccount } from 'wagmi'
+import { Hash, isHash } from 'viem'
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
@@ -54,10 +55,9 @@ export const OpenVault: React.FC<{
   })
 
   const { address: evmAddress } = useAccount()
-
   const { balanceAsBtc: btcBalance } = useBTCBalance()
   const wbtcPrice = useTokenPrice()
-  const [mint, setMint] = useState('')
+
   const [deposit, setDeposit] = useState('')
 
   const [showProcessing, setShowProcessing] = useState(false)
@@ -66,20 +66,18 @@ export const OpenVault: React.FC<{
     ProcessingStatus.Processing
   )
   const [processingTxn, setProcessingTxn] = useState('')
-  // const { data: txnReceipt } = useWaitForTransactionReceipt({
-  //   hash: zetaTxn as Hash,
-  //   query: {
-  //     enabled:
-  //       isHash(zetaTxn) &&
-  //       processingStep === TxnStep.Two &&
-  //       processingStatus === ProcessingStatus.Processing
-  //   }
-  // })
+  const { data: zetaTxnReceipt } = useWaitForTransactionReceipt({
+    hash: processingTxn as Hash,
+    query: {
+      enabled:
+        isHash(processingTxn) &&
+        processingStep === TxnStep.Two &&
+        processingStatus === ProcessingStatus.Processing
+    }
+  })
 
-  const { btcAddress, handleSendBtc, signData, broadcastTxn } = useZetaClient(
-    chainId,
-    collateralId
-  )
+  const { btcAddress, mint, setMint, handleSendBtc, signData, broadcastTxn } =
+    useZetaClient(chainId, collateralId)
 
   const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
 
@@ -126,12 +124,12 @@ export const OpenVault: React.FC<{
 
   const isNextButtonDisabled = useMemo(() => {
     if (!deposit) return true
-
     if (depositInputErrorMsg) return true
     if (mintInputErrorMsg) return true
+    if (processingTxn) return true
 
     return false
-  }, [deposit, depositInputErrorMsg, mintInputErrorMsg])
+  }, [deposit, depositInputErrorMsg, mintInputErrorMsg, processingTxn])
 
   const handleBroadcasting = async (rawTxn: string | null) => {
     console.log('🚀 ~ handleBroadcasting ~ rawTxn:', rawTxn)
@@ -263,6 +261,7 @@ export const OpenVault: React.FC<{
         clearInterval(intervalId)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     processingTxn,
     processingStatus,
@@ -291,14 +290,6 @@ export const OpenVault: React.FC<{
                 res?.data?.inboundHashToCctx.cctx_index[0]
               )
               setProcessingTxn(res?.data?.inboundHashToCctx.cctx_index[0])
-              setProcessingStatus(ProcessingStatus.Success)
-              setShowProcessing(true)
-              deleteLocalStorage(
-                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
-              )
-              deleteLocalStorage(
-                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`
-              )
             } else {
               console.log('waiting txn inbound_hash')
             }
@@ -314,17 +305,25 @@ export const OpenVault: React.FC<{
     }
   }, [processingTxn, processingStatus, processingStep, evmAddress])
 
-  // useEffect(() => {
-  //   if (processingStep === TxnStep.Two) {
-  //     console.log('txnReceipt: ', txnReceipt?.status)
-  //     if (txnReceipt?.status === 'success') {
-  //       setProcessingStatus(ProcessingStatus.Success)
-  //     }
-  //     if (txnReceipt?.status === 'reverted') {
-  //       setProcessingStatus(ProcessingStatus.Error)
-  //     }
-  //   }
-  // }, [txnReceipt, processingStep])
+  useEffect(() => {
+    if (processingStep === TxnStep.Two && zetaTxnReceipt?.status) {
+      setShowProcessing(true)
+      deleteLocalStorage(
+        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
+      )
+      deleteLocalStorage(
+        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`
+      )
+
+      console.log('zeta txnReceipt: ', zetaTxnReceipt?.status)
+      if (zetaTxnReceipt?.status === 'success') {
+        setProcessingStatus(ProcessingStatus.Success)
+      }
+      if (zetaTxnReceipt?.status === 'reverted') {
+        setProcessingStatus(ProcessingStatus.Error)
+      }
+    }
+  }, [zetaTxnReceipt, processingStep, evmAddress])
 
   return (
     <div className="size-full overflow-y-auto pb-12">
