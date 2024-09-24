@@ -97,10 +97,11 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   }, [step, status])
 
   const actionButtonText = useMemo(() => {
-    if (type === ProcessingType.Success || type === ProcessingType.Error) {
-      return 'Ok'
+    if (type === ProcessingType.Processing) {
+      return undefined
     }
-    return undefined
+
+    return 'OK'
   }, [type])
 
   const stepOneStatus = useMemo(() => {
@@ -127,6 +128,11 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     if (stepTwoStatus === ProcessingStatus.Error) {
       return 'border-warning'
     }
+
+    if (stepTwoStatus === ProcessingStatus.NoResult) {
+      return 'border-orange-500'
+    }
+
     return 'border-white/50'
   }, [stepTwoStatus])
 
@@ -192,16 +198,19 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                 <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
               </div>
               <div className="flex w-[380px] flex-col gap-2">
-                {status === 'error' && (
+                {status === ProcessingStatus.Error && (
                   <div className="text-warning">Transaction Failed</div>
+                )}
+
+                {status === ProcessingStatus.NoResult && (
+                  <div className="text-orange-500">
+                    No result, please check on-chain
+                  </div>
                 )}
 
                 {txn && (
                   <>
-                    <p>
-                      {txnType}
-                      Transaction
-                    </p>
+                    <p>{txnType} Transaction</p>
                     <div className="break-words">
                       {type === ProcessingType.Success ? (
                         <a

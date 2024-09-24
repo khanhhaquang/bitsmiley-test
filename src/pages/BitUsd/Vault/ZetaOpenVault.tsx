@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios'
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Hash, isHash } from 'viem'
 import { useAccount, useWaitForTransactionReceipt } from 'wagmi'
@@ -66,10 +66,10 @@ export const OpenVault: React.FC<{
     ProcessingStatus.Processing
   )
   const [processingTxn, setProcessingTxn] = useState('')
+
   const { data: zetaTxnReceipt } = useWaitForTransactionReceipt({
     hash: processingTxn as Hash,
     query: {
-      retryDelay: 3000,
       enabled:
         isHash(processingTxn) &&
         processingStep === TxnStep.Two &&
@@ -151,17 +151,28 @@ export const OpenVault: React.FC<{
     }
   }
 
+  const clearTxnCache = useCallback(() => {
+    deleteLocalStorage(
+      `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
+    )
+    deleteLocalStorage(
+      `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`
+    )
+    deleteLocalStorage(
+      `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`
+    )
+  }, [evmAddress])
+
   const handleNext = async () => {
     if (!btcAddress) {
       setBtcWalletOpen(true)
       return
     }
-    setShowProcessing(true)
     //reset status
     setProcessingTxn('')
-    deleteLocalStorage(
-      `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
-    )
+    clearTxnCache()
+
+    setShowProcessing(true)
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
 
@@ -204,18 +215,23 @@ export const OpenVault: React.FC<{
 
   useEffect(() => {
     if (evmAddress) {
-      setProcessingTxn(
+      const cachedTxn =
         getLocalStorage(
           `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
         ) ?? ''
-      )
-      setProcessingStep(
+
+      const cachedStep =
         getLocalStorage(
           `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`
         ) === '2'
           ? TxnStep.Two
           : TxnStep.One
-      )
+      setProcessingTxn(cachedTxn)
+      setProcessingStep(cachedStep)
+
+      if (cachedTxn) {
+        setShowProcessing(true)
+      }
     }
   }, [evmAddress])
 
@@ -311,26 +327,28 @@ export const OpenVault: React.FC<{
   }, [processingTxn, processingStatus, processingStep, evmAddress])
 
   useEffect(() => {
-    console.log('🚀 ~ useEffect ~ zetaTxnReceipt:', zetaTxnReceipt)
+    if (processingStep === TxnStep.Two) {
+      let noResultTimer = null
+      if (zetaTxnReceipt?.status) {
+        if (noResultTimer) clearTimeout(noResultTimer)
+        setShowProcessing(true)
+        clearTxnCache()
 
-    if (processingStep === TxnStep.Two && zetaTxnReceipt?.status) {
-      setShowProcessing(true)
-      deleteLocalStorage(
-        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`
-      )
-      deleteLocalStorage(
-        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`
-      )
-
-      console.log('zeta txnReceipt: ', zetaTxnReceipt?.status)
-      if (zetaTxnReceipt?.status === 'success') {
-        setProcessingStatus(ProcessingStatus.Success)
-      }
-      if (zetaTxnReceipt?.status === 'reverted') {
-        setProcessingStatus(ProcessingStatus.Error)
+        if (zetaTxnReceipt?.status === 'success') {
+          setProcessingStatus(ProcessingStatus.Success)
+        }
+        if (zetaTxnReceipt?.status === 'reverted') {
+          setProcessingStatus(ProcessingStatus.Error)
+        }
+      } else {
+        noResultTimer = setTimeout(() => {
+          setShowProcessing(true)
+          clearTxnCache()
+          setProcessingStatus(ProcessingStatus.NoResult)
+        }, 10000)
       }
     }
-  }, [zetaTxnReceipt, processingStep, evmAddress])
+  }, [zetaTxnReceipt, processingStep, clearTxnCache])
 
   return (
     <div className="size-full overflow-y-auto pb-12">
