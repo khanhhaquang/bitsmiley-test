@@ -1,7 +1,4 @@
-import { axios } from '@/config/axios'
-
-const ZETA_URL =
-  'https://zetachain-athens.blockpi.network/lcd/v1/public/zeta-chain/crosschain/inboundHashToCctx'
+import { AxiosInstance } from 'axios'
 
 interface CctxResponse {
   inboundHashToCctx: Cctx
@@ -11,9 +8,12 @@ interface Cctx {
   cctx_index: string[]
 }
 
-export const ZetaService = {
+export const ZetaService = (axiosInstance: AxiosInstance) => ({
   inboundHashToCctx: {
     key: 'zeta.inboundHashToCctx',
-    call: (hash: string) => axios.get<CctxResponse>(`${ZETA_URL}/${hash}`)
+    call: (hash: string) =>
+      axiosInstance.get<CctxResponse>(
+        `/zeta-chain/crosschain/inTxHashToCctx/${hash}`
+      )
   }
-}
+})

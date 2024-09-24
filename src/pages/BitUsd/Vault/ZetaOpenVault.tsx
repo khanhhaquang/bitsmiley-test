@@ -14,7 +14,7 @@ import { useMempool } from '@/hooks/useMempool'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
-import { ZetaService } from '@/services/zeta'
+import { useZetaService } from '@/hooks/useZetaService'
 import {
   deleteLocalStorage,
   getLocalStorage,
@@ -40,6 +40,7 @@ export const OpenVault: React.FC<{
   collateralId: string
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
+  const ZetaService = useZetaService()
   const MempoolService = useMempool()
   const { collateral } = useCollaterals(chainId, collateralId)
 
