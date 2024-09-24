@@ -192,7 +192,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                 {txnId && (
                   <>
                     <p>
-                      {type === ProcessingType.Success ? 'Zeta ' : 'BTC '}
+                      {step === TxnStep.Two ? 'ZETA ' : 'BTC '}
                       Transaction
                     </p>
                     <div className="break-words">

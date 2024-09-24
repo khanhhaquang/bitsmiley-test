@@ -69,6 +69,7 @@ export const OpenVault: React.FC<{
   const { data: zetaTxnReceipt } = useWaitForTransactionReceipt({
     hash: processingTxn as Hash,
     query: {
+      retryDelay: 3000,
       enabled:
         isHash(processingTxn) &&
         processingStep === TxnStep.Two &&
@@ -272,7 +273,7 @@ export const OpenVault: React.FC<{
 
   useEffect(() => {
     if (
-      processingTxn &&
+      !isHash(processingTxn) &&
       processingStep === TxnStep.Two &&
       processingStatus === ProcessingStatus.Processing
     ) {
@@ -287,6 +288,10 @@ export const OpenVault: React.FC<{
             ) {
               console.log(
                 'zetaTxn:',
+                res?.data?.inboundHashToCctx.cctx_index[0]
+              )
+              setLocalStorage(
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
                 res?.data?.inboundHashToCctx.cctx_index[0]
               )
               setProcessingTxn(res?.data?.inboundHashToCctx.cctx_index[0])
@@ -306,6 +311,8 @@ export const OpenVault: React.FC<{
   }, [processingTxn, processingStatus, processingStep, evmAddress])
 
   useEffect(() => {
+    console.log('🚀 ~ useEffect ~ zetaTxnReceipt:', zetaTxnReceipt)
+
     if (processingStep === TxnStep.Two && zetaTxnReceipt?.status) {
       setShowProcessing(true)
       deleteLocalStorage(
