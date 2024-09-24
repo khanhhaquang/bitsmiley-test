@@ -327,7 +327,7 @@ export const OpenVault: React.FC<{
   }, [processingTxn, processingStatus, processingStep, evmAddress])
 
   useEffect(() => {
-    if (processingStep === TxnStep.Two) {
+    if (processingStep === TxnStep.Two && isHash(processingTxn)) {
       let noResultTimer = null
       if (zetaTxnReceipt?.status) {
         if (noResultTimer) clearTimeout(noResultTimer)
@@ -348,7 +348,7 @@ export const OpenVault: React.FC<{
         }, 10000)
       }
     }
-  }, [zetaTxnReceipt, processingStep, clearTxnCache])
+  }, [zetaTxnReceipt, processingStep, processingTxn, clearTxnCache])
 
   return (
     <div className="size-full overflow-y-auto pb-12">
