@@ -325,7 +325,13 @@ export const OpenVault: React.FC<{
         clearInterval(intervalId)
       }
     }
-  }, [processingTxn, processingStatus, processingStep, evmAddress])
+  }, [
+    processingTxn,
+    processingStatus,
+    processingStep,
+    evmAddress,
+    ZetaService.inboundHashToCctx
+  ])
 
   useEffect(() => {
     if (processingStep === TxnStep.Two && isHash(processingTxn)) {
