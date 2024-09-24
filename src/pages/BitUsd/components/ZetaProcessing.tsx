@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react'
+import { isHash } from 'viem'
 
 import { CheckGreenIcon, CrossRedIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
@@ -15,7 +16,7 @@ import { ProcessingStatus, TxnStep } from './ZetaProcessing.types'
 type ZetaProcessingProps = {
   status: ProcessingStatus
   step: TxnStep
-  txnId?: string
+  txn?: string
   open: boolean
   onOpen: () => void
   onClose: () => void
@@ -68,7 +69,7 @@ const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
 export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   step,
   status,
-  txnId,
+  txn,
   open,
   onOpen,
   onClose
@@ -128,6 +129,12 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     }
     return 'border-white/50'
   }, [stepTwoStatus])
+
+  const txnType = useMemo(() => {
+    if (!txn) return ''
+    if (isHash(txn)) return `ZETA`
+    return 'BTC'
+  }, [txn])
 
   const onClickRightButton = () => {
     onClose()
@@ -189,10 +196,10 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                   <div className="text-warning">Transaction Failed</div>
                 )}
 
-                {txnId && (
+                {txn && (
                   <>
                     <p>
-                      {step === TxnStep.Two ? 'ZETA ' : 'BTC '}
+                      {txnType}
                       Transaction
                     </p>
                     <div className="break-words">
@@ -200,15 +207,15 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                         <a
                           className="underline"
                           target="_blank"
-                          href={`${blockExplorerUrl}/cc/tx/${txnId}`}>
-                          {txnId}
+                          href={`${blockExplorerUrl}/cc/tx/${txn}`}>
+                          {txn}
                         </a>
                       ) : (
                         <a
                           className="underline"
                           target="_blank"
-                          href={`${mempoolExplorerUrl}/tx/${txnId}`}>
-                          {txnId}
+                          href={`${mempoolExplorerUrl}/tx/${txn}`}>
+                          {txn}
                         </a>
                       )}
                     </div>

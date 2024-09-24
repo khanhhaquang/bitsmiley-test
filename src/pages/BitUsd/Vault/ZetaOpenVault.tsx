@@ -337,7 +337,7 @@ export const OpenVault: React.FC<{
       <ZetaProcessing
         status={processingStatus}
         step={processingStep}
-        txnId={processingTxn}
+        txn={processingTxn}
         open={showProcessing}
         onOpen={() => setShowProcessing(true)}
         onClose={() => setShowProcessing(false)}></ZetaProcessing>
