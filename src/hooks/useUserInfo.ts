@@ -1,7 +1,10 @@
-import { useBTCProvider } from '@particle-network/btc-connectkit'
+import {
+  useBTCProvider,
+  useETHProvider
+} from '@particle-network/btc-connectkit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { Address } from 'viem'
+import { Address, isAddressEqual } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { customChains } from '@/config/wagmi'
@@ -9,6 +12,7 @@ import { IFeaturesEnabled, UserService } from '@/services/user'
 
 export const useUserInfo = () => {
   const { accounts: btcAccounts } = useBTCProvider()
+  const { account: aaEthAccount } = useETHProvider()
   const {
     address: evmAddress,
     chainId: evmChainId,
@@ -40,7 +44,18 @@ export const useUserInfo = () => {
     [evmChain]
   )
 
-  const isLoading = isConnecting || isReconnecting || isLoadingEnabledFeatures
+  const isLoading = useMemo(
+    () => isConnecting || isReconnecting || isLoadingEnabledFeatures,
+    [isConnecting, isLoadingEnabledFeatures, isReconnecting]
+  )
+
+  const isConnectedWithAA = useMemo(() => {
+    return (
+      !!aaEthAccount &&
+      !!evmAddress &&
+      isAddressEqual(aaEthAccount as Address, evmAddress as Address)
+    )
+  }, [aaEthAccount, evmAddress])
 
   //TODO: THIS IS TEMPORARY MOCK FOR TEST, REMOVE THIS AFTER TESTING DONE
   const enabledFeatures: IFeaturesEnabled = useMemo(
@@ -53,7 +68,7 @@ export const useUserInfo = () => {
   )
 
   return {
-    isConnectedWithAA: !!(btcAccounts[0] as Address),
+    isConnectedWithAA,
     isConnected: isEvmConnected,
     address: evmAddress,
     addressForDisplay,

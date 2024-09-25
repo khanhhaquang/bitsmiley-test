@@ -122,6 +122,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             evmAddress,
             signature
           )
+          console.log('🚀 ~ openVault callData:', callData)
           const satsAmount = btcToSats(btcAmount)
           const commitTxn = await sendBitcoin(
             zetaClient.call(Buffer.from(callData, 'hex')).toString(),
@@ -162,6 +163,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             mint || '0',
             signature
           )
+          console.log('🚀 ~ mint callData:', callData)
           const satsAmount = btcToSats(btcAmount)
           const commitTxn = await sendBitcoin(
             zetaClient.call(Buffer.from(callData, 'hex')).toString(),

@@ -6,6 +6,7 @@ import { useAccount } from 'wagmi'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useMempool } from '@/hooks/useMempool'
 import { useZetaClient } from '@/hooks/useZetaClient'
+import { useZetaService } from '@/hooks/useZetaService'
 import { useGetCctx } from '@/queries/zeta'
 import {
   deleteLocalStorage,
@@ -18,7 +19,7 @@ import { ProcessingStatus, TxnStep } from '../components/ZetaProcessing.types'
 export const useZetaProcessing = (chainId: number, collateralId: string) => {
   const { address: evmAddress } = useAccount()
   const MempoolService = useMempool()
-
+  const ZetaService = useZetaService()
   const [showProcessing, setShowProcessing] = useState(false)
   const [processingStep, setProcessingStep] = useState(TxnStep.One)
   const [processingStatus, setProcessingStatus] = useState(
@@ -167,6 +168,46 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
     processingStep,
     MempoolService.getTransaction,
     evmAddress
+  ])
+
+  useEffect(() => {
+    if (
+      !isHash(processingTxn) &&
+      processingStep === TxnStep.Two &&
+      processingStatus === ProcessingStatus.Processing
+    ) {
+      setShowProcessing(true)
+      const intervalId = setInterval(() => {
+        ZetaService.inboundHashToCctx
+          .call(processingTxn)
+          .then((res) => {
+            const cctxArr = res?.inboundHashToCctx?.cctx_index
+            if (cctxArr && cctxArr.length > 0) {
+              console.log('zetaTxn:', cctxArr[0])
+              setLocalStorage(
+                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
+                cctxArr[0]
+              )
+              setProcessingTxn(cctxArr[0])
+            } else {
+              console.log('waiting txn inbound_hash')
+            }
+          })
+          .catch(() => {
+            console.log('waiting txn')
+          })
+      }, 3000)
+
+      return () => {
+        clearInterval(intervalId)
+      }
+    }
+  }, [
+    processingTxn,
+    processingStatus,
+    processingStep,
+    evmAddress,
+    ZetaService.inboundHashToCctx
   ])
 
   useEffect(() => {

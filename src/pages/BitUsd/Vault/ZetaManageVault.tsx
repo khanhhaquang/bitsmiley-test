@@ -73,7 +73,6 @@ export const ZetaManageVault: React.FC<{
     bitUsdAllowance,
     approvalTxnStatus,
     approvalVault,
-    mintFromBtc,
     repayToBtc,
     mintFromBtcTxnStatus,
     repayToBtcTxnStatus,
@@ -102,7 +101,7 @@ export const ZetaManageVault: React.FC<{
     collateral?.collateral?.tokenAddress
   )
   const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
-  const { sign, btcAddress } = useZetaClient(chainId, collateralId)
+  const { sign, btcAddress, mint } = useZetaClient(chainId, collateralId)
 
   const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
 
@@ -248,7 +247,7 @@ export const ZetaManageVault: React.FC<{
     }
 
     if (isMintFromBtc) {
-      mintFromBtc(Number(depositBtc), mintBitUsd)
+      mint(Number(depositBtc), mintBitUsd)
     } else {
       repayToBtc(withdrawBtc, repayBitUsd, vault?.debtBitUSD)
     }
