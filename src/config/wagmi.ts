@@ -118,7 +118,7 @@ export const zetaTestnet = {
   nativeCurrency: { name: 'ZETA', symbol: 'ZETA', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://zeta-chain-testnet.drpc.org']
+      http: ['https://zetachain-athens-evm.blockpi.network/v1/rpc/public']
     }
   },
   blockExplorers: {
@@ -136,7 +136,7 @@ export const zetaMainnet = {
   nativeCurrency: { name: 'ZETA', symbol: 'ZETA', decimals: 18 },
   rpcUrls: {
     default: {
-      http: ['https://zeta-chain.drpc.org']
+      http: ['https://zetachain-mainnet.public.blastapi.io']
     }
   },
   blockExplorers: {

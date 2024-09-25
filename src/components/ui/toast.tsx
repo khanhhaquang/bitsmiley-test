@@ -32,7 +32,8 @@ const toastVariants = cva(
         destructive: 'border-white/50 bg-black/75 text-sm text-white',
         success: 'border-green/50 bg-black/75 text-sm text-green/70',
         processing: 'border-white/50 bg-black/75 text-sm text-white',
-        error: 'border-warning/50 bg-black/75 text-sm text-warning/70'
+        error: 'border-warning/50 bg-black/75 text-sm text-warning/70',
+        warning: 'border-warning/50 bg-black/75 text-sm text-warning/70'
       }
     },
     defaultVariants: {
