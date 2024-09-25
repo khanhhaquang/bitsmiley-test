@@ -11,6 +11,7 @@ import oracleAbi from './src/abi/Oracle.json'
 import registerAbi from './src/abi/Register.json'
 import erc721StakingAbi from './src/abi/Staking.json'
 import vaultManagerAbi from './src/abi/VaultManager.json'
+import zetaConnectorAbi from './src/abi/BitSmileyZetaConnector.json'
 
 export default defineConfig([
   {
@@ -119,6 +120,16 @@ export default defineConfig([
       {
         name: 'Airdrop',
         abi: BitSmileyMerkleErc20Airdrop as Abi
+      }
+    ],
+    plugins: [react()]
+  },
+  {
+    out: 'src/contracts/ZetaConnector.ts',
+    contracts: [
+      {
+        name: 'ZetaConnector',
+        abi: zetaConnectorAbi as Abi
       }
     ],
     plugins: [react()]

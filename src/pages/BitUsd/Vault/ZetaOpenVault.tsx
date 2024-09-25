@@ -61,6 +61,7 @@ export const OpenVault: React.FC<{
   const wbtcPrice = useTokenPrice()
 
   const [deposit, setDeposit] = useState('')
+  const [mint, setMint] = useState('')
 
   const [showProcessing, setShowProcessing] = useState(false)
   const [processingStep, setProcessingStep] = useState(TxnStep.One)
@@ -68,17 +69,31 @@ export const OpenVault: React.FC<{
     ProcessingStatus.Processing
   )
   const [processingTxn, setProcessingTxn] = useState('')
-  const { btcAddress, mint, setMint, handleSendBtc, signData, broadcastTxn } =
-    useZetaClient(chainId, collateralId)
+  const { btcAddress, openVault, sign, broadcastTxn } = useZetaClient(
+    chainId,
+    collateralId
+  )
 
   const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
 
-  const { data: zetaCctx } = useGetCctx(
+  const { data: zetaCctx, refetch: getZetaCctxDetail } = useGetCctx(
     processingTxn as Hash,
     collateralId,
     evmAddress,
     {
       retry: 3,
+      refetchInterval: ({ state }) => {
+        const statusOfTxn = state.data?.CrossChainTx?.cctx_status?.status
+        if (
+          statusOfTxn === undefined ||
+          ['Aborted', 'Reverted', 'OutboundMined', 'PendingRevert'].includes(
+            statusOfTxn
+          )
+        ) {
+          return 3000
+        }
+        return false
+      },
       enabled:
         isHash(processingTxn) &&
         processingStep === TxnStep.Two &&
@@ -184,7 +199,7 @@ export const OpenVault: React.FC<{
     setProcessingStep(TxnStep.One)
     setProcessingStatus(ProcessingStatus.Processing)
 
-    const rawTx = await handleSendBtc(Number(deposit))
+    const rawTx = await openVault(Number(deposit), mint)
     if (rawTx) {
       setLocalStorage(
         `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`,
@@ -213,9 +228,9 @@ export const OpenVault: React.FC<{
 
   useEffect(() => {
     if (btcAddress) {
-      signData()
+      sign()
     }
-  }, [btcAddress, signData])
+  }, [btcAddress, sign])
 
   useEffect(() => {
     if (evmAddress) {
@@ -338,13 +353,16 @@ export const OpenVault: React.FC<{
       if (status) {
         if (noResultTimer) clearTimeout(noResultTimer)
         setShowProcessing(true)
-        clearTxnCache()
-
         if (status === 'OutboundMined') {
           setProcessingStatus(ProcessingStatus.Success)
-        }
-        if (status === 'Aborted' || status === 'Reverted') {
+          clearTxnCache()
+        } else if (
+          status === 'Aborted' ||
+          status === 'Reverted' ||
+          status === 'PendingRevert'
+        ) {
           setProcessingStatus(ProcessingStatus.Error)
+          clearTxnCache()
         }
       } else {
         noResultTimer = setTimeout(() => {
@@ -358,6 +376,7 @@ export const OpenVault: React.FC<{
     processingStep,
     processingTxn,
     clearTxnCache,
+    getZetaCctxDetail,
     zetaCctx?.CrossChainTx?.cctx_status?.status
   ])
 

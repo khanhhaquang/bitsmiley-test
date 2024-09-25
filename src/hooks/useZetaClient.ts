@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
@@ -21,7 +21,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const { address: evmAddress } = useAccount()
   const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
   const { projectInfo } = useProjectInfo()
-  const [mint, setMint] = useState('')
 
   const isZeta = useMemo(() => isZetaChain(chain), [chain])
 
@@ -53,28 +52,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     [zetaConnectorAddress]
   )
 
-  const callData = useMemo(() => {
-    if (callDataInstance && evmAddress && signature) {
-      const callData = callDataInstance.openVault(
-        collateralId,
-        mint || '0',
-        evmAddress,
-        signature
-      )
-      console.log('🚀 ~ callData ~ callData:', callData)
-      return callData
-    }
-
-    return null
-  }, [callDataInstance, collateralId, evmAddress, mint, signature])
-
-  const tapRootAddress = useMemo(() => {
-    if (callData) {
-      return zetaClient.call(Buffer.from(callData, 'hex'))
-    }
-  }, [callData, zetaClient])
-
-  const signData = useCallback(
+  const sign = useCallback(
     (onSuccessCallback?: () => void) => {
       if (!isSigning && !signature && evmAddress && signatureUtilAddress) {
         const message = { user: evmAddress, chainId: BigInt(chain) }
@@ -134,13 +112,14 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     [pushTx]
   )
 
-  const handleSendBtc = useCallback(
-    async (btcAmount: number) => {
+  const openVault = useCallback(
+    async (btcAmount: number, mint: string) => {
       try {
-        if (tapRootAddress) {
+        if (evmAddress && callDataInstance && signature) {
+          const callData = callDataInstance.mint(evmAddress, mint, signature)
           const satsAmount = btcToSats(btcAmount)
           const commitTxn = await sendBitcoin(
-            tapRootAddress.toString(),
+            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
             satsAmount
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
@@ -158,17 +137,63 @@ export const useZetaClient = (chain: number, collateralId: string) => {
         return ''
       }
     },
-    [tapRootAddress, sendBitcoin, zetaClient, recommendedFee?.halfHourFee]
+    [
+      evmAddress,
+      callDataInstance,
+      signature,
+      sendBitcoin,
+      zetaClient,
+      recommendedFee?.halfHourFee
+    ]
+  )
+
+  const mint = useCallback(
+    async (btcAmount: number, mint: string) => {
+      try {
+        if (evmAddress && callDataInstance && signature) {
+          const callData = callDataInstance.openVault(
+            collateralId,
+            mint || '0',
+            evmAddress,
+            signature
+          )
+          const satsAmount = btcToSats(btcAmount)
+          const commitTxn = await sendBitcoin(
+            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
+            satsAmount
+          )
+          console.log('🚀 ~ btc commit txn:', commitTxn)
+          const buffer = zetaClient.buildRevealTxn(
+            { txn: commitTxn, idx: 0 },
+            satsAmount,
+            recommendedFee?.halfHourFee || 2
+          )
+          const rawTx = buffer.toString('hex')
+          console.log('rawTx:', rawTx)
+          return rawTx
+        }
+      } catch (error) {
+        console.log('🚀 ~ sendBtc error:', error)
+        return ''
+      }
+    },
+    [
+      evmAddress,
+      callDataInstance,
+      signature,
+      collateralId,
+      sendBitcoin,
+      zetaClient,
+      recommendedFee?.halfHourFee
+    ]
   )
 
   return {
-    signData,
+    sign,
     isZeta,
     btcAddress: btcAccounts[0],
-    tapRootAddress,
-    handleSendBtc,
-    broadcastTxn,
+    openVault,
     mint,
-    setMint
+    broadcastTxn
   }
 }

@@ -86,7 +86,12 @@ export const displayVaultValues = (
     undefined,
     vault?.collateralSymbol
   ),
-  availableToWithdraw: formatWBtc(vault?.availableToWithdraw, withUnit),
+  availableToWithdraw: formatWBtc(
+    vault?.lockedCollateral,
+    vault?.collateralSymbol ? false : true,
+    undefined,
+    vault?.collateralSymbol
+  ),
   availableToMint: formatBitUsd(vault?.availableToMint, withUnit)
 })
 
