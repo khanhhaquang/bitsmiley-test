@@ -8,6 +8,7 @@ import {
   OrIcon,
   VaultChangesBorderIcon
 } from '@/assets/icons'
+import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
 import { InfoIndicator } from '@/components/InfoIndicator'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useCollaterals } from '@/hooks/useCollaterals'
@@ -17,6 +18,7 @@ import { useTokenBalance } from '@/hooks/useTokenBalance'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
+import { useZetaClient } from '@/hooks/useZetaClient'
 import { TransactionStatus } from '@/types/common'
 import {
   formatNumberAsCeil,
@@ -100,6 +102,9 @@ export const ZetaManageVault: React.FC<{
     collateral?.collateral?.tokenAddress
   )
   const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
+  const { sign, btcAddress } = useZetaClient(chainId, collateralId)
+
+  const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
 
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
@@ -243,7 +248,7 @@ export const ZetaManageVault: React.FC<{
     }
 
     if (isMintFromBtc) {
-      mintFromBtc(depositBtc, mintBitUsd)
+      mintFromBtc(Number(depositBtc), mintBitUsd)
     } else {
       repayToBtc(withdrawBtc, repayBitUsd, vault?.debtBitUSD)
     }
@@ -433,10 +438,22 @@ export const ZetaManageVault: React.FC<{
     }
   }, [isMintFromBtc])
 
+  useEffect(() => {
+    if (btcAddress) {
+      sign()
+    }
+  }, [btcAddress, sign])
+
   console.log(vault)
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
+
+      <NativeBtcWalletModal
+        onClose={() => setBtcWalletOpen(false)}
+        isOpen={btcWalletOpen}
+      />
+
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
       <ManageVaultHeaderInformation collateral={collateral} />
 

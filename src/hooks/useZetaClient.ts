@@ -116,41 +116,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (btcAmount: number, mint: string) => {
       try {
         if (evmAddress && callDataInstance && signature) {
-          const callData = callDataInstance.mint(evmAddress, mint, signature)
-          const satsAmount = btcToSats(btcAmount)
-          const commitTxn = await sendBitcoin(
-            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
-            satsAmount
-          )
-          console.log('🚀 ~ btc commit txn:', commitTxn)
-          const buffer = zetaClient.buildRevealTxn(
-            { txn: commitTxn, idx: 0 },
-            satsAmount,
-            recommendedFee?.halfHourFee || 2
-          )
-          const rawTx = buffer.toString('hex')
-          console.log('rawTx:', rawTx)
-          return rawTx
-        }
-      } catch (error) {
-        console.log('🚀 ~ sendBtc error:', error)
-        return ''
-      }
-    },
-    [
-      evmAddress,
-      callDataInstance,
-      signature,
-      sendBitcoin,
-      zetaClient,
-      recommendedFee?.halfHourFee
-    ]
-  )
-
-  const mint = useCallback(
-    async (btcAmount: number, mint: string) => {
-      try {
-        if (evmAddress && callDataInstance && signature) {
           const callData = callDataInstance.openVault(
             collateralId,
             mint || '0',
@@ -182,6 +147,45 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       callDataInstance,
       signature,
       collateralId,
+      sendBitcoin,
+      zetaClient,
+      recommendedFee?.halfHourFee
+    ]
+  )
+
+  const mint = useCallback(
+    async (btcAmount: number, mint: string) => {
+      try {
+        if (evmAddress && callDataInstance && signature) {
+          const callData = callDataInstance.mint(
+            evmAddress,
+            mint || '0',
+            signature
+          )
+          const satsAmount = btcToSats(btcAmount)
+          const commitTxn = await sendBitcoin(
+            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
+            satsAmount
+          )
+          console.log('🚀 ~ btc commit txn:', commitTxn)
+          const buffer = zetaClient.buildRevealTxn(
+            { txn: commitTxn, idx: 0 },
+            satsAmount,
+            recommendedFee?.halfHourFee || 2
+          )
+          const rawTx = buffer.toString('hex')
+          console.log('rawTx:', rawTx)
+          return rawTx
+        }
+      } catch (error) {
+        console.log('🚀 ~ sendBtc error:', error)
+        return ''
+      }
+    },
+    [
+      evmAddress,
+      callDataInstance,
+      signature,
       sendBitcoin,
       zetaClient,
       recommendedFee?.halfHourFee
