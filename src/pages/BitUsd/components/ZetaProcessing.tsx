@@ -12,6 +12,7 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { ProcessingModal } from './Processing'
 import { ProcessingType } from './Processing.types'
 import { ProcessingStatus, TxnStep } from './ZetaProcessing.types'
+import { displayAddress } from '@/utils/formatter'
 
 type ZetaProcessingProps = {
   status: ProcessingStatus
@@ -224,23 +225,16 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                 {txn && (
                   <>
                     <p>{txnType} Transaction</p>
-                    <div className="break-words">
-                      {isHash(txn) ? (
-                        <a
-                          className="underline"
-                          target="_blank"
-                          href={`${blockExplorerUrl}/cc/tx/${txn}`}>
-                          {txn}
-                        </a>
-                      ) : (
-                        <a
-                          className="underline"
-                          target="_blank"
-                          href={`${mempoolExplorerUrl}/tx/${txn}`}>
-                          {txn}
-                        </a>
-                      )}
-                    </div>
+                    <a
+                      className="underline"
+                      target="_blank"
+                      href={
+                        isHash(txn)
+                          ? `${blockExplorerUrl}/cc/tx/${txn}`
+                          : `${mempoolExplorerUrl}/tx/${txn}`
+                      }>
+                      {displayAddress(txn, 8, 8)}
+                    </a>
                   </>
                 )}
               </div>
