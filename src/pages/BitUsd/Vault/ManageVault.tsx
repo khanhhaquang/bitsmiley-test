@@ -447,7 +447,10 @@ export const ManageVault: React.FC<{
           onClose={() => setIsLiquidatedWarningOpen(false)}
         />
 
-        <ManageVaultInfoSection className="mb-12" vault={vault} />
+        <ManageVaultInfoSection
+          className="mb-12"
+          vault={{ ...vault, collateralSymbol: deptTokenSymbol }}
+        />
 
         <div className="mb-6 grid grid-cols-2 gap-x-[46px]">
           <div className="overflow-hidden">

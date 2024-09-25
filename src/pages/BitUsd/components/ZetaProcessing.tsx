@@ -35,6 +35,9 @@ const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
       return 'border-2 border-warning/60 text-warning'
     if (status === ProcessingStatus.Processing)
       return 'border-2 border-blue/60 text-blue'
+    if (status === ProcessingStatus.NoResult)
+      return 'border-2 border-orange-500/60 text-orange-500'
+
     return 'text-white/50'
   }, [status])
 
@@ -93,6 +96,11 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     if (status === ProcessingStatus.Error) {
       return ProcessingType.Error
     }
+
+    if (status === ProcessingStatus.NoResult) {
+      return ProcessingType.Warning
+    }
+
     return ProcessingType.Processing
   }, [step, status])
 
@@ -146,13 +154,18 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     onClose()
     let statusText = 'getting processed'
     let textClassName = 'text-white/50'
+
     if (type === ProcessingType.Success) {
       statusText = 'successful'
       textClassName = 'text-green'
     } else if (type === ProcessingType.Error) {
       statusText = 'failed'
       textClassName = 'text-warning'
+    } else if (type === ProcessingType.Warning) {
+      statusText = 'warning'
+      textClassName = 'text-warning'
     }
+
     toast({
       variant: type,
       className: 'w-[380px]',
@@ -212,7 +225,7 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                   <>
                     <p>{txnType} Transaction</p>
                     <div className="break-words">
-                      {type === ProcessingType.Success ? (
+                      {isHash(txn) ? (
                         <a
                           className="underline"
                           target="_blank"

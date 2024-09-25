@@ -89,21 +89,25 @@ export const Processing: React.FC<ProcessingProps> = ({
     if (type === 'error') return 'border-warning/50'
     return 'border-blue'
   }, [type])
+
   const titleColorClassName = useMemo(() => {
     if (type === 'success') return 'text-green/70'
     if (type === 'error') return 'text-warning/50'
     return 'text-blue'
   }, [type])
+
   const titleTextColorClassName = useMemo(() => {
     if (type === 'success') return 'text-green'
     if (type === 'error') return 'text-warning'
     return 'text-blue'
   }, [type])
+
   const defaultTitle = useMemo(() => {
     if (type === 'success') return 'Success'
     if (type === 'error') return 'Failed'
     return 'Processing'
   }, [type])
+
   const rightButton = useMemo(() => {
     if (type === 'success')
       return <CrossGreenIcon width={14} height={14}></CrossGreenIcon>
@@ -181,8 +185,7 @@ export const Processing: React.FC<ProcessingProps> = ({
             </p>
           )}
         </div>
-
-        {actionButtonText && (
+        {!!actionButtonText && (
           <ActionButton
             className={cn('w-[302px]', actionButtonClassName)}
             onClick={onClickActionButton}>

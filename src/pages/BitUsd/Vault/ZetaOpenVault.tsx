@@ -2,7 +2,7 @@ import { isAxiosError } from 'axios'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Hash, isHash } from 'viem'
-import { useAccount, useWaitForTransactionReceipt } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
@@ -15,6 +15,7 @@ import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
 import { useZetaService } from '@/hooks/useZetaService'
+import { useGetCctx } from '@/queries/zeta'
 import {
   deleteLocalStorage,
   getLocalStorage,
@@ -67,21 +68,23 @@ export const OpenVault: React.FC<{
     ProcessingStatus.Processing
   )
   const [processingTxn, setProcessingTxn] = useState('')
+  const { btcAddress, mint, setMint, handleSendBtc, signData, broadcastTxn } =
+    useZetaClient(chainId, collateralId)
 
-  const { data: zetaTxnReceipt } = useWaitForTransactionReceipt({
-    hash: processingTxn as Hash,
-    query: {
+  const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
+
+  const { data: zetaCctx } = useGetCctx(
+    processingTxn as Hash,
+    collateralId,
+    evmAddress,
+    {
+      retry: 3,
       enabled:
         isHash(processingTxn) &&
         processingStep === TxnStep.Two &&
         processingStatus === ProcessingStatus.Processing
     }
-  })
-
-  const { btcAddress, mint, setMint, handleSendBtc, signData, broadcastTxn } =
-    useZetaClient(chainId, collateralId)
-
-  const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
+  )
 
   const depositDisabled = useMemo(() => {
     if (btcBalance <= 0) return true
@@ -99,6 +102,10 @@ export const OpenVault: React.FC<{
 
     return ''
   }, [deposit, btcBalance])
+
+  const depositInUsd = useMemo(() => {
+    return (wbtcPrice * Number(deposit)).toFixed(2)
+  }, [deposit, wbtcPrice])
 
   const mintInputErrorMsg = useMemo(() => {
     if (mint) {
@@ -192,10 +199,6 @@ export const OpenVault: React.FC<{
   const handleInput = (value?: string, callback?: (v: string) => void) => {
     callback?.(value || '')
   }
-
-  const depositInUsd = useMemo(() => {
-    return (wbtcPrice * Number(deposit)).toFixed(2)
-  }, [deposit, wbtcPrice])
 
   useEffect(() => {
     setTryOpenVaultBitUsd(mint)
@@ -299,19 +302,14 @@ export const OpenVault: React.FC<{
         ZetaService.inboundHashToCctx
           .call(processingTxn)
           .then((res) => {
-            if (
-              res?.data?.inboundHashToCctx.cctx_index &&
-              res?.data?.inboundHashToCctx.cctx_index.length > 0
-            ) {
-              console.log(
-                'zetaTxn:',
-                res?.data?.inboundHashToCctx.cctx_index[0]
-              )
+            const cctxArr = res?.inboundHashToCctx?.cctx_index
+            if (cctxArr && cctxArr.length > 0) {
+              console.log('zetaTxn:', cctxArr[0])
               setLocalStorage(
                 `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
-                res?.data?.inboundHashToCctx.cctx_index[0]
+                cctxArr[0]
               )
-              setProcessingTxn(res?.data?.inboundHashToCctx.cctx_index[0])
+              setProcessingTxn(cctxArr[0])
             } else {
               console.log('waiting txn inbound_hash')
             }
@@ -335,16 +333,17 @@ export const OpenVault: React.FC<{
 
   useEffect(() => {
     if (processingStep === TxnStep.Two && isHash(processingTxn)) {
+      const status = zetaCctx?.CrossChainTx?.cctx_status?.status
       let noResultTimer = null
-      if (zetaTxnReceipt?.status) {
+      if (status) {
         if (noResultTimer) clearTimeout(noResultTimer)
         setShowProcessing(true)
         clearTxnCache()
 
-        if (zetaTxnReceipt?.status === 'success') {
+        if (status === 'OutboundMined') {
           setProcessingStatus(ProcessingStatus.Success)
         }
-        if (zetaTxnReceipt?.status === 'reverted') {
+        if (status === 'Aborted' || status === 'Reverted') {
           setProcessingStatus(ProcessingStatus.Error)
         }
       } else {
@@ -352,10 +351,15 @@ export const OpenVault: React.FC<{
           setShowProcessing(true)
           clearTxnCache()
           setProcessingStatus(ProcessingStatus.NoResult)
-        }, 10000)
+        }, 16000)
       }
     }
-  }, [zetaTxnReceipt, processingStep, processingTxn, clearTxnCache])
+  }, [
+    processingStep,
+    processingTxn,
+    clearTxnCache,
+    zetaCctx?.CrossChainTx?.cctx_status?.status
+  ])
 
   return (
     <div className="size-full overflow-y-auto pb-12">
