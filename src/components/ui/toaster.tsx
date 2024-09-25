@@ -20,14 +20,14 @@ export function Toaster() {
   const { toasts } = useToast()
   const getIcon = useCallback(
     (
-      variant:
+      variant?:
         | 'default'
         | 'destructive'
         | 'success'
         | 'processing'
         | 'error'
+        | 'warning'
         | null
-        | undefined
     ) => {
       if (variant === 'destructive') return <FailIcon width={28} height={24} />
       if (variant === 'processing')
