@@ -7,12 +7,12 @@ import { useToast } from '@/components/ui/use-toast'
 import { useBtcNetwork } from '@/hooks/useBtcNetwork'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
+import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ProcessingModal } from './Processing'
 import { ProcessingType } from './Processing.types'
 import { ProcessingStatus, TxnStep } from './ZetaProcessing.types'
-import { displayAddress } from '@/utils/formatter'
 
 type ZetaProcessingProps = {
   status: ProcessingStatus
