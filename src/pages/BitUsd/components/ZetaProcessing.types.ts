@@ -6,5 +6,6 @@ export enum TxnStep {
 export enum ProcessingStatus {
   Processing = 'processing',
   Success = 'success',
-  Error = 'error'
+  Error = 'error',
+  NoResult = 'no-result'
 }

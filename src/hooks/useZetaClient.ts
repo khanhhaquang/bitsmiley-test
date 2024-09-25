@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
@@ -21,6 +21,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const { address: evmAddress } = useAccount()
   const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
   const { projectInfo } = useProjectInfo()
+  const [mint, setMint] = useState('')
 
   const isZeta = useMemo(() => isZetaChain(chain), [chain])
 
@@ -56,7 +57,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     if (callDataInstance && evmAddress && signature) {
       const callData = callDataInstance.openVault(
         collateralId,
-        '0',
+        mint || '0',
         evmAddress,
         signature
       )
@@ -65,7 +66,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     }
 
     return null
-  }, [callDataInstance, collateralId, evmAddress, signature])
+  }, [callDataInstance, collateralId, evmAddress, mint, signature])
 
   const tapRootAddress = useMemo(() => {
     if (callData) {
@@ -134,10 +135,10 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   )
 
   const handleSendBtc = useCallback(
-    async (amount: number) => {
+    async (btcAmount: number) => {
       try {
         if (tapRootAddress) {
-          const satsAmount = btcToSats(amount)
+          const satsAmount = btcToSats(btcAmount)
           const commitTxn = await sendBitcoin(
             tapRootAddress.toString(),
             satsAmount
@@ -166,6 +167,8 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     btcAddress: btcAccounts[0],
     tapRootAddress,
     handleSendBtc,
-    broadcastTxn
+    broadcastTxn,
+    mint,
+    setMint
   }
 }

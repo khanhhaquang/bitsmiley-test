@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react'
+import { isHash } from 'viem'
 
 import { CheckGreenIcon, CrossRedIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
@@ -15,7 +16,7 @@ import { ProcessingStatus, TxnStep } from './ZetaProcessing.types'
 type ZetaProcessingProps = {
   status: ProcessingStatus
   step: TxnStep
-  txnId?: string
+  txn?: string
   open: boolean
   onOpen: () => void
   onClose: () => void
@@ -68,7 +69,7 @@ const ZetaStep: React.FC<ZetaStepProps> = ({ status, step }) => {
 export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   step,
   status,
-  txnId,
+  txn,
   open,
   onOpen,
   onClose
@@ -96,10 +97,11 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
   }, [step, status])
 
   const actionButtonText = useMemo(() => {
-    if (type === ProcessingType.Success || type === ProcessingType.Error) {
-      return 'Ok'
+    if (type === ProcessingType.Processing) {
+      return undefined
     }
-    return undefined
+
+    return 'OK'
   }, [type])
 
   const stepOneStatus = useMemo(() => {
@@ -126,8 +128,19 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
     if (stepTwoStatus === ProcessingStatus.Error) {
       return 'border-warning'
     }
+
+    if (stepTwoStatus === ProcessingStatus.NoResult) {
+      return 'border-orange-500'
+    }
+
     return 'border-white/50'
   }, [stepTwoStatus])
+
+  const txnType = useMemo(() => {
+    if (!txn) return ''
+    if (isHash(txn)) return `ZETA`
+    return 'BTC'
+  }, [txn])
 
   const onClickRightButton = () => {
     onClose()
@@ -185,30 +198,33 @@ export const ZetaProcessing: React.FC<ZetaProcessingProps> = ({
                 <ZetaStep step={TxnStep.Two} status={stepTwoStatus}></ZetaStep>
               </div>
               <div className="flex w-[380px] flex-col gap-2">
-                {status === 'error' && (
+                {status === ProcessingStatus.Error && (
                   <div className="text-warning">Transaction Failed</div>
                 )}
 
-                {txnId && (
+                {status === ProcessingStatus.NoResult && (
+                  <div className="text-orange-500">
+                    No result, please check on-chain
+                  </div>
+                )}
+
+                {txn && (
                   <>
-                    <p>
-                      {type === ProcessingType.Success ? 'Zeta ' : 'BTC '}
-                      Transaction
-                    </p>
+                    <p>{txnType} Transaction</p>
                     <div className="break-words">
                       {type === ProcessingType.Success ? (
                         <a
                           className="underline"
                           target="_blank"
-                          href={`${blockExplorerUrl}/cc/tx/${txnId}`}>
-                          {txnId}
+                          href={`${blockExplorerUrl}/cc/tx/${txn}`}>
+                          {txn}
                         </a>
                       ) : (
                         <a
                           className="underline"
                           target="_blank"
-                          href={`${mempoolExplorerUrl}/tx/${txnId}`}>
-                          {txnId}
+                          href={`${mempoolExplorerUrl}/tx/${txn}`}>
+                          {txn}
                         </a>
                       )}
                     </div>
