@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { useChainId } from 'wagmi'
 
@@ -7,6 +8,7 @@ import { isZetaChain } from '@/utils/chain'
 
 import { ManageVault } from './ManageVault'
 import { MemoizedOpenVault as OpenVault } from './OpenVault'
+import { ZetaManageVault } from './ZetaManageVault'
 import { ZetaOpenVault } from './ZetaOpenVault'
 
 const Vault: React.FC = () => {
@@ -17,6 +19,32 @@ const Vault: React.FC = () => {
     collateralId
   )
 
+  const vaultSection = useMemo(() => {
+    if (collateralId) {
+      if (isZetaChain(Number(chainId))) {
+        return isMyVault ? (
+          <ZetaManageVault
+            chainId={Number(chainId)}
+            collateralId={collateralId}
+          />
+        ) : (
+          <ZetaOpenVault
+            chainId={Number(chainId)}
+            collateralId={collateralId}
+          />
+        )
+      }
+
+      return isMyVault ? (
+        <ManageVault chainId={Number(chainId)} collateralId={collateralId} />
+      ) : (
+        <OpenVault chainId={Number(chainId)} collateralId={collateralId} />
+      )
+    }
+
+    return null
+  }, [chainId, collateralId, isMyVault])
+
   if (!chainId || !collateralId || !currentChainId) return null
 
   if (isLoading) return <OnChainLoader />
@@ -26,13 +54,7 @@ const Vault: React.FC = () => {
 
   return (
     <div className="relative size-full overflow-hidden pt-9">
-      {isMyVault ? (
-        <ManageVault chainId={Number(chainId)} collateralId={collateralId} />
-      ) : isZetaChain(Number(chainId)) ? (
-        <ZetaOpenVault chainId={Number(chainId)} collateralId={collateralId} />
-      ) : (
-        <OpenVault chainId={Number(chainId)} collateralId={collateralId} />
-      )}
+      {vaultSection}
     </div>
   )
 }
