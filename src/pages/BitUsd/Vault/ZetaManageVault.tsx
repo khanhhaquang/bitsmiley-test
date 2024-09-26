@@ -32,6 +32,7 @@ import {
   ManageVaultInfoSection,
   ManageVaultSectionTitle
 } from './component/ManageVaultInfoSection'
+import { useZetaProcessing } from './useZetaProcessing'
 
 import {
   ActionButton,
@@ -43,6 +44,8 @@ import { ProcessingModal } from '../components/Processing'
 import { ProcessingType } from '../components/Processing.types'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
+import { ZetaProcessing } from '../components/ZetaProcessing'
+import { ProcessingStatus } from '../components/ZetaProcessing.types'
 import { displayVaultValues } from '../display'
 
 export const ZetaManageVault: React.FC<{
@@ -102,6 +105,17 @@ export const ZetaManageVault: React.FC<{
   )
   const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
   const { sign, btcAddress, mint } = useZetaClient(chainId, collateralId)
+  const {
+    showProcessing,
+    processingStep,
+    processingStatus,
+    processingTxn,
+    setShowProcessing,
+    setProcessingStatus,
+    initProcess,
+    cacheRawTxn,
+    handleBroadcasting
+  } = useZetaProcessing(chainId, collateralId)
 
   const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
 
@@ -237,7 +251,7 @@ export const ZetaManageVault: React.FC<{
     }
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (isNotApproved) {
       approvalVault(
         isMintFromBtc ? 'wBTC' : 'bitUSD',
@@ -247,7 +261,15 @@ export const ZetaManageVault: React.FC<{
     }
 
     if (isMintFromBtc) {
-      mint(Number(depositBtc), mintBitUsd)
+      //reset status
+      initProcess()
+      const rawTx = await mint(Number(depositBtc), mintBitUsd)
+      if (rawTx) {
+        cacheRawTxn(rawTx)
+        handleBroadcasting(rawTx)
+      } else {
+        setProcessingStatus(ProcessingStatus.Error)
+      }
     } else {
       repayToBtc(withdrawBtc, repayBitUsd, vault?.debtBitUSD)
     }
@@ -447,6 +469,15 @@ export const ZetaManageVault: React.FC<{
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
+
+      <ZetaProcessing
+        status={processingStatus}
+        step={processingStep}
+        txn={processingTxn}
+        open={showProcessing}
+        onOpen={() => setShowProcessing(true)}
+        onClose={() => setShowProcessing(false)}
+      />
 
       <NativeBtcWalletModal
         onClose={() => setBtcWalletOpen(false)}

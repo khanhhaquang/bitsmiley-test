@@ -1,17 +1,14 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAccount } from 'wagmi'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
-import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useReadErc20Symbol } from '@/contracts/ERC20'
 import { useBTCBalance } from '@/hooks/useBTCBalance'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useVaultDetail } from '@/hooks/useVaultDetail'
 import { useZetaClient } from '@/hooks/useZetaClient'
-import { setLocalStorage } from '@/utils/storage'
 
 import VaultHeader from './component/VaultHeader'
 import { useZetaProcessing } from './useZetaProcessing'
@@ -46,7 +43,6 @@ export const OpenVault: React.FC<{
     address: collateral?.collateral?.tokenAddress
   })
 
-  const { address: evmAddress } = useAccount()
   const { balanceAsBtc: btcBalance } = useBTCBalance()
   const wbtcPrice = useTokenPrice()
 
@@ -62,6 +58,7 @@ export const OpenVault: React.FC<{
     setShowProcessing,
     setProcessingStatus,
     initProcess,
+    cacheRawTxn,
     handleBroadcasting
   } = useZetaProcessing(chainId, collateralId)
   const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
@@ -129,10 +126,7 @@ export const OpenVault: React.FC<{
     initProcess()
     const rawTx = await openVault(Number(deposit), mint)
     if (rawTx) {
-      setLocalStorage(
-        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`,
-        rawTx
-      )
+      cacheRawTxn(rawTx)
       handleBroadcasting(rawTx)
     } else {
       setProcessingStatus(ProcessingStatus.Error)
@@ -168,7 +162,8 @@ export const OpenVault: React.FC<{
         txn={processingTxn}
         open={showProcessing}
         onOpen={() => setShowProcessing(true)}
-        onClose={() => setShowProcessing(false)}></ZetaProcessing>
+        onClose={() => setShowProcessing(false)}
+      />
 
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
       <VaultHeader collateral={collateral} />

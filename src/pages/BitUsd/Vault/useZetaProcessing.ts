@@ -41,6 +41,36 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
     )
   }, [evmAddress])
 
+  const cacheTxn = useCallback(
+    (txn: string) => {
+      setLocalStorage(
+        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
+        txn
+      )
+    },
+    [evmAddress]
+  )
+
+  const cacheRawTxn = useCallback(
+    (txn: string) => {
+      setLocalStorage(
+        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_RAW_BTC_TXN}-${evmAddress}`,
+        txn
+      )
+    },
+    [evmAddress]
+  )
+
+  const cacheStep = useCallback(
+    (step: TxnStep) => {
+      setLocalStorage(
+        `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`,
+        step
+      )
+    },
+    [evmAddress]
+  )
+
   const initProcess = useCallback(() => {
     setProcessingTxn('')
     clearTxnCache()
@@ -57,10 +87,7 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
         const btcTxn = await broadcastTxn(rawTxn)
         if (btcTxn) {
           setProcessingTxn(btcTxn)
-          setLocalStorage(
-            `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
-            btcTxn
-          )
+          cacheTxn(btcTxn)
         } else {
           setProcessingStatus(ProcessingStatus.Error)
         }
@@ -68,7 +95,7 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
         setProcessingStatus(ProcessingStatus.Error)
       }
     },
-    [broadcastTxn, evmAddress]
+    [broadcastTxn, cacheTxn]
   )
 
   const { data: zetaCctx, refetch: getZetaCctxDetail } = useGetCctx(
@@ -131,10 +158,7 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
           .then((response) => {
             if (response?.status?.confirmed) {
               setProcessingStep(TxnStep.Two)
-              setLocalStorage(
-                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_STEP}-${evmAddress}`,
-                TxnStep.Two
-              )
+              cacheStep(TxnStep.Two)
               setShowProcessing(true)
             } else {
               console.log('waiting txn confirm')
@@ -184,10 +208,7 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
             const cctxArr = res?.inboundHashToCctx?.cctx_index
             if (cctxArr && cctxArr.length > 0) {
               console.log('zetaTxn:', cctxArr[0])
-              setLocalStorage(
-                `${LOCAL_STORAGE_KEYS.ZETA_PROCESSING_TXN}-${evmAddress}`,
-                cctxArr[0]
-              )
+              cacheTxn(cctxArr[0])
               setProcessingTxn(cctxArr[0])
             } else {
               console.log('waiting txn inbound_hash')
@@ -207,7 +228,8 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
     processingStatus,
     processingStep,
     evmAddress,
-    ZetaService.inboundHashToCctx
+    ZetaService.inboundHashToCctx,
+    cacheTxn
   ])
 
   useEffect(() => {
@@ -254,6 +276,8 @@ export const useZetaProcessing = (chainId: number, collateralId: string) => {
     setProcessingStep,
     setProcessingTxn,
     clearTxnCache,
+    cacheTxn,
+    cacheRawTxn,
     handleBroadcasting,
     initProcess
   }
