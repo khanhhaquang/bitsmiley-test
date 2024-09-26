@@ -72,7 +72,6 @@ export const ZetaManageVault: React.FC<{
   } = useVaultDetail(collateral)
 
   const {
-    wBtcAllowance,
     bitUsdAllowance,
     approvalTxnStatus,
     approvalVault,
@@ -281,9 +280,14 @@ export const ZetaManageVault: React.FC<{
 
   const noInputValues =
     !depositBtc && !mintBitUsd && !withdrawBtc && !repayBitUsd
-  const isNotApproved = isMintFromBtc
-    ? !!depositBtc && wBtcAllowance < Number(depositBtc)
-    : !!repayBitUsd && bitUsdAllowance < Number(repayBitUsd)
+
+  const isNotApproved = useMemo(
+    () =>
+      isMintFromBtc
+        ? false
+        : !!repayBitUsd && bitUsdAllowance < Number(repayBitUsd),
+    [bitUsdAllowance, isMintFromBtc, repayBitUsd]
+  )
 
   const isApproving = useMemo(
     () =>

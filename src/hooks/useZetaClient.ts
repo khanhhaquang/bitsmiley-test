@@ -7,6 +7,7 @@ import { isZetaChain } from '@/utils/chain'
 import { btcToSats } from '@/utils/formatter'
 
 import { useBtcFee } from './useBtcFee'
+import { useBtcNetwork } from './useBtcNetwork'
 import { useNativeBtcProvider } from './useNativeBtcProvider'
 import { useProjectInfo } from './useProjectInfo'
 
@@ -21,6 +22,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const { address: evmAddress } = useAccount()
   const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
   const { projectInfo } = useProjectInfo()
+  const { btcNetwork } = useBtcNetwork()
 
   const isZeta = useMemo(() => isZetaChain(chain), [chain])
 
@@ -41,8 +43,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const signatureUtilAddress = useMemo(() => {
     return contractAddresses?.signatureUtil
   }, [contractAddresses])
-
-  const zetaClient = useMemo(() => ZetaBtcClient.testnet(), [])
 
   const callDataInstance = useMemo(
     () =>
@@ -116,6 +116,10 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (btcAmount: number, mint: string) => {
       try {
         if (evmAddress && callDataInstance && signature) {
+          const zetaClient =
+            btcNetwork === 'livenet'
+              ? ZetaBtcClient.mainnet()
+              : ZetaBtcClient.testnet()
           const callData = callDataInstance.openVault(
             collateralId,
             mint || '0',
@@ -147,9 +151,9 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       evmAddress,
       callDataInstance,
       signature,
+      btcNetwork,
       collateralId,
       sendBitcoin,
-      zetaClient,
       recommendedFee?.halfHourFee
     ]
   )
@@ -158,6 +162,10 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (btcAmount: number, mint: string) => {
       try {
         if (evmAddress && callDataInstance && signature) {
+          const zetaClient =
+            btcNetwork === 'livenet'
+              ? ZetaBtcClient.mainnet()
+              : ZetaBtcClient.testnet()
           const callData = callDataInstance.mint(
             evmAddress,
             mint || '0',
@@ -188,8 +196,8 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       evmAddress,
       callDataInstance,
       signature,
+      btcNetwork,
       sendBitcoin,
-      zetaClient,
       recommendedFee?.halfHourFee
     ]
   )
