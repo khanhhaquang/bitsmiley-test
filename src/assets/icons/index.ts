@@ -64,6 +64,7 @@ import RightAngleThin from './right-angle-thin.svg'
 import RightAngleVaultIcon from './right-angle-vault.svg'
 import RightAngle from './right-angle.svg'
 import ScoreBoardIcon from './score-board.svg'
+import SmileAirdropIcon from './smile-airdrop.svg'
 import SmileyIcon from './smiley.svg'
 import Smiley3Icon from './smiley3.svg'
 import SpinIcon from './spin.svg'
@@ -78,6 +79,7 @@ import WarningOutline from './warning-outline.svg'
 import YourPointHeaderIcon from './your-point-header.svg'
 
 export {
+  SmileAirdropIcon,
   TVLIndicatorIcon,
   AirdropModalTitleLeftIcon,
   AirdropModalTitleRightIcon,

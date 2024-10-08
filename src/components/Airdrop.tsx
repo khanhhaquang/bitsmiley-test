@@ -1,36 +1,22 @@
-import { useEffect, useState } from 'react'
-import { formatEther } from 'viem'
-import { useChainId, useSwitchChain } from 'wagmi'
+import { useETHProvider } from '@particle-network/btc-connectkit'
+import { useCallback, useMemo, useState } from 'react'
 
-import {
-  AirdropIcon,
-  AirdropModalTitleLeftIcon,
-  AirdropModalTitleRightIcon,
-  CloseIcon,
-  InputIndicatorIcon,
-  RightAngleThin
-} from '@/assets/icons'
-import { Image } from '@/components/Image'
+import { SmileAirdropIcon, RightAngleThin, CloseIcon } from '@/assets/icons'
 import { Modal } from '@/components/Modal'
-import Typewriter from '@/components/Typewriter'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { useAirdrop } from '@/hooks/useAirdrop'
-import { useUserInfo } from '@/hooks/useUserInfo'
-import { IAirdrop } from '@/services/project'
+import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
+import { useBindEvmAddress, useBtcCheckWallet } from '@/queries/btcWallet'
 import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
+import { ActionButton } from './ActionButton'
+import styles from './Airdrop.module.scss'
+import { SelectWalletModal } from './ConnectWallet'
+import { Image } from './Image'
+import { Input } from './ui/input'
+import { isAddress } from 'viem'
 
 export const Airdrop: React.FC = () => {
-  const { airdrops } = useAirdrop()
-  const { isConnected } = useUserInfo()
-
   const [isModalOpen, setIsModalOpen] = useState(false)
-
-  if (!airdrops?.length || !isConnected) return null
 
   return (
     <>
@@ -45,21 +31,23 @@ export const Airdrop: React.FC = () => {
 
 const AirdropButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
   return (
-    <div
-      onClick={onClick}
-      className="group absolute top-[calc(200%+24px)] size-full cursor-pointer">
-      <div
-        className={cn(
-          'relative flex size-full items-center justify-center whitespace-nowrap bg-yellow4/25 uppercase text-yellow5 group-hover:bg-yellow4/50 group-active:text-opacity-50 group-active:bg-yellow4/10'
-        )}>
-        <span className="flex items-center justify-center gap-x-1">
-          <AirdropIcon />
-          AIRDROP
-        </span>
-        <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
-        <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
-        <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
-        <RightAngleThin className="absolute bottom-[-1px] left-[-1px] -rotate-90" />
+    <div className="absolute top-[calc(200%+30px)] size-full">
+      <div className="group relative flex items-center text-[#FA0]">
+        <SmileAirdropIcon className="pointer-events-none absolute left-0 z-[1] -translate-x-1/4 select-none text-[#FFAA00] group-hover:text-[#EAC641] group-active:text-[#CF6D19]" />
+        <RightAngleThin className="absolute left-[-3px] top-[-3px]" />
+        <RightAngleThin className="absolute right-[-3px] top-[-3px] rotate-90" />
+        <RightAngleThin className="absolute bottom-[-3px] right-[-3px] rotate-180" />
+        <RightAngleThin className="absolute bottom-[-3px] left-[-3px] -rotate-90" />
+        <button
+          onClick={onClick}
+          className={cn(
+            'group relative cursor-pointer flex h-[30px] w-full items-center justify-center  bg-[#FFAA00] uppercase hover:bg-[#EAC641] active:bg-[#CF6D19] overflow-hidden',
+            styles.airdropBtn
+          )}>
+          <span className="ml-6 flex items-center justify-center gap-x-1 font-psm text-base font-bold text-black">
+            AIRDROP
+          </span>
+        </button>
       </div>
     </div>
   )
@@ -69,150 +57,230 @@ const AirdropModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
-  const chainId = useChainId()
-  const { switchChain } = useSwitchChain()
-  const [selectedAirdrop, setSelectedAirdrop] = useState<IAirdrop>()
+  const { accounts, customSignMessage } = useNativeBtcProvider()
+  const { account: aaEthAccount } = useETHProvider()
 
+  const { mutateAsync: bindEvm, isPending: isBinding } = useBindEvmAddress({})
   const {
-    airdrops,
-    airdropProofAndAmount,
-    isClaimed,
-    canClaim,
-    isLoading,
-    isLoadingAirdropProofAndAmount,
-    isClaiming,
-    isRefetching,
-    claim
-  } = useAirdrop(selectedAirdrop)
+    data: btcWalletCheckResult,
+    isFetching: isCheckingBtcWallet,
+    refetch: refetchBtcWalletCheck
+  } = useBtcCheckWallet(accounts[0], {
+    enabled: !!accounts[0]
+  })
 
-  const handleOnSelect = (i: IAirdrop) => {
-    if (chainId !== i.chainId) {
-      switchChain(
-        { chainId: i.chainId },
-        {
-          onSuccess: () => {
-            setSelectedAirdrop(i)
-          },
-          onError: () => {
-            onClose()
-            console.error('Switching network failed')
-          }
-        }
-      )
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false)
+  const [bindEvmAddress, setBindEvmAddress] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const handleSubmit = useCallback(async () => {
+    if (!isAddress(bindEvmAddress)) {
+      setErrorMsg('This address is not valid')
       return
     }
-    setSelectedAirdrop(i)
-  }
 
-  const onClaim = async () => {
-    if (isClaiming) return
-    await claim()
-    onClose()
-  }
+    try {
+      const signature = await customSignMessage(bindEvmAddress)
+      const data = await bindEvm({
+        signature,
+        message: bindEvmAddress,
+        address: accounts[0]
+      })
 
-  useEffect(() => {
-    if (!isOpen) setSelectedAirdrop(undefined)
-  }, [isOpen])
+      if (data.code === 0) {
+        refetchBtcWalletCheck()
+      } else {
+        setErrorMsg(data.message)
+      }
+    } catch (e) {
+      console.log('error', e)
+      setErrorMsg('Something went wrong')
+    }
+  }, [
+    accounts,
+    bindEvmAddress,
+    bindEvm,
+    customSignMessage,
+    refetchBtcWalletCheck
+  ])
+
+  const isNotEligible = useMemo(() => {
+    return btcWalletCheckResult && btcWalletCheckResult.code === -12
+  }, [btcWalletCheckResult])
+
+  const isBound = useMemo(() => {
+    return btcWalletCheckResult && btcWalletCheckResult.code === -13
+  }, [btcWalletCheckResult])
+
+  const connectWallet = useMemo(() => {
+    return (
+      <div className="flex flex-col items-center gap-y-6 text-center">
+        <h2 className="text-center font-ibmb text-2xl uppercase text-[#FA0]">
+          Connect to wallet
+        </h2>
+        <p className="w-[244px] font-ibmr text-sm text-white">
+          Connect to wallet to find all your <b>$SMILE</b> airdrops!
+        </p>
+
+        <ActionButton
+          disabled={isCheckingBtcWallet}
+          className="h-[30px] w-[159px] uppercase"
+          onClick={() => setIsConnectModalOpen(true)}>
+          {isCheckingBtcWallet ? 'Waiting...' : 'Connect wallet'}
+        </ActionButton>
+        <SelectWalletModal
+          isBtcOnly
+          isOpen={isConnectModalOpen}
+          onClose={() => setIsConnectModalOpen(false)}
+        />
+      </div>
+    )
+  }, [isCheckingBtcWallet, isConnectModalOpen])
+
+  const evmAddressInput = useMemo(() => {
+    return (
+      <div className="flex flex-col items-center gap-y-6 text-center">
+        <h2 className="text-center font-ibmb text-2xl uppercase text-[#FA0]">
+          Dear AA/BTC Wallet User
+        </h2>
+        <p className="w-[494px] font-ibmr text-sm text-white">
+          {isBound
+            ? 'Your wallet has been bound successfully!'
+            : 'Your wallet address is qualified for airdrop! Please provide an EVM wallet address to receive the airdrop.'}
+        </p>
+
+        {isBound ? (
+          <p className="text-xs">
+            Bound EVM Address:{' '}
+            <span className="text-white/70">
+              {btcWalletCheckResult?.data.bindEVM}
+            </span>
+          </p>
+        ) : (
+          <div className="flex min-w-[475px] flex-col items-center">
+            <p className="text-xs">
+              Current AA Address:{' '}
+              <span className="text-white/70">{aaEthAccount}</span>
+            </p>
+
+            <Input
+              className="mt-2 w-full border-white/20 bg-white/5 px-3 font-bold"
+              placeholder="Input wallet address"
+              value={bindEvmAddress}
+              onChange={(e) => {
+                setErrorMsg('')
+                setBindEvmAddress(e.target.value)
+              }}
+            />
+            <span className="mt-1 text-left text-xs text-error">
+              {errorMsg}
+            </span>
+          </div>
+        )}
+
+        {isBound ? (
+          <ActionButton className="h-[30px] w-[110px]" onClick={onClose}>
+            OK
+          </ActionButton>
+        ) : (
+          <ActionButton
+            disabled={!bindEvmAddress || isBinding}
+            className="h-[30px] w-[110px]"
+            onClick={() => handleSubmit()}>
+            {isBinding ? 'Waiting...' : 'Confirm'}
+          </ActionButton>
+        )}
+      </div>
+    )
+  }, [
+    isBound,
+    btcWalletCheckResult?.data.bindEVM,
+    aaEthAccount,
+    bindEvmAddress,
+    errorMsg,
+    isBinding,
+    onClose,
+    handleSubmit
+  ])
+
+  const notEligible = useMemo(() => {
+    return (
+      <div className="flex flex-col items-center gap-y-6 bg-black/75 px-12 py-9 pb-6 text-center">
+        <h2 className="text-center font-ibmb text-2xl uppercase text-white">
+          Dear AA/BTC Wallet User
+        </h2>
+        <p className="w-[323px] font-ibmr text-sm text-white">
+          Unfortunately, your AA/BTC Wallet is not eligible for $SMILE airdrops.
+        </p>
+
+        <ActionButton className="h-[30px] w-[110px]" onClick={() => onClose()}>
+          OK
+        </ActionButton>
+      </div>
+    )
+  }, [onClose])
+
+  const renderContent = useMemo(() => {
+    if (!accounts.length || isCheckingBtcWallet) {
+      return connectWallet
+    }
+    if (isNotEligible) return notEligible
+
+    return evmAddressInput
+  }, [
+    accounts.length,
+    connectWallet,
+    evmAddressInput,
+    isCheckingBtcWallet,
+    isNotEligible,
+    notEligible
+  ])
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
-      <div className="flex flex-col">
-        <div className="relative flex w-full items-center justify-between gap-x-1 border border-blue bg-[#120E1F]">
-          <AirdropModalTitleLeftIcon className="w-full flex-1" />
-          <span className="font-smb text-xs uppercase text-blue [text-shadow:1.5px_0_0_rgba(38,72,239,0.25)]">
-            claim airdrops
-          </span>
-          <AirdropModalTitleRightIcon className="w-full flex-1" />
-
-          <button
-            onClick={onClose}
-            className="absolute right-0 top-0 flex aspect-square h-full cursor-pointer items-center justify-center bg-black text-blue hover:text-blue1">
-            <CloseIcon width={13} height={13} />
-          </button>
-        </div>
-
-        <div className="flex flex-col items-center gap-y-6 border border-blue bg-black p-6">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex w-[294px] cursor-pointer items-center justify-between border border-white/70 p-2 font-smb text-xs text-white/50 [text-shadow:1.5px_0_0_rgba(0,0,0,0.25)] hover:border-white hover:text-white">
-                {selectedAirdrop?.name ? (
-                  <>
-                    <span className="flex items-center gap-x-1.5 font-smb text-xs">
-                      <Image
-                        src={selectedAirdrop.icon}
-                        width={16}
-                        height={16}
-                      />
-                      {selectedAirdrop.name}
-                    </span>
-                  </>
-                ) : (
-                  'select a token'
-                )}
-                <InputIndicatorIcon className="rotate-90" />
-              </div>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              sideOffset={0}
-              className="w-[294px] cursor-default rounded-none border-none bg-black p-0">
-              {airdrops?.map((airdrop) => (
-                <DropdownMenuItem
-                  key={airdrop.address}
-                  onSelect={() => handleOnSelect(airdrop)}
-                  className="cursor-pointer rounded-none border border-white/70 bg-black px-2 py-1.5 text-white/50 hover:border-white hover:bg-black hover:text-white active:border-white active:bg-black active:text-white">
-                  <span className="flex min-h-4 items-center gap-x-1.5 font-smb text-xs">
-                    <Image src={airdrop.icon} width={16} height={16} />
-                    {airdrop.name}
-                  </span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {!!selectedAirdrop && (
-            <div className="flex flex-col gap-y-3">
-              <div className="font-ibmr text-sm text-white/70">
-                {isLoading || isRefetching
-                  ? '...Loading'
-                  : isClaimed
-                    ? 'You have claimed'
-                    : canClaim
-                      ? 'You can claim'
-                      : 'You cannot claim this airdrop'}
-              </div>
-
-              {(canClaim || isClaimed) && (
-                <div className="flex items-center justify-center font-ibmb text-white">
-                  {isLoadingAirdropProofAndAmount ? (
-                    <Typewriter
-                      loop
-                      wrapperClassName="min-w-10"
-                      speed={300}
-                      cursor={false}
-                      renderNodes={() => '...'}
-                    />
-                  ) : (
-                    formatEther(BigInt(airdropProofAndAmount?.amountStr || ''))
-                  )}{' '}
-                  {selectedAirdrop?.symbol}
-                </div>
+    <Modal
+      backdrop={false}
+      isOpen={isOpen}
+      onClose={() => {
+        onClose()
+        setErrorMsg('')
+        setIsConnectModalOpen(false)
+      }}>
+      <div
+        className={cn(
+          'relative flex min-w-[400px] flex-col items-center border bg-black/75 px-12 py-9 pb-6',
+          isNotEligible
+            ? 'border-white/20 p-0.5 bg-transparent'
+            : 'border-[#EAC641]'
+        )}>
+        <button
+          className="absolute right-3 top-3 cursor-pointer text-white/70"
+          onClick={onClose}>
+          <CloseIcon width={13} height={13} />
+        </button>
+        {!isNotEligible && (
+          <>
+            <Image
+              src={getIllustrationUrl(
+                'bind-wallet-modal-decorator-left',
+                'webp'
               )}
-            </div>
-          )}
+              width={170}
+              height={160}
+              className="pointer-events-none absolute bottom-0 left-0 origin-bottom-left scale-[70%]"
+            />
+            <Image
+              src={getIllustrationUrl(
+                'bind-wallet-modal-decorator-right',
+                'webp'
+              )}
+              width={168}
+              height={158}
+              className="pointer-events-none absolute bottom-0 right-0 origin-bottom-right scale-[70%]"
+            />
+          </>
+        )}
 
-          {!isLoading && !isRefetching && canClaim && !isClaimed && (
-            <button
-              onClick={onClaim}
-              disabled={isClaiming}
-              className={cn(
-                'cursor-pointer w-[124px]',
-                'text-nowrap border border-white/50 bg-white/10 py-1 font-ibmb text-sm text-white/70 shadow-[0_0_5px_1px_rgba(255,255,255,0.12)] hover:bg-white/20 hover:text-white active:bg-white/5 active:text-white/50',
-                'disabled:bg-white/10 disabled:text-white/20  disabled:cursor-not-allowed'
-              )}>
-              {isClaiming ? 'Claiming...' : 'Claim'}
-            </button>
-          )}
-        </div>
+        {renderContent}
       </div>
     </Modal>
   )

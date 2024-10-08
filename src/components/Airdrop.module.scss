@@ -1,0 +1,30 @@
+@use 'sass:math';
+
+.airdropBtn {
+  $anim-duration: 3; // in seconds
+  $anim-speed: 5; // in seconds
+
+  @keyframes shine {
+    0% {
+      left: -100%;
+      transition-property: left;
+    }
+    #{math.div($anim-speed, $anim-duration + $anim-speed) * 100%},
+    100% {
+      left: 150%;
+      transition-property: left;
+    }
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.4);
+    transform-origin: center;
+    transform: rotate(-60deg);
+    animation: shine #{$anim-duration}s ease-in-out infinite;
+  }
+}
