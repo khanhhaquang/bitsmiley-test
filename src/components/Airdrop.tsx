@@ -141,7 +141,7 @@ const AirdropModal: React.FC<{
     return (
       <div className="flex flex-col items-center gap-y-6 text-center">
         <h2 className="text-center font-ibmb text-2xl uppercase text-[#FA0]">
-          Dear AA/BTC Wallet User
+          Dear BTC Wallet User
         </h2>
         <p className="w-[494px] font-ibmr text-sm text-white">
           {isBound
@@ -207,10 +207,10 @@ const AirdropModal: React.FC<{
     return (
       <div className="flex flex-col items-center gap-y-6 bg-black/75 px-12 py-9 pb-6 text-center">
         <h2 className="text-center font-ibmb text-2xl uppercase text-white">
-          Dear AA/BTC Wallet User
+          Dear BTC Wallet User
         </h2>
         <p className="w-[323px] font-ibmr text-sm text-white">
-          Unfortunately, your AA/BTC Wallet is not eligible for $SMILE airdrops.
+          Unfortunately, your BTC address is not eligible for $SMILE airdrops.
         </p>
 
         <ActionButton className="h-[30px] w-[110px]" onClick={() => onClose()}>
