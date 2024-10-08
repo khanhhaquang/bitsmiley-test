@@ -14,7 +14,6 @@ export const useBtcConnectors = () => {
     chainId: evmChainId,
     provider: particleEvmProvider
   } = useETHProvider()
-  console.log('🚀 ~ useBtcConnectors ~ evmChainId:', evmChainId)
 
   const { getNetwork, switchNetwork } = useBTCProvider()
 
