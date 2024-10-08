@@ -1,5 +1,6 @@
 import { useETHProvider } from '@particle-network/btc-connectkit'
 import { useCallback, useMemo, useState } from 'react'
+import { isAddress } from 'viem'
 
 import { SmileAirdropIcon, RightAngleThin, CloseIcon } from '@/assets/icons'
 import { Modal } from '@/components/Modal'
@@ -13,7 +14,6 @@ import styles from './Airdrop.module.scss'
 import { SelectWalletModal } from './ConnectWallet'
 import { Image } from './Image'
 import { Input } from './ui/input'
-import { isAddress } from 'viem'
 
 export const Airdrop: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
