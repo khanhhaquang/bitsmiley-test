@@ -93,7 +93,7 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
         <WalletItem
           key={c.metadata.id}
           iconName={c.metadata.id}
-          name={c.metadata.name}
+          name={c.metadata.id}
           connect={async () => {
             if (c.isReady()) {
               try {
