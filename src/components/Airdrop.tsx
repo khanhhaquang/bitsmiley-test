@@ -11,9 +11,9 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
 import styles from './Airdrop.module.scss'
-import { SelectWalletModal } from './ConnectWallet'
 import { Image } from './Image'
 import { Input } from './ui/input'
+import { SelectWalletModal } from './ConnectWallet'
 
 export const Airdrop: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -130,6 +130,7 @@ const AirdropModal: React.FC<{
         </ActionButton>
         <SelectWalletModal
           isBtcOnly
+          whitelistBtcWallets={['okx', 'unisat']}
           isOpen={isConnectModalOpen}
           onClose={() => setIsConnectModalOpen(false)}
         />

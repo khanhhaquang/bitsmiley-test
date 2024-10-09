@@ -2,7 +2,6 @@ import { useConnector, useETHProvider } from '@particle-network/btc-connectkit'
 import { useEffect, useMemo, useState } from 'react'
 import { useConnect } from 'wagmi'
 
-import { WALLET_SITE } from '@/config/links'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useBtcConnectors } from '@/hooks/useBtcConnectors'
 import { LoginType } from '@/types/common'
@@ -14,13 +13,17 @@ import WalletItem from './WalletItem'
 type BtcConnectorsProps = {
   onClose: () => void
   expectedChainId?: number
+  whitelistWallets?: string[]
 }
 
 const BtcConnectors: React.FC<BtcConnectorsProps> = ({
   onClose,
-  expectedChainId
+  expectedChainId,
+  whitelistWallets = []
 }) => {
-  const { connect } = useConnect()
+  const { connect: connectEvm } = useConnect()
+  const { connect: connectParticle, connectors } = useConnector()
+
   const {
     okxWithParticleConnector: okxConnector,
     unisatConnector,
@@ -28,12 +31,17 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
     bitgetWithParticleConnector: bitgetConnector,
     xverseWithParticleConnector: xverseConnector
   } = useBtcConnectors()
-  const { connect: connectParticle } = useConnector()
 
-  const [loginType, setLoginType] = useState<LoginType>()
+  const [loginType, setLoginType] = useState('')
 
-  const { evmAccount: particleEvmAccount, provider: particleEvmProvider } =
+  const { account: particleEvmAccount, provider: particleEvmProvider } =
     useETHProvider()
+
+  const filteredConnectors = useMemo(() => {
+    if (whitelistWallets.length === 0) return connectors
+
+    return connectors.filter((c) => whitelistWallets.includes(c.metadata.id))
+  }, [connectors, whitelistWallets])
 
   const connector = useMemo(() => {
     switch (loginType) {
@@ -63,14 +71,14 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
     if (!loginType || !particleEvmAccount || !particleEvmProvider || !connector)
       return
 
-    connect(
+    connectEvm(
       { connector, chainId: expectedChainId },
       { onError: (v) => console.log('connect error: ', v) }
     )
     setLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE, loginType)
     onClose()
   }, [
-    connect,
+    connectEvm,
     connector,
     loginType,
     onClose,
@@ -81,70 +89,25 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
 
   return (
     <>
-      <WalletItem
-        iconName="okx"
-        name="OKX"
-        connect={() => {
-          if (!window.okxwallet) {
-            openUrl(WALLET_SITE.okx)
-            return
-          }
-
-          connectParticle(LoginType.OKX)
-          setLoginType(LoginType.OKX)
-        }}
-      />
-      <WalletItem
-        iconName="unisat"
-        name="Unisat"
-        connect={async () => {
-          if (!window.unisat) {
-            openUrl(WALLET_SITE.unisat)
-            return
-          }
-
-          connectParticle(LoginType.UNISAT)
-          setLoginType(LoginType.UNISAT)
-        }}
-      />
-      <WalletItem
-        iconName="bybit"
-        name="Bybit"
-        connect={async () => {
-          if (!window.bybitWallet) {
-            openUrl(WALLET_SITE.bybit)
-            return
-          }
-
-          connectParticle(LoginType.BYBIT)
-          setLoginType(LoginType.BYBIT)
-        }}
-      />
-      <WalletItem
-        iconName="bitget"
-        name="Bitget"
-        connect={async () => {
-          if (!window.bitgetWallet) {
-            openUrl(WALLET_SITE.bitget)
-            return
-          }
-
-          connectParticle(LoginType.BITGET)
-          setLoginType(LoginType.BITGET)
-        }}
-      />
-      <WalletItem
-        iconName="xverse"
-        name="Xverse"
-        connect={async () => {
-          if (!window.XverseProviders) {
-            openUrl(WALLET_SITE.xverse)
-            return
-          }
-          connectParticle(LoginType.XVERSE)
-          setLoginType(LoginType.XVERSE)
-        }}
-      />
+      {filteredConnectors.map((c) => (
+        <WalletItem
+          key={c.metadata.id}
+          iconName={c.metadata.id}
+          name={c.metadata.name}
+          connect={async () => {
+            if (c.isReady()) {
+              try {
+                await connectParticle(c.metadata.id)
+                setLoginType(c.metadata.id)
+              } catch (error: unknown) {
+                console.error('BTC connect error: ', error)
+              }
+            } else {
+              openUrl(c.metadata.downloadUrl)
+            }
+          }}
+        />
+      ))}
     </>
   )
 }
