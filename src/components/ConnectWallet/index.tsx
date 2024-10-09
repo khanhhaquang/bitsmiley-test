@@ -147,12 +147,20 @@ export const ConnectWallet: React.FC<{
 }
 
 export const SelectWalletModal: React.FC<{
+  whitelistBtcWallets?: string[]
   expectedChainId?: number
   hideParticle?: boolean
   isBtcOnly?: boolean
   isOpen: boolean
   onClose: () => void
-}> = ({ isBtcOnly, isOpen, hideParticle, onClose, expectedChainId }) => {
+}> = ({
+  isBtcOnly,
+  isOpen,
+  hideParticle,
+  onClose,
+  whitelistBtcWallets,
+  expectedChainId
+}) => {
   const [isConfirmed, setIsConfirmed] = useState(
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
@@ -199,6 +207,7 @@ export const SelectWalletModal: React.FC<{
               <div className="flex flex-1 flex-col items-center gap-y-6">
                 <WalletTitle title="BTC Wallet" />
                 <BtcConnectors
+                  whitelistWallets={whitelistBtcWallets}
                   onClose={onClose}
                   expectedChainId={expectedChainId}
                 />

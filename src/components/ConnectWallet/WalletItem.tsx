@@ -34,7 +34,7 @@ const WalletItem: React.FC<{
             fill="currentColor"
           />
         </svg>
-        <span className="font-psm text-2xl">{name}</span>
+        <span className="font-psm text-2xl capitalize">{name}</span>
       </button>
     </div>
   )
