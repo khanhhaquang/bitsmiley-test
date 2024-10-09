@@ -11,9 +11,9 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
 import styles from './Airdrop.module.scss'
+import { SelectWalletModal } from './ConnectWallet'
 import { Image } from './Image'
 import { Input } from './ui/input'
-import { SelectWalletModal } from './ConnectWallet'
 
 export const Airdrop: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -73,6 +73,12 @@ const AirdropModal: React.FC<{
   const [bindEvmAddress, setBindEvmAddress] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
+  const handleClose = useCallback(() => {
+    onClose()
+    setErrorMsg('')
+    setIsConnectModalOpen(false)
+  }, [onClose])
+
   const handleSubmit = useCallback(async () => {
     if (!isAddress(bindEvmAddress)) {
       setErrorMsg('This address is not valid')
@@ -110,6 +116,10 @@ const AirdropModal: React.FC<{
 
   const isBound = useMemo(() => {
     return btcWalletCheckResult && btcWalletCheckResult.code === -13
+  }, [btcWalletCheckResult])
+
+  const isLimitedForBinding = useMemo(() => {
+    return btcWalletCheckResult && btcWalletCheckResult.code === -14
   }, [btcWalletCheckResult])
 
   const connectWallet = useMemo(() => {
@@ -214,18 +224,40 @@ const AirdropModal: React.FC<{
           Unfortunately, your BTC address is not eligible for $SMILE airdrops.
         </p>
 
-        <ActionButton className="h-[30px] w-[110px]" onClick={() => onClose()}>
+        <ActionButton
+          className="h-[30px] w-[110px]"
+          onClick={() => handleClose()}>
           OK
         </ActionButton>
       </div>
     )
-  }, [onClose])
+  }, [handleClose])
+
+  const limitedOfRequest = useMemo(() => {
+    return (
+      <div className="flex flex-col items-center gap-y-6 bg-black/75 px-12 py-9 pb-6 text-center">
+        <h2 className="text-center font-ibmb text-2xl uppercase text-white">
+          Dear BTC Wallet User
+        </h2>
+        <p className="w-[323px] font-ibmr text-sm text-white">
+          Please retry later for binding request.
+        </p>
+
+        <ActionButton
+          className="h-[30px] w-[110px]"
+          onClick={() => handleClose()}>
+          OK
+        </ActionButton>
+      </div>
+    )
+  }, [handleClose])
 
   const renderContent = useMemo(() => {
     if (!accounts.length || isCheckingBtcWallet) {
       return connectWallet
     }
     if (isNotEligible) return notEligible
+    if (isLimitedForBinding) return limitedOfRequest
 
     return evmAddressInput
   }, [
@@ -233,7 +265,9 @@ const AirdropModal: React.FC<{
     connectWallet,
     evmAddressInput,
     isCheckingBtcWallet,
+    isLimitedForBinding,
     isNotEligible,
+    limitedOfRequest,
     notEligible
   ])
 
@@ -242,9 +276,7 @@ const AirdropModal: React.FC<{
       backdrop={false}
       isOpen={isOpen}
       onClose={() => {
-        onClose()
-        setErrorMsg('')
-        setIsConnectModalOpen(false)
+        handleClose()
       }}>
       <div
         className={cn(
