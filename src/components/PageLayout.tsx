@@ -9,10 +9,11 @@ export const PageLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { pathname } = useLocation()
 
   const isRoot = pathname === '/'
+  const isAirdrop = pathname === '/airdrop'
 
   return (
     <>
-      <Header wallet />
+      <Header wallet isAirdrop={isAirdrop} />
       {children}
       <CopyRightAndLinks
         musicControl={isRoot}
