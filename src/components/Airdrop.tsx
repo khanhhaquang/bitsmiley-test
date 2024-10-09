@@ -1,5 +1,5 @@
 import { useETHProvider } from '@particle-network/btc-connectkit'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { isAddress } from 'viem'
 
 import { SmileAirdropIcon, RightAngleThin, CloseIcon } from '@/assets/icons'
@@ -17,11 +17,7 @@ import { Input } from './ui/input'
 
 export const Airdrop: React.FC = () => {
   const [isAirdropModalOpen, setIsAirdropModalOpen] = useState(false)
-  const [isIntroModalOpen, setIsIntroModalOpen] = useState(false)
-
-  useEffect(() => {
-    setIsIntroModalOpen(true)
-  }, [])
+  const [isIntroModalOpen, setIsIntroModalOpen] = useState(true)
 
   return (
     <>
