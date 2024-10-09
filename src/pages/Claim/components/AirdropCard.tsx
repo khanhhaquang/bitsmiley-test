@@ -147,7 +147,7 @@ const AirdropCard: React.FC<{
         </div>
         <div className="relative flex w-full flex-col gap-y-3">
           <p className="relative flex h-8 w-full items-center justify-center bg-yellow2 font-ibmb text-black [text-shadow:1.5px_0_0px_rgba(0,0,0,0.25)]">
-            $BIT airdrop
+            $SMILE airdrop
             <Image
               className="absolute left-1/2 top-1/2 size-full -translate-x-1/2 -translate-y-1/2"
               src={getIllustrationUrl('airdrop-claim-session-bg')}
