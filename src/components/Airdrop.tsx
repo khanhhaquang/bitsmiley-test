@@ -1,5 +1,5 @@
 import { useETHProvider } from '@particle-network/btc-connectkit'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isAddress } from 'viem'
 
 import { SmileAirdropIcon, RightAngleThin, CloseIcon } from '@/assets/icons'
@@ -16,22 +16,35 @@ import { Image } from './Image'
 import { Input } from './ui/input'
 
 export const Airdrop: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAirdropModalOpen, setIsAirdropModalOpen] = useState(false)
+  const [isIntroModalOpen, setIsIntroModalOpen] = useState(false)
+
+  useEffect(() => {
+    setIsIntroModalOpen(true)
+  }, [])
 
   return (
     <>
       <AirdropModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isAirdropModalOpen}
+        onClose={() => setIsAirdropModalOpen(false)}
       />
-      <AirdropButton onClick={() => setIsModalOpen(true)} />
+      <AirdropIntroModal
+        isOpen={isIntroModalOpen}
+        onClose={() => setIsIntroModalOpen(false)}
+        handleOpenAirdrop={() => setIsAirdropModalOpen(true)}
+      />
+      <AirdropButton onClick={() => setIsAirdropModalOpen(true)} />
     </>
   )
 }
 
-const AirdropButton: React.FC<{ onClick: () => void }> = ({ onClick }) => {
+const AirdropButton: React.FC<{ onClick: () => void; className?: string }> = ({
+  onClick,
+  className
+}) => {
   return (
-    <div className="absolute top-[calc(200%+30px)] size-full">
+    <div className={cn('absolute top-[calc(200%+30px)] size-full', className)}>
       <div className="group relative flex items-center text-[#FA0]">
         <SmileAirdropIcon className="pointer-events-none absolute left-0 z-[1] -translate-x-1/4 select-none text-[#FFAA00] group-hover:text-[#EAC641] group-active:text-[#CF6D19]" />
         <RightAngleThin className="absolute left-[-3px] top-[-3px]" />
@@ -313,6 +326,72 @@ const AirdropModal: React.FC<{
           </>
         )}
 
+        {renderContent}
+      </div>
+    </Modal>
+  )
+}
+
+const AirdropIntroModal: React.FC<{
+  isOpen: boolean
+  onClose: () => void
+  handleOpenAirdrop: () => void
+}> = ({ isOpen, onClose, handleOpenAirdrop }) => {
+  const renderContent = useMemo(() => {
+    return (
+      <div className="flex flex-col items-center gap-y-6 text-center">
+        <h2 className="text-center font-ibmb text-2xl uppercase text-[#FA0]">
+          <Image
+            src={getIllustrationUrl('bind-wallet-modal-intro-title', 'webp')}
+            width={249}
+            height={38}
+            className="pointer-events-none"
+          />
+        </h2>
+        <p className="w-[250px] text-center font-ibmr text-sm text-white">
+          <b>$SMILE</b> airdrop is coming! Harvesting season is here!
+        </p>
+
+        <AirdropButton
+          className="relative w-[153px]"
+          onClick={() => {
+            handleOpenAirdrop()
+            onClose()
+          }}
+        />
+      </div>
+    )
+  }, [handleOpenAirdrop, onClose])
+
+  return (
+    <Modal
+      backdrop={false}
+      isOpen={isOpen}
+      onClose={() => {
+        onClose()
+      }}>
+      <div
+        className={cn(
+          'relative flex min-w-[400px] flex-col items-center border bg-black/75 px-12 py-9 pb-6 border-[#EAC641]'
+        )}>
+        <button
+          className="absolute right-3 top-3 cursor-pointer text-white/70"
+          onClick={onClose}>
+          <CloseIcon width={13} height={13} />
+        </button>
+
+        <Image
+          src={getIllustrationUrl('bind-wallet-modal-decorator-left', 'webp')}
+          width={170}
+          height={160}
+          className="pointer-events-none absolute bottom-0 left-0 origin-bottom-left scale-[70%]"
+        />
+        <Image
+          src={getIllustrationUrl('bind-wallet-modal-decorator-right', 'webp')}
+          width={168}
+          height={158}
+          className="pointer-events-none absolute bottom-0 right-0 origin-bottom-right scale-[70%]"
+        />
         {renderContent}
       </div>
     </Modal>
