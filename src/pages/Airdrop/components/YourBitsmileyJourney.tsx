@@ -23,7 +23,6 @@ const YourBitsmileyJourney = () => {
       )
       event.preventDefault()
     }
-    return
   }
 
   useEffect(() => {

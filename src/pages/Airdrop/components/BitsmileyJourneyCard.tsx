@@ -57,18 +57,31 @@ const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
             Rules
           </a>
         </div>
-        <div
-          className={cn(
-            'bg-[#FFB800] uppercase w-full flex flex-col items-center h-[60px] font-bold',
-            { 'bg-[#8A8A8A]': isNotEntitled }
-          )}>
+        <div className="flex h-[60px] w-full flex-col font-bold uppercase">
           <div
-            className={cn('bg-[#120E1F] px-5 py-1  text-[#FFB800]', {
-              'text-[#8A8A8A]': isNotEntitled
-            })}>
-            airdrops
+            className={cn('bg-repeat flex-1 flex justify-center pt-[2px]')}
+            style={{
+              backgroundImage: `url(${getIllustrationUrl(
+                isNotEntitled
+                  ? 'journey-card-inactive-bg'
+                  : 'journey-card-active-bg',
+                'webp'
+              )})`
+            }}>
+            <div
+              className={cn('bg-[#120E1F] text-center px-5 text-[#FFB800]', {
+                'text-[#8A8A8A]': isNotEntitled
+              })}>
+              airdrops
+            </div>
           </div>
-          <div className=" text-black">
+          <div
+            className={cn(
+              'bg-[#FFB800] flex-1 text-center text-black w-full py-1',
+              {
+                'bg-[#8A8A8A]': isNotEntitled
+              }
+            )}>
             {getJourneyStatusTitle(status, airdropAmount)}
           </div>
         </div>

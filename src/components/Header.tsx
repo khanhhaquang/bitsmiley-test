@@ -5,7 +5,6 @@ import { cn } from '@/utils/cn'
 
 import { Airdrop } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 export const Header: React.FC<{ wallet?: boolean; isAirdrop?: boolean }> = ({
   wallet,
@@ -16,15 +15,6 @@ export const Header: React.FC<{ wallet?: boolean; isAirdrop?: boolean }> = ({
       <Link to="/" className={cn({ 'sm:hidden': isAirdrop })}>
         <HeaderIcon />
       </Link>
-
-      {isAirdrop && (
-        <div className="translate-y-[-50px]">
-          <img
-            src={getIllustrationUrl('airdrop-harvesting-season', 'webp')}
-            className="h-auto w-full max-w-[1168px] px-12 sm:px-0"
-          />
-        </div>
-      )}
 
       {!!wallet && (
         <div className="flex items-center gap-x-9 sm:hidden">
