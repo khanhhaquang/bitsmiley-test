@@ -1,5 +1,5 @@
 import { useConnector } from '@particle-network/btc-connectkit'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useAccount } from 'wagmi'
 
 import { CloseIcon } from '@/assets/icons'
@@ -16,14 +16,21 @@ import { Modal } from '../Modal'
 export const NativeBtcWalletModal: React.FC<{
   isOpen: boolean
   onClose: () => void
-}> = ({ isOpen, onClose }) => {
+  whitelistWallets?: string[]
+}> = ({ isOpen, onClose, whitelistWallets = [] }) => {
   const { switchNetwork, provider } = useNativeBtcProvider()
   const { btcNetwork } = useBtcNetwork()
   const { connectors, connect } = useConnector()
-  const { chain: evmChain, address: evmAddress } = useAccount()
+  const { chain: evmChain } = useAccount()
+
+  const filteredConnectors = useMemo(() => {
+    if (whitelistWallets.length === 0) return connectors
+
+    return connectors.filter((c) => whitelistWallets.includes(c.metadata.id))
+  }, [connectors, whitelistWallets])
 
   useEffect(() => {
-    if (!evmAddress || !evmChain || !provider) return
+    if (!evmChain || !provider) return
 
     if (evmChain.testnet && btcNetwork === 'livenet') {
       switchNetwork('testnet')
@@ -36,7 +43,7 @@ export const NativeBtcWalletModal: React.FC<{
     }
 
     onClose()
-  }, [evmAddress, evmChain, btcNetwork, onClose, provider, switchNetwork])
+  }, [evmChain, btcNetwork, onClose, provider, switchNetwork])
 
   const renderWallets = () => {
     return (
@@ -51,7 +58,7 @@ export const NativeBtcWalletModal: React.FC<{
             CONNECT BTC WALLET
           </h2>
           <div className="flex flex-col items-center gap-y-6">
-            {connectors.map((c) => (
+            {filteredConnectors.map((c) => (
               <WalletItem
                 key={c.metadata.id}
                 iconName={c.metadata.id}

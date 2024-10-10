@@ -11,7 +11,7 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
 import styles from './Airdrop.module.scss'
-import { SelectWalletModal } from './ConnectWallet'
+import { NativeBtcWalletModal } from './ConnectWallet/NativeBtcWalletModal'
 import { Image } from './Image'
 import { Input } from './ui/input'
 
@@ -147,9 +147,8 @@ const AirdropModal: React.FC<{
           onClick={() => setIsConnectModalOpen(true)}>
           {isCheckingBtcWallet ? 'Waiting...' : 'Connect wallet'}
         </ActionButton>
-        <SelectWalletModal
-          isBtcOnly
-          whitelistBtcWallets={['okx', 'unisat']}
+        <NativeBtcWalletModal
+          whitelistWallets={['okx', 'unisat']}
           isOpen={isConnectModalOpen}
           onClose={() => setIsConnectModalOpen(false)}
         />
