@@ -9,7 +9,7 @@ export const PageLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { pathname } = useLocation()
 
   const isRoot = pathname === '/'
-  const isAirdrop = pathname === '/airdrop'
+  const isAirdrop = pathname.startsWith('/airdrop')
 
   return (
     <>
@@ -18,7 +18,8 @@ export const PageLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
       <CopyRightAndLinks
         musicControl={isRoot}
         className={cn(
-          isRoot ? 'text-white mix-blend-difference ' : 'text-black'
+          isRoot ? 'text-white mix-blend-difference ' : 'text-black',
+          isAirdrop && 'hidden'
         )}
       />
     </>
