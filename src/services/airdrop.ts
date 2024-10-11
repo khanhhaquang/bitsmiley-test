@@ -3,7 +3,14 @@ import { Address } from 'viem'
 import { axiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
 
-export type BitsmileyJourneyType = 1 | 2 | 3 | 4 | 5 | 6
+export enum BitsmileyJourneyType {
+  BITDISC_GAS_COVER = 1,
+  STAKE_BIT_DISC = 2,
+  THE_RUEMEME_SHOW = 3,
+  PRE_SEASON_BITPOINT = 4,
+  SEASON_ONE_BITPOINT = 5,
+  SPECIAL_COMMUNITY_EVENTS = 6
+}
 
 export enum BitsmileyJourneyStatus {
   NOT_ENTITLED = 0,
@@ -12,12 +19,14 @@ export enum BitsmileyJourneyStatus {
 }
 
 export const BitsmileyJourneyNames: Record<BitsmileyJourneyType, string> = {
-  1: 'Invalid bit-Disc Black Inscription gas cover',
-  2: 'Stake bit-Disc Black (bitJade)',
-  3: 'The ruememe show',
-  4: 'Pre-Season bitPoint',
-  5: 'Season One bitPoint',
-  6: 'Special: bitSmiley Community Events'
+  [BitsmileyJourneyType.BITDISC_GAS_COVER]:
+    'Invalid bit-Disc Black Inscription gas cover',
+  [BitsmileyJourneyType.STAKE_BIT_DISC]: 'Stake bit-Disc Black (bitJade)',
+  [BitsmileyJourneyType.THE_RUEMEME_SHOW]: 'The ruememe show',
+  [BitsmileyJourneyType.PRE_SEASON_BITPOINT]: 'Pre-Season bitPoint',
+  [BitsmileyJourneyType.SEASON_ONE_BITPOINT]: 'Season One bitPoint',
+  [BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS]:
+    'Special: bitSmiley Community Events'
 }
 
 export interface BitsmileyJourney {

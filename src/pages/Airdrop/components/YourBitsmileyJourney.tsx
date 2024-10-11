@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import { useGetMyBitsmileyJourney } from '@/hooks/useAirdropQueries'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { BitsmileyJourneyNames } from '@/services/airdrop'
+import { BitsmileyJourneyNames, BitsmileyJourneyType } from '@/services/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import BitsmileyJourneyCard from './BitsmileyJourneyCard'
@@ -13,7 +13,21 @@ const YourBitsmileyJourney = () => {
   const cardsRef = useRef<HTMLDivElement>(null)
   const { isMobile } = useMediaQuery()
 
-  const communityJourney = data?.[5]
+  const communityJourney = useMemo(
+    () =>
+      data?.find(
+        (item) => item?.type === BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS
+      ),
+    [data]
+  )
+
+  const listNormalJourney = useMemo(
+    () =>
+      data?.filter(
+        (item) => item?.type !== BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS
+      ),
+    [data]
+  )
 
   const onWheel = (event: WheelEvent) => {
     if (event?.deltaY !== 0) {
@@ -45,9 +59,9 @@ const YourBitsmileyJourney = () => {
       </div>
       <div
         ref={cardsRef}
-        className="scrollbar-none m-auto flex w-[1423px] flex-col gap-y-[60px] overflow-x-auto sm:w-full sm:items-center sm:p-0">
+        className="scrollbar-none m-auto flex w-full flex-col gap-y-[60px] overflow-x-auto sm:items-center sm:p-0 md:px-[100px] lg:px-[225px]">
         <div className="flex w-fit flex-nowrap items-center pb-1 sm:flex-col">
-          {data?.slice(0, 5)?.map((item, index) => (
+          {listNormalJourney?.map((item, index) => (
             <>
               {index !== 0 && (
                 <img
