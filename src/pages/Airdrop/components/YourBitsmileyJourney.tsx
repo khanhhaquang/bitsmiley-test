@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 
 import { useGetMyBitsmileyJourney } from '@/hooks/useAirdropQueries'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { BitsmileyJourneyNames } from '@/services/airdrop'
+import { BitsmileyJourneyNames, BitsmileyJourneyType } from '@/services/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import BitsmileyJourneyCard from './BitsmileyJourneyCard'
@@ -13,7 +13,9 @@ const YourBitsmileyJourney = () => {
   const cardsRef = useRef<HTMLDivElement>(null)
   const { isMobile } = useMediaQuery()
 
-  const communityJourney = data?.[5]
+  const communityJourney = data?.find(
+    (item) => item?.type === BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS
+  )
 
   const onWheel = (event: WheelEvent) => {
     if (event?.deltaY !== 0) {
@@ -47,21 +49,26 @@ const YourBitsmileyJourney = () => {
         ref={cardsRef}
         className="scrollbar-none m-auto flex w-[1423px] flex-col gap-y-[60px] overflow-x-auto sm:w-full sm:items-center sm:p-0">
         <div className="flex w-fit flex-nowrap items-center pb-1 sm:flex-col">
-          {data?.slice(0, 5)?.map((item, index) => (
-            <>
-              {index !== 0 && (
-                <img
-                  src={getIllustrationUrl('next-journey-chevron', 'webp')}
-                  className="size-10 px-1 sm:rotate-90"
+          {data
+            ?.filter(
+              (item) =>
+                item?.type !== BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS
+            )
+            ?.map((item, index) => (
+              <>
+                {index !== 0 && (
+                  <img
+                    src={getIllustrationUrl('next-journey-chevron', 'webp')}
+                    className="size-10 px-1 sm:rotate-90"
+                  />
+                )}
+                <BitsmileyJourneyCard
+                  key={item?.type}
+                  {...item}
+                  name={BitsmileyJourneyNames[item?.type]}
                 />
-              )}
-              <BitsmileyJourneyCard
-                key={item?.type}
-                {...item}
-                name={BitsmileyJourneyNames[item?.type]}
-              />
-            </>
-          ))}
+              </>
+            ))}
         </div>
       </div>
       {communityJourney && <CommunityJourneyCard {...communityJourney} />}
