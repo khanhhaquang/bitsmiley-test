@@ -51,6 +51,8 @@ const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
         <div className="flex size-full flex-1 items-end justify-center bg-cover text-lg">
           <a
             href={mediumLink}
+            target="_blank"
+            rel="noopener noreferrer"
             className={cn('text-[#FFB800] underline', {
               'text-white': isNotEntitled
             })}>

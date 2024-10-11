@@ -30,6 +30,8 @@ const CommunityJourneyCard: FC<BitsmileyJourney> = ({
           </div>
           <a
             href={mediumLink}
+            target="_blank"
+            rel="noopener noreferrer"
             className={cn('text-white/60 underline', {
               'text-white': isCommunityJourneyNotEntitled
             })}>
