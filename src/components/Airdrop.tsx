@@ -1,5 +1,6 @@
 import { useETHProvider } from '@particle-network/btc-connectkit'
 import { useCallback, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { isAddress } from 'viem'
 
 import { SmileAirdropIcon, RightAngleThin, CloseIcon } from '@/assets/icons'
@@ -16,21 +17,17 @@ import { Image } from './Image'
 import { Input } from './ui/input'
 
 export const Airdrop: React.FC = () => {
-  const [isAirdropModalOpen, setIsAirdropModalOpen] = useState(false)
   const [isIntroModalOpen, setIsIntroModalOpen] = useState(true)
+  const navigate = useNavigate()
 
   return (
     <>
-      <AirdropModal
-        isOpen={isAirdropModalOpen}
-        onClose={() => setIsAirdropModalOpen(false)}
-      />
       <AirdropIntroModal
         isOpen={isIntroModalOpen}
         onClose={() => setIsIntroModalOpen(false)}
-        handleOpenAirdrop={() => setIsAirdropModalOpen(true)}
+        handleOpenAirdrop={() => navigate('/airdrop')}
       />
-      <AirdropButton onClick={() => setIsAirdropModalOpen(true)} />
+      <AirdropButton onClick={() => navigate('/airdrop')} />
     </>
   )
 }
@@ -62,7 +59,7 @@ const AirdropButton: React.FC<{ onClick: () => void; className?: string }> = ({
   )
 }
 
-const AirdropModal: React.FC<{
+export const AirdropModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {

@@ -7,12 +7,15 @@ import { cn } from '@/utils/cn'
 import { Airdrop } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
 
-export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
+export const Header: React.FC<{ wallet?: boolean; isAirdrop?: boolean }> = ({
+  wallet,
+  isAirdrop
+}) => {
   const { isMobile } = useMediaQuery()
 
   return (
-    <div className="absolute left-0 top-[50px] z-50 flex w-full items-center justify-between px-12 text-white sm:justify-center">
-      <Link to="/">
+    <div className="absolute left-0 top-[50px] z-50 flex w-full  items-center justify-between px-12 text-white sm:justify-center">
+      <Link to="/" className={cn({ 'sm:hidden': isAirdrop })}>
         <HeaderIcon />
       </Link>
 
@@ -21,7 +24,7 @@ export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
           <div className="relative">
             <ConnectWallet />
             <EnterAppButton />
-            <Airdrop />
+            {!isAirdrop && <Airdrop />}
           </div>
         </div>
       )}
