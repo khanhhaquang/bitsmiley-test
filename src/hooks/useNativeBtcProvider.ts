@@ -1,6 +1,8 @@
 import { useBTCProvider } from '@particle-network/btc-connectkit'
 import { useCallback } from 'react'
 
+import { isBtcTaprootAddress } from '@/utils/chain'
+
 import { useMempool } from './useMempool'
 
 export const useNativeBtcProvider = () => {
@@ -27,7 +29,25 @@ export const useNativeBtcProvider = () => {
     [MempoolService.postTransaction, accounts.length, provider]
   )
 
+  const customSignMessage = useCallback(
+    async (message: string) => {
+      if (provider && accounts.length > 0) {
+        try {
+          const signature = await provider.signMessage(
+            message,
+            isBtcTaprootAddress(accounts[0] && 'bip322-simple')
+          )
+          return signature
+        } catch (e) {
+          console.log('sign message error: ', e)
+        }
+      }
+    },
+    [accounts, provider]
+  )
+
   return {
+    customSignMessage,
     pushTx,
     getNetwork,
     provider,

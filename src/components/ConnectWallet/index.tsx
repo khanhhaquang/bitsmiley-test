@@ -147,11 +147,20 @@ export const ConnectWallet: React.FC<{
 }
 
 export const SelectWalletModal: React.FC<{
+  whitelistBtcWallets?: string[]
   expectedChainId?: number
   hideParticle?: boolean
+  isBtcOnly?: boolean
   isOpen: boolean
   onClose: () => void
-}> = ({ isOpen, hideParticle, onClose, expectedChainId }) => {
+}> = ({
+  isBtcOnly,
+  isOpen,
+  hideParticle,
+  onClose,
+  whitelistBtcWallets,
+  expectedChainId
+}) => {
   const [isConfirmed, setIsConfirmed] = useState(
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
@@ -185,27 +194,34 @@ export const SelectWalletModal: React.FC<{
           onClick={onClose}
           className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
         />
-        <div className="p-11">
+        <div className="w-full p-11">
           <h2 className="mb-9 text-center font-smb text-2xl text-white">
             CONNECT WALLET
           </h2>
-          <div className="flex gap-x-6">
+          <div
+            className={cn(
+              'flex w-full',
+              hideParticle || isBtcOnly ? 'gap-x-0' : 'gap-x-6'
+            )}>
             {!hideParticle && (
-              <div className="flex flex-col items-center gap-y-6">
+              <div className="flex flex-1 flex-col items-center gap-y-6">
                 <WalletTitle title="BTC Wallet" />
                 <BtcConnectors
+                  whitelistWallets={whitelistBtcWallets}
                   onClose={onClose}
                   expectedChainId={expectedChainId}
                 />
               </div>
             )}
-            <div className="flex flex-col items-center gap-y-6">
-              <WalletTitle title="EVM Wallet" />
-              <EvmConnectors
-                onClose={onClose}
-                expectedChainId={expectedChainId}
-              />
-            </div>
+            {!isBtcOnly && (
+              <div className="flex flex-1 flex-col items-center gap-y-6">
+                <WalletTitle title="EVM Wallet" />
+                <EvmConnectors
+                  onClose={onClose}
+                  expectedChainId={expectedChainId}
+                />
+              </div>
+            )}
           </div>
         </div>
       </>

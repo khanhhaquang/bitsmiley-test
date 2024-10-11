@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { HeaderIcon, RightAngleThin } from '@/assets/icons'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/utils/cn'
 
 import { Airdrop } from './Airdrop'
@@ -10,14 +11,16 @@ export const Header: React.FC<{ wallet?: boolean; isAirdrop?: boolean }> = ({
   wallet,
   isAirdrop
 }) => {
+  const { isMobile } = useMediaQuery()
+
   return (
     <div className="absolute left-0 top-[50px] z-50 flex w-full  items-center justify-between px-12 text-white sm:justify-center">
       <Link to="/" className={cn({ 'sm:hidden': isAirdrop })}>
         <HeaderIcon />
       </Link>
 
-      {!!wallet && (
-        <div className="flex items-center gap-x-9 sm:hidden">
+      {!!wallet && !isMobile && (
+        <div className="flex items-center gap-x-9">
           <div className="relative">
             <ConnectWallet />
             <EnterAppButton />

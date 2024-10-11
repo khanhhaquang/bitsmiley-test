@@ -29,10 +29,10 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <ReduxProvider store={store}>
       <BrowserRouter>
+        <ModalsContainer />
         <CustomWagmiProvider>
           <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} position="bottom" />
-            <ModalsContainer />
             <Toaster />
             <TooltipProvider>
               <PageLayout>{children}</PageLayout>

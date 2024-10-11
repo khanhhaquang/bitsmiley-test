@@ -25,7 +25,7 @@ const Claim: React.FC = () => {
       )}>
       <VaultTitleBlue className="items-baseline gap-x-2">
         <DollarShadowIcon width={24} />
-        Bit Claim
+        SMILE Claim
       </VaultTitleBlue>
 
       {isLoading ? (
