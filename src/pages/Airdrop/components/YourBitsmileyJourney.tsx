@@ -37,7 +37,7 @@ const YourBitsmileyJourney = () => {
 
   return (
     <div className="mt-[100px] flex w-full flex-col gap-y-[60px]">
-      <div className="flex w-full items-center justify-center overflow-hidden ">
+      <div className="flex w-full items-center justify-center overflow-hidden">
         <img
           src={getIllustrationUrl('your-bitsmiley-journey', 'webp')}
           className="h-auto min-h-[128px] min-w-[1926px] overflow-hidden sm:min-h-[90px] sm:min-w-[1000px]"
