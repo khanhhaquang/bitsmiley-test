@@ -24,7 +24,7 @@ export const Header: React.FC<{ wallet?: boolean; isAirdrop?: boolean }> = ({
           <div className="relative">
             <ConnectWallet />
             <EnterAppButton />
-            <Airdrop />
+            {!isAirdrop && <Airdrop />}
           </div>
         </div>
       )}
