@@ -5,7 +5,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 
-import { Airdrop } from './Airdrop'
+import { Airdrop, AirdropButton } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
 
 export const Header: React.FC<{
@@ -21,12 +21,11 @@ export const Header: React.FC<{
       </Link>
 
       {!isMobile && (
-        <div className="flex items-center gap-x-9">
-          <div className="relative">
-            <ConnectWallet />
-            <EnterAppButton />
-            {!isAirdropPage && isConnected && <Airdrop />}
-          </div>
+        <div className="relative flex flex-col items-center gap-y-9">
+          <ConnectWallet />
+          <EnterAppButton />
+          {isConnected && !isAirdropPage && <AirdropButton />}
+          <Airdrop />
         </div>
       )}
     </div>
