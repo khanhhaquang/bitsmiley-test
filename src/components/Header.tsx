@@ -2,30 +2,30 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { HeaderIcon, RightAngleThin } from '@/assets/icons'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 
-import { Airdrop } from './Airdrop'
+import { Airdrop, AirdropButton } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
 
-export const Header: React.FC<{ wallet?: boolean; isAirdrop?: boolean }> = ({
-  wallet,
-  isAirdrop
-}) => {
+export const Header: React.FC<{
+  isAirdropPage?: boolean
+}> = ({ isAirdropPage }) => {
   const { isMobile } = useMediaQuery()
+  const { isConnected } = useUserInfo()
 
   return (
     <div className="absolute left-0 top-[50px] z-50 flex w-full  items-center justify-between px-12 text-white sm:justify-center">
-      <Link to="/" className={cn({ 'sm:hidden': isAirdrop })}>
+      <Link to="/" className={cn({ 'sm:hidden': isAirdropPage })}>
         <HeaderIcon />
       </Link>
 
-      {!!wallet && !isMobile && (
-        <div className="flex items-center gap-x-9">
-          <div className="relative">
-            <ConnectWallet />
-            <EnterAppButton />
-            {!isAirdrop && <Airdrop />}
-          </div>
+      {!isMobile && (
+        <div className="relative flex flex-col items-center gap-y-9">
+          <ConnectWallet />
+          <EnterAppButton />
+          {isConnected && !isAirdropPage && <AirdropButton />}
+          <Airdrop />
         </div>
       )}
     </div>

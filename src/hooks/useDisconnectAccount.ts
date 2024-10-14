@@ -8,20 +8,29 @@ import { clearStorage } from '@/utils/storage'
 export const useDisconnectAccount = () => {
   const navigate = useNavigate()
   const { disconnect: disConnectParticle } = useParticleConnect()
-  const { disconnect: disconnectEvm } = useDisconnect()
+  const { disconnect: disconnectEvm, connectors } = useDisconnect()
 
-  const disconnect = useCallback(() => {
-    disConnectParticle?.()
+  const disconnectWagmi = useCallback(() => {
     disconnectEvm(
-      {},
+      {
+        connector: connectors[0]
+      },
       {
         onSuccess: () => {
           clearStorage()
           navigate('/')
+        },
+        onError: (e) => {
+          console.log('err', e)
         }
       }
     )
-  }, [disConnectParticle, disconnectEvm, navigate])
+  }, [connectors, disconnectEvm, navigate])
+
+  const disconnect = useCallback(() => {
+    disconnectWagmi()
+    disConnectParticle?.()
+  }, [disConnectParticle, disconnectWagmi])
 
   return disconnect
 }

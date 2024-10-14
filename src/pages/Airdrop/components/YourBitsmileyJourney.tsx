@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { Fragment, useEffect, useMemo, useRef } from 'react'
 
 import { useGetMyBitsmileyJourney } from '@/hooks/useAirdropQueries'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -62,7 +62,7 @@ const YourBitsmileyJourney = () => {
         className="scrollbar-none m-auto flex w-full flex-col gap-y-[60px] overflow-x-auto sm:items-center sm:p-0 md:px-[100px] lg:px-[225px]">
         <div className="flex w-fit flex-nowrap items-center pb-1 sm:flex-col">
           {listNormalJourney?.map((item, index) => (
-            <>
+            <Fragment key={item?.type}>
               {index !== 0 && (
                 <img
                   src={getIllustrationUrl('next-journey-chevron', 'webp')}
@@ -70,11 +70,10 @@ const YourBitsmileyJourney = () => {
                 />
               )}
               <BitsmileyJourneyCard
-                key={item?.type}
                 {...item}
                 name={BitsmileyJourneyNames[item?.type]}
               />
-            </>
+            </Fragment>
           ))}
         </div>
       </div>

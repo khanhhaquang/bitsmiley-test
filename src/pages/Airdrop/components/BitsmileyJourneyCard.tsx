@@ -1,4 +1,5 @@
 import { FC } from 'react'
+
 import { BitsmileyJourney, BitsmileyJourneyStatus } from '@/services/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -18,6 +19,7 @@ export const getJourneyStatusTitle = (
       return ''
   }
 }
+
 const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
   name,
   type,

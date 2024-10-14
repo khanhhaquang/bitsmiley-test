@@ -1,8 +1,19 @@
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import YourBitsmileyJourney from './components/YourBitsmileyJourney'
 
 const Airdrop = () => {
+  const navigate = useNavigate()
+  const { isConnected } = useUserInfo()
+
+  useEffect(() => {
+    if (!isConnected) navigate('/')
+  }, [isConnected, navigate])
+
   return (
     <div className="flex min-h-svh w-full flex-col items-center overflow-x-hidden">
       <img

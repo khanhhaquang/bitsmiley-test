@@ -18,26 +18,53 @@ import { Input } from './ui/input'
 
 export const Airdrop: React.FC = () => {
   const [isIntroModalOpen, setIsIntroModalOpen] = useState(true)
-  const navigate = useNavigate()
+  const [isAirdropModalOpen, setIsAirdropModalOpen] = useState(false)
 
   return (
     <>
       <AirdropIntroModal
         isOpen={isIntroModalOpen}
         onClose={() => setIsIntroModalOpen(false)}
-        handleOpenAirdrop={() => navigate('/airdrop')}
+        handleOpenAirdrop={() => setIsAirdropModalOpen(true)}
       />
-      <AirdropButton onClick={() => navigate('/airdrop')} />
+      <AirdropModal
+        isOpen={isAirdropModalOpen}
+        onClose={() => setIsAirdropModalOpen(false)}
+      />
+      <BindEvmButton onClick={() => setIsAirdropModalOpen(true)} />
     </>
   )
 }
 
-const AirdropButton: React.FC<{ onClick: () => void; className?: string }> = ({
-  onClick,
-  className
-}) => {
+export const BindEvmButton: React.FC<{
+  onClick: () => void
+  className?: string
+}> = ({ onClick }) => {
   return (
-    <div className={cn('absolute top-[calc(200%+30px)] size-full', className)}>
+    <div className="absolute top-[calc(200%+28px)] size-full">
+      <button
+        onClick={() => onClick()}
+        className={cn(
+          'relative flex size-full items-center justify-center whitespace-nowrap bg-green/10 uppercase text-green hover:bg-green/30 hover:font-bold hover:text-opacity-70 active:bg-green/10'
+        )}>
+        <span>Bind EVM Wallet</span>
+        <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
+        <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
+        <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
+        <RightAngleThin className="absolute bottom-[-1px] left-[-1px] -rotate-90" />
+      </button>
+    </div>
+  )
+}
+
+export const AirdropButton: React.FC<{
+  onClick?: () => void
+  className?: string
+}> = ({ onClick, className }) => {
+  const navigate = useNavigate()
+
+  return (
+    <div className={cn('absolute top-[calc(300%+48px)] size-full', className)}>
       <div className="group relative flex items-center text-[#FA0]">
         <SmileAirdropIcon className="pointer-events-none absolute left-0 z-[1] -translate-x-1/4 select-none text-[#FFAA00] group-hover:text-[#EAC641] group-active:text-[#CF6D19]" />
         <RightAngleThin className="absolute left-[-3px] top-[-3px]" />
@@ -45,7 +72,7 @@ const AirdropButton: React.FC<{ onClick: () => void; className?: string }> = ({
         <RightAngleThin className="absolute bottom-[-3px] right-[-3px] rotate-180" />
         <RightAngleThin className="absolute bottom-[-3px] left-[-3px] -rotate-90" />
         <button
-          onClick={onClick}
+          onClick={() => (onClick ? onClick() : navigate('/airdrop'))}
           className={cn(
             'group relative cursor-pointer flex h-[30px] w-full items-center justify-center  bg-[#FFAA00] uppercase hover:bg-[#EAC641] active:bg-[#CF6D19] overflow-hidden',
             styles.airdropBtn

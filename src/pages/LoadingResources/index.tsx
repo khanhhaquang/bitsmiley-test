@@ -1,10 +1,9 @@
-// import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
-import { LoadingLineIcon } from '@/assets/icons'
+import { HeaderIcon, LoadingLineIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import { CanvasFrames } from '@/components/CanvasFrames'
-import { Header } from '@/components/Header'
 import Typewriter from '@/components/Typewriter'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { cn } from '@/utils/cn'
@@ -24,8 +23,12 @@ const LoadingResources: React.FC<{
 
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-black bg-loading bg-cover bg-center bg-no-repeat">
-      <Header />
-      {/* <CopyRightAndLinks musicControl={false} /> */}
+      <div className="absolute left-0 top-[50px] z-50 flex w-full  items-center justify-between px-12 text-white sm:justify-center">
+        <Link to="/">
+          <HeaderIcon />
+        </Link>
+      </div>
+
       <div className="flex flex-col items-center text-white">
         <div className="mb-12">
           <CanvasFrames
