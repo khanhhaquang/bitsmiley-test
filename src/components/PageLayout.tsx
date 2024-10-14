@@ -13,7 +13,7 @@ export const PageLayout: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <>
-      <Header wallet isAirdropPage={isAirdropPage} />
+      <Header isAirdropPage={isAirdropPage} />
       {children}
       <CopyRightAndLinks
         musicControl={isRoot}

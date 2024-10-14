@@ -9,11 +9,10 @@ import { Airdrop } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
 
 export const Header: React.FC<{
-  wallet?: boolean
   isAirdropPage?: boolean
-}> = ({ wallet, isAirdropPage }) => {
-  const { isConnected } = useUserInfo()
+}> = ({ isAirdropPage }) => {
   const { isMobile } = useMediaQuery()
+  const { isConnected } = useUserInfo()
 
   return (
     <div className="absolute left-0 top-[50px] z-50 flex w-full  items-center justify-between px-12 text-white sm:justify-center">
@@ -21,7 +20,7 @@ export const Header: React.FC<{
         <HeaderIcon />
       </Link>
 
-      {!!wallet && !isMobile && (
+      {!isMobile && (
         <div className="flex items-center gap-x-9">
           <div className="relative">
             <ConnectWallet />
