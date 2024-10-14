@@ -20,7 +20,7 @@ const CommunityJourneyCard: FC<BitsmileyJourney> = ({
 
   return (
     <div className="flex w-full justify-center">
-      <div className="flex w-[862px] flex-col gap-1 border-2 border-[#FFB800]/60 bg-[#221901] p-1 font-ibmr text-2xl font-bold sm:text-xl">
+      <div className="flex w-[862px] flex-col gap-1 border-2 border-[#FFB800]/60 bg-[#221901] p-1 font-ibmr text-2xl font-bold leading-5 sm:text-xl sm:leading-4">
         <div className="flex w-full justify-between bg-[#FFB800]/20 px-6 py-[10px] sm:flex-col sm:items-center sm:text-center">
           <div
             className={cn('capitalize', {

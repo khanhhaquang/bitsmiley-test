@@ -50,7 +50,7 @@ const YourBitsmileyJourney = () => {
   }, [isMobile])
 
   return (
-    <div className="mt-[100px] flex w-full flex-col gap-y-[60px]">
+    <div className="flex w-full flex-col gap-y-[60px]">
       <div className="flex w-full items-center justify-center overflow-hidden">
         <img
           src={getIllustrationUrl('your-bitsmiley-journey', 'webp')}

@@ -22,7 +22,7 @@ export const BitsmileyJourneyNames: Record<BitsmileyJourneyType, string> = {
   [BitsmileyJourneyType.BITDISC_GAS_COVER]:
     'Invalid bit-Disc Black Inscription gas cover',
   [BitsmileyJourneyType.STAKE_BIT_DISC]: 'Stake bit-Disc Black (bitJade)',
-  [BitsmileyJourneyType.THE_RUEMEME_SHOW]: 'The ruememe show',
+  [BitsmileyJourneyType.THE_RUEMEME_SHOW]: 'The Truememe show',
   [BitsmileyJourneyType.PRE_SEASON_BITPOINT]: 'Pre-Season bitPoint',
   [BitsmileyJourneyType.SEASON_ONE_BITPOINT]: 'Season One bitPoint',
   [BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS]:

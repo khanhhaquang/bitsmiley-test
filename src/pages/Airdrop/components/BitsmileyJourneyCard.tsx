@@ -28,7 +28,7 @@ const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
   const isNotEntitled = status === BitsmileyJourneyStatus.NOT_ENTITLED
 
   return (
-    <div className="relative h-[362px] w-[348px] border-2 border-[#2648ef]/60 bg-[#000727] p-1 font-ibmr">
+    <div className="relative h-[326px] w-[348px] border-2 border-[#2648ef]/60 bg-[#000727] p-1 font-ibmr">
       <div
         className={cn('w-full h-full absolute bg-no-repeat bg-contain z-0', {
           'opacity-60': isNotEntitled
