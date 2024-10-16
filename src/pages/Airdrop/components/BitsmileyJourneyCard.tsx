@@ -15,7 +15,7 @@ export const getJourneyStatusTitle = (
     case BitsmileyJourneyStatus.COMING_SOON:
       return 'Coming soon'
     case BitsmileyJourneyStatus.ACTIVE:
-      return formatNumberAsTrunc(airdropAmount || '', 2)
+      return formatNumberAsTrunc(airdropAmount || '')
     default:
       return ''
   }
@@ -33,12 +33,9 @@ const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
   return (
     <div className="relative h-[326px] w-[348px] border-2 border-[#2648ef]/60 bg-[#000727] p-1 font-ibmr">
       <div
-        className={cn(
-          'inset-1 absolute bg-no-repeat bg-contain overflow-hidden',
-          {
-            'opacity-60': isNotEntitled
-          }
-        )}
+        className={cn('inset-1 absolute bg-no-repeat bg-contain', {
+          'opacity-60': isNotEntitled
+        })}
         style={{
           backgroundImage: `url(${getIllustrationUrl(
             `bitsmiley-journey-${type}`,
