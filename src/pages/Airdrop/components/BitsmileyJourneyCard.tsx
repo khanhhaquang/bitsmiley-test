@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { BitsmileyJourney, BitsmileyJourneyStatus } from '@/services/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { formatNumberAsTrunc } from '@/utils/number'
 
 export const getJourneyStatusTitle = (
   status: BitsmileyJourneyStatus,
@@ -14,7 +15,7 @@ export const getJourneyStatusTitle = (
     case BitsmileyJourneyStatus.COMING_SOON:
       return 'Coming soon'
     case BitsmileyJourneyStatus.ACTIVE:
-      return airdropAmount?.toLocaleString()
+      return formatNumberAsTrunc(airdropAmount || '', 2)
     default:
       return ''
   }
@@ -32,9 +33,12 @@ const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
   return (
     <div className="relative h-[326px] w-[348px] border-2 border-[#2648ef]/60 bg-[#000727] p-1 font-ibmr">
       <div
-        className={cn('w-full h-full absolute bg-no-repeat bg-contain z-0', {
-          'opacity-60': isNotEntitled
-        })}
+        className={cn(
+          'inset-1 absolute bg-no-repeat bg-contain overflow-hidden',
+          {
+            'opacity-60': isNotEntitled
+          }
+        )}
         style={{
           backgroundImage: `url(${getIllustrationUrl(
             `bitsmiley-journey-${type}`,
