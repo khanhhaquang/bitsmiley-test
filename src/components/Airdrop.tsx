@@ -41,11 +41,11 @@ export const BindEvmButton: React.FC<{
   className?: string
 }> = ({ onClick }) => {
   return (
-    <div className="absolute top-[calc(200%+28px)] size-full">
+    <div className="h-[34px] w-full">
       <button
         onClick={() => onClick()}
         className={cn(
-          'relative flex size-full items-center justify-center whitespace-nowrap bg-green/10 uppercase text-green hover:bg-green/30 hover:font-bold hover:text-opacity-70 active:bg-green/10'
+          'relative cursor-pointer flex size-full items-center justify-center whitespace-nowrap bg-green/10 uppercase text-green hover:bg-green/30 hover:font-bold hover:text-opacity-70 active:bg-green/10'
         )}>
         <span>Bind EVM Wallet</span>
         <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
@@ -64,7 +64,7 @@ export const AirdropButton: React.FC<{
   const navigate = useNavigate()
 
   return (
-    <div className={cn('absolute top-[calc(300%+48px)] size-full', className)}>
+    <div className={cn('w-full', className)}>
       <div className="group relative flex items-center text-[#FA0]">
         <SmileAirdropIcon className="pointer-events-none absolute left-0 z-[1] -translate-x-1/4 select-none text-[#FFAA00] group-hover:text-[#EAC641] group-active:text-[#CF6D19]" />
         <RightAngleThin className="absolute left-[-3px] top-[-3px]" />
