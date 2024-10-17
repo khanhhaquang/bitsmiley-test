@@ -30,12 +30,23 @@ const YourBitsmileyJourney = () => {
   )
 
   const onWheel = (event: WheelEvent) => {
-    if (event?.deltaY !== 0) {
-      cardsRef.current?.scroll(
-        cardsRef.current.scrollLeft + event.deltaY * 5,
-        cardsRef.current.scrollTop
-      )
-      event.preventDefault()
+    if (event?.deltaY !== 0 && cardsRef?.current) {
+      const { scrollWidth, scrollLeft, clientWidth, scrollTop } =
+        cardsRef.current
+      const maxScrollWidth = scrollWidth - clientWidth
+      const calculatedScrollWidth = scrollLeft + event.deltaY * 5
+
+      const isPositionBetweenScroll = (position: number) =>
+        position > 0 && position < maxScrollWidth
+
+      if (
+        isPositionBetweenScroll(scrollLeft) ||
+        isPositionBetweenScroll(calculatedScrollWidth)
+      ) {
+        // do horizontal scroll until it reach to maximum width, then do vertical scroll
+        cardsRef.current?.scroll(calculatedScrollWidth, scrollTop)
+        event.preventDefault()
+      }
     }
   }
 
