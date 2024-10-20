@@ -31,7 +31,6 @@ export const Airdrop: React.FC = () => {
         isOpen={isAirdropModalOpen}
         onClose={() => setIsAirdropModalOpen(false)}
       />
-      <BindEvmButton onClick={() => setIsAirdropModalOpen(true)} />
     </>
   )
 }
