@@ -16,11 +16,11 @@ const Airdrop = () => {
     <div className="relative flex min-h-svh w-full flex-col items-center overflow-x-hidden">
       <img
         src={getIllustrationUrl('airdrop-page-cover-top', 'webp')}
-        className="absolute inset-x-0 top-0 aspect-[1920/435]"
+        className="absolute inset-x-0 top-0 aspect-[1920/435] select-none"
       />
       <img
         src={getIllustrationUrl('airdrop-page-cover-bottom', 'webp')}
-        className="absolute inset-x-0 bottom-0 aspect-[1920/435]"
+        className="absolute inset-x-0 bottom-0 aspect-[1920/435] select-none"
       />
     </div>
   )
