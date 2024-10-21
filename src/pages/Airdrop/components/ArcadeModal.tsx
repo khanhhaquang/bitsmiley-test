@@ -3,7 +3,7 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import AirdropCheckModal from './AirdropCheckModal'
 
-const ArcaseModal: React.FC<{
+const ArcadeModal: React.FC<{
   isOpen: boolean
   onCheck: () => void
   onClose: () => void
@@ -28,4 +28,4 @@ const ArcaseModal: React.FC<{
   )
 }
 
-export default ArcaseModal
+export default ArcadeModal
