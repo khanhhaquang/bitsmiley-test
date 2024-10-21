@@ -73,6 +73,7 @@ export default {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
         pss: ['pss', ...defaultTheme.fontFamily.sans],
         smb: ['smb', ...defaultTheme.fontFamily.sans],
+        smb2: ['smb2', ...defaultTheme.fontFamily.sans],
         sdm: ['sdm', ...defaultTheme.fontFamily.sans],
         ppnb: ['ppnb', ...defaultTheme.fontFamily.sans],
         ppnr: ['ppnr', ...defaultTheme.fontFamily.sans],
