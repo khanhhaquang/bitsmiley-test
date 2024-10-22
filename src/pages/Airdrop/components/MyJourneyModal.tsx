@@ -1,5 +1,6 @@
 import { FC, Fragment, useEffect, useMemo, useRef } from 'react'
 
+import { CloseIcon } from '@/assets/icons'
 import { Modal } from '@/components/Modal'
 import { useGetMyBitsmileyJourney } from '@/hooks/useAirdropQueries'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -8,7 +9,6 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import BitsmileyJourneyCard from './BitsmileyJourneyCard'
 import CommunityJourneyCard from './CommunityJourneyCard'
-import { CloseIcon } from '@/assets/icons'
 
 const MyJourneyModal: FC<{
   isOpen: boolean
