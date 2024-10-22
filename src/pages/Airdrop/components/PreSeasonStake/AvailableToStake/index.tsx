@@ -98,7 +98,7 @@ const AvailableToStake = () => {
           type="number"
           className="flex-1 border border-l-[18px] border-blue bg-transparent  pl-[6px] text-2xl text-white"
         />
-        <Button className="w-[129px] text-2xl" disabled={!stakeAmount}>
+        <Button className="w-[129px] text-2xl" disabled={stakePercentage === 0}>
           Stake
         </Button>
       </div>
