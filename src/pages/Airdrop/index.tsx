@@ -8,6 +8,7 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import ArcadeModal from './components/ArcadeModal'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
+import PreSeasonStake from './components/PreSeasonStake'
 
 enum STAGE {
   INIT,
@@ -31,7 +32,7 @@ const Airdrop = () => {
       case STAGE.ARCADE:
         return <div>Arcade</div>
       case STAGE.STAKE:
-        return <div>Stake</div>
+        return <PreSeasonStake />
       default:
         return null
     }
