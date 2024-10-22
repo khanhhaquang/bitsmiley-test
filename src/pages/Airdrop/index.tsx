@@ -9,7 +9,7 @@ import ArcadeModal from './components/ArcadeModal'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
 
-export enum STAGE {
+enum STAGE {
   INIT,
   SELECT,
   STAKE,

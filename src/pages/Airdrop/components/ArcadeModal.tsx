@@ -16,7 +16,7 @@ const ArcadeModal: React.FC<{
       amount={4853902}>
       <div className="flex h-[410px] w-[800px] flex-col items-center">
         <Image
-          src={getIllustrationUrl('arcade', 'gif')}
+          src={getIllustrationUrl('arcade-with-result-effect', 'gif')}
           className="h-[400px] w-[800px]"
         />
         <div className="flex gap-1">

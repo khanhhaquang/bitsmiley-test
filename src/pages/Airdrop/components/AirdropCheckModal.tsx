@@ -1,4 +1,4 @@
-import ActionButton from '@/components/ActionButton'
+import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
