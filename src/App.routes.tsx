@@ -12,8 +12,6 @@ const MainBitPoint = lazy(() => import('@/pages/BitPoint'))
 const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
 const BitPointHistory = lazy(() => import('@/pages/BitPoint/BitPointHistory'))
 
-const Claim = lazy(() => import('@/pages/Claim'))
-
 const Airdrop = lazy(() => import('@/pages/Airdrop'))
 
 const Routes = () => {
@@ -61,11 +59,6 @@ const Routes = () => {
               element: <BitPointHistory />
             }
           ]
-        },
-        {
-          path: 'claim',
-          id: 'claim',
-          element: <Claim />
         }
       ]
     },
