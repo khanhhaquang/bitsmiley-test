@@ -9,7 +9,7 @@ import './AvailableToStake.scss'
 const max = 48539.02
 
 const AvailableToStake = () => {
-  const [stakeAmount, setStakeAmount] = useState<string>('')
+  const [stakeAmount, setStakeAmount] = useState<string>('0')
   const [stakePercentage, setStakePercentage] = useState<number>(0)
 
   const onChangeStakeAmount: React.ChangeEventHandler<HTMLInputElement> = (
@@ -44,8 +44,11 @@ const AvailableToStake = () => {
           AVAILABLE TO STAKE ⓘ
         </div>
         <div className="flex items-center gap-3 px-4 py-3">
-          <img src={getIllustrationUrl('smile', 'webp')} className="size-5" />
-          <div className="text-5xl font-semibold text-white/70 ">
+          <img
+            src={getIllustrationUrl('smile', 'webp')}
+            className="h-[46px] w-[52px]"
+          />
+          <div className="text-5xl font-semibold leading-[62px] text-white/70">
             {formatNumberAsTrunc(max)}
           </div>
         </div>
@@ -54,7 +57,7 @@ const AvailableToStake = () => {
       {/* Slider */}
       <div className="flex items-stretch gap-4">
         <div className="flex h-full flex-1 flex-col justify-between">
-          <div className="relative mt-[-10px]">
+          <div className="relative mt-[10px]">
             <div
               className=" absolute h-[18px] w-full max-w-[98%] border-2 border-l-4 border-r-0 border-[#758CFF] bg-blue bg-repeat mix-blend-hard-light"
               style={{

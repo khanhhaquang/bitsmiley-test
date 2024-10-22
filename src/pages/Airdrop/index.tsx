@@ -6,9 +6,9 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import ArcadeModal from './components/ArcadeModal'
+import PreSeasonStake from './components/PreSeasonStake'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
-import PreSeasonStake from './components/PreSeasonStake'
 
 enum STAGE {
   INIT,

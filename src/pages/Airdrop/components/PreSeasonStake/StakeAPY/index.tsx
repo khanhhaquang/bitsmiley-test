@@ -30,7 +30,7 @@ const StakeAPY = () => {
       <div className="flex flex-1 items-center justify-center bg-[#1C1703] px-4">
         <div
           className={cn(
-            ' apy-stroke-text bg-clip-text bg-apyText text-transparent font-smb text-5xl ',
+            ' apy-stroke-text bg-clip-text bg-apyText text-transparent font-smb2 text-5xl ',
             fontSize
           )}>
           {mockStakeAPY}%

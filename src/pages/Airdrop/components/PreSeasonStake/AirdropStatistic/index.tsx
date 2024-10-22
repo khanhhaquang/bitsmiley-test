@@ -18,7 +18,7 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
         <div className=" text-base uppercase text-[#FA0]">{label}</div>
         <img src={getIllustrationUrl('smile', 'webp')} className="size-5" />
       </div>
-      <div className="text-5xl text-white/70">{content}</div>
+      <div className="text-5xl leading-[62px] text-white/70">{content}</div>
     </div>
   )
 }

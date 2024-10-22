@@ -133,7 +133,7 @@ const StageSelect: React.FC = () => {
           </div>
         </div>
 
-        <button className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
+        <button className="mx-auto mt-3 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
           <ArrowLeftDoubleIcon width={13} height={9} />
           I want to claim unlocked airdrop
           <ArrowRightDoubleIcon width={13} height={9} />

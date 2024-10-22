@@ -22,6 +22,7 @@
     width: 31px;
     transform: translateY(-12px);
     background: url('../../../../../assets//icons/stake-slider-thumb.svg');
+    cursor: pointer;
   }
   &::-moz-range-thumb {
     -webkit-appearance: none;
@@ -30,5 +31,6 @@
     width: 31px;
     transform: translateY(-12px);
     background: url('../../../../../assets//icons/stake-slider-thumb.svg');
+    cursor: pointer;
   }
 }
