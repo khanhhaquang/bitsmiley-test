@@ -80,7 +80,7 @@ const MyJourneyModal: FC<{
         </div>
         <div
           ref={cardsRef}
-          className="scrollbar-none mt-9 flex w-full flex-nowrap items-center overflow-x-auto overflow-y-hidden pl-[94px] md:pr-10 lg:pr-20">
+          className="scrollbar-none mt-9 flex w-full flex-nowrap items-center overflow-x-auto overflow-y-hidden pl-[92px] md:pr-10 lg:pr-20">
           {listNormalJourney?.map((item, index) => (
             <Fragment key={`${index}-${item?.type}`}>
               {index !== 0 && (
@@ -96,8 +96,17 @@ const MyJourneyModal: FC<{
             </Fragment>
           ))}
         </div>
-        <div className="mt-3 w-full">
+        <div className="mt-3 w-full px-[92px]">
           {communityJourney && <CommunityJourneyCard {...communityJourney} />}
+        </div>
+
+        <div className="mx-[92px] mt-6 border-y border-dashed border-[#FFB800]/40 py-2 font-psm text-base text-[#FFB800]">
+          <p className="flex items-center justify-between">
+            Total $SMILE: <span>8,212,031.32</span>
+          </p>
+          <p className="mt-2 flex items-center justify-between">
+            Unlocked $SMILE now: <span>2,031.32</span>
+          </p>
         </div>
       </div>
     </Modal>
