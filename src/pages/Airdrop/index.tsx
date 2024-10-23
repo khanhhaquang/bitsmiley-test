@@ -6,6 +6,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import ArcadeModal from './components/ArcadeModal'
+import PreSeasonStake from './components/PreSeasonStake'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
 
@@ -31,7 +32,7 @@ const Airdrop = () => {
       case STAGE.ARCADE:
         return <div>Arcade</div>
       case STAGE.STAKE:
-        return <div>Stake</div>
+        return <PreSeasonStake />
       default:
         return null
     }

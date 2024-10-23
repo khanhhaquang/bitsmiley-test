@@ -71,6 +71,7 @@ import SpinIcon from './spin.svg'
 import StarIcon from './start.svg'
 import SuccessIcon from './success.svg'
 import TVLIndicatorIcon from './tvl-indicator.svg'
+import UnionIcon from './union.svg'
 import VaultChangesBorderIcon from './vault-changes-border.svg'
 import VaultInfoBorderIcon from './vault-info-border.svg'
 import ManageVaultInfoTitleIcon from './vault-info-title.svg'
@@ -157,5 +158,6 @@ export {
   CrossGreenIcon,
   CrossRedIcon,
   CheckGreenIcon,
-  MinimizeIcon
+  MinimizeIcon,
+  UnionIcon
 }
