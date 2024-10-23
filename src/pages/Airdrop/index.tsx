@@ -9,13 +9,7 @@ import ArcadeModal from './components/ArcadeModal'
 import PreSeasonStake from './components/PreSeasonStake'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
-
-enum STAGE {
-  INIT,
-  SELECT,
-  STAKE,
-  ARCADE
-}
+import { STAGE } from './index.types'
 
 const Airdrop = () => {
   const navigate = useNavigate()
@@ -28,11 +22,11 @@ const Airdrop = () => {
   const renderStage = useMemo(() => {
     switch (stage) {
       case STAGE.SELECT:
-        return <StageSelect />
+        return <StageSelect onSelect={(v) => setStage(v)} />
+      case STAGE.STAKE:
+        return <PreSeasonStake onBack={() => setStage(STAGE.SELECT)} />
       case STAGE.ARCADE:
         return <div>Arcade</div>
-      case STAGE.STAKE:
-        return <PreSeasonStake />
       default:
         return null
     }

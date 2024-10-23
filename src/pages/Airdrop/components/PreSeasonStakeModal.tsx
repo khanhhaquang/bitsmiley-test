@@ -5,8 +5,7 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import AirdropCheckModal from './AirdropCheckModal'
-
-import './PreSeasonStakeModal.scss'
+import styles from './PreSeasonStakeModal.module.scss'
 
 export const PreSeasonStakeInfo: React.FC<{
   className?: string
@@ -40,7 +39,7 @@ export const PreSeasonStakeInfo: React.FC<{
         />
         <div
           className={cn(
-            'apyText',
+            styles.apyText,
             'absolute inset-x-0 bottom-0 m-auto w-[350px] font-smb2 text-[32px] leading-none'
           )}
           data-storke="10000% APY">

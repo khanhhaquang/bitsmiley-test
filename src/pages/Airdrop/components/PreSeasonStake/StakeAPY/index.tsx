@@ -1,25 +1,23 @@
 import { useMemo } from 'react'
 
 import { cn } from '@/utils/cn'
-import './StakeAPY.scss'
 
 const mockStakeAPY = 10000
 
 const stakeFontSize = [
-  'text-84px', // 0 char
-  'text-84px', // 1 char
-  'text-84px', // 2
-  'text-72px', // 3
-  'text-[56px]', // 4
-  'text-[48px]' // 5
+  '84px', // 0 char
+  '84px', // 1 char
+  '84px', // 2
+  '72px', // 3
+  '56px', // 4
+  '48px' // 5
 ]
 
 const StakeAPY = () => {
   const fontSize = useMemo(() => {
-    const apyLength = mockStakeAPY?.toString()?.length
+    const apyLength = mockStakeAPY?.toString()?.length || 0
     if (apyLength > stakeFontSize.length) return stakeFontSize[5]
-    // eslint-disable-next-line security/detect-object-injection
-    return stakeFontSize[apyLength]
+    return stakeFontSize[`${apyLength}`]
   }, [])
 
   return (
@@ -30,9 +28,13 @@ const StakeAPY = () => {
       <div className="flex flex-1 items-center justify-center bg-[#1C1703] px-4">
         <div
           className={cn(
-            ' apy-stroke-text bg-clip-text bg-apyText text-transparent font-smb2 text-5xl ',
-            fontSize
-          )}>
+            'bg-clip-text bg-apyText text-transparent font-smb2 text-5xl'
+          )}
+          style={{
+            fontSize: fontSize,
+            WebkitTextStroke: 2,
+            WebkitTextStrokeColor: '#301610'
+          }}>
           {mockStakeAPY}%
         </div>
       </div>

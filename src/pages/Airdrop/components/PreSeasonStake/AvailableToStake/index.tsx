@@ -1,10 +1,16 @@
 import { useState } from 'react'
 
-import { Button } from '@/components/Button'
+import { ActionButton } from '@/components/ActionButton'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from '@/components/ui/tooltip'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberAsTrunc } from '@/utils/number'
-import './AvailableToStake.scss'
+
+import styles from './AvailableToStake.module.scss'
 
 const max = 48539.02
 
@@ -28,7 +34,7 @@ const AvailableToStake = () => {
   const onChangePercentange: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    const value = Number(event.target?.value)
+    const value = event.target?.valueAsNumber
 
     if (!Number.isNaN(value)) {
       setStakePercentage(value)
@@ -38,19 +44,22 @@ const AvailableToStake = () => {
 
   return (
     <div className="flex flex-col gap-[18px] font-ibmr">
-      {/* Available to Stake */}
-      <div className="w-[534px] border border-blue/30 ">
-        <div className="bg-blue px-4 py-[6px] font-smb text-xs uppercase text-white">
-          AVAILABLE TO STAKE ⓘ
-        </div>
+      <div className="w-[534px] border border-blue/30">
+        <p className="bg-blue px-4 py-[6px] font-smb text-xs uppercase text-white">
+          AVAILABLE TO STAKE{' '}
+          <Tooltip>
+            <TooltipTrigger>ⓘ</TooltipTrigger>
+            <TooltipContent>Available amount to stake</TooltipContent>
+          </Tooltip>
+        </p>
         <div className="flex items-center gap-3 px-4 py-3">
           <img
-            src={getIllustrationUrl('smile', 'webp')}
-            className="h-[46px] w-[52px]"
+            src={getIllustrationUrl('smile-icon', 'webp')}
+            className="h-[46px] w-[44px]"
           />
-          <div className="text-5xl font-semibold leading-[62px] text-white/70">
+          <p className="text-5xl font-semibold leading-[62px] text-white/70">
             {formatNumberAsTrunc(max)}
-          </div>
+          </p>
         </div>
       </div>
 
@@ -76,13 +85,13 @@ const AvailableToStake = () => {
               max="100"
               className={cn(
                 'flex-1 text-2xl bg-transparent text-white',
-                'available-stake-slider-input'
+                styles.sliderInput
               )}
             />
           </div>
           <div className="flex items-center justify-between text-sm text-white/60">
             {[0, 25, 50, 75, 100].map((tick) => (
-              <div>{tick}%</div>
+              <span key={tick}>{tick}%</span>
             ))}
           </div>
         </div>
@@ -91,16 +100,18 @@ const AvailableToStake = () => {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-x-4">
         <input
           value={stakeAmount}
           onChange={onChangeStakeAmount}
           type="number"
-          className="flex-1 border border-l-[18px] border-blue bg-transparent  pl-[6px] text-2xl text-white"
+          className="flex-1 border border-l-[18px] border-blue bg-transparent pl-[6px] font-ibmb text-2xl text-white"
         />
-        <Button className="w-[129px] text-2xl" disabled={stakePercentage === 0}>
+        <ActionButton
+          className="w-[129px] bg-white/70 text-2xl text-black/75 hover:bg-white hover:text-black/75 active:bg-white/60 active:text-black/75"
+          disabled={stakePercentage === 0}>
           Stake
-        </Button>
+        </ActionButton>
       </div>
     </div>
   )

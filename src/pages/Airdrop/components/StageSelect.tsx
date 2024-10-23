@@ -10,7 +10,11 @@ import { formatNumberWithSeparator } from '@/utils/number'
 import MyJourneyModal from './MyJourneyModal'
 import { PreSeasonStakeInfo } from './PreSeasonStakeModal'
 
-const StageSelect: React.FC = () => {
+import { STAGE } from '../index.types'
+
+const StageSelect: React.FC<{
+  onSelect: (v: STAGE) => void
+}> = ({ onSelect }) => {
   const [isMyJourneyModalOpen, setIsMyJourneyModalOpen] = useState(false)
 
   return (
@@ -28,7 +32,7 @@ const StageSelect: React.FC = () => {
         Airdrop
       </h2>
 
-      <div className="mt-[86px] flex w-[787px] flex-col">
+      <div className="mt-5 flex w-[787px] flex-col lg:mt-10 3xl:mt-[86px]">
         <div className="w-full border-[0.6px] border-[#FA0]">
           <div
             className="flex h-[31px] items-center bg-[#FA0] pl-4 font-smb text-black"
@@ -42,7 +46,7 @@ const StageSelect: React.FC = () => {
             <p className="flex items-center gap-x-3 text-4xl font-bold text-[#FA0]">
               <Image
                 src={getIllustrationUrl('smile-icon', 'webp')}
-                className="h-[48px] w-[54px]"
+                className="h-[48px] w-[44px]"
               />
               {formatNumberWithSeparator(30291.19)}
             </p>
@@ -72,6 +76,7 @@ const StageSelect: React.FC = () => {
               />
             </PreSeasonStakeInfo>
             <ActionButton
+              onClick={() => onSelect(STAGE.STAKE)}
               className={cn(
                 'mx-auto mt-10 w-40 border-[#FFAA00]/80 bg-[#FFAA00]/80 text-2xl uppercase text-black/75',
                 'hover:bg-[#FFAA00] active:bg-[#FFAA00]/60 hover:!text-black/75 active:!text-black/75'
@@ -124,6 +129,7 @@ const StageSelect: React.FC = () => {
               />
             </div>
             <ActionButton
+              onClick={() => onSelect(STAGE.ARCADE)}
               className={cn(
                 'absolute bottom-0 z-10 left-1/2 -translate-x-1/2 ml-6 w-40 border-green/80 bg-green/80 text-2xl uppercase text-black/75',
                 'hover:bg-green active:bg-green/60 hover:!text-black/75 active:!text-black/75'
@@ -133,7 +139,7 @@ const StageSelect: React.FC = () => {
           </div>
         </div>
 
-        <button className="mx-auto mt-3 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
+        <button className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
           <ArrowLeftDoubleIcon width={13} height={9} />
           I want to claim unlocked airdrop
           <ArrowRightDoubleIcon width={13} height={9} />

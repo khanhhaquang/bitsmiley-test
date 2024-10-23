@@ -17,12 +17,12 @@ const AirdropCheckModal: React.FC<{
           <div className="h-[30px] w-full bg-[#E0A828] text-center font-smb uppercase leading-[30px] text-black">
             your total airdrop
           </div>
-          <div className="flex h-[54px] items-center gap-1 font-ibmb text-[32px] text-[#FFAA00]">
+          <div className="flex h-[54px] items-center gap-x-1.5 font-ibmb text-[32px] text-[#FFAA00]">
             <Image
               src={getIllustrationUrl('smile-icon', 'webp')}
-              className="h-[30px] w-[34px]"
+              className="h-[30px] w-[27px]"
             />
-            <div>{amount}</div>
+            <span>{amount}</span>
           </div>
         </div>
         {children}
