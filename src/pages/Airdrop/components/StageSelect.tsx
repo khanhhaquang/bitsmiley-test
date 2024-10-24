@@ -1,6 +1,10 @@
 import { useState } from 'react'
 
-import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
+import {
+  ArrowLeftDoubleIcon,
+  ArrowRightDoubleIcon,
+  SmileyIcon
+} from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
 import { cn } from '@/utils/cn'
@@ -44,10 +48,7 @@ const StageSelect: React.FC<{
 
           <div className="flex h-[84px] items-center justify-between px-4">
             <p className="flex items-center gap-x-3 text-4xl font-bold text-[#FA0]">
-              <Image
-                src={getIllustrationUrl('smile-icon', 'webp')}
-                className="h-[48px] w-[44px]"
-              />
+              <SmileyIcon className="h-[48px] w-[44px] text-white" />
               {formatNumberWithSeparator(30291.19)}
             </p>
 

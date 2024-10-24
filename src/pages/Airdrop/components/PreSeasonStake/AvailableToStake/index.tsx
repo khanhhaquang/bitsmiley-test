@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import {
   Tooltip,
@@ -53,10 +54,7 @@ const AvailableToStake = () => {
           </Tooltip>
         </p>
         <div className="flex items-center gap-3 px-4 py-3">
-          <img
-            src={getIllustrationUrl('smile-icon', 'webp')}
-            className="h-[46px] w-[44px]"
-          />
+          <SmileyIcon className="h-[46px] w-[44px] text-white" />
           <p className="text-5xl font-semibold leading-[62px] text-white/70">
             {formatNumberAsTrunc(max)}
           </p>

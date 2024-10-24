@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { SmileyIcon } from '@/assets/icons'
 import { formatNumberAsTrunc } from '@/utils/number'
 
 interface AirdropStatisticItemProps {
@@ -16,10 +16,7 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
     <div>
       <div className="flex items-center gap-[5px]">
         <div className=" text-base uppercase text-[#FA0]">{label}</div>
-        <img
-          src={getIllustrationUrl('smile-icon', 'webp')}
-          className="w-[20px] h-[22px]"
-        />
+        <SmileyIcon className="h-[21px] w-[20px] text-white" />
       </div>
       <div className="text-5xl leading-[62px] text-white/70">{content}</div>
     </div>

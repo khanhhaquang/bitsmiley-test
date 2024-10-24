@@ -1,10 +1,6 @@
 import { FC } from 'react'
 
-import {
-  ArrowLeftDoubleIcon,
-  ArrowRightDoubleIcon,
-  UnionIcon
-} from '@/assets/icons'
+import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
 
 import AirdropStatistic from './AirdropStatistic'
 import AvailableToStake from './AvailableToStake'
@@ -15,7 +11,7 @@ const PreSeasonStake: FC<{ onBack: () => void }> = ({ onBack }) => {
     <div className="relative mt-[45px] flex flex-col items-center gap-[50px]">
       <div className="flex items-center gap-[30px]">
         <button onClick={onBack}>
-          <UnionIcon className="h-[45px] w-[53px]" />
+          <ArrowLeftDoubleIcon className="h-[45px] w-[53px] text-[#EAC641] hover:text-[#FFC900]" />
         </button>
         <h2
           className="text-center font-sdm text-[78px] uppercase text-yellow3"

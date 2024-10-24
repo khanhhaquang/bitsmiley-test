@@ -1,7 +1,6 @@
+import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
-import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 const AirdropCheckModal: React.FC<{
   isOpen: boolean
@@ -18,10 +17,7 @@ const AirdropCheckModal: React.FC<{
             your total airdrop
           </div>
           <div className="flex h-[54px] items-center gap-x-1.5 font-ibmb text-[32px] text-[#FFAA00]">
-            <Image
-              src={getIllustrationUrl('smile-icon', 'webp')}
-              className="h-[30px] w-[27px]"
-            />
+            <SmileyIcon className="h-[30px] w-[27px] text-white" />
             <span>{amount}</span>
           </div>
         </div>
