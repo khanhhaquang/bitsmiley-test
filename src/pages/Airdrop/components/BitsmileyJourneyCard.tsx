@@ -23,7 +23,6 @@ export const getJourneyStatusTitle = (
 
 const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
   name,
-  type,
   airdropAmount,
   mediumLink,
   status
@@ -31,27 +30,16 @@ const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
   const isNotEntitled = status === BitsmileyJourneyStatus.NOT_ENTITLED
 
   return (
-    <div className="relative h-[326px] w-[348px] border-2 border-[#2648ef]/60 bg-[#000727] p-1 font-ibmr">
-      <div
-        className={cn('inset-1 absolute bg-no-repeat bg-contain', {
-          'opacity-60': isNotEntitled
-        })}
-        style={{
-          backgroundImage: `url(${getIllustrationUrl(
-            `bitsmiley-journey-${type}`,
-            'webp'
-          )}`
-        }}
-      />
+    <div className="relative h-[162px] w-[274px] shrink-0 border-[1.5px] border-[#2648ef]/60 bg-[#000727] p-1 font-ibmr">
       <div className="relative z-[1] flex size-full flex-col justify-between">
         <div
           className={cn(
-            'flex w-full capitalize items-center justify-center bg-blue p-[10px] text-center text-2xl text-white h-[90px] leading-6 font-bold',
+            'flex w-full capitalize items-center justify-center bg-blue p-[10px] text-center text-base text-white h-[90px] leading-6 font-bold',
             { 'opacity-40': isNotEntitled }
           )}>
           {name}
         </div>
-        <div className="flex size-full flex-1 items-end justify-center bg-cover text-lg">
+        <div className="flex size-full flex-1 items-end justify-center bg-cover text-sm">
           <a
             href={mediumLink}
             target="_blank"
@@ -62,9 +50,9 @@ const BitsmileyJourneyCard: FC<BitsmileyJourney> = ({
             Rules
           </a>
         </div>
-        <div className="flex h-[60px] w-full flex-col font-bold uppercase">
+        <div className="flex h-[60px] w-full flex-col text-sm font-bold uppercase">
           <div
-            className={cn('bg-repeat flex-1 flex justify-center pt-[2px]')}
+            className={cn('bg-repeat flex-1 flex justify-center pt-0.5')}
             style={{
               backgroundImage: `url(${getIllustrationUrl(
                 isNotEntitled

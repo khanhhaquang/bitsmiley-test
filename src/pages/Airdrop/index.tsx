@@ -1,37 +1,73 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { Image } from '@/components/Image'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-import YourBitsmileyJourney from './components/YourBitsmileyJourney'
+import ArcadeModal from './components/ArcadeModal'
+import PreSeasonStake from './components/PreSeasonStake'
+import PreSeasonStakeModal from './components/PreSeasonStakeModal'
+import StageSelect from './components/StageSelect'
+import { STAGE } from './index.types'
 
 const Airdrop = () => {
   const navigate = useNavigate()
   const { isConnected } = useUserInfo()
+
+  const [stage, setStage] = useState(STAGE.INIT)
+  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(true)
+  const [isArcadeModalOpen, setIsArcadeModalOpen] = useState(false)
+
+  const renderStage = useMemo(() => {
+    switch (stage) {
+      case STAGE.SELECT:
+        return <StageSelect onSelect={(v) => setStage(v)} />
+      case STAGE.STAKE:
+        return <PreSeasonStake onBack={() => setStage(STAGE.SELECT)} />
+      case STAGE.ARCADE:
+        return <div>Arcade</div>
+      default:
+        return null
+    }
+  }, [stage])
 
   useEffect(() => {
     if (!isConnected) navigate('/')
   }, [isConnected, navigate])
 
   return (
-    <div className="flex min-h-svh w-full flex-col items-center overflow-x-hidden">
-      <img
-        src={getIllustrationUrl('airdrop-harvesting-season', 'webp')}
-        width={1148}
-        height={186}
-        className="fixed z-10 origin-top sm:px-4 md:scale-[60%] lg:scale-75 2xl:scale-100"
+    <div className="relative flex min-h-svh w-full flex-col items-center overflow-x-hidden">
+      <Image
+        src={getIllustrationUrl('airdrop-page-cover-top', 'webp')}
+        className="absolute inset-x-0 top-0 aspect-[1920/435] select-none"
       />
-      <div className="mt-[200px] flex w-screen flex-col gap-y-[100px] bg-cover bg-center bg-no-repeat pb-[200px] text-white sm:px-2">
-        <YourBitsmileyJourney />
-      </div>
-
-      <div
-        className="fixed bottom-0 h-[136px] w-full bg-contain bg-repeat px-3"
-        style={{
-          backgroundImage: `url(${getIllustrationUrl('harvesting', 'gif')})`
+      <Image
+        src={getIllustrationUrl('airdrop-page-cover-bottom', 'webp')}
+        className="absolute inset-x-0 bottom-0 aspect-[1920/435] select-none"
+      />
+      <ArcadeModal
+        isOpen={isArcadeModalOpen}
+        onClose={() => {
+          setIsArcadeModalOpen(false)
+          setStage(STAGE.SELECT)
+        }}
+        onCheck={() => {
+          setIsArcadeModalOpen(false)
         }}
       />
+      <PreSeasonStakeModal
+        isOpen={isPrecheckModalOpen}
+        onClose={() => {
+          setIsPrecheckModalOpen(false)
+          setIsArcadeModalOpen(true)
+        }}
+        onCheck={() => {
+          setIsPrecheckModalOpen(false)
+          setStage(STAGE.STAKE)
+        }}
+      />
+      {renderStage}
     </div>
   )
 }

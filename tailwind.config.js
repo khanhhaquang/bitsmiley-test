@@ -73,6 +73,7 @@ export default {
         psm: ['psm', ...defaultTheme.fontFamily.sans],
         pss: ['pss', ...defaultTheme.fontFamily.sans],
         smb: ['smb', ...defaultTheme.fontFamily.sans],
+        smb2: ['smb2', ...defaultTheme.fontFamily.sans],
         sdm: ['sdm', ...defaultTheme.fontFamily.sans],
         ppnb: ['ppnb', ...defaultTheme.fontFamily.sans],
         ppnr: ['ppnr', ...defaultTheme.fontFamily.sans],
@@ -122,7 +123,9 @@ export default {
         'express-black':
           'linear-gradient(90deg, #FFF 4.33%, #868686 30.27%, #FFF 38.38%, #434343 62.96%, #707070 69.23%, #FFF 79.63%, #696969 90.22%, #CCC 97.33%)',
         yourPointStats:
-          'linear-gradient(124deg, rgba(38, 72, 239, 0.30) 16.19%, rgba(0, 8, 45, 0.30) 96.03%)'
+          'linear-gradient(124deg, rgba(38, 72, 239, 0.30) 16.19%, rgba(0, 8, 45, 0.30) 96.03%)',
+        apyText:
+          'linear-gradient(180deg, #86FFA8 11.11%, #86FFA8 30.28%, #00FF22 30.63%, #00FF22 60.85%, #00B221 61.48%, #00B221 74.07%)'
       }
     }
   },
