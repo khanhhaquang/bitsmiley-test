@@ -1,12 +1,18 @@
+import { Link } from 'react-router-dom'
+
+import { HeaderIcon } from '@/assets/icons'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { CopyRightAndLinks } from '@/components/CopyRightAndLinks'
-import { Header } from '@/components/Header'
 import { getFrameUrl } from '@/utils/getAssetsUrl'
 
 const NetworkError: React.FC = () => {
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-black bg-loading bg-cover bg-center bg-no-repeat">
-      <Header />
+      <div className="absolute left-0 top-[50px] z-50 flex w-full  items-center justify-between px-12 text-white sm:justify-center">
+        <Link to="/">
+          <HeaderIcon />
+        </Link>
+      </div>
       <CopyRightAndLinks musicControl={false} />
       <div className="flex flex-col items-center justify-center">
         <div className="mb-5">
