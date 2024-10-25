@@ -16,8 +16,8 @@ import styles from './AvailableToStake.module.scss'
 const max = 48539.02
 
 const AvailableToStake = () => {
-  const [stakeAmount, setStakeAmount] = useState<string>('0')
-  const [stakePercentage, setStakePercentage] = useState<number>(0)
+  const [stakeAmount, setStakeAmount] = useState('0')
+  const [stakePercentage, setStakePercentage] = useState(0)
 
   const onChangeStakeAmount: React.ChangeEventHandler<HTMLInputElement> = (
     event
@@ -28,7 +28,7 @@ const AvailableToStake = () => {
       setStakePercentage(1)
       return
     }
-    setStakePercentage((value / max) * 100)
+    setStakePercentage(Math.floor(value / max) * 100)
     setStakeAmount(event.target?.value)
   }
 
@@ -62,11 +62,11 @@ const AvailableToStake = () => {
       </div>
 
       {/* Slider */}
-      <div className="flex items-stretch gap-4">
-        <div className="flex h-full flex-1 flex-col justify-between">
-          <div className="relative mt-[10px]">
+      <div className="flex items-stretch gap-x-4">
+        <div className="flex h-full flex-1 flex-col justify-between pt-2.5">
+          <div className="relative">
             <div
-              className=" absolute h-[18px] w-full max-w-[98%] border-2 border-l-4 border-r-0 border-[#758CFF] bg-blue bg-repeat mix-blend-hard-light"
+              className="absolute h-[18px] w-full max-w-[98%] border-2 border-l-4 border-r-0 border-[#758CFF] bg-blue bg-repeat mix-blend-hard-light"
               style={{
                 width: `${stakePercentage}%`,
                 backgroundImage: `url(${getIllustrationUrl(
@@ -87,11 +87,11 @@ const AvailableToStake = () => {
               )}
             />
           </div>
-          <div className="flex items-center justify-between text-sm text-white/60">
+          <p className="flex items-center justify-between text-sm text-white/60">
             {[0, 25, 50, 75, 100].map((tick) => (
               <span key={tick}>{tick}%</span>
             ))}
-          </div>
+          </p>
         </div>
         <div className="flex w-[95px] items-center justify-center bg-blue/20 py-4 text-2xl text-blue">
           {formatNumberAsTrunc(stakePercentage.toString(), 2)}%

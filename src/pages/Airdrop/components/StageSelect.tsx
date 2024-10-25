@@ -11,6 +11,7 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
+import { ClaimUnlockedModal } from './ExitTokenModals'
 import MyJourneyModal from './MyJourneyModal'
 import { PreSeasonStakeInfo } from './PreSeasonStakeModal'
 
@@ -20,6 +21,8 @@ const StageSelect: React.FC<{
   onSelect: (v: STAGE) => void
 }> = ({ onSelect }) => {
   const [isMyJourneyModalOpen, setIsMyJourneyModalOpen] = useState(false)
+  const [isClaimUnlockedModalOpen, setIsClaimUnlockedModalOpen] =
+    useState(false)
 
   return (
     <div className="relative">
@@ -140,11 +143,18 @@ const StageSelect: React.FC<{
           </div>
         </div>
 
-        <button className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
+        <button
+          onClick={() => setIsClaimUnlockedModalOpen(true)}
+          className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
           <ArrowLeftDoubleIcon width={13} height={9} />
           I want to claim unlocked airdrop
           <ArrowRightDoubleIcon width={13} height={9} />
         </button>
+
+        <ClaimUnlockedModal
+          isOpen={isClaimUnlockedModalOpen}
+          onClose={() => setIsClaimUnlockedModalOpen(false)}
+        />
       </div>
     </div>
   )
