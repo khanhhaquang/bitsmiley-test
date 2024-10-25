@@ -5,6 +5,7 @@ import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
 import AirdropStatistic from './AirdropStatistic'
 import AvailableToStake from './AvailableToStake'
 import StakeAPY from './StakeAPY'
+
 import { UnstakeModal } from '../ExitTokenModals'
 
 const PreSeasonStake: FC<{ onBack: () => void }> = ({ onBack }) => {
