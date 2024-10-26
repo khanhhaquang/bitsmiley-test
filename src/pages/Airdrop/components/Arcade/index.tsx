@@ -8,10 +8,12 @@ import ChoosePrize from './components/ChoosePrize'
 import GameScroller from './components/GameScroller'
 import { SmileButton } from './components/SmileButton'
 import { PrizeType } from './index.types'
+import { getRandomBool } from '@/utils/number'
 
 const Arcade = () => {
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
   const [scroll, setScroll] = useState(false)
+  const [isWon, setIsWon] = useState(false)
   return (
     <div className="relative mt-[45px] flex h-[913.71px] w-[1053px] flex-col items-center bg-arcadeMachineBg bg-contain px-20 py-5 text-white">
       <div className="flex h-[100px] items-center gap-20">
@@ -43,10 +45,14 @@ const Arcade = () => {
       </div>
       <ChoosePrize
         type={prizeType}
-        onChoose={(value) => setPrizeType(value)}></ChoosePrize>
+        onChoose={(value) => {
+          if (scroll) return
+          setPrizeType(value)
+        }}></ChoosePrize>
       <GameScroller
         scroll={scroll}
         prize={prizeType}
+        isWon={isWon}
         onStop={() => {
           setScroll(false)
         }}></GameScroller>
@@ -71,7 +77,11 @@ const Arcade = () => {
             </div>
           </div>
           <div className="flex w-full justify-center gap-3">
-            <button onClick={() => setScroll(true)}>
+            <button
+              onClick={() => {
+                setIsWon(getRandomBool())
+                setScroll(true)
+              }}>
               <Image
                 src={getIllustrationUrl('simulate-button', 'gif')}
                 className="h-[56px] w-[168px]"

@@ -8,42 +8,61 @@ import styles from './GameScroller.module.scss'
 import { PrizeType } from '../index.types'
 import { PrizeStyle } from './PrizeOption'
 import StrokeText from '@/components/StrokeText'
+import { getRandomInt } from '@/utils/number'
+
+interface SpeedStep {
+  speed: number
+  timeout: number
+}
 
 const GameScroller: React.FC<{
   scroll: boolean
   prize: PrizeType
+  isWon: boolean
   onStop: () => void
-}> = ({ scroll, prize, onStop }) => {
-  const [indexes, setIndexes] = useState<number[]>([0, 1, 2, 3, 4])
-  const [duration] = useState(500)
-  const data = [false, false, false, true, false]
+}> = ({ scroll, prize, isWon, onStop }) => {
+  const speedSteps: SpeedStep[] = useMemo(() => {
+    return [
+      { speed: 500, timeout: 500 },
+      { speed: 300, timeout: 600 },
+      { speed: 100, timeout: 100 * (getRandomInt(10) + 40) },
+      { speed: 300, timeout: 600 },
+      { speed: 500, timeout: 0 }
+    ]
+  }, [scroll])
+  const [step, setStep] = useState(0)
+  const data = [false, false, false, false, true, false, false]
+  const [indexArray, setIndexArray] = useState(
+    Array.from({ length: data.length }, (_, index) => index)
+  )
+  const [prizePos, setPrizePos] = useState(data.findIndex((value) => value))
   const [amount, icon, iconWidth, iconHeight] = PrizeStyle[`${prize}`]
+  const itemWidth = 180
+  const halfIndex = Math.floor(data.length / 2)
   const items = useMemo(() => {
-    const halfIndex = Math.floor(data.length / 2)
-    return data.map((v, i) => {
-      const pos = indexes.indexOf(i)
-      const movement = pos === halfIndex ? 0 : (pos - halfIndex) * 180
-      const moveToRight = movement >= 180 * halfIndex
-      console.log('movement:', movement, moveToRight)
+    return data.map((prizeItem, i) => {
+      const pos = indexArray.indexOf(i)
+      const movement = pos === halfIndex ? 0 : (pos - halfIndex) * itemWidth
+      const moveToRight = movement >= itemWidth * halfIndex
+      if (prizeItem) {
+        setPrizePos(pos)
+      }
       return (
         <div
+          key={i}
           className="absolute size-[160px]"
           style={{
             zIndex: moveToRight ? 1 : 10,
-            // display: moveToRight ? 'none' : 'block',
-            // opacity: moveToRight ? 0 : 1,
             transform: `translateX(${movement}px)`,
-            transition: `all ${duration}ms ease`,
-            animationFillMode: 'forwards',
+            transition: moveToRight
+              ? ''
+              : `all ${speedSteps[step].speed}ms linear`,
             backgroundImage: `url(${getIllustrationUrl(
-              v ? 'arcade-prize-bg' : 'arcade-face',
+              prizeItem ? 'arcade-prize-bg' : 'arcade-face',
               'webp'
             )})`
           }}>
-          {/* <div className=" text-white">
-            {i} {moveToRight ? 0 : 1}
-          </div> */}
-          {v && (
+          {prizeItem && (
             <div
               className="flex size-[160px] flex-col items-center justify-center gap-1 pt-10 bg-no-repeat"
               style={{
@@ -70,24 +89,57 @@ const GameScroller: React.FC<{
         </div>
       )
     })
-  }, [indexes, prize])
+  }, [indexArray, prize, step])
+
+  const scrollToLeft = () => {
+    setIndexArray((prev) => {
+      const head = prev.shift()
+      return [...prev, head!]
+    })
+  }
 
   useEffect(() => {
-    console.log('indexes', indexes)
-  }, [data])
+    if (!scroll) {
+      setStep(0)
+      return
+    }
+    const intervalId = setInterval(() => {
+      scrollToLeft()
+    }, speedSteps[step].speed)
 
-  useEffect(() => {
-    if (!scroll) return
-    setTimeout(() => {
-      setIndexes((prev) => {
-        const head = prev.shift()
-        return [...prev, head!]
-      })
-    }, duration)
-    setTimeout(() => {
-      onStop()
-    }, 4000)
-  }, [indexes, scroll, duration])
+    if (step < speedSteps.length - 1) {
+      setTimeout(() => {
+        setStep((prev) => prev + 1)
+      }, speedSteps[step].timeout)
+    } else {
+      //scroll to prize
+      let lastStep = getRandomInt(data.length)
+      const prizeStep =
+        prizePos >= halfIndex ? prizePos - halfIndex : halfIndex + 1 + prizePos
+      if (isWon) {
+        lastStep = prizeStep
+      } else {
+        if (lastStep === prizeStep) {
+          lastStep = prizeStep + 1
+        }
+      }
+      console.log(
+        'isWon:',
+        isWon,
+        'prizeStep:',
+        prizeStep,
+        'lastStep:',
+        lastStep
+      )
+      setTimeout(() => {
+        onStop()
+      }, speedSteps[step].speed * lastStep)
+    }
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [scroll, step, speedSteps])
   return (
     <div className="relative mt-3 flex h-[240px] w-[775px] items-center overflow-hidden">
       <Image

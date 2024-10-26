@@ -51,3 +51,11 @@ export const formatNumberAsCompact = (
     .format(Number(value))
     .toLowerCase()
 }
+
+export const getRandomInt = (max: number) => {
+  return Math.floor(Math.random() * Math.floor(max))
+}
+
+export const getRandomBool = () => {
+  return Math.random() >= 0.5;
+}
