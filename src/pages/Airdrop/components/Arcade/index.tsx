@@ -11,6 +11,7 @@ import { PrizeType } from './index.types'
 
 const Arcade = () => {
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
+  const [scroll, setScroll] = useState(false)
   return (
     <div className="relative mt-[45px] flex h-[913.71px] w-[1053px] flex-col items-center bg-arcadeMachineBg bg-contain px-20 py-5 text-white">
       <div className="flex h-[100px] items-center gap-20">
@@ -43,7 +44,12 @@ const Arcade = () => {
       <ChoosePrize
         type={prizeType}
         onChoose={(value) => setPrizeType(value)}></ChoosePrize>
-      <GameScroller scroll={false} onStop={() => {}}></GameScroller>
+      <GameScroller
+        scroll={scroll}
+        prize={prizeType}
+        onStop={() => {
+          setScroll(false)
+        }}></GameScroller>
       <div className="flex w-[610px] flex-col gap-3">
         <div className="flex h-[81px] w-full flex-col border border-dashed border-blue bg-black/50">
           <div>CHOOSE WINNING PROBABILITY</div>
@@ -65,7 +71,7 @@ const Arcade = () => {
             </div>
           </div>
           <div className="flex w-full justify-center gap-3">
-            <button>
+            <button onClick={() => setScroll(true)}>
               <Image
                 src={getIllustrationUrl('simulate-button', 'gif')}
                 className="h-[56px] w-[168px]"
