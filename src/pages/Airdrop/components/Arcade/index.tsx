@@ -5,7 +5,9 @@ import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { getRandomBool } from '@/utils/number'
 
+import { ArcadeButton } from './components/ArcadeButton'
 import ChoosePrize from './components/ChoosePrize'
+import ChooseProbability from './components/ChooseProbability'
 import GameScroller from './components/GameScroller'
 import { SmileButton } from './components/SmileButton'
 import { PrizeType } from './index.types'
@@ -56,45 +58,23 @@ const Arcade = () => {
         onStop={() => {
           setScroll(false)
         }}></GameScroller>
-      <div className="flex w-[610px] flex-col gap-3">
-        <div className="flex h-[81px] w-full flex-col border border-dashed border-blue bg-black/50">
-          <div>CHOOSE WINNING PROBABILITY</div>
-        </div>
-        <div className="flex flex-col">
-          <div className="flex justify-between">
-            <div>Potential upside</div>
-            <div>1.11x</div>
-          </div>
-          <div className="flex justify-between">
-            <div>Winning Probability</div>
-            <div>45%</div>
-          </div>
-          <div className="flex justify-between">
-            <div>USE $SMILE</div>
-            <div className="flex items-center gap-1">
-              <SmileyIcon className="h-[16px] w-[14.7px] text-white" />
-              90
-            </div>
-          </div>
-          <div className="flex w-full justify-center gap-3">
-            <button
-              onClick={() => {
-                setIsWon(getRandomBool())
-                setScroll(true)
-              }}>
-              <Image
-                src={getIllustrationUrl('simulate-button', 'gif')}
-                className="h-[56px] w-[168px]"
-              />
-            </button>
-            <button>
-              <Image
-                src={getIllustrationUrl('play-button-bg', 'webp')}
-                className="h-[45px] w-[265px]"
-              />
-            </button>
-          </div>
-        </div>
+      <ChooseProbability
+        type={prizeType}
+        onChoose={() => {}}></ChooseProbability>
+      <div className="flex w-full justify-center gap-3">
+        <button
+          onClick={() => {
+            setIsWon(getRandomBool())
+            setScroll(true)
+          }}>
+          <Image
+            src={getIllustrationUrl('simulate-button', 'gif')}
+            className="h-[56px] w-[168px]"
+          />
+        </button>
+        <ArcadeButton className="mt-2 h-[45.3px] w-[265.6px] pb-2">
+          Play
+        </ArcadeButton>
       </div>
     </div>
   )

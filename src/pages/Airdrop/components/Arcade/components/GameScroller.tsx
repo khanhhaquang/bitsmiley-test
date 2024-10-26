@@ -142,7 +142,7 @@ const GameScroller: React.FC<{
     }
   }, [scroll, step, speedSteps])
   return (
-    <div className="relative mt-3 flex h-[240px] w-[775px] items-center overflow-hidden">
+    <div className="relative mt-3 flex h-[220px] w-[775px] items-center overflow-hidden pt-3">
       <Image
         src={getIllustrationUrl('arcade-pointer', 'webp')}
         className="absolute left-12 top-0 z-20 h-[68.5px] w-[677px]"
