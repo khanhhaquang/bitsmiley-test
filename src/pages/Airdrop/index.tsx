@@ -16,8 +16,8 @@ const Airdrop = () => {
   const navigate = useNavigate()
   const { isConnected } = useUserInfo()
 
-  const [stage, setStage] = useState(STAGE.ARCADE)
-  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(false)
+  const [stage, setStage] = useState(STAGE.INIT)
+  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(true)
   const [isArcadeModalOpen, setIsArcadeModalOpen] = useState(false)
 
   const renderStage = useMemo(() => {
