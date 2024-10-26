@@ -1,0 +1,20 @@
+.scroller{
+  animation: scroll 5s linear infinite;
+}
+ 
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-160px);
+  }
+}
+.slideContainer {
+  position: relative;
+  margin: 0px auto;
+}
+// .scrollItem{
+//   display: inline-block;
+//   margin-right: 10px;
+// }

@@ -10,13 +10,14 @@ import PreSeasonStake from './components/PreSeasonStake'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
 import { STAGE } from './index.types'
+import Arcade from './components/Arcade'
 
 const Airdrop = () => {
   const navigate = useNavigate()
   const { isConnected } = useUserInfo()
 
-  const [stage, setStage] = useState(STAGE.INIT)
-  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(true)
+  const [stage, setStage] = useState(STAGE.ARCADE)
+  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(false)
   const [isArcadeModalOpen, setIsArcadeModalOpen] = useState(false)
 
   const renderStage = useMemo(() => {
@@ -26,7 +27,7 @@ const Airdrop = () => {
       case STAGE.STAKE:
         return <PreSeasonStake onBack={() => setStage(STAGE.SELECT)} />
       case STAGE.ARCADE:
-        return <div>Arcade</div>
+        return <Arcade></Arcade>
       default:
         return null
     }
