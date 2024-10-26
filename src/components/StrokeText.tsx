@@ -1,7 +1,7 @@
 import { cn } from '@/utils/cn'
 
 const StrokeText: React.FC<{
-  children: string|number
+  children: string | number
   color: string
   strokeColor: string
   strokeWidth: number
@@ -13,7 +13,7 @@ const StrokeText: React.FC<{
       style={{
         color: color,
         WebkitTextStrokeColor: strokeColor,
-        WebkitTextStrokeWidth: `${strokeWidth}px`,
+        WebkitTextStrokeWidth: `${strokeWidth}px`
       }}>
       <div
         style={{

@@ -5,12 +5,12 @@ import { Image } from '@/components/Image'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
+import Arcade from './components/Arcade'
 import ArcadeModal from './components/ArcadeModal'
 import PreSeasonStake from './components/PreSeasonStake'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
 import { STAGE } from './index.types'
-import Arcade from './components/Arcade'
 
 const Airdrop = () => {
   const navigate = useNavigate()

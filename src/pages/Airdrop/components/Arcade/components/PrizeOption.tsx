@@ -1,8 +1,9 @@
-import { cn } from '@/utils/cn'
 import { Image } from '@/components/Image'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { PrizeType } from '../index.types'
 import StrokeText from '@/components/StrokeText'
+import { cn } from '@/utils/cn'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+
+import { PrizeType } from '../index.types'
 
 export const PrizeStyle: Record<PrizeType, [number, string, number, number]> = {
   [PrizeType.SMILE_100]: [100, 'prize-100-icon', 90, 60.6],
@@ -25,7 +26,7 @@ const PrizeOption: React.FC<{
       )}
       onClick={() => onSelect(type)}>
       <div
-        className="w-[210px] h-[106px] bg-no-repeat flex flex-col items-center justify-center gap-4"
+        className="flex h-[106px] w-[210px] flex-col items-center justify-center gap-4 bg-no-repeat"
         style={{
           backgroundImage: `url(${getIllustrationUrl(icon, 'webp')})`,
           backgroundPosition: 'center',
@@ -41,7 +42,7 @@ const PrizeOption: React.FC<{
           </StrokeText>
           <Image
             src={getIllustrationUrl('prize-face', 'webp')}
-            className="h-[20] w-[20]"
+            className="size-[20]"
           />
         </div>
         <StrokeText
