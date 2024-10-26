@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { Image } from '@/components/Image'
+import StrokeText from '@/components/StrokeText'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { getRandomInt } from '@/utils/number'
 
 import styles from './GameScroller.module.scss'
-import { PrizeType } from '../index.types'
 import { PrizeStyle } from './PrizeOption'
-import StrokeText from '@/components/StrokeText'
-import { getRandomInt } from '@/utils/number'
+
+import { PrizeType } from '../index.types'
 
 interface SpeedStep {
   speed: number
@@ -64,7 +65,7 @@ const GameScroller: React.FC<{
           }}>
           {prizeItem && (
             <div
-              className="flex size-[160px] flex-col items-center justify-center gap-1 pt-10 bg-no-repeat"
+              className="flex size-[160px] flex-col items-center justify-center gap-1 bg-no-repeat pt-10"
               style={{
                 backgroundImage: `url(${getIllustrationUrl(icon, 'webp')})`,
                 backgroundPosition: 'center',
@@ -144,7 +145,7 @@ const GameScroller: React.FC<{
     <div className="relative mt-3 flex h-[240px] w-[775px] items-center overflow-hidden">
       <Image
         src={getIllustrationUrl('arcade-pointer', 'webp')}
-        className="absolute top-0 left-12 z-20 h-[68.5px] w-[677px]"
+        className="absolute left-12 top-0 z-20 h-[68.5px] w-[677px]"
       />
       <div className={cn('w-[160px] h-[160px]', styles.slideContainer)}>
         {items}

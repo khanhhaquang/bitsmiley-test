@@ -57,5 +57,5 @@ export const getRandomInt = (max: number) => {
 }
 
 export const getRandomBool = () => {
-  return Math.random() >= 0.5;
+  return Math.random() >= 0.5
 }

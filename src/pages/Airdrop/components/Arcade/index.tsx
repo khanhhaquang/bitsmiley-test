@@ -3,12 +3,12 @@ import { useState } from 'react'
 import { SmileyIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { getRandomBool } from '@/utils/number'
 
 import ChoosePrize from './components/ChoosePrize'
 import GameScroller from './components/GameScroller'
 import { SmileButton } from './components/SmileButton'
 import { PrizeType } from './index.types'
-import { getRandomBool } from '@/utils/number'
 
 const Arcade = () => {
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
@@ -71,7 +71,7 @@ const Arcade = () => {
           </div>
           <div className="flex justify-between">
             <div>USE $SMILE</div>
-            <div className="flex gap-1 items-center">
+            <div className="flex items-center gap-1">
               <SmileyIcon className="h-[16px] w-[14.7px] text-white" />
               90
             </div>
