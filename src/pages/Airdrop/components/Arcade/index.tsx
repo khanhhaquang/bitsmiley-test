@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
+import { useGetArcadeLuckyAccount } from '@/queries/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { getRandomBool } from '@/utils/number'
 
@@ -13,6 +14,8 @@ import { SmileButton } from './components/SmileButton'
 import { PrizeType } from './index.types'
 
 const Arcade = () => {
+  const { data } = useGetArcadeLuckyAccount()
+  console.log('🚀 ~ Arcade ~ data:', data)
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
   const [scroll, setScroll] = useState(false)
   const [isWon, setIsWon] = useState(false)
@@ -61,7 +64,7 @@ const Arcade = () => {
       <ChooseProbability
         type={prizeType}
         onChoose={() => {}}></ChooseProbability>
-      <div className="flex w-full justify-center gap-3">
+      <div className=" flex w-full items-center justify-center gap-3">
         <button
           onClick={() => {
             setIsWon(getRandomBool())
@@ -72,9 +75,7 @@ const Arcade = () => {
             className="h-[56px] w-[168px]"
           />
         </button>
-        <ArcadeButton className="mt-2 h-[45.3px] w-[265.6px] pb-2">
-          Play
-        </ArcadeButton>
+        <ArcadeButton className="mt-2 h-[45px] w-[265px]">Play</ArcadeButton>
       </div>
     </div>
   )

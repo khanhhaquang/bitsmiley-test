@@ -24,7 +24,7 @@ export const ArcadeButton: React.FC<ArcadeButtonProps> = ({
       disabled={disabled}
       type="button"
       className={cn(
-        'w-[151px] h-[25px] uppercase text-black/25 text-base font-ibmb',
+        'w-[151px] h-[25px] uppercase text-black/25 text-base font-ibmb pb-2',
         className,
         textStyle
       )}

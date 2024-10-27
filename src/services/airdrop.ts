@@ -38,6 +38,23 @@ export interface BitsmileyJourney {
   name?: string
 }
 
+export interface ArcadeLuckyAccount {
+  totalAirdrop: number
+  availableAirdrop: number
+  haveWon: number
+  locked: number
+}
+
+export interface BuyArcadeLuckyPayload {
+  type: number
+  participationAmount: string
+}
+
+export interface BuyArcadeLuckyResponse {
+  winAmount: number
+  isWin: boolean
+}
+
 export const AirdropService = {
   getMyBitsmileyJourney: {
     key: 'airdrop.getMyBitsmileyJourney',
@@ -46,6 +63,20 @@ export const AirdropService = {
         .get<IResponse<BitsmileyJourney[]>>(
           `/airdrop/getMyBitSmileyJourney/${address}`
         )
+        .then((res) => res.data)
+  },
+  getArcadeLuckyAccount: {
+    key: 'airdrop.getArcadeLuckyAccount',
+    call: () =>
+      axiosInstance
+        .get<IResponse<ArcadeLuckyAccount>>(`/luck_buy/getAccount`)
+        .then((res) => res.data)
+  },
+  buyArcadeLucky: {
+    key: 'airdrop.buyArcadeLucky',
+    call: (payload: BuyArcadeLuckyPayload) =>
+      axiosInstance
+        .post<IResponse<BuyArcadeLuckyResponse>>(`/luck_buy/luck`, payload)
         .then((res) => res.data)
   }
 }

@@ -12,12 +12,14 @@ type SliderProps = {
   className?: string
   inputClassName?: string
   stepsClassName?: string
+  step?: string | number
   onInputChange?: (v: number) => void
 }
 
 const Slider: FC<SliderProps> = ({
   min = 0,
   max = 100,
+  step = 1,
   range,
   className,
   stepsClassName,
@@ -35,7 +37,7 @@ const Slider: FC<SliderProps> = ({
     <div className={cn('flex flex-col gap-y-2', className)}>
       <div className="relative w-full">
         <div
-          className="absolute h-[18px] max-w-full border-2 border-l-4 border-[#758CFF] bg-blue bg-repeat mix-blend-hard-light"
+          className="absolute h-[18px] max-w-full border-x-4 border-y-2 border-[#758CFF] bg-blue bg-repeat mix-blend-hard-light"
           style={{
             width: `${Math.floor((value / max) * 100)}%`,
             backgroundImage: `url(${getIllustrationUrl(
@@ -50,8 +52,9 @@ const Slider: FC<SliderProps> = ({
           onChange={onChange}
           min={min}
           max={max}
+          step={step}
           className={cn(
-            'flex-1 text-2xl bg-transparent text-white',
+            'flex-1 text-2xl bg-transparent text-white w-full h-[18px]',
             styles.sliderInput
           )}
         />
