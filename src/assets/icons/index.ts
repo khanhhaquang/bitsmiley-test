@@ -5,6 +5,7 @@ import AlertBg from './alert-bg.svg'
 import ArrowDownDoubleIcon from './arrow-down-double.svg'
 import ArrowDownIcon from './arrow-down.svg'
 import ArrowLeftDoubleIcon from './arrow-left-double.svg'
+import ArrowLeftFilledIcon from './arrow-left-filled.svg'
 import ArrowLeftThinIcon from './arrow-left-thin.svg'
 import ArrowLeftIcon from './arrow-left.svg'
 import ArrowRightDoubleIcon from './arrow-right-double.svg'
@@ -96,6 +97,7 @@ export {
   CloseIcon,
   HeaderIcon,
   ArrowLeftThinIcon,
+  ArrowLeftFilledIcon,
   ArrowLeftIcon,
   ArrowDownIcon,
   CopyrightIcon,
