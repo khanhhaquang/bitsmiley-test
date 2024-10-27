@@ -12,6 +12,8 @@ import ChooseProbability from './components/ChooseProbability'
 import GameScroller from './components/GameScroller'
 import { SmileButton } from './components/SmileButton'
 import { PrizeType } from './index.types'
+import LockedTokensModal from './components/LockedTokensModal'
+import CongratsModal from './components/CongratsModal'
 
 const Arcade = () => {
   const { data } = useGetArcadeLuckyAccount()
@@ -77,6 +79,8 @@ const Arcade = () => {
         </button>
         <ArcadeButton className="mt-2 h-[45px] w-[265px]">Play</ArcadeButton>
       </div>
+      <CongratsModal isOpen={true} onClose={() => {}} />
+      <LockedTokensModal isOpen={false} onClose={() => {}} />
     </div>
   )
 }

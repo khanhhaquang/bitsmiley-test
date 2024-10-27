@@ -42,6 +42,7 @@ const ChooseProbability: React.FC<{
                 range={[0.05, 11, 22, 33, 46]}
                 min={0.05}
                 max={46}
+                step={0.01}
                 onInputChange={onChangePercentage}
               />
               <div className="relative flex h-9 items-center justify-center bg-blue p-2 text-black">
