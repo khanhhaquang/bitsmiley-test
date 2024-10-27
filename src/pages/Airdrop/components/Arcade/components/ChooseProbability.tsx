@@ -6,6 +6,7 @@ import { formatNumberAsTrunc } from '@/utils/number'
 
 import styles from '../../PreSeasonStake/AvailableToStake/AvailableToStake.module.scss'
 import { PrizeType } from '../index.types'
+import StyledInput from '@/components/StyledInput'
 
 const ChooseProbability: React.FC<{
   type: PrizeType
@@ -14,6 +15,7 @@ const ChooseProbability: React.FC<{
   const max = 10000
   const [propability, setPropability] = useState(0.2)
   const [amount, setAmount] = useState('90')
+
   const onChangePercentange: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
@@ -23,22 +25,24 @@ const ChooseProbability: React.FC<{
     }
     onChoose()
   }
+
   const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    const value = Number(event.target?.value)
+    const value = event.target?.valueAsNumber
     if (!Number.isNaN(value) && value > max) {
       setAmount(max.toString())
       return
     }
     setAmount(event.target?.value)
   }
+
   return (
     <div className="flex w-[610px] flex-col gap-3">
-      <div className="flex w-full flex-col border border-dashed border-blue bg-black/50 p-4">
-        <div className="flex gap-5">
+      <div className="flex w-full flex-col border border-blue/40 bg-blue/10 px-4 py-3">
+        <div className="flex justify-between">
           <div className="flex w-[400px] flex-col gap-5">
-            <div>CHOOSE WINNING PROBABILITY</div>
+            <span className="font-ibmb">CHOOSE WINNING PROBABILITY</span>
             <div className="flex gap-2">
               <div className="flex w-[350px] flex-col gap-4">
                 <input
@@ -61,16 +65,14 @@ const ChooseProbability: React.FC<{
               <div>{`${formatNumberAsTrunc(propability)}%`}</div>
             </div>
           </div>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-1">
-              USE $SMILE{' '}
-              <SmileyIcon className="h-[16px] w-[14.7px] text-white" />
-            </div>
-            <input
+          <div className="flex w-[158px] shrink-0 flex-col gap-3">
+            <span className="flex items-center gap-x-1 font-ibmb text-white">
+              USE $SMILE <SmileyIcon className="h-[16px] w-[14.7px]" />
+            </span>
+            <StyledInput
               value={amount}
               onChange={onChangeAmount}
               type="number"
-              className="w-[160px] border border-l-[18px] border-blue bg-transparent font-ibmb text-2xl text-white"
             />
           </div>
         </div>

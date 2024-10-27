@@ -18,16 +18,18 @@ export const ArcadeButton: React.FC<ArcadeButtonProps> = ({
   ...rest
 }) => {
   const [bgImage, textStyle] = BtnStyle[`${color}`]
+
   return (
     <button
       disabled={disabled}
       type="button"
       className={cn(
-        'w-[151px] h-[25px] uppercase text-white/80 text-sm',
+        'w-[151px] h-[25px] uppercase text-black/25 text-base font-ibmb',
         className,
         textStyle
       )}
       style={{
+        textShadow: '1.186px 1.186px 0px rgba(0, 0, 0, 0.25)',
         backgroundImage: `url(${getIllustrationUrl(bgImage, 'webp')})`
       }}
       {...rest}

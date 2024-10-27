@@ -27,7 +27,7 @@ const Airdrop = () => {
       case STAGE.STAKE:
         return <PreSeasonStake onBack={() => setStage(STAGE.SELECT)} />
       case STAGE.ARCADE:
-        return <Arcade></Arcade>
+        return <Arcade />
       default:
         return null
     }
@@ -55,6 +55,7 @@ const Airdrop = () => {
         }}
         onCheck={() => {
           setIsArcadeModalOpen(false)
+          setStage(STAGE.ARCADE)
         }}
       />
       <PreSeasonStakeModal

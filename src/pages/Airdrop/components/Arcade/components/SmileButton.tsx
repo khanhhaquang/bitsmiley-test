@@ -8,8 +8,8 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 export const SmileButton: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 > = ({
-  className,
   // color = 'blue',
+  className,
   disabled,
   ...rest
 }) => {
