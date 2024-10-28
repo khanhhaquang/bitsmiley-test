@@ -16,20 +16,21 @@ interface SpeedStep {
   timeout: number
 }
 
-const SPEED_STEPS: SpeedStep[] = [
-  { speed: 500, timeout: 500 },
-  { speed: 300, timeout: 600 },
-  { speed: 100, timeout: 100 * (getRandomInt(10) + 40) },
-  { speed: 300, timeout: 600 },
-  { speed: 500, timeout: 0 }
-]
-
 const GameScroller: React.FC<{
   isScrolling: boolean
   prize: PrizeType
   isWin: boolean
   onResult: (isWin: boolean) => void
 }> = ({ isScrolling, prize, isWin, onResult }) => {
+  const speedSteps: SpeedStep[] = useMemo(() => {
+    return [
+      { speed: 500, timeout: 500 },
+      { speed: 300, timeout: 600 },
+      { speed: 100, timeout: 100 * (getRandomInt(10) + 30) },
+      { speed: 300, timeout: 600 },
+      { speed: 500, timeout: 0 }
+    ]
+  }, [isScrolling])
   const [step, setStep] = useState(0)
   const [showFaceAnimation, setShowFaceAnimation] = useState(false)
   const data = [false, false, false, false, true, false, false]
@@ -42,8 +43,8 @@ const GameScroller: React.FC<{
   const halfIndex = Math.floor(data.length / 2)
 
   console.log(
-    '🚀 ~ returndata.map ~ SPEED_STEPS[`${step}`]:',
-    SPEED_STEPS[`${step}`]
+    '🚀 ~ returndata.map ~ speedSteps[`${step}`]:',
+    speedSteps[`${step}`]
   )
 
   const items = useMemo(() => {
@@ -72,7 +73,7 @@ const GameScroller: React.FC<{
                   transform: `translateX(${movement}px)`,
                   transition: moveToRight
                     ? ''
-                    : `all ${SPEED_STEPS[`${step}`].speed}ms linear`,
+                    : `all ${speedSteps[`${step}`].speed}ms linear`,
                   backgroundImage: `url(${getIllustrationUrl(
                     prizeItem ? 'arcade-prize-bg' : 'arcade-face',
                     'webp'
@@ -130,12 +131,12 @@ const GameScroller: React.FC<{
     }
     const intervalId = setInterval(() => {
       scrollToLeft()
-    }, SPEED_STEPS[`${step}`].speed)
+    }, speedSteps[`${step}`].speed)
 
-    if (step < SPEED_STEPS.length - 1) {
+    if (step < speedSteps.length - 1) {
       setTimeout(() => {
         setStep((prev) => prev + 1)
-      }, SPEED_STEPS[`${step}`].timeout)
+      }, speedSteps[`${step}`].timeout)
     } else {
       //isScrolling to prize
       let lastStep = getRandomInt(data.length)
@@ -164,23 +165,14 @@ const GameScroller: React.FC<{
             setShowFaceAnimation(true)
           }
         },
-        SPEED_STEPS[`${step}`].speed * lastStep
+        speedSteps[`${step}`].speed * lastStep
       )
     }
 
     return () => {
       clearInterval(intervalId)
     }
-  }, [
-    isScrolling,
-    step,
-    showFaceAnimation,
-    data.length,
-    prizePos,
-    halfIndex,
-    isWin,
-    onResult
-  ])
+  }, [isScrolling, step, showFaceAnimation, speedSteps])
 
   return (
     <div className="relative mt-3 flex h-[220px] w-[775px] items-center overflow-hidden pt-3">
