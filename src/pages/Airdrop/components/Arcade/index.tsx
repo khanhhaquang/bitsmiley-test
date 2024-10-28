@@ -79,7 +79,7 @@ const Arcade = () => {
         </button>
         <ArcadeButton className="mt-2 h-[45px] w-[265px]">Play</ArcadeButton>
       </div>
-      <CongratsModal isOpen={true} onClose={() => {}} />
+      <CongratsModal isOpen={false} onClose={() => {}} />
       <LockedTokensModal isOpen={false} onClose={() => {}} />
     </div>
   )
