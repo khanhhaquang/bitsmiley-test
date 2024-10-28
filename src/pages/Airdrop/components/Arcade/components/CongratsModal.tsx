@@ -12,8 +12,9 @@ import { ArcadeButton } from './ArcadeButton'
 
 const CongratsModal: React.FC<{
   isOpen: boolean
+  amount: number
   onClose: () => void
-}> = ({ isOpen, onClose }) => {
+}> = ({ isOpen, amount, onClose }) => {
   const [isInfoDisplayed, setIsInfoDisplayed] = useState(false)
 
   const handleClose = () => {
@@ -71,7 +72,7 @@ const CongratsModal: React.FC<{
                   WebkitTextStrokeColor: '#4D2202',
                   fontVariantNumeric: 'slashed-zero'
                 }}>
-                {formatNumberWithSeparator(4500)}
+                {formatNumberWithSeparator(amount)}
               </p>
             </div>
             <p className="w-[390px] text-center font-ibmr">
