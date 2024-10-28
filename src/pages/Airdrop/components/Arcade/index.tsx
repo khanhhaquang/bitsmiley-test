@@ -21,11 +21,27 @@ const Arcade = () => {
   console.log('🚀 ~ Arcade ~ data:', data)
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
   const [scroll, setScroll] = useState(false)
-  const [isWon, setIsWon] = useState(false)
+  const [isWin, setIsWin] = useState(false)
+  const [showCongratsModal, setShowCongratsModal] = useState(false)
+  const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
 
   const simulate = () => {
-    setIsWon(getRandomBool())
+    const result = getRandomBool()
+    console.log('simulate:', result)
+    setIsWin(result)
     setScroll(true)
+  }
+
+  const onScrollResult = (isWin: boolean) => {
+    setScroll(false)
+    console.log('onScrollResult:', isWin)
+    if (isWin) {
+      setShowCongratsModal(true)
+    } else {
+      setTimeout(() => {
+        setShowLockedTokensModal(true)
+      }, 5000)
+    }
   }
   return (
     <div className="relative mt-[45px] flex h-[913.71px] w-[1053px] flex-col items-center bg-arcadeMachineBg bg-contain px-20 py-5 text-white">
@@ -65,10 +81,8 @@ const Arcade = () => {
       <GameScroller
         scroll={scroll}
         prize={prizeType}
-        isWon={isWon}
-        onStop={() => {
-          setScroll(false)
-        }}></GameScroller>
+        isWin={isWin}
+        onResult={onScrollResult}></GameScroller>
       <ChooseProbability
         type={prizeType}
         onChoose={() => {}}></ChooseProbability>
@@ -76,8 +90,18 @@ const Arcade = () => {
         <SimulateButton onClick={simulate}></SimulateButton>
         <ArcadeButton className="mt-2 h-[45px] w-[265px]">Play</ArcadeButton>
       </div>
-      <CongratsModal isOpen={false} onClose={() => {}} />
-      <LockedTokensModal isOpen={false} onClose={() => {}} />
+      <CongratsModal
+        isOpen={showCongratsModal}
+        onClose={() => {
+          setShowCongratsModal(false)
+        }}
+      />
+      <LockedTokensModal
+        isOpen={showLockedTokensModal}
+        onClose={() => {
+          setShowLockedTokensModal(false)
+        }}
+      />
     </div>
   )
 }
