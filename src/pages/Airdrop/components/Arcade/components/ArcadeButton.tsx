@@ -18,7 +18,8 @@ export const ArcadeButton: React.FC<ArcadeButtonProps> = ({
       disabled={disabled}
       type="button"
       className={cn(
-        'w-[151px] h-[25px] uppercase text-black/75 text-base font-ibmb pb-2 group relative',
+        'w-[151px] h-[25px] uppercase text-black/75 text-base font-ibmb pb-2 group relative cursor-pointer',
+        'disabled:cursor-not-allowed',
         className
       )}
       style={{

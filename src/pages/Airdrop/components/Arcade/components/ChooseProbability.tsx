@@ -10,17 +10,16 @@ import { PrizeType } from '../index.types'
 
 const ChooseProbability: React.FC<{
   type: PrizeType
-  onChoose: () => void
-}> = ({ onChoose }) => {
+  amount: string
+  setAmount: React.Dispatch<React.SetStateAction<string>>
+}> = ({ amount, setAmount }) => {
   const { data: luckAccount } = useGetArcadeLuckyAccount()
   const [propability, setPropability] = useState(0.2)
-  const [amount, setAmount] = useState('0')
 
   const available = luckAccount?.data.availableAirdrop || 0
 
   const onChangePercentage = (v: number) => {
     setPropability(v)
-    onChoose()
   }
 
   const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (

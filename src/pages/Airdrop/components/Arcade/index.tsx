@@ -6,7 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { useGetArcadeLuckyAccount } from '@/queries/airdrop'
+import { useBuyArcadeLucky, useGetArcadeLuckyAccount } from '@/queries/airdrop'
 import { getRandomBool } from '@/utils/number'
 
 import { ArcadeButton } from './components/ArcadeButton'
@@ -25,13 +25,31 @@ const Arcade = () => {
   const [isWin, setIsWin] = useState(false)
   const [showCongratsModal, setShowCongratsModal] = useState(false)
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
+  const [amount, setAmount] = useState('0')
 
+  const { mutateAsync: buyLucky, isPending: isBuying } = useBuyArcadeLucky({})
   const { data: luckAccount } = useGetArcadeLuckyAccount()
 
-  const simulate = () => {
+  const isPlayDisabled = isScrolling || !Number(amount) || isBuying
+
+  const handleStartSpinning = async () => {
+    try {
+      const resp = await buyLucky({
+        type: prizeType,
+        participationAmount: amount
+      })
+      if (resp.code === 0) {
+        setIsWin(resp.data.isWin)
+        simulate(resp.data.isWin)
+      }
+    } catch (error) {
+      console.log('🚀 ~ handleStartSpinning ~ error:', error)
+    }
+  }
+
+  const simulate = (resultFromServer?: boolean) => {
     if (!isScrolling) {
-      const result = getRandomBool()
-      console.log('simulate:', result)
+      const result = resultFromServer ?? getRandomBool()
       setIsWin(result)
       setIsScrolling(true)
     }
@@ -87,12 +105,20 @@ const Arcade = () => {
         isWin={isWin}
         onResult={onScrollResult}
       />
-      <ChooseProbability type={prizeType} onChoose={() => {}} />
+      <ChooseProbability
+        type={prizeType}
+        amount={amount}
+        setAmount={setAmount}
+      />
 
       <div className=" flex w-full items-center justify-center gap-3">
-        <SimulateButton disabled={isScrolling} onClick={simulate} />
+        <SimulateButton
+          disabled={isScrolling || isBuying}
+          onClick={() => simulate()}
+        />
         <ArcadeButton
-          disabled={isScrolling}
+          onClick={() => handleStartSpinning()}
+          disabled={isPlayDisabled}
           className="mt-2 h-[45px] w-[265px]">
           Play
         </ArcadeButton>

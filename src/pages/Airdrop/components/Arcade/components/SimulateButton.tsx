@@ -9,7 +9,8 @@ export const SimulateButton: React.FC<
       disabled={disabled}
       type="button"
       className={cn(
-        'w-[168px] h-[56px] uppercase text-black/75 text-base font-ibmb pb-2 group relative',
+        'w-[168px] h-[56px] uppercase text-black/75 text-base font-ibmb pb-2 group relative cursor-pointer',
+        'disabled:cursor-not-allowed',
         className
       )}
       style={{
