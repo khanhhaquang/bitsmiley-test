@@ -106,7 +106,7 @@ const Arcade = () => {
         onResult={onScrollResult}
       />
       <ChooseProbability
-        type={prizeType}
+        prizeType={prizeType}
         amount={amount}
         setAmount={setAmount}
       />

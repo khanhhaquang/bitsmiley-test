@@ -12,6 +12,13 @@ export const PrizeStyle: Record<PrizeType, [number, string, number, number]> = {
   [PrizeType.SMILE_10000]: [10000, 'prize-10000-icon', 90, 60.6]
 } as const
 
+export const Prizes: Record<PrizeType, number> = {
+  [PrizeType.SMILE_100]: 100,
+  [PrizeType.SMILE_1000]: 1000,
+  [PrizeType.SMILE_5000]: 5000,
+  [PrizeType.SMILE_10000]: 10000
+} as const
+
 const PrizeOption: React.FC<{
   type: PrizeType
   selected: boolean

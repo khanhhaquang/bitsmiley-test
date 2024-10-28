@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -13,6 +13,8 @@ type SliderProps = {
   inputClassName?: string
   stepsClassName?: string
   step?: string | number
+  disabled?: boolean
+  value?: number
   onInputChange?: (v: number) => void
 }
 
@@ -23,13 +25,12 @@ const Slider: FC<SliderProps> = ({
   range,
   className,
   stepsClassName,
+  disabled,
+  value = 0,
   onInputChange
 }) => {
-  const [value, setValue] = useState(min)
-
   const onChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const value = event.target?.valueAsNumber
-    setValue(value)
     onInputChange?.(value)
   }
 
@@ -47,6 +48,7 @@ const Slider: FC<SliderProps> = ({
           }}
         />
         <input
+          disabled={disabled}
           value={value}
           type="range"
           onChange={onChange}
@@ -54,7 +56,7 @@ const Slider: FC<SliderProps> = ({
           max={max}
           step={step}
           className={cn(
-            'flex-1 text-2xl bg-transparent text-white w-full h-[18px]',
+            'flex-1 text-2xl bg-transparent text-white w-full h-[18px] disabled:cursor-not-allowed',
             styles.sliderInput
           )}
         />
