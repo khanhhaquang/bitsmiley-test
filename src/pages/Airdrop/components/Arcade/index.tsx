@@ -58,7 +58,7 @@ const Arcade = () => {
     if (!isScrolling) {
       const result = resultFromServer ?? getRandomBool()
       setIsWin(result)
-      setWinAmount(Prizes[`${prizeType}`])
+      if (!resultFromServer) setWinAmount(Prizes[`${prizeType}`])
       setIsScrolling(true)
     }
   }
