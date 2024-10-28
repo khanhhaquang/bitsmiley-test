@@ -26,7 +26,7 @@ const GameScroller: React.FC<{
     return [
       { speed: 500, timeout: 500 },
       { speed: 300, timeout: 600 },
-      { speed: 100, timeout: 100 * (getRandomInt(10) + 30) },
+      { speed: 80, timeout: 80 * (getRandomInt(10) + 30) },
       { speed: 300, timeout: 600 },
       { speed: 500, timeout: 0 }
     ]
@@ -42,10 +42,10 @@ const GameScroller: React.FC<{
   const itemWidth = 180
   const halfIndex = Math.floor(data.length / 2)
 
-  console.log(
-    '🚀 ~ returndata.map ~ speedSteps[`${step}`]:',
-    speedSteps[`${step}`]
-  )
+  // console.log(
+  //   '🚀 ~ returndata.map ~ speedSteps[`${step}`]:',
+  //   speedSteps[`${step}`]
+  // )
 
   const items = useMemo(() => {
     return data.map((prizeItem, i) => {
@@ -116,9 +116,19 @@ const GameScroller: React.FC<{
     })
   }
 
+  const isCurrentPrize = () => {
+    return indexArray[halfIndex] === data.findIndex((v) => v)
+  }
+
+  //not point to prize when prize changed
+  useEffect(() => {
+    if (isCurrentPrize()) {
+      scrollToLeft()
+    }
+  }, [prize])
+
   useEffect(() => {
     if (showFaceAnimation) {
-      console.log('showFaceAnimation:', showFaceAnimation)
       setTimeout(() => {
         setShowFaceAnimation(false)
       }, 5000)
@@ -149,14 +159,14 @@ const GameScroller: React.FC<{
           lastStep = prizeStep + 1
         }
       }
-      console.log(
-        'isWin:',
-        isWin,
-        'prizeStep:',
-        prizeStep,
-        'lastStep:',
-        lastStep
-      )
+      // console.log(
+      //   'isWin:',
+      //   isWin,
+      //   'prizeStep:',
+      //   prizeStep,
+      //   'lastStep:',
+      //   lastStep
+      // )
 
       setTimeout(
         () => {
