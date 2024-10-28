@@ -4,7 +4,7 @@ import axiosRetry from 'axios-retry'
 import { DOMAIN_URL, LOCAL_STORAGE_KEYS } from '@/config/settings'
 import commonActions from '@/store/common/actions'
 import store from '@/store/rootReducer'
-import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import { parseCachedToken, setLocalStorage } from '@/utils/storage'
 
 const axiosInstance = axios.create({
   baseURL: DOMAIN_URL.API,
@@ -32,7 +32,7 @@ const privateAxiosSetupInterceptors = (callbackOnFail: () => void) => {
     (config) => {
       if (config.url === 'user/login') return config
 
-      const token = getLocalStorage(LOCAL_STORAGE_KEYS.TOKEN)
+      const { token } = parseCachedToken()
 
       if (!token) {
         const controller = new AbortController()
