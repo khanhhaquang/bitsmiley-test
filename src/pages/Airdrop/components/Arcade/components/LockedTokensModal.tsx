@@ -36,7 +36,7 @@ const LockedTokensModal: React.FC<{
         </div>
         <div
           className={cn(
-            'relative flex w-full flex-col border border-[#ffd000] opacity-0 transition-all scale-0',
+            'relative flex w-full flex-col border border-[#ffd000] opacity-0 transition-all scale-50',
             isInfoDisplayed && 'opacity-100 scale-100'
           )}>
           <div
