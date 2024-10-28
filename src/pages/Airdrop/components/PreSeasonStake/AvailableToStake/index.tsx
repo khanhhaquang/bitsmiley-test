@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
@@ -7,15 +7,16 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import { useGetMyPreStake } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberAsTrunc } from '@/utils/number'
 
 import styles from './AvailableToStake.module.scss'
 
-const max = 48539.02
-
 const AvailableToStake = () => {
+  const { data } = useGetMyPreStake()
+  const max = useMemo(() => data?.data.totalAirdrop ?? 0, [data])
   const [stakeAmount, setStakeAmount] = useState('0')
   const [stakePercentage, setStakePercentage] = useState(0)
 

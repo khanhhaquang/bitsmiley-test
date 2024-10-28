@@ -1,6 +1,7 @@
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { Modal } from '@/components/Modal'
+import { formatNumberAsTrunc } from '@/utils/number'
 
 const AirdropCheckModal: React.FC<{
   isOpen: boolean
@@ -18,7 +19,7 @@ const AirdropCheckModal: React.FC<{
           </div>
           <div className="flex h-[54px] items-center gap-x-1.5 font-ibmb text-[32px] text-[#FFAA00]">
             <SmileyIcon className="h-[30px] w-[27px] text-white" />
-            <span>{amount}</span>
+            <span>{formatNumberAsTrunc(amount)}</span>
           </div>
         </div>
         {children}

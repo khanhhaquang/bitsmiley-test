@@ -58,10 +58,13 @@ export interface BuyArcadeLuckyResponse {
 export interface MyPreStakeResponse {
   reward: number
   totalAirdrop: number
+  availableAirdrop: number
   staked: number
+  preStakeAPY: number
 }
 
 export interface PreStakeInfo {
+  preStakeAPY: number
   preStakeStartTime: number
   nowTime: number
   preStakeEndTime: number

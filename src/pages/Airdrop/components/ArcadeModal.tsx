@@ -1,4 +1,5 @@
 import { Image } from '@/components/Image'
+import { useGetMyPreStake } from '@/queries/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import AirdropCheckModal from './AirdropCheckModal'
@@ -8,12 +9,13 @@ const ArcadeModal: React.FC<{
   onCheck: () => void
   onClose: () => void
 }> = ({ isOpen, onCheck, onClose }) => {
+  const { data } = useGetMyPreStake()
   return (
     <AirdropCheckModal
       isOpen={isOpen}
       onCheck={onCheck}
       onClose={onClose}
-      amount={4853902}>
+      amount={data?.data.totalAirdrop ?? 0}>
       <div className="flex h-[410px] w-[800px] flex-col items-center">
         <Image
           src={getIllustrationUrl('arcade-with-result-effect', 'gif')}

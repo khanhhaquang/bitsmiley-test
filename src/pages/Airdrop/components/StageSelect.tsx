@@ -7,6 +7,7 @@ import {
 } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
+import { useGetMyPreStake } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
@@ -23,6 +24,7 @@ const StageSelect: React.FC<{
   const [isMyJourneyModalOpen, setIsMyJourneyModalOpen] = useState(false)
   const [isClaimUnlockedModalOpen, setIsClaimUnlockedModalOpen] =
     useState(false)
+  const { data } = useGetMyPreStake()
 
   return (
     <div className="relative">
@@ -52,7 +54,7 @@ const StageSelect: React.FC<{
           <div className="flex h-[84px] items-center justify-between px-4">
             <p className="flex items-center gap-x-3 text-4xl font-bold text-[#FA0]">
               <SmileyIcon className="h-[48px] w-[44px] text-white" />
-              {formatNumberWithSeparator(30291.19)}
+              {formatNumberWithSeparator(data?.data.totalAirdrop ?? 0)}
             </p>
 
             <button
@@ -65,7 +67,9 @@ const StageSelect: React.FC<{
 
         <div className="mt-1 flex justify-between">
           <div className="mt-12 flex flex-col">
-            <PreSeasonStakeInfo className="h-[272px]">
+            <PreSeasonStakeInfo
+              apy={data?.data.preStakeAPY ?? 0}
+              className="h-[272px]">
               <Image
                 width={164}
                 height={77}
