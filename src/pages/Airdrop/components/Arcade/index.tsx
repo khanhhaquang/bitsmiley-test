@@ -9,12 +9,12 @@ import { getRandomBool } from '@/utils/number'
 import { ArcadeButton } from './components/ArcadeButton'
 import ChoosePrize from './components/ChoosePrize'
 import ChooseProbability from './components/ChooseProbability'
+import CongratsModal from './components/CongratsModal'
 import GameScroller from './components/GameScroller'
+import LockedTokensModal from './components/LockedTokensModal'
+import { SimulateButton } from './components/SimulateButton'
 import { SmileButton } from './components/SmileButton'
 import { PrizeType } from './index.types'
-import LockedTokensModal from './components/LockedTokensModal'
-import CongratsModal from './components/CongratsModal'
-import { SimulateButton } from './components/SimulateButton'
 
 const Arcade = () => {
   const { data } = useGetArcadeLuckyAccount()

@@ -3,7 +3,7 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 export const SimulateButton: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ className, color = 'green', disabled, ...rest }) => {
+> = ({ className, disabled, ...rest }) => {
   return (
     <button
       disabled={disabled}
@@ -16,12 +16,12 @@ export const SimulateButton: React.FC<
         textShadow: '1.186px 1.186px 0px rgba(0, 0, 0, 0.25)'
       }}
       {...rest}>
-      <span className="z-10 relative h-full mt-[18px] text-center hidden group-hover:block group-active:block">
+      <span className="relative z-10 mt-[18px] hidden h-full text-center group-hover:block group-active:block">
         Simulate
       </span>
       <img
         src={getIllustrationUrl('simulate-button', 'gif')}
-        className="h-[56px] w-[168px] absolute inset-0 block group-active:hidden group-hover:hidden"
+        className="absolute inset-0 block h-[56px] w-[168px] group-hover:hidden group-active:hidden"
       />
       <img
         className={cn(

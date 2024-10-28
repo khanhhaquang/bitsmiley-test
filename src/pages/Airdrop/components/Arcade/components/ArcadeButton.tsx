@@ -25,7 +25,7 @@ export const ArcadeButton: React.FC<ArcadeButtonProps> = ({
         textShadow: '1.186px 1.186px 0px rgba(0, 0, 0, 0.25)'
       }}
       {...rest}>
-      <span className="flex items-center justify-center z-10 relative h-full">
+      <span className="relative z-10 flex h-full items-center justify-center">
         {rest?.children}
       </span>
       <img
