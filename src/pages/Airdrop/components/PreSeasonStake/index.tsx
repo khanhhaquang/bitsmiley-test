@@ -13,8 +13,8 @@ const PreSeasonStake: FC<{ onBack: () => void }> = ({ onBack }) => {
 
   return (
     <div className="relative mt-[45px] flex flex-col items-center gap-[50px]">
-      <div className="flex items-center gap-[30px]">
-        <button onClick={onBack}>
+      <div className="pointer-events-auto flex items-center gap-[30px]">
+        <button className="cursor-pointer" onClick={() => onBack()}>
           <ArrowLeftDoubleIcon className="h-[45px] w-[53px] text-[#EAC641] hover:text-[#FFC900]" />
         </button>
         <h2

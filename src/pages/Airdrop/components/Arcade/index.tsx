@@ -20,30 +20,29 @@ import { SmileIndicator } from './components/SmileIndicator'
 import { PrizeType } from './index.types'
 
 const Arcade = () => {
-  const { data } = useGetArcadeLuckyAccount()
-  console.log('🚀 ~ Arcade ~ data:', data)
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
-  const [scroll, setScroll] = useState(false)
+  const [isScrolling, setIsScrolling] = useState(false)
   const [isWin, setIsWin] = useState(false)
   const [showCongratsModal, setShowCongratsModal] = useState(false)
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
 
+  const { data: luckAccount } = useGetArcadeLuckyAccount()
+
   const simulate = () => {
-    const result = getRandomBool()
-    console.log('simulate:', result)
-    setIsWin(result)
-    setScroll(true)
+    if (!isScrolling) {
+      const result = getRandomBool()
+      console.log('simulate:', result)
+      setIsWin(result)
+      setIsScrolling(true)
+    }
   }
 
   const onScrollResult = (isWin: boolean) => {
-    setScroll(false)
-    console.log('onScrollResult:', isWin)
+    setIsScrolling(false)
     if (isWin) {
       setShowCongratsModal(true)
     } else {
-      setTimeout(() => {
-        setShowLockedTokensModal(true)
-      }, 5000)
+      setShowLockedTokensModal(true)
     }
   }
   return (
@@ -55,18 +54,20 @@ const Arcade = () => {
             <SmileyIcon className="h-[16px] w-[14.7px] text-white" />
           </div>
           <div className="font-smb2 text-4xl [text-shadow:_2px_-2px_0px_rgba(0,0,0,0.25)]">
-            9,210.39
+            {luckAccount?.data.haveWon ?? '--'}
           </div>
         </div>
         <div className="ml-auto flex shrink-0 flex-col items-center gap-2">
           <Tooltip>
-            <TooltipContent>xxx</TooltipContent>
+            <TooltipContent>
+              {luckAccount?.data.availableAirdrop ?? '--'}
+            </TooltipContent>
             <TooltipTrigger>
               <SmileIndicator>Available $SMILE</SmileIndicator>
             </TooltipTrigger>
           </Tooltip>
           <Tooltip>
-            <TooltipContent>xxx</TooltipContent>
+            <TooltipContent>{luckAccount?.data.locked ?? '--'}</TooltipContent>
             <TooltipTrigger>
               <SmileIndicator>Locked $SMILE</SmileIndicator>
             </TooltipTrigger>
@@ -76,22 +77,27 @@ const Arcade = () => {
       <ChoosePrize
         type={prizeType}
         onChoose={(value) => {
-          if (scroll) return
+          if (isScrolling) return
           setPrizeType(value)
         }}
       />
       <GameScroller
-        scroll={scroll}
+        isScrolling={isScrolling}
         prize={prizeType}
         isWin={isWin}
-        onResult={onScrollResult}></GameScroller>
-      <ChooseProbability
-        type={prizeType}
-        onChoose={() => {}}></ChooseProbability>
+        onResult={onScrollResult}
+      />
+      <ChooseProbability type={prizeType} onChoose={() => {}} />
+
       <div className=" flex w-full items-center justify-center gap-3">
-        <SimulateButton onClick={simulate}></SimulateButton>
-        <ArcadeButton className="mt-2 h-[45px] w-[265px]">Play</ArcadeButton>
+        <SimulateButton disabled={isScrolling} onClick={simulate} />
+        <ArcadeButton
+          disabled={isScrolling}
+          className="mt-2 h-[45px] w-[265px]">
+          Play
+        </ArcadeButton>
       </div>
+
       <CongratsModal
         isOpen={showCongratsModal}
         onClose={() => {

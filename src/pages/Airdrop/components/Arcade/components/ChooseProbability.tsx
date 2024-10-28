@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import { ArrowLeftFilledIcon, SmileyIcon } from '@/assets/icons'
 import StyledInput from '@/components/StyledInput'
+import { useGetArcadeLuckyAccount } from '@/queries/airdrop'
+import { formatNumberWithSeparator } from '@/utils/number'
 
 import Slider from '../../Slider'
 import { PrizeType } from '../index.types'
@@ -10,9 +12,11 @@ const ChooseProbability: React.FC<{
   type: PrizeType
   onChoose: () => void
 }> = ({ onChoose }) => {
-  const max = 10000
+  const { data: luckAccount } = useGetArcadeLuckyAccount()
   const [propability, setPropability] = useState(0.2)
-  const [amount, setAmount] = useState('90')
+  const [amount, setAmount] = useState('0')
+
+  const available = luckAccount?.data.availableAirdrop || 0
 
   const onChangePercentage = (v: number) => {
     setPropability(v)
@@ -23,8 +27,8 @@ const ChooseProbability: React.FC<{
     event
   ) => {
     const value = event.target?.valueAsNumber
-    if (!Number.isNaN(value) && value > max) {
-      setAmount(max.toString())
+    if (!Number.isNaN(value) && value > available) {
+      setAmount(available.toString())
       return
     }
     setAmount(event.target?.value)
@@ -45,7 +49,7 @@ const ChooseProbability: React.FC<{
                 step={0.01}
                 onInputChange={onChangePercentage}
               />
-              <div className="relative flex h-9 items-center justify-center bg-blue p-2 text-black">
+              <div className="relative flex h-9 w-[70px] items-center justify-center bg-blue p-2 text-black">
                 <ArrowLeftFilledIcon className="absolute right-full" />
                 {propability}%
               </div>
@@ -71,13 +75,13 @@ const ChooseProbability: React.FC<{
         </div>
         <div className="flex justify-between">
           <div>Winning Probability</div>
-          <div>45%</div>
+          <div>{propability}%</div>
         </div>
         <div className="flex justify-between">
           <div>USE $SMILE</div>
           <div className="flex items-center gap-x-1">
             <SmileyIcon width={18} height={20} className="text-white" />
-            90
+            {formatNumberWithSeparator(amount)}
           </div>
         </div>
       </div>

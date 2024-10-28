@@ -12,8 +12,8 @@ import ArcadeModal from './components/ArcadeModal'
 import PreSeasonStake from './components/PreSeasonStake'
 import PreSeasonStakeModal from './components/PreSeasonStakeModal'
 import StageSelect from './components/StageSelect'
-import { STAGE } from './index.types'
 import { useAirdropLogin } from './index.hooks'
+import { STAGE } from './index.types'
 
 const Airdrop = () => {
   const navigate = useNavigate()
