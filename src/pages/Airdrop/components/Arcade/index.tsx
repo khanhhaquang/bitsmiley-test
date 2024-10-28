@@ -116,7 +116,9 @@ const Arcade = () => {
         amount={amount}
         setAmount={setAmount}
       />
-
+      <p className="mt-1 flex w-full justify-center font-ibmr text-sm text-error">
+        {buyResp?.code !== 0 && buyResp?.message}
+      </p>
       <div className=" flex w-full items-center justify-center gap-3">
         <SimulateButton
           disabled={isScrolling || isBuying}
@@ -129,7 +131,6 @@ const Arcade = () => {
           Play
         </ArcadeButton>
       </div>
-
       <CongratsModal
         isOpen={showCongratsModal}
         amount={buyResp?.data?.winAmount || 0}

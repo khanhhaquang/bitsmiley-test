@@ -50,7 +50,7 @@ const ChooseProbability: React.FC<{
   }
 
   return (
-    <div className="flex w-[640px] flex-col gap-3">
+    <div className="flex w-[640px] flex-col gap-y-3">
       <div className="flex w-full flex-col border border-blue/40 bg-blue/10 px-4 py-3">
         <div className="flex justify-between">
           <div className="flex w-[400px] flex-col gap-5">
@@ -86,7 +86,7 @@ const ChooseProbability: React.FC<{
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-y-1.5">
+      <div className="flex flex-col gap-y-1.5 text-sm">
         <div className="flex justify-between">
           <span>Potential upside</span>
           <span>{upside}X</span>
