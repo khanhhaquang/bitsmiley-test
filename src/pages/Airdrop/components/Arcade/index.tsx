@@ -18,6 +18,7 @@ import LockedTokensModal from './components/LockedTokensModal'
 import { SimulateButton } from './components/SimulateButton'
 import { SmileIndicator } from './components/SmileIndicator'
 import { PrizeType } from './index.types'
+import { Prizes } from './components/PrizeOption'
 
 const Arcade = () => {
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
@@ -26,6 +27,7 @@ const Arcade = () => {
   const [showCongratsModal, setShowCongratsModal] = useState(false)
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
   const [amount, setAmount] = useState('0')
+  const [winAmount, setWinAmount] = useState(0)
   const {
     mutateAsync: buyLucky,
     isPending: isBuying,
@@ -46,6 +48,7 @@ const Arcade = () => {
       })
       if (resp.code === 0) {
         setIsWin(resp.data.isWin)
+        setWinAmount(resp.data.winAmount)
         simulate(resp.data.isWin)
       }
     } catch (error) {
@@ -57,6 +60,7 @@ const Arcade = () => {
     if (!isScrolling) {
       const result = resultFromServer ?? getRandomBool()
       setIsWin(result)
+      if (!resultFromServer) setWinAmount(Prizes[`${prizeType}`])
       setIsScrolling(true)
     }
   }
@@ -133,7 +137,7 @@ const Arcade = () => {
       </div>
       <CongratsModal
         isOpen={showCongratsModal}
-        amount={buyResp?.data?.winAmount || 0}
+        amount={winAmount}
         onClose={() => {
           setShowCongratsModal(false)
         }}
