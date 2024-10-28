@@ -14,6 +14,7 @@ import { SmileButton } from './components/SmileButton'
 import { PrizeType } from './index.types'
 import LockedTokensModal from './components/LockedTokensModal'
 import CongratsModal from './components/CongratsModal'
+import { SimulateButton } from './components/SimulateButton'
 
 const Arcade = () => {
   const { data } = useGetArcadeLuckyAccount()
@@ -21,6 +22,11 @@ const Arcade = () => {
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
   const [scroll, setScroll] = useState(false)
   const [isWon, setIsWon] = useState(false)
+
+  const simulate = () => {
+    setIsWon(getRandomBool())
+    setScroll(true)
+  }
   return (
     <div className="relative mt-[45px] flex h-[913.71px] w-[1053px] flex-col items-center bg-arcadeMachineBg bg-contain px-20 py-5 text-white">
       <div className="flex h-[100px] items-center gap-20">
@@ -67,16 +73,7 @@ const Arcade = () => {
         type={prizeType}
         onChoose={() => {}}></ChooseProbability>
       <div className=" flex w-full items-center justify-center gap-3">
-        <button
-          onClick={() => {
-            setIsWon(getRandomBool())
-            setScroll(true)
-          }}>
-          <Image
-            src={getIllustrationUrl('simulate-button', 'gif')}
-            className="h-[56px] w-[168px]"
-          />
-        </button>
+        <SimulateButton onClick={simulate}></SimulateButton>
         <ArcadeButton className="mt-2 h-[45px] w-[265px]">Play</ArcadeButton>
       </div>
       <CongratsModal isOpen={false} onClose={() => {}} />
