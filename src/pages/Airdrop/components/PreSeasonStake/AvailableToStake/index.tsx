@@ -7,7 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { useGetMyPreStake } from '@/queries/airdrop'
+import { useGetMyPreStake, useStake } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberAsTrunc } from '@/utils/number'
@@ -15,10 +15,11 @@ import { formatNumberAsTrunc } from '@/utils/number'
 import styles from './AvailableToStake.module.scss'
 
 const AvailableToStake = () => {
-  const { data } = useGetMyPreStake()
-  const max = useMemo(() => data?.data.totalAirdrop ?? 0, [data])
+  const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
+  const max = useMemo(() => data?.data.availableAirdrop ?? 0, [data])
   const [stakeAmount, setStakeAmount] = useState('0')
   const [stakePercentage, setStakePercentage] = useState(0)
+  const { mutateAsync: stakeMutate, isPending: isStaking } = useStake({})
 
   const onChangeStakeAmount: React.ChangeEventHandler<HTMLInputElement> = (
     event
@@ -29,7 +30,8 @@ const AvailableToStake = () => {
       setStakePercentage(1)
       return
     }
-    setStakePercentage(Math.floor(value / max) * 100)
+
+    setStakePercentage((value * 100) / max)
     setStakeAmount(event.target?.value)
   }
 
@@ -42,6 +44,14 @@ const AvailableToStake = () => {
       setStakePercentage(value)
       setStakeAmount(formatNumberAsTrunc((value * max) / 100))
     }
+  }
+
+  const stake = () => {
+    stakeMutate({ amount: Number(stakeAmount) }).then((res) => {
+      if (res.code === 0) {
+        refetchMyPreStake()
+      }
+    })
   }
 
   return (
@@ -108,7 +118,8 @@ const AvailableToStake = () => {
         />
         <ActionButton
           className="w-[129px] bg-white/70 text-2xl text-black/75 hover:bg-white hover:text-black/75 active:bg-white/60 active:text-black/75"
-          disabled={stakePercentage === 0}>
+          disabled={stakePercentage === 0 || isStaking}
+          onClick={stake}>
           Stake
         </ActionButton>
       </div>

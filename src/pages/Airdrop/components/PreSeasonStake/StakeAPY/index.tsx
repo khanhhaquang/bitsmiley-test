@@ -18,7 +18,7 @@ const StakeAPY = () => {
   const stakeAPY = useMemo(
     () =>
       data?.data.preStakeAPY
-        ? formatNumberAsTrunc(data?.data.preStakeAPY * 100)
+        ? formatNumberAsTrunc(data?.data.preStakeAPY * 100, 0)
         : 0,
     [data]
   )
