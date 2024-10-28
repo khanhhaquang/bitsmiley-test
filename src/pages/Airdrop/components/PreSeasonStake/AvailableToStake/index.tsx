@@ -13,6 +13,8 @@ import { formatNumberAsTrunc } from '@/utils/number'
 
 import Slider from '../../Slider'
 
+const MAX_PERCENTAGE = 100
+
 const AvailableToStake = () => {
   const { data: myPreStake, refetch: refetchMyPreStake } = useGetMyPreStake()
   const [stakeAmount, setStakeAmount] = useState('0')
@@ -31,7 +33,11 @@ const AvailableToStake = () => {
     const expectedValue = Number.isNaN(value) ? 0 : value > max ? max : value
 
     setStakeAmount(expectedValue.toString())
-    setStakePercentage(Math.floor(expectedValue * 100) / max)
+
+    const percentage = Math.floor(expectedValue * 100) / max
+    setStakePercentage(
+      percentage > MAX_PERCENTAGE ? MAX_PERCENTAGE : percentage
+    )
   }
 
   const onChangePercentage = (v: number) => {
@@ -67,10 +73,11 @@ const AvailableToStake = () => {
 
       <div className="flex items-stretch gap-x-4">
         <Slider
-          range={[0, 25, 50, 75, 100]}
+          range={[0, 25, 50, 75, MAX_PERCENTAGE]}
           min={0}
-          max={100}
+          max={MAX_PERCENTAGE}
           step={1}
+          disabled={!max}
           value={stakePercentage}
           onInputChange={onChangePercentage}
           stepsClassName="text-sm text-white/60"
@@ -78,7 +85,7 @@ const AvailableToStake = () => {
         />
 
         <div className="flex w-[95px] items-center justify-center bg-blue/20 py-4 text-2xl text-blue">
-          {formatNumberAsTrunc(stakePercentage.toString(), 2)}%
+          {formatNumberAsTrunc(stakePercentage)}%
         </div>
       </div>
 
@@ -87,6 +94,7 @@ const AvailableToStake = () => {
           value={stakeAmount}
           onChange={onChangeStakeAmount}
           type="number"
+          disabled={!max}
           inputClassName="w-full"
         />
         <ActionButton

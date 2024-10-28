@@ -26,7 +26,6 @@ const Arcade = () => {
   const [showCongratsModal, setShowCongratsModal] = useState(false)
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
   const [amount, setAmount] = useState('0')
-  const [winAmount, setWinAmount] = useState(0)
   const {
     mutateAsync: buyLucky,
     isPending: isBuying,
@@ -47,7 +46,6 @@ const Arcade = () => {
       })
       if (resp.code === 0) {
         setIsWin(resp.data.isWin)
-        setWinAmount(resp.data.winAmount)
         simulate(resp.data.isWin)
       }
     } catch (error) {
@@ -134,7 +132,7 @@ const Arcade = () => {
 
       <CongratsModal
         isOpen={showCongratsModal}
-        amount={winAmount}
+        amount={buyResp?.data?.winAmount || 0}
         onClose={() => {
           setShowCongratsModal(false)
         }}

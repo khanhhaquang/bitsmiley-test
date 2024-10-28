@@ -3,12 +3,14 @@ import { useMemo, useState } from 'react'
 import { ArrowLeftFilledIcon, SmileyIcon } from '@/assets/icons'
 import StyledInput from '@/components/StyledInput'
 import { useGetArcadeLuckyAccount } from '@/queries/airdrop'
-import { formatNumberWithSeparator } from '@/utils/number'
+import { formatNumberAsTrunc, formatNumberWithSeparator } from '@/utils/number'
 
 import { Prizes } from './PrizeOption'
 
 import Slider from '../../Slider'
 import { PrizeType } from '../index.types'
+
+const MAX_PROBABILITY = 46
 
 const ChooseProbability: React.FC<{
   prizeType: PrizeType
@@ -42,7 +44,9 @@ const ChooseProbability: React.FC<{
         : value
 
     setAmount(expectedValue.toString())
-    setProbability(Math.floor((expectedValue / available) * 100))
+
+    const prob = Math.floor((expectedValue / available) * 100)
+    setProbability(prob > MAX_PROBABILITY ? MAX_PROBABILITY : prob)
   }
 
   return (
@@ -55,16 +59,16 @@ const ChooseProbability: React.FC<{
               <Slider
                 disabled={!available}
                 className="w-[310px] shrink-0"
-                range={[0.05, 11, 22, 33, 46]}
+                range={[0.05, 11, 22, 33, MAX_PROBABILITY]}
                 min={0.05}
-                max={46}
+                max={MAX_PROBABILITY}
                 step={0.01}
                 value={probability}
                 onInputChange={onChangeProbability}
               />
               <div className="relative flex h-9 w-[70px] items-center justify-center bg-blue p-2 text-black">
                 <ArrowLeftFilledIcon className="absolute right-full" />
-                {probability}%
+                {formatNumberAsTrunc(probability)}%
               </div>
             </div>
           </div>
@@ -77,21 +81,22 @@ const ChooseProbability: React.FC<{
               value={amount}
               onChange={onChangeAmount}
               type="number"
+              disabled={!available}
             />
           </div>
         </div>
       </div>
       <div className="flex flex-col gap-y-1.5">
         <div className="flex justify-between">
-          <div>Potential upside</div>
-          <div>{upside}x</div>
+          <span>Potential upside</span>
+          <span>{upside}X</span>
         </div>
         <div className="flex justify-between">
-          <div>Winning Probability</div>
-          <div>{probability}%</div>
+          <span>Winning Probability</span>
+          <span>{probability}%</span>
         </div>
         <div className="flex justify-between">
-          <div>USE $SMILE</div>
+          <span>USE $SMILE</span>
           <div className="flex items-center gap-x-1">
             <SmileyIcon width={18} height={20} className="text-white" />
             {formatNumberWithSeparator(amount)}
