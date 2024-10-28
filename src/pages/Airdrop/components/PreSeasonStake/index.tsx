@@ -1,13 +1,13 @@
 import { FC, useMemo, useState } from 'react'
 
 import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
+import { useGetPreStakeInfo } from '@/queries/airdrop'
 
 import AirdropStatistic from './AirdropStatistic'
 import AvailableToStake from './AvailableToStake'
 import StakeAPY from './StakeAPY'
 
 import { UnstakeModal } from '../ExitTokenModals'
-import { useGetPreStakeInfo } from '@/queries/airdrop'
 
 const PreSeasonStake: FC<{ onBack: () => void }> = ({ onBack }) => {
   const [isUnstakeModalOpen, setIsUnstakeModalOpen] = useState(false)

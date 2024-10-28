@@ -5,9 +5,9 @@ import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import StyledInput from '@/components/StyledInput'
+import { useGetMyPreStake, useUnStake } from '@/queries/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
-import { useGetMyPreStake, useUnStake } from '@/queries/airdrop'
 
 type ExitTokenModalProps = {
   isOpen: boolean
