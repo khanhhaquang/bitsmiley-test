@@ -2,9 +2,9 @@ import { SmileyIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { formatNumberWithSeparator } from '@/utils/number'
 
 import { ArcadeButton } from './ArcadeButton'
-import { formatNumberWithSeparator } from '@/utils/number'
 
 const CongratsModal: React.FC<{
   isOpen: boolean

@@ -19,9 +19,9 @@ interface SpeedStep {
 const GameScroller: React.FC<{
   scroll: boolean
   prize: PrizeType
-  isWon: boolean
-  onStop: () => void
-}> = ({ scroll, prize, isWon, onStop }) => {
+  isWin: boolean
+  onResult: (isWin: boolean) => void
+}> = ({ scroll, prize, isWin, onResult }) => {
   const speedSteps: SpeedStep[] = useMemo(() => {
     return [
       { speed: 500, timeout: 500 },
@@ -32,6 +32,7 @@ const GameScroller: React.FC<{
     ]
   }, [scroll])
   const [step, setStep] = useState(0)
+  const [showFaceAnimation, setShowFaceAnimation] = useState(false)
   const data = [false, false, false, false, true, false, false]
   const [indexArray, setIndexArray] = useState(
     Array.from({ length: data.length }, (_, index) => index)
@@ -52,17 +53,27 @@ const GameScroller: React.FC<{
         <div
           key={i}
           className="absolute size-[160px]"
-          style={{
-            zIndex: moveToRight ? 1 : 10,
-            transform: `translateX(${movement}px)`,
-            transition: moveToRight
-              ? ''
-              : `all ${speedSteps[step].speed}ms linear`,
-            backgroundImage: `url(${getIllustrationUrl(
-              prizeItem ? 'arcade-prize-bg' : 'arcade-face',
-              'webp'
-            )})`
-          }}>
+          style={
+            showFaceAnimation && pos === halfIndex && !prizeItem
+              ? {
+                  backgroundImage: `url(${getIllustrationUrl(
+                    'arcade-face',
+                    'gif'
+                  )})`,
+                  backgroundSize: '160px 160px'
+                }
+              : {
+                  zIndex: moveToRight ? 1 : 10,
+                  transform: `translateX(${movement}px)`,
+                  transition: moveToRight
+                    ? ''
+                    : `all ${speedSteps[step].speed}ms linear`,
+                  backgroundImage: `url(${getIllustrationUrl(
+                    prizeItem ? 'arcade-prize-bg' : 'arcade-face',
+                    'webp'
+                  )})`
+                }
+          }>
           {prizeItem && (
             <div
               className="flex size-[160px] flex-col items-center justify-center gap-1 bg-no-repeat pt-10"
@@ -100,6 +111,13 @@ const GameScroller: React.FC<{
   }
 
   useEffect(() => {
+    if (showFaceAnimation) {
+      console.log('showFaceAnimation:', showFaceAnimation)
+      setTimeout(() => {
+        setShowFaceAnimation(false)
+      }, 5000)
+      return
+    }
     if (!scroll) {
       setStep(0)
       return
@@ -117,7 +135,7 @@ const GameScroller: React.FC<{
       let lastStep = getRandomInt(data.length)
       const prizeStep =
         prizePos >= halfIndex ? prizePos - halfIndex : halfIndex + 1 + prizePos
-      if (isWon) {
+      if (isWin) {
         lastStep = prizeStep
       } else {
         if (lastStep === prizeStep) {
@@ -125,22 +143,26 @@ const GameScroller: React.FC<{
         }
       }
       console.log(
-        'isWon:',
-        isWon,
+        'isWin:',
+        isWin,
         'prizeStep:',
         prizeStep,
         'lastStep:',
         lastStep
       )
+
       setTimeout(() => {
-        onStop()
+        onResult(isWin)
+        if (!isWin) {
+          setShowFaceAnimation(true)
+        }
       }, speedSteps[step].speed * lastStep)
     }
 
     return () => {
       clearInterval(intervalId)
     }
-  }, [scroll, step, speedSteps])
+  }, [scroll, step, speedSteps, showFaceAnimation])
   return (
     <div className="relative mt-3 flex h-[220px] w-[775px] items-center overflow-hidden pt-3">
       <Image

@@ -1,18 +1,9 @@
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-// type SpecialButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-//   color?: 'red' | 'blue'
-// }
-
 export const SmileButton: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({
-  // color = 'blue',
-  className,
-  disabled,
-  ...rest
-}) => {
+> = ({ className, disabled, ...rest }) => {
   return (
     <button
       disabled={disabled}
