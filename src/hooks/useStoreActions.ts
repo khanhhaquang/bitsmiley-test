@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { Hash } from 'viem'
 
 import { IProject } from '@/services/project'
+import airdropActions from '@/store/airdrop/actions'
 import commonActions from '@/store/common/actions'
 
 export const useStoreActions = () => {
@@ -39,6 +40,10 @@ export const useStoreActions = () => {
     [dispatch]
   )
 
+  const setAirdropIsLoggedIn = useCallback(
+    (payload: boolean) => dispatch(airdropActions.SET_LOGGED_IN(payload)),
+    [dispatch]
+  )
   return {
     resetStorage,
     setNetworkError,
@@ -46,6 +51,7 @@ export const useStoreActions = () => {
     addTransaction,
     addTransactions,
     removeTransaction,
-    setProjectInfo
+    setProjectInfo,
+    setAirdropIsLoggedIn
   }
 }

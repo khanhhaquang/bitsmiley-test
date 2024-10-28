@@ -5,8 +5,11 @@ import { useDisconnect } from 'wagmi'
 
 import { clearStorage } from '@/utils/storage'
 
+import { useStoreActions } from './useStoreActions'
+
 export const useDisconnectAccount = () => {
   const navigate = useNavigate()
+  const { resetStorage: resetReduxStorage } = useStoreActions()
   const { disconnect: disConnectParticle } = useParticleConnect()
   const { disconnect: disconnectEvm, connectors } = useDisconnect()
 
@@ -17,6 +20,7 @@ export const useDisconnectAccount = () => {
       },
       {
         onSuccess: () => {
+          resetReduxStorage()
           clearStorage()
           navigate('/')
         },
@@ -25,7 +29,7 @@ export const useDisconnectAccount = () => {
         }
       }
     )
-  }, [connectors, disconnectEvm, navigate])
+  }, [connectors, disconnectEvm, navigate, resetReduxStorage])
 
   const disconnect = useCallback(() => {
     disconnectWagmi()

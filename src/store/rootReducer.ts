@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 
+import airdrop from './airdrop'
 import common from './common'
 
 const allReducers = combineReducers({
-  common: common.reducer
+  common: common.reducer,
+  airdrop: airdrop.reducer
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

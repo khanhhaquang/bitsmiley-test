@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 
-import { axiosInstance } from '@/config/axios'
+import { axiosInstance, privateAxiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
 
 export enum BitsmileyJourneyType {
@@ -68,14 +68,14 @@ export const AirdropService = {
   getArcadeLuckyAccount: {
     key: 'airdrop.getArcadeLuckyAccount',
     call: () =>
-      axiosInstance
+      privateAxiosInstance
         .get<IResponse<ArcadeLuckyAccount>>(`/luck_buy/getAccount`)
         .then((res) => res.data)
   },
   buyArcadeLucky: {
     key: 'airdrop.buyArcadeLucky',
     call: (payload: BuyArcadeLuckyPayload) =>
-      axiosInstance
+      privateAxiosInstance
         .post<IResponse<BuyArcadeLuckyResponse>>(`/luck_buy/luck`, payload)
         .then((res) => res.data)
   }
