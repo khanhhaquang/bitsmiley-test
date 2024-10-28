@@ -55,6 +55,25 @@ export interface BuyArcadeLuckyResponse {
   isWin: boolean
 }
 
+export interface MyPreStakeResponse {
+  reward: number
+  totalAirdrop: number
+  availableAirdrop: number
+  staked: number
+  preStakeAPY: number
+}
+
+export interface PreStakeInfo {
+  preStakeAPY: number
+  preStakeStartTime: number
+  nowTime: number
+  preStakeEndTime: number
+}
+
+export interface StakePayload {
+  amount: number
+}
+
 export const AirdropService = {
   getMyBitsmileyJourney: {
     key: 'airdrop.getMyBitsmileyJourney',
@@ -77,6 +96,34 @@ export const AirdropService = {
     call: (payload: BuyArcadeLuckyPayload) =>
       privateAxiosInstance
         .post<IResponse<BuyArcadeLuckyResponse>>(`/luck_buy/luck`, payload)
+        .then((res) => res.data)
+  },
+  getMyReward: {
+    key: 'airdrop.getMyReward',
+    call: () =>
+      privateAxiosInstance
+        .get<IResponse<string>>(`/preStake/getMyReward`)
+        .then((res) => res.data)
+  },
+  getMyPreStake: {
+    key: 'airdrop.getMyPreStake',
+    call: () =>
+      privateAxiosInstance
+        .get<IResponse<MyPreStakeResponse>>(`/preStake/getMyPreStake`)
+        .then((res) => res.data)
+  },
+  getPreStakeInfo: {
+    key: 'airdrop.getPreStakeInfo',
+    call: () =>
+      privateAxiosInstance
+        .get<IResponse<PreStakeInfo>>(`/preStake/getPreStakeInfo`)
+        .then((res) => res.data)
+  },
+  stake: {
+    key: 'airdrop.stake',
+    call: (payload: StakePayload) =>
+      privateAxiosInstance
+        .post<IResponse<MyPreStakeResponse>>(`/preStake/stake`, payload)
         .then((res) => res.data)
   }
 }

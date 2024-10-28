@@ -4,11 +4,11 @@ import { useState } from 'react'
 import { SmileyIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
+import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
 import { ArcadeButton } from './ArcadeButton'
-import { cn } from '@/utils/cn'
 
 const CongratsModal: React.FC<{
   isOpen: boolean
