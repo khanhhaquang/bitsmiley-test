@@ -15,11 +15,11 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 }) => {
   return (
     <div>
-      <div className="flex items-center gap-[5px]">
-        <div className=" text-base uppercase text-[#FA0]">{label}</div>
+      <div className="flex items-center gap-x-[5px]">
+        <span className="text-base uppercase text-[#FA0]">{label}</span>
         <SmileyIcon className="h-[21px] w-[20px] text-white" />
       </div>
-      <div className="text-5xl leading-[62px] text-white/70">{content}</div>
+      <span className="text-5xl leading-[62px] text-white/70">{content}</span>
     </div>
   )
 }
@@ -43,9 +43,9 @@ const AirdropStatistic = () => {
         content={
           <div className="flex items-center gap-4">
             <div>{formatNumberAsTrunc(data?.data.reward ?? 0)}</div>
-            <button className="bg-transparent text-sm font-bold text-[#FFAA00]/60 hover:text-[#FFAA00]">
+            {/* <button className="bg-transparent text-sm font-bold text-[#FFAA00]/60 hover:text-[#FFAA00]">
               Claim
-            </button>
+            </button> */}
           </div>
         }
       />
