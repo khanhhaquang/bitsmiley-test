@@ -52,6 +52,8 @@ export interface BuyArcadeLuckyPayload {
 
 export interface BuyArcadeLuckyResponse {
   winAmount: number
+  locked: number
+  lockedFor: number
   isWin: boolean
 }
 

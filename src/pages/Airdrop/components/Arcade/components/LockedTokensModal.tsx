@@ -11,8 +11,10 @@ import { ArcadeButton } from './ArcadeButton'
 
 const LockedTokensModal: React.FC<{
   isOpen: boolean
+  locked?: number
+  lockedFor?: number
   onClose: () => void
-}> = ({ isOpen, onClose }) => {
+}> = ({ isOpen, locked, lockedFor, onClose }) => {
   const [isInfoDisplayed, setIsInfoDisplayed] = useState(false)
 
   const handleClose = () => {
@@ -62,7 +64,7 @@ const LockedTokensModal: React.FC<{
                 </span>
                 <span className="relative flex items-center gap-x-2 text-4xl text-[#FFD000]">
                   <SmileyIcon width={29} height={31} className="text-white" />{' '}
-                  4500
+                  {locked ?? 4500}
                 </span>
               </div>
               <div className="relative flex h-[106px] w-[238px] flex-col items-center justify-center font-ibmb">
@@ -77,7 +79,7 @@ const LockedTokensModal: React.FC<{
                   Locked for
                 </span>
                 <span className="relative flex items-center gap-x-2 text-4xl text-white/75">
-                  100 Days
+                  {lockedFor ?? 100} Days
                 </span>
               </div>
             </div>

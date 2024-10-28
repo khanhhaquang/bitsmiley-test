@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import {
@@ -27,10 +27,17 @@ const Arcade = () => {
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
   const [amount, setAmount] = useState('0')
   const [winAmount, setWinAmount] = useState(0)
-  const { mutateAsync: buyLucky, isPending: isBuying } = useBuyArcadeLucky({})
+  const {
+    mutateAsync: buyLucky,
+    isPending: isBuying,
+    data: buyResp
+  } = useBuyArcadeLucky({})
   const { data: luckAccount } = useGetArcadeLuckyAccount()
 
-  const isPlayDisabled = isScrolling || !Number(amount) || isBuying
+  const isPlayDisabled = useMemo(
+    () => isScrolling || !Number(amount) || isBuying,
+    [amount, isBuying, isScrolling]
+  )
 
   const handleStartSpinning = async () => {
     try {
@@ -134,6 +141,8 @@ const Arcade = () => {
       />
       <LockedTokensModal
         isOpen={showLockedTokensModal}
+        lockedFor={buyResp?.data?.lockedFor}
+        locked={buyResp?.data?.locked}
         onClose={() => {
           setShowLockedTokensModal(false)
         }}
