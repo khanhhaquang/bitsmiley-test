@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from 'react'
+import { FC, ReactNode, useMemo, useState } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
@@ -7,6 +7,7 @@ import { Modal } from '@/components/Modal'
 import StyledInput from '@/components/StyledInput'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
+import { useGetMyPreStake, useUnStake } from '@/queries/airdrop'
 
 type ExitTokenModalProps = {
   isOpen: boolean
@@ -14,6 +15,7 @@ type ExitTokenModalProps = {
   children?: ReactNode
   onCancel: () => void
   onProceed: () => void
+  isPending?: boolean
 }
 
 const ExitTokenModal: FC<ExitTokenModalProps> = ({
@@ -21,7 +23,8 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
   title,
   children,
   onCancel,
-  onProceed
+  onProceed,
+  isPending
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onCancel} backdrop={false}>
@@ -52,6 +55,7 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
           </ActionButton>
           <ActionButton
             className="h-[47px] w-[166px] border-blue bg-blue/80 font-ibmb text-2xl text-white hover:bg-blue active:bg-blue/70"
+            disabled={isPending}
             onClick={onProceed}>
             Proceed
           </ActionButton>
@@ -65,13 +69,34 @@ export const UnstakeModal: FC<{
   onClose: () => void
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
+  const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
+  const stakedAmount = useMemo(() => data?.data.staked ?? 0, [data])
+  const { mutateAsync: unStake, isPending: isUnStaking } = useUnStake({})
   const [value, setValue] = useState('')
-  const handleProceed = () => {}
+  const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    const value = Number(event.target?.value)
+    if (!Number.isNaN(value) && value > stakedAmount) {
+      setValue(stakedAmount.toString())
+      return
+    }
+    setValue(event.target?.value)
+  }
+  const handleProceed = () => {
+    unStake({ amount: Number(value) }).then((res) => {
+      if (res.code === 0) {
+        refetchMyPreStake()
+        onClose()
+      }
+    })
+  }
 
   return (
     <ExitTokenModal
       isOpen={isOpen}
       title="Unstake $Smile"
+      isPending={isUnStaking}
       onCancel={onClose}
       onProceed={handleProceed}>
       <div className="my-6 flex flex-col items-center">
@@ -79,7 +104,7 @@ export const UnstakeModal: FC<{
           Staked $SMILE <SmileyIcon />
         </p>
         <p className="mt-1.5 font-ibmb text-2xl text-[#FFD000]">
-          {formatNumberWithSeparator(4930223)}
+          {formatNumberWithSeparator(stakedAmount)}
         </p>
 
         <div className="mt-6 flex flex-col items-center gap-y-3">
@@ -90,7 +115,7 @@ export const UnstakeModal: FC<{
             className="h-[45px] w-[302px]"
             type="number"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={onChangeAmount}
           />
         </div>
       </div>

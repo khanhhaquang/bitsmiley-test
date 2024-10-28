@@ -95,3 +95,17 @@ export const useStake = ({
     onError
   })
 }
+
+export const useUnStake = ({
+  onSuccess,
+  onError
+}: {
+  onSuccess?: (data: IResponse<MyPreStakeResponse>) => void
+  onError?: (error: Error) => void
+}) => {
+  return useMutation({
+    mutationFn: (payload: StakePayload) => AirdropService.unStake.call(payload),
+    onSuccess,
+    onError
+  })
+}

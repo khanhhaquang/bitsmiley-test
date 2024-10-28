@@ -125,5 +125,12 @@ export const AirdropService = {
       privateAxiosInstance
         .post<IResponse<MyPreStakeResponse>>(`/preStake/stake`, payload)
         .then((res) => res.data)
+  },
+  unStake: {
+    key: 'airdrop.unStake',
+    call: (payload: StakePayload) =>
+      privateAxiosInstance
+        .post<IResponse<MyPreStakeResponse>>(`/preStake/unStake`, payload)
+        .then((res) => res.data)
   }
 }
