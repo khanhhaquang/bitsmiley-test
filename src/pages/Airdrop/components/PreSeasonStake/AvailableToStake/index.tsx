@@ -56,13 +56,13 @@ const AvailableToStake = () => {
   return (
     <div className="flex flex-col gap-[18px] font-ibmr">
       <div className="w-[534px] border border-blue/30">
-        <p className="bg-blue px-4 py-[6px] font-smb text-xs uppercase text-white">
+        <div className="bg-blue px-4 py-[6px] font-smb text-xs uppercase text-white">
           AVAILABLE TO STAKE{' '}
           <Tooltip>
             <TooltipTrigger>ⓘ</TooltipTrigger>
             <TooltipContent>Available amount to stake</TooltipContent>
           </Tooltip>
-        </p>
+        </div>
         <div className="flex items-center gap-3 px-4 py-3">
           <SmileyIcon className="h-[46px] w-[44px] text-white" />
           <p className="text-5xl font-semibold leading-[62px] text-white/70">

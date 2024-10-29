@@ -34,8 +34,8 @@ export const Header: React.FC<{
           <ConnectWallet />
           {!isRoot && <EnterHomeButton />}
           {!isMainApp && <EnterAppButton />}
-          <AirdropBindingWallet />
           {isConnected && !isAirdropPage && <EnterAirdropButton />}
+          <AirdropBindingWallet isAirdropPage={isAirdropPage} />
         </div>
       )}
     </div>
