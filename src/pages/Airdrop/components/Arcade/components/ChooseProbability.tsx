@@ -22,6 +22,12 @@ const ChooseProbability: React.FC<{
 
   const available = luckAccount?.data.availableAirdrop || 0
 
+  const max = useMemo(
+    () =>
+      Prizes[`${prizeType}`] > available ? available : Prizes[`${prizeType}`],
+    [available, prizeType]
+  )
+
   const upside = useMemo(() => {
     return Number(amount)
       ? formatNumberWithSeparator(Prizes[`${prizeType}`] / Number(amount))
@@ -30,22 +36,18 @@ const ChooseProbability: React.FC<{
 
   const onChangeProbability = (v: number) => {
     setProbability(v)
-    setAmount(Math.floor((available * v) / 100).toString())
+    setAmount(Math.floor((v / 100) * 2 * Prizes[`${prizeType}`]).toString())
   }
 
   const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
     const value = event.target?.valueAsNumber
-    const expectedValue = Number.isNaN(value)
-      ? 0
-      : value > available
-        ? available
-        : value
+    const expectedValue = Number.isNaN(value) ? 0 : value > max ? max : value
 
     setAmount(expectedValue.toString())
 
-    const prob = Math.floor((expectedValue / available) * 100)
+    const prob = Math.floor((expectedValue / Prizes[`${prizeType}`] / 2) * 100)
     setProbability(prob > MAX_PROBABILITY ? MAX_PROBABILITY : prob)
   }
 
@@ -81,6 +83,7 @@ const ChooseProbability: React.FC<{
               value={amount}
               onChange={onChangeAmount}
               type="number"
+              max={max}
               disabled={!available}
             />
           </div>
