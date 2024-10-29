@@ -1,4 +1,5 @@
 import { type Chain } from 'viem'
+import { holesky, mainnet } from 'viem/chains'
 
 export const merlinTestnet = {
   id: 686868,
@@ -166,5 +167,7 @@ export const customChains = [
   bitLayerTestnet,
   bitLayerMainnet,
   zetaTestnet,
-  zetaMainnet
+  zetaMainnet,
+  holesky,
+  mainnet
 ] as Chain[]

@@ -131,7 +131,7 @@ const Arcade = () => {
         <ArcadeButton
           onClick={() => handleStartSpinning()}
           disabled={isPlayDisabled}
-          className="mt-2 h-[45px] w-[265px]">
+          className="mt-3 h-[45px] w-[265px]">
           Play
         </ArcadeButton>
       </div>

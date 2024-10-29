@@ -37,6 +37,7 @@ export interface INetworkInfo {
 export interface IProject {
   nowTime: string
   startTime: string
+  tgeTime: string
   web3Info: INetworkInfo[]
 }
 
