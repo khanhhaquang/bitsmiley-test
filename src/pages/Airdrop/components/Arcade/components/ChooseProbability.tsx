@@ -36,7 +36,8 @@ const ChooseProbability: React.FC<{
 
   const onChangeProbability = (v: number) => {
     setProbability(v)
-    setAmount(Math.floor((v / 100) * 2 * Prizes[`${prizeType}`]).toString())
+    const matchedAmount = Math.floor((v / 100) * 2 * Prizes[`${prizeType}`])
+    setAmount(matchedAmount > max ? max.toString() : matchedAmount.toString())
   }
 
   const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (
