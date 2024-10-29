@@ -9,7 +9,7 @@ import { useStoreActions } from './useStoreActions'
 
 export const useDisconnectAccount = () => {
   const navigate = useNavigate()
-  const { resetStorage: resetReduxStorage } = useStoreActions()
+  const { setAirdropIsLoggedIn } = useStoreActions()
   const { disconnect: disConnectParticle } = useParticleConnect()
   const { disconnect: disconnectEvm, connectors } = useDisconnect()
 
@@ -20,7 +20,7 @@ export const useDisconnectAccount = () => {
       },
       {
         onSuccess: () => {
-          resetReduxStorage()
+          setAirdropIsLoggedIn(false)
           clearStorage()
           navigate('/')
         },
@@ -29,7 +29,7 @@ export const useDisconnectAccount = () => {
         }
       }
     )
-  }, [connectors, disconnectEvm, navigate, resetReduxStorage])
+  }, [connectors, disconnectEvm, navigate, setAirdropIsLoggedIn])
 
   const disconnect = useCallback(() => {
     disconnectWagmi()
