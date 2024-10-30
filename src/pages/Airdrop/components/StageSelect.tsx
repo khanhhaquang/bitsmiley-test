@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
   ArrowLeftDoubleIcon,
@@ -17,6 +17,7 @@ import MyJourneyModal from './MyJourneyModal'
 import { PreSeasonStakeInfo } from './PreSeasonStakeModal'
 
 import { STAGE } from '../index.types'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const StageSelect: React.FC<{
   onSelect: (v: STAGE) => void
@@ -25,6 +26,11 @@ const StageSelect: React.FC<{
   const [isClaimUnlockedModalOpen, setIsClaimUnlockedModalOpen] =
     useState(false)
   const { data } = useGetMyPreStake()
+  const { projectInfo } = useProjectInfo()
+  const showClaim = useMemo(() => {
+    if (!projectInfo?.nowTime || !projectInfo.tgeTime) return false
+    return projectInfo.nowTime >= projectInfo.tgeTime
+  }, [projectInfo])
 
   return (
     <div className="relative">
@@ -147,13 +153,15 @@ const StageSelect: React.FC<{
           </div>
         </div>
 
-        <button
-          onClick={() => setIsClaimUnlockedModalOpen(true)}
-          className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
-          <ArrowLeftDoubleIcon width={13} height={9} />
-          I want to claim unlocked airdrop
-          <ArrowRightDoubleIcon width={13} height={9} />
-        </button>
+        {showClaim && (
+          <button
+            onClick={() => setIsClaimUnlockedModalOpen(true)}
+            className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
+            <ArrowLeftDoubleIcon width={13} height={9} />
+            I want to claim unlocked airdrop
+            <ArrowRightDoubleIcon width={13} height={9} />
+          </button>
+        )}
 
         <ClaimUnlockedModal
           isOpen={isClaimUnlockedModalOpen}
