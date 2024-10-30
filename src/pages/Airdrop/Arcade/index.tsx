@@ -6,6 +6,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useBuyArcadeLucky, useGetArcadeLuckyAccount } from '@/queries/airdrop'
 import { formatNumberWithSeparator, getRandomBool } from '@/utils/number'
 
@@ -15,10 +16,10 @@ import ChooseProbability from './components/ChooseProbability'
 import CongratsModal from './components/CongratsModal'
 import GameScroller from './components/GameScroller'
 import LockedTokensModal from './components/LockedTokensModal'
+import { Prizes } from './components/PrizeOption'
 import { SimulateButton } from './components/SimulateButton'
 import { SmileIndicator } from './components/SmileIndicator'
 import { PrizeType } from './index.types'
-import { Prizes } from './components/PrizeOption'
 
 const Arcade = () => {
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
@@ -34,6 +35,14 @@ const Arcade = () => {
     data: buyResp
   } = useBuyArcadeLucky({})
   const { data: luckAccount } = useGetArcadeLuckyAccount()
+  const { projectInfo } = useProjectInfo()
+
+  const isReady = useMemo(
+    () =>
+      !!projectInfo?.arcadeStartTime &&
+      projectInfo.nowTime >= projectInfo.arcadeStartTime,
+    [projectInfo?.arcadeStartTime, projectInfo?.nowTime]
+  )
 
   const isPlayDisabled = useMemo(
     () => isScrolling || !Number(amount) || isBuying,
@@ -73,6 +82,9 @@ const Arcade = () => {
       setShowLockedTokensModal(true)
     }
   }
+
+  if (!isReady) return null
+
   return (
     <div className="relative mt-[45px] flex h-[913.71px] w-[1053px] flex-col items-center bg-arcadeMachineBg bg-contain px-20 py-5 text-white">
       <div className="flex h-[100px] w-full items-center pl-6 pr-8">
