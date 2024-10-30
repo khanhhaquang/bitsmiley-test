@@ -70,21 +70,12 @@ export const UnstakeModal: FC<{
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
   const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
+
   const stakedAmount = useMemo(() => data?.data.staked ?? 0, [data])
   const { mutateAsync: unStake, isPending: isUnStaking } = useUnStake({})
-  const [value, setValue] = useState('')
-  const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (
-    event
-  ) => {
-    const value = Number(event.target?.value)
-    if (!Number.isNaN(value) && value > stakedAmount) {
-      setValue(stakedAmount.toString())
-      return
-    }
-    setValue(event.target?.value)
-  }
+
   const handleProceed = () => {
-    unStake({ amount: Number(value) }).then((res) => {
+    unStake({ amount: Number(stakedAmount) }).then((res) => {
       if (res.code === 0) {
         refetchMyPreStake()
         onClose()
@@ -95,29 +86,23 @@ export const UnstakeModal: FC<{
   return (
     <ExitTokenModal
       isOpen={isOpen}
-      title="Unstake $Smile"
+      title="Confirm Unstake $Smile"
       isPending={isUnStaking}
       onCancel={onClose}
       onProceed={handleProceed}>
-      <div className="my-6 flex flex-col items-center">
-        <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
-          Staked $SMILE <SmileyIcon />
+      <div className="my-6 flex flex-col items-center gap-y-3 font-ibmb">
+        <p className="flex justify-center text-base text-white">
+          You are about to unstake
         </p>
-        <p className="mt-1.5 font-ibmb text-2xl text-[#FFD000]">
+        <p className="flex items-center justify-center gap-x-1.5 text-2xl text-[#FFD000]">
+          <SmileyIcon width={17} height={19} />
           {formatNumberWithSeparator(stakedAmount)}
         </p>
 
-        <div className="mt-6 flex flex-col items-center gap-y-3">
-          <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
-            Unstake $SMILE <SmileyIcon />
-          </p>
-          <StyledInput
-            className="h-[45px] w-[302px]"
-            type="number"
-            value={value}
-            onChange={onChangeAmount}
-          />
-        </div>
+        <p className="w-[418px] text-center text-base uppercase text-white">
+          We'll stop calculating your yield now. You will be able to collect
+          your $SMILE in 72 hours{' '}
+        </p>
       </div>
     </ExitTokenModal>
   )
@@ -136,7 +121,7 @@ export const ClaimUnlockedModal: FC<{
       title="Claim unlocked  $Smile"
       onCancel={onClose}
       onProceed={handleProceed}>
-      <div className="my-6 flex flex-col items-center">
+      <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
           Unlocked $SMILE <SmileyIcon />
         </p>

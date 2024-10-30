@@ -70,6 +70,7 @@ const PreSeasonStakeModal: React.FC<{
 
   return (
     <AirdropCheckModal
+      isEventReady
       isOpen={isOpen}
       onCheck={onCheck}
       onClose={onClose}

@@ -57,13 +57,13 @@ const MyJourneyModal: FC<{
 
   useEffect(() => {
     const currentCardRef = cardsRef.current
-    if (!isMobile) {
+    if (!isMobile && isOpen) {
       currentCardRef?.addEventListener('wheel', onWheel)
     }
     return () => {
       currentCardRef?.removeEventListener('wheel', onWheel)
     }
-  }, [isMobile])
+  }, [isMobile, isOpen])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>

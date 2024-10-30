@@ -1,23 +1,17 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense } from 'react'
 import { useSelector } from 'react-redux'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
-import { useUserInfo } from '@/hooks/useUserInfo'
 import { getIsLoggedIn } from '@/store/airdrop/reducer'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { useAirdropLogin } from './index.hooks'
 
 const Airdrop = () => {
-  const navigate = useNavigate()
   const isLoggedIn = useSelector(getIsLoggedIn)
-  const { isConnected } = useUserInfo()
 
   useAirdropLogin()
-  useEffect(() => {
-    if (!isConnected) navigate('/')
-  }, [isConnected, navigate])
 
   if (!isLoggedIn) {
     return (

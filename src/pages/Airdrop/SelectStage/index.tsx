@@ -31,6 +31,13 @@ const SelectStage: React.FC = () => {
   const { data } = useGetMyPreStake()
   const { projectInfo } = useProjectInfo()
 
+  const isArcadeReady = useMemo(() => {
+    return (
+      !!projectInfo?.arcadeStartTime &&
+      projectInfo.nowTime >= projectInfo?.arcadeStartTime
+    )
+  }, [projectInfo?.arcadeStartTime, projectInfo?.nowTime])
+
   const showClaim = useMemo(() => {
     if (!projectInfo?.nowTime || !projectInfo.tgeTime) return false
     return projectInfo.nowTime >= projectInfo.tgeTime
@@ -45,6 +52,7 @@ const SelectStage: React.FC = () => {
         }}
         onCheck={() => {
           setIsArcadeModalOpen(false)
+          navigate('arcade')
         }}
       />
       <PreSeasonStakeModal
@@ -54,6 +62,7 @@ const SelectStage: React.FC = () => {
           setIsArcadeModalOpen(true)
         }}
         onCheck={() => {
+          navigate('pre-stake')
           setIsPrecheckModalOpen(false)
         }}
       />
@@ -166,12 +175,14 @@ const SelectStage: React.FC = () => {
               />
             </div>
             <ActionButton
+              disabled={!isArcadeReady}
               onClick={() => navigate('arcade')}
               className={cn(
                 'absolute bottom-0 z-10 left-1/2 -translate-x-1/2 ml-6 w-40 border-green/80 bg-green/80 text-2xl uppercase text-black/75',
-                'hover:bg-green active:bg-green/60 hover:!text-black/75 active:!text-black/75'
+                'hover:bg-green active:bg-green/60 hover:!text-black/75 active:!text-black/75',
+                'w-fit min-w-[152px] disabled:border-grey2 disabled:bg-grey2/80 disabled:!text-white/50'
               )}>
-              Play
+              {isArcadeReady ? 'Play' : 'Coming soon'}
             </ActionButton>
           </div>
         </div>

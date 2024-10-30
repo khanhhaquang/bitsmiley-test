@@ -8,8 +8,9 @@ const AirdropCheckModal: React.FC<{
   onCheck: () => void
   onClose: () => void
   amount: number
+  isEventReady?: boolean
   children?: React.ReactNode
-}> = ({ isOpen, onCheck, onClose, amount, children }) => {
+}> = ({ isOpen, onCheck, onClose, amount, children, isEventReady }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
       <div className="relative flex w-[465px] flex-col items-center gap-4 border border-[#E0A828] bg-black px-6 pb-8 pt-10">
@@ -23,16 +24,24 @@ const AirdropCheckModal: React.FC<{
           </div>
         </div>
         {children}
-        <div className="flex gap-x-2">
-          <ActionButton className="h-[30px] w-[110px]" onClick={onClose}>
-            No Thanks
-          </ActionButton>
+        {isEventReady ? (
+          <div className="flex gap-x-2">
+            <ActionButton className="h-[30px] w-[110px]" onClick={onClose}>
+              No Thanks
+            </ActionButton>
+            <ActionButton
+              className="h-[30px] w-[110px] border-[#FFAA00]/80 bg-[#FFAA00]/80 text-black/75 hover:bg-[#FFAA00] hover:text-black/50 active:bg-[#FFAA00]/60 active:text-black"
+              onClick={onCheck}>
+              Check
+            </ActionButton>
+          </div>
+        ) : (
           <ActionButton
             className="h-[30px] w-[110px] border-[#FFAA00]/80 bg-[#FFAA00]/80 text-black/75 hover:bg-[#FFAA00] hover:text-black/50 active:bg-[#FFAA00]/60 active:text-black"
-            onClick={onCheck}>
-            Check
+            onClick={onClose}>
+            OK
           </ActionButton>
-        </div>
+        )}
       </div>
     </Modal>
   )
