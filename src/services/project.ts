@@ -38,6 +38,7 @@ export interface IProject {
   nowTime: string
   startTime: string
   tgeTime: string
+  arcadeStartTime: string
   web3Info: INetworkInfo[]
 }
 

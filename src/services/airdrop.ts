@@ -90,14 +90,14 @@ export const AirdropService = {
     key: 'airdrop.getArcadeLuckyAccount',
     call: () =>
       privateAxiosInstance
-        .get<IResponse<ArcadeLuckyAccount>>(`/luck_buy/getAccount`)
+        .get<IResponse<ArcadeLuckyAccount>>(`/arcade/getAccount`)
         .then((res) => res.data)
   },
   buyArcadeLucky: {
     key: 'airdrop.buyArcadeLucky',
     call: (payload: BuyArcadeLuckyPayload) =>
       privateAxiosInstance
-        .post<IResponse<BuyArcadeLuckyResponse>>(`/luck_buy/luck`, payload)
+        .post<IResponse<BuyArcadeLuckyResponse>>(`/arcade/run`, payload)
         .then((res) => res.data)
   },
   getMyReward: {

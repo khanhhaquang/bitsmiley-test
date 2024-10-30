@@ -7,7 +7,7 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useBuyArcadeLucky, useGetArcadeLuckyAccount } from '@/queries/airdrop'
-import { getRandomBool } from '@/utils/number'
+import { formatNumberWithSeparator, getRandomBool } from '@/utils/number'
 
 import { ArcadeButton } from './components/ArcadeButton'
 import ChoosePrize from './components/ChoosePrize'
@@ -86,16 +86,33 @@ const Arcade = () => {
           </div>
         </div>
         <div className="ml-auto flex shrink-0 flex-col items-center gap-2">
-          <Tooltip>
-            <TooltipContent>
-              {luckAccount?.data.availableAirdrop ?? '--'}
+          <Tooltip delayDuration={100}>
+            <TooltipContent className="flex flex-col items-center justify-center gap-y-1.5 border-blue px-6 py-3 font-ibmb">
+              <span className="flex items-center gap-x-1.5 uppercase text-white">
+                AVAILABLE $SMILE
+                <SmileyIcon width={15} height={17} />
+              </span>
+              <span className="text-2xl text-[#FFD000]">
+                {formatNumberWithSeparator(
+                  luckAccount?.data.availableAirdrop || 0
+                ) || '--'}
+              </span>
             </TooltipContent>
             <TooltipTrigger>
               <SmileIndicator>Available $SMILE</SmileIndicator>
             </TooltipTrigger>
           </Tooltip>
-          <Tooltip>
-            <TooltipContent>{luckAccount?.data.locked ?? '--'}</TooltipContent>
+          <Tooltip delayDuration={100}>
+            <TooltipContent className="flex flex-col items-center justify-center gap-y-1.5 border-blue px-6 py-3 font-ibmb">
+              <span className="flex items-center gap-x-1.5 uppercase text-white">
+                LOCKED $SMILE
+                <SmileyIcon width={15} height={17} />
+              </span>
+              <span className="text-2xl text-[#FFD000]">
+                {formatNumberWithSeparator(luckAccount?.data.locked || 0) ||
+                  '--'}
+              </span>
+            </TooltipContent>{' '}
             <TooltipTrigger>
               <SmileIndicator>Locked $SMILE</SmileIndicator>
             </TooltipTrigger>

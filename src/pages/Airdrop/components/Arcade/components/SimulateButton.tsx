@@ -1,5 +1,4 @@
 import { useRive } from '@rive-app/react-canvas'
-// import { useEffect } from 'react'
 
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -9,15 +8,10 @@ export const SimulateButton: React.FC<
 > = ({ className, disabled, ...rest }) => {
   const { RiveComponent: SimulateRive } = useRive({
     src: '/rive/simulate-button.riv',
-    autoplay: true,
-    artboard: 'Artboard',
-    onLoop: (e) => {
-      console.log(e)
-    }
+    autoplay: true
   })
 
   // useEffect(() => {
-  //   console.log(simulateBtnRive?.getTextRunValue('Simulate'))
   //   // simulateBtnRive?.setTextRunValue('simulate', 'xxx')
   // }, [simulateBtnRive])
 
