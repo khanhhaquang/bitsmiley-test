@@ -1,4 +1,5 @@
 import { FC, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
 import { useGetPreStakeInfo } from '@/queries/airdrop'
@@ -7,9 +8,11 @@ import AirdropStatistic from './AirdropStatistic'
 import AvailableToStake from './AvailableToStake'
 import StakeAPY from './StakeAPY'
 
-import { UnstakeModal } from '../ExitTokenModals'
+import { UnstakeModal } from '../components/ExitTokenModals'
 
-const PreSeasonStake: FC<{ onBack: () => void }> = ({ onBack }) => {
+const PreSeasonStake: FC = () => {
+  const navigate = useNavigate()
+
   const [isUnstakeModalOpen, setIsUnstakeModalOpen] = useState(false)
   const { data } = useGetPreStakeInfo()
   const showUnStake = useMemo(() => {
@@ -22,7 +25,7 @@ const PreSeasonStake: FC<{ onBack: () => void }> = ({ onBack }) => {
   return (
     <div className="relative mt-[45px] flex flex-col items-center gap-[50px]">
       <div className="pointer-events-auto flex items-center gap-[30px]">
-        <button className="cursor-pointer" onClick={() => onBack()}>
+        <button className="cursor-pointer" onClick={() => navigate('/airdrop')}>
           <ArrowLeftDoubleIcon className="h-[45px] w-[53px] text-[#EAC641] hover:text-[#FFC900]" />
         </button>
         <h2

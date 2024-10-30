@@ -7,7 +7,7 @@ import { formatNumberAsTrunc, formatNumberWithSeparator } from '@/utils/number'
 
 import { Prizes } from './PrizeOption'
 
-import Slider from '../../Slider'
+import Slider from '../../components/Slider'
 import { PrizeType } from '../index.types'
 
 const MAX_PROBABILITY = 46

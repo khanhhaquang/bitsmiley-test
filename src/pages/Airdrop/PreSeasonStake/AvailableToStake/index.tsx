@@ -11,7 +11,7 @@ import {
 import { useGetMyPreStake, useStake } from '@/queries/airdrop'
 import { formatNumberAsTrunc } from '@/utils/number'
 
-import Slider from '../../Slider'
+import Slider from '../../components/Slider'
 
 const MAX_PERCENTAGE = 100
 

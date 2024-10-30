@@ -12,7 +12,7 @@ const AirdropCheckModal: React.FC<{
 }> = ({ isOpen, onCheck, onClose, amount, children }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={false}>
-      <div className="relative flex w-[465px] flex-col items-center gap-4 border border-[#E0A828] px-6 pb-8 pt-10">
+      <div className="relative flex w-[465px] flex-col items-center gap-4 border border-[#E0A828] bg-black px-6 pb-8 pt-10">
         <div className="absolute -top-10 flex w-[380px] flex-col items-center justify-center border border-[#E0A828] bg-black">
           <div className="h-[30px] w-full bg-[#E0A828] text-center font-smb uppercase leading-[30px] text-black">
             your total airdrop

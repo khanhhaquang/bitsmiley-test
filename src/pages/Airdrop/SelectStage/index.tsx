@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   ArrowLeftDoubleIcon,
@@ -7,26 +8,29 @@ import {
 } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useGetMyPreStake } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
-import { ClaimUnlockedModal } from './ExitTokenModals'
-import MyJourneyModal from './MyJourneyModal'
-import { PreSeasonStakeInfo } from './PreSeasonStakeModal'
+import ArcadeModal from '../components/ArcadeModal'
+import { ClaimUnlockedModal } from '../components/ExitTokenModals'
+import MyJourneyModal from '../components/MyJourneyModal'
+import PreSeasonStakeModal, {
+  PreSeasonStakeInfo
+} from '../components/PreSeasonStakeModal'
 
-import { STAGE } from '../index.types'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
-
-const StageSelect: React.FC<{
-  onSelect: (v: STAGE) => void
-}> = ({ onSelect }) => {
+const SelectStage: React.FC = () => {
+  const navigate = useNavigate()
+  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(true)
+  const [isArcadeModalOpen, setIsArcadeModalOpen] = useState(false)
   const [isMyJourneyModalOpen, setIsMyJourneyModalOpen] = useState(false)
   const [isClaimUnlockedModalOpen, setIsClaimUnlockedModalOpen] =
     useState(false)
   const { data } = useGetMyPreStake()
   const { projectInfo } = useProjectInfo()
+
   const showClaim = useMemo(() => {
     if (!projectInfo?.nowTime || !projectInfo.tgeTime) return false
     return projectInfo.nowTime >= projectInfo.tgeTime
@@ -34,6 +38,25 @@ const StageSelect: React.FC<{
 
   return (
     <div className="relative">
+      <ArcadeModal
+        isOpen={isArcadeModalOpen}
+        onClose={() => {
+          setIsArcadeModalOpen(false)
+        }}
+        onCheck={() => {
+          setIsArcadeModalOpen(false)
+        }}
+      />
+      <PreSeasonStakeModal
+        isOpen={isPrecheckModalOpen}
+        onClose={() => {
+          setIsPrecheckModalOpen(false)
+          setIsArcadeModalOpen(true)
+        }}
+        onCheck={() => {
+          setIsPrecheckModalOpen(false)
+        }}
+      />
       <MyJourneyModal
         onClose={() => setIsMyJourneyModalOpen(false)}
         isOpen={isMyJourneyModalOpen}
@@ -90,7 +113,7 @@ const StageSelect: React.FC<{
               />
             </PreSeasonStakeInfo>
             <ActionButton
-              onClick={() => onSelect(STAGE.STAKE)}
+              onClick={() => navigate('pre-stake')}
               className={cn(
                 'mx-auto mt-10 w-40 border-[#FFAA00]/80 bg-[#FFAA00]/80 text-2xl uppercase text-black/75',
                 'hover:bg-[#FFAA00] active:bg-[#FFAA00]/60 hover:!text-black/75 active:!text-black/75'
@@ -143,7 +166,7 @@ const StageSelect: React.FC<{
               />
             </div>
             <ActionButton
-              onClick={() => onSelect(STAGE.ARCADE)}
+              onClick={() => navigate('arcade')}
               className={cn(
                 'absolute bottom-0 z-10 left-1/2 -translate-x-1/2 ml-6 w-40 border-green/80 bg-green/80 text-2xl uppercase text-black/75',
                 'hover:bg-green active:bg-green/60 hover:!text-black/75 active:!text-black/75'
@@ -172,4 +195,4 @@ const StageSelect: React.FC<{
   )
 }
 
-export default StageSelect
+export default SelectStage
