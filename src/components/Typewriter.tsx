@@ -1,8 +1,9 @@
+import { useState, useEffect, ReactNode, useMemo, useRef } from 'react'
+import { useSelector } from 'react-redux'
+
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { getCurrentTypeWritterSeq } from '@/store/common/reducer'
 import { cn } from '@/utils/cn'
-import { useState, useEffect, ReactNode, useMemo, useRef } from 'react'
-import { useSelector } from 'react-redux'
 
 const DEFAULT_MS = 40
 
@@ -26,7 +27,7 @@ export default function Typewriter({
   onStop
 }: ITypewriterProps) {
   const { setCurrentTypewritterSeq } = useStoreActions()
-  const timerRef = useRef(0)
+  const timerRef = useRef<NodeJS.Timeout>()
   const currentSeq = useSelector(getCurrentTypeWritterSeq)
   const [currentNodeIndex, setCurrentNodeIndex] = useState(0)
 

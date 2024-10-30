@@ -1,31 +1,93 @@
-import { HeaderIcon } from '@/assets/icons'
-import { useWindowSize } from '@/hooks/useWindowSize'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+
+import { HeaderIcon, RightAngleThin } from '@/assets/icons'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useUserInfo } from '@/hooks/useUserInfo'
+import { cn } from '@/utils/cn'
+
+import {
+  Airdrop as AirdropIntro,
+  AirdropButton as EnterAirdropButton
+} from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
+import { useMemo } from 'react'
 
-export const Header: React.FC<{ wallet?: boolean }> = ({ wallet }) => {
-  const { width } = useWindowSize()
+export const Header: React.FC<{
+  isAirdropPage?: boolean
+}> = ({ isAirdropPage }) => {
+  const { isMobile } = useMediaQuery()
+  const { isConnected } = useUserInfo()
+  const { pathname } = useLocation()
+
+  const isRoot = pathname === '/'
+  const isMainApp = pathname.startsWith('/app')
+
+  const showAirdropEntryButton = useMemo(() => {
+    return pathname !== '/airdrop'
+  }, [pathname])
+
   return (
-    <div
-      className="absolute left-0 top-[50px] z-50 flex w-screen origin-top items-start justify-between text-white"
-      style={{
-        padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-      }}>
-      <HeaderIcon
-        onClick={() => window.location.reload()}
-        className="origin-top-left cursor-pointer"
-        style={{
-          scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-        }}
-      />
+    <div className="pointer-events-none absolute left-0 top-[50px] z-50 flex w-full items-start justify-between px-12 text-white sm:justify-center">
+      <Link
+        to="/"
+        className={cn('pointer-events-auto', { 'sm:hidden': isAirdropPage })}>
+        <HeaderIcon />
+      </Link>
 
-      {!!wallet && (
-        <ConnectWallet
-          className="origin-top-right"
-          style={{
-            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-          }}
-        />
+      {!isMobile && (
+        <div className="pointer-events-auto relative flex flex-col items-center gap-y-3">
+          <ConnectWallet />
+          {!isRoot && <EnterHomeButton />}
+          {!isMainApp && <EnterAppButton />}
+          {isConnected && showAirdropEntryButton && <EnterAirdropButton />}
+          <AirdropIntro isAirdropPage={isAirdropPage} />
+        </div>
       )}
+    </div>
+  )
+}
+
+const EnterAppButton: React.FC = () => {
+  const navigate = useNavigate()
+
+  return (
+    <div className="group h-[34px] w-full">
+      <button
+        onClick={() => {
+          navigate('/app')
+        }}
+        className={cn(
+          'relative flex cursor-pointer size-full items-center justify-center whitespace-nowrap bg-green/10 uppercase text-green group-hover:bg-green/30 group-hover:font-bold group-hover:text-opacity-70 group-active:bg-green/10'
+        )}>
+        <span>Enter APP</span>
+        <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
+        <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
+        <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
+        <RightAngleThin className="absolute bottom-[-1px] left-[-1px] -rotate-90" />
+      </button>
+    </div>
+  )
+}
+
+const EnterHomeButton = () => {
+  const navigate = useNavigate()
+
+  return (
+    <div className="group h-[34px] w-full">
+      <button
+        onClick={() => {
+          navigate('/')
+        }}
+        className={cn(
+          'relative cursor-pointer flex size-full items-center justify-center whitespace-nowrap uppercase group-hover:font-bold group-hover:text-opacity-70',
+          'text-white bg-white/10 group-hover:bg-white/20 group-active:bg-white/30 mix-blend-difference'
+        )}>
+        <span>Home</span>
+        <RightAngleThin className="absolute left-[-1px] top-[-1px]" />
+        <RightAngleThin className="absolute right-[-1px] top-[-1px] rotate-90" />
+        <RightAngleThin className="absolute bottom-[-1px] right-[-1px] rotate-180" />
+        <RightAngleThin className="absolute bottom-[-1px] left-[-1px] -rotate-90" />
+      </button>
     </div>
   )
 }

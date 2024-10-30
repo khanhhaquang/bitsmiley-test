@@ -12,14 +12,20 @@
 @font-face {
   font-family: 'pss';
   src: url('./assets/fonts/pss/PPSupplySans-Bold.otf') format('opentype');
-  font-weight: 700;
+  font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'smb';
-  src: url('./assets/fonts/smb/super-mario-bros-the-lost-levels-font.ttf')
-    format('truetype');
+  src: url('./assets/fonts/smb/super-mario-bros-the-lost-levels-font.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'smb2';
+  src: url('./assets/fonts/smb2/Super-Mario-Bros-2.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
@@ -31,29 +37,134 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'ppnb';
+  src: url('./assets/fonts/ppnb/PPNeueBit-Bold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ppnr';
+  src: url('./assets/fonts/ppnr/PPNeueBit-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ibmr';
+  src: url('./assets/fonts/ibmr/IBMPlexMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ibmb';
+  src: url('./assets/fonts/ibmb/IBMPlexMono-Bold.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 body {
   box-sizing: border-box;
   overflow: overlay;
   margin: 0;
-  font-family: 'psm', 'pss', 'smb', 'sdm', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', 'Roboto', 'Oxygen', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+  font-family:
+    'psm',
+    'pss',
+    'smb',
+    'sdm',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   background-color: black !important;
-  cursor: url('./assets/icons/cursor-default.svg') 8 0, default;
-  user-select: none;
+  cursor:
+    url('./assets/icons/cursor-default.svg') 8 0,
+    default;
 }
 
 a {
-  cursor: url('./assets/icons/cursor-pointer.svg') 8 0, pointer;
-}
-
-img {
-  pointer-events: none;
+  cursor:
+    url('./assets/icons/cursor-pointer.svg') 8 0,
+    pointer;
 }
 
 .no-scroll {
-  overflow: hidden;
+  overflow: hidden !important;
+}
+
+/* Chrome, Safari and Opera */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  /* Customize the scrollbar track */
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* Customize the scrollbar thumb */
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.blue-border-dashed-animation {
+  background:
+    linear-gradient(90deg, #2563eb 50%, transparent 0) repeat-x,
+    linear-gradient(90deg, #2563eb 50%, transparent 0) repeat-x,
+    linear-gradient(0deg, #2563eb 50%, transparent 0) repeat-y,
+    linear-gradient(0deg, #2563eb 50%, transparent 0) repeat-y;
+  background-size:
+    8px 1px,
+    8px 1px,
+    1px 8px,
+    1px 8px;
+  background-position:
+    0 0,
+    0 100%,
+    0 0,
+    100% 0;
+  animation: linearGradientMove 0.3s infinite linear;
+}
+
+@keyframes linearGradientMove {
+  100% {
+    background-position:
+      8px 0,
+      -8px 100%,
+      0 -8px,
+      100% 8px;
+  }
 }

@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare interface Window {
-  okxwallet?: {
-    bitcoin?: any
-    isConnected?: () => boolean
-    isUnlock?: () => Promise<boolean>
-  }
+  ethereum?: any
+  okxwallet?: any
   unisat?: any
+  bybitWallet?: any
+  bitgetWallet?: any
+  bitkeep?: any
+}
+
+declare interface WindowEventMap {
+  'eip6963:announceProvider': CustomEvent
 }

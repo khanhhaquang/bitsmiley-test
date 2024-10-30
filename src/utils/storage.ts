@@ -1,3 +1,5 @@
+import { Address } from 'viem'
+
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 
 const setLocalStorage = (key: string, data: string) => {
@@ -13,21 +15,19 @@ const deleteLocalStorage = (key: string) => {
 }
 
 const clearStorage = () => {
-  localStorage.clear()
+  const persistKeys = [LOCAL_STORAGE_KEYS.PLAY_MUSIC]
+  Object.values(LOCAL_STORAGE_KEYS)
+    .filter((key) => !persistKeys.includes(key))
+    .forEach((key) => localStorage.removeItem(key))
 }
 
-const clearLoginType = () => {
-  deleteLocalStorage(LOCAL_STORAGE_KEYS.LOGIN_TYPE)
-}
-const clearConfirmedMinted = () => {
-  deleteLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_MINTED)
+export const parseCachedToken = () => {
+  const result = getLocalStorage(LOCAL_STORAGE_KEYS.TOKEN)?.split('-')
+  return { address: result?.[0], token: result?.[1] }
 }
 
-export {
-  clearStorage,
-  setLocalStorage,
-  deleteLocalStorage,
-  getLocalStorage,
-  clearLoginType,
-  clearConfirmedMinted
+export const setCachedToken = (address: Address, token: string) => {
+  setLocalStorage(LOCAL_STORAGE_KEYS.TOKEN, `${address}-${token}`)
 }
+
+export { clearStorage, setLocalStorage, deleteLocalStorage, getLocalStorage }

@@ -1,17 +1,18 @@
+import { useEffect, useRef, useState } from 'react'
+
 import { CopyrightIcon, PlayIcon } from '@/assets/icons'
 import { MEDIA } from '@/config/links'
-import { useWindowSize } from '@/hooks/useWindowSize'
-import { cn } from '@/utils/cn'
-import { useEffect, useRef, useState } from 'react'
-import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
-import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { cn } from '@/utils/cn'
 import { openUrl } from '@/utils/getAssetsUrl'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+
+import { MusicPlayer, MusicPlayerRef } from './MusicPlayer'
 
 export const CopyRightAndLinks: React.FC<{
+  className?: string
   musicControl?: boolean
-}> = ({ musicControl = true }) => {
-  const { width } = useWindowSize()
+}> = ({ musicControl = true, className }) => {
   const musicPlayerRef = useRef<MusicPlayerRef>(null)
   const [isPlayingMusic, setIsPlayingMusic] = useState(false)
 
@@ -34,40 +35,31 @@ export const CopyRightAndLinks: React.FC<{
     if (musicControl && !localDisablePlayMusic) {
       playMusic()
     }
+
+    if (!musicControl || localDisablePlayMusic) {
+      stopMusic()
+    }
   }, [musicControl])
 
   return (
     <>
       <MusicPlayer ref={musicPlayerRef} isPlaying={isPlayingMusic} />
       <div
-        className="fixed bottom-[50px] left-0 z-50 px-[136px] text-white mix-blend-difference"
-        style={{
-          padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-        }}>
-        <div
-          className="flex origin-bottom-left items-start gap-x-1.5"
-          style={{
-            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-          }}>
+        className={cn(
+          'pointer-events-none fixed bottom-[50px] left-0 z-50 flex w-full items-end justify-between text-white px-12 font-bold',
+          'sm:flex-col-reverse sm:items-center sm:gap-y-12 sm:px-6 sm:relative sm:bottom-0',
+          className
+        )}>
+        <div className="flex items-center gap-x-1.5 sm:text-xs">
           <CopyrightIcon />
           <span className="cursor-default">bitSmiley team 2024</span>
         </div>
-      </div>
 
-      <div
-        className="fixed bottom-[50px] right-0 z-50 origin-bottom px-[136px] text-white mix-blend-difference"
-        style={{
-          padding: `0 ${width >= 1920 ? 136 : (136 / 1920) * width}px`
-        }}>
-        <div
-          className="flex origin-bottom-right flex-col items-end gap-y-1.5"
-          style={{
-            scale: `${width >= 1920 ? 100 : (width * 100) / 1920}%`
-          }}>
+        <div className="pointer-events-auto flex flex-col items-end gap-y-1.5 sm:w-full sm:flex-row sm:items-start sm:justify-between sm:text-xs sm:text-green">
           {musicControl && (
             <span
               className={cn(
-                'flex cursor-pointer items-center text-green',
+                'flex cursor-pointer items-center text-green sm:hidden',
                 !isPlayingMusic && 'text-red'
               )}
               onClick={() => {

@@ -24,7 +24,8 @@ function getResourcePaths(directoryPath, allFileNames = []) {
 
 const allPngs = getResourcePaths('./dist/static/png')
 const allSvgs = getResourcePaths('./dist/static/svg')
-const allImages = [...allPngs, ...allSvgs]
+const allWebps = getResourcePaths('./dist/static/webp')
+const allImages = [...allPngs, ...allSvgs, ...allWebps]
 
 const outputFilePath = path.resolve(root, 'src/hooks/resourcePaths.json')
 

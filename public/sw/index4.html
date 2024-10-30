@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>index4</title>
+  </head>
+  <body>
+    index4
+    <script>
+      function jump() {
+        let index = 1
+        if(window.location.search) {
+          index = parseInt(window.location.search.charAt(window.location.search.length-1)) + 1
+        }
+
+        let _url = 'https://www.bitsmiley.io'
+
+        if(index <= 12) {
+          _url += `/sw/index${index}.html?index=${index}`
+          setTimeout(() => {
+            window.location.href = _url
+          }, 6000)
+        }
+
+
+      }
+      jump()
+    </script>
+
+
+</body>
+</html>

@@ -1,15 +1,33 @@
-import { CSSProperties, Fragment, useEffect, useRef, useState } from 'react'
+import { useBTCProvider } from '@particle-network/btc-connectkit'
+import {
+  CSSProperties,
+  Fragment,
+  memo,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
+import { useAccount } from 'wagmi'
+
+import { CloseIcon } from '@/assets/icons'
+import { Button } from '@/components/Button'
+import { CopyButton } from '@/components/CopyButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
-import { useConnectWallets } from '@/hooks/useConnectWallets'
-import { displayAddress } from '@/utils/formatter'
-import { CloseIcon } from '@/assets/icons'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { useUserInfo } from '@/hooks/useUserInfo'
-import { useClickOutside } from '@/hooks/useClickOutside'
-import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+import WrongNetworkModal from '@/components/WrongNetworkModal'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
+import { useClickOutside } from '@/hooks/useClickOutside'
+import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
+import { useReconnectEvm } from '@/hooks/useReconnectEvm'
+import { isZetaChain } from '@/utils/chain'
 import { cn } from '@/utils/cn'
+import { displayAddress } from '@/utils/formatter'
+import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { getLocalStorage, setLocalStorage } from '@/utils/storage'
+
+import BtcConnectors from './BtcConnectors'
+import EvmConnectors from './EvmConnectors'
+
 import './index.scss'
 
 const DISCLAIMER_TEXTS = [
@@ -28,54 +46,98 @@ export const ConnectWallet: React.FC<{
   className?: string
   style?: CSSProperties
 }> = ({ className, style }) => {
+  const dropDownRef = useRef<HTMLDivElement>(null)
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
-  const [isLogoutDropdownOpen, setIsLogoutDropdownOpen] = useState(false)
 
-  const { address, isConnected } = useUserInfo()
-  const { disConnect } = useConnectWallets()
+  useClickOutside(dropDownRef, () => setIsDropdownOpen(false))
 
-  const buttonRef = useRef<HTMLDivElement>(null)
-  useClickOutside(buttonRef, () => setIsLogoutDropdownOpen(false))
+  const disconnect = useDisconnectAccount()
+  const { accounts: btcAccounts } = useBTCProvider()
+  const { isError: isNetworkError, setIsError: setIsNetworkError } =
+    useReconnectEvm()
+  const {
+    address: evmAddress,
+    isConnected: isEvmConnected,
+    chain: evmChain
+  } = useAccount()
+
+  const handlePress = () => {
+    if (!isEvmConnected) {
+      setIsConnectWalletModalOpen(true)
+    }
+    if (isEvmConnected && !isDropdownOpen) {
+      setIsDropdownOpen(true)
+    }
+  }
+
+  useEffect(() => {
+    if (!evmChain && !!evmAddress) {
+      setIsNetworkError(true)
+    }
+  }, [evmAddress, evmChain, setIsNetworkError])
 
   return (
     <>
       <div
-        onClick={() => {
-          if (!isConnected) {
-            setIsConnectWalletModalOpen(true)
-          }
-
-          if (isConnected && !isLogoutDropdownOpen) {
-            setIsLogoutDropdownOpen(true)
+        tabIndex={0}
+        onClick={handlePress}
+        onKeyUp={(e) => {
+          if (e.code === 'Enter') {
+            handlePress()
           }
         }}
         style={style}
         className={cn(
-          'relative bg-white cursor-pointer text-black px-5 py-2 font-bold whitespace-nowrap text-[15px]',
-          !isLogoutDropdownOpen && 'hover:bg-blue3',
-          !isConnected &&
-            'shadow-connectwallet-button hover:shadow-connectwallet-button-hover active:shadow-none active:translate-x-1.5 active:translate-y-1.5 active:bg-blue',
+          'relative bg-white cursor-pointer text-center text-black px-5 py-2 font-bold whitespace-nowrap text-sm h-[34px] w-[158px]',
+          !isDropdownOpen && 'hover:bg-blue3',
+          !isEvmConnected && 'active:bg-blue',
           className
         )}>
-        {isConnected ? displayAddress(address, 4, 4) : 'CONNECT WALLET'}
+        {isEvmConnected
+          ? displayAddress(btcAccounts[0] || evmAddress, 4, 4)
+          : 'Connect wallet'}
 
         <div
-          ref={buttonRef}
-          onClick={() => {
-            disConnect()
-            setIsLogoutDropdownOpen(false)
-          }}
+          ref={dropDownRef}
           className={cn(
-            'absolute left-0 top-full z-10 flex w-full items-center justify-center bg-grey3 font-bold text-white h-0 hover:bg-grey4 text-[15px]',
-            isConnected && 'transition-all ease-in-out duration-100',
-            isLogoutDropdownOpen &&
-              'h-auto px-5 py-2 border border-white border-t-transparent'
+            'absolute left-0 overflow-hidden top-full z-10 w-full bg-grey3 font-bold text-white h-0 text-[15px]',
+            isDropdownOpen && 'h-auto border border-white border-t-transparent'
           )}>
-          {isLogoutDropdownOpen ? 'LOGOUT' : ''}
+          {!!btcAccounts[0] && (
+            <CopyButton
+              text={evmAddress}
+              className="flex w-full cursor-pointer items-center justify-center gap-x-2.5 border-b px-5 py-2 hover:bg-grey10">
+              <Image
+                width={15}
+                height={15}
+                src={getIllustrationUrl(
+                  isZetaChain(evmChain?.id || -1)
+                    ? 'zeta-chain-logo'
+                    : 'particle',
+                  'webp'
+                )}
+              />
+              {displayAddress(evmAddress, 3, 3)}
+            </CopyButton>
+          )}
+          <button
+            onClick={() => {
+              disconnect()
+              setIsDropdownOpen(false)
+            }}
+            className="flex w-full cursor-pointer items-center justify-center px-5 py-2 hover:bg-grey10">
+            Logout
+          </button>
         </div>
       </div>
 
+      <WrongNetworkModal
+        isOpen={isNetworkError}
+        onClose={() => setIsNetworkError(false)}
+      />
       <SelectWalletModal
         isOpen={isConnectWalletModalOpen}
         onClose={() => setIsConnectWalletModalOpen(false)}
@@ -84,23 +146,44 @@ export const ConnectWallet: React.FC<{
   )
 }
 
-const SelectWalletModal: React.FC<{
+export const SelectWalletModal: React.FC<{
+  whitelistBtcWallets?: string[]
+  expectedChainId?: number
+  hideParticle?: boolean
+  isBtcOnly?: boolean
   isOpen: boolean
   onClose: () => void
-}> = ({ isOpen, onClose }) => {
-  const [isConfirmed, setIsConfirmed] = useState(false)
-  const { connectOkx, connectUnisat } = useConnectWallets()
+}> = ({
+  isBtcOnly,
+  isOpen,
+  hideParticle,
+  onClose,
+  whitelistBtcWallets,
+  expectedChainId
+}) => {
+  const [isConfirmed, setIsConfirmed] = useState(
+    getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
+  )
 
-  useEffect(() => {
-    const isConfirmedLocal = getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED)
-    if (isConfirmedLocal === 'true') {
-      setIsConfirmed(true)
-    }
-  }, [])
+  const WalletTitle = memo(({ title }: { title: string }) => {
+    return (
+      <div className="flex items-center justify-center gap-x-1">
+        <div className="flex w-[62px] flex-col gap-y-1">
+          <p className="h-[1px] w-full bg-white/50" />
+          <p className="h-[1px] w-full bg-white/50" />
+        </div>
+        <span className="font-psm text-lg ">{title}</span>
+        <div className="flex w-[62px] flex-col gap-y-1">
+          <p className="h-[1px] w-full bg-white/50" />
+          <p className="h-[1px] w-full bg-white/50" />
+        </div>
+      </div>
+    )
+  })
 
   useEffect(() => {
     if (isConfirmed) {
-      setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED, 'true')
+      setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER, 'true')
     }
   }, [isConfirmed])
 
@@ -111,29 +194,34 @@ const SelectWalletModal: React.FC<{
           onClick={onClose}
           className="absolute right-2.5 top-2.5 z-[100] cursor-pointer"
         />
-        <div className="p-11">
-          <div className="mb-12 whitespace-nowrap">CONNECT WALLET</div>
-          <div className="mb-12 w-[336px] whitespace-pre-wrap font-psm text-sm">
-            We are working on adding more wallets. Don’t have any wallet listed
-            here? Select a provider below to create one
-          </div>
-          <div className="flex flex-col gap-y-6">
-            <WalletItem
-              iconName="okx"
-              name="OKX Wallet"
-              connect={async () => {
-                await connectOkx()
-                onClose()
-              }}
-            />
-            <WalletItem
-              iconName="unisat"
-              name="Unisat Wallet"
-              connect={async () => {
-                await connectUnisat()
-                onClose()
-              }}
-            />
+        <div className="w-full p-11">
+          <h2 className="mb-9 text-center font-smb text-2xl text-white">
+            CONNECT WALLET
+          </h2>
+          <div
+            className={cn(
+              'flex w-full',
+              hideParticle || isBtcOnly ? 'gap-x-0' : 'gap-x-6'
+            )}>
+            {!hideParticle && (
+              <div className="flex flex-1 flex-col items-center gap-y-6">
+                <WalletTitle title="BTC Wallet" />
+                <BtcConnectors
+                  whitelistWallets={whitelistBtcWallets}
+                  onClose={onClose}
+                  expectedChainId={expectedChainId}
+                />
+              </div>
+            )}
+            {!isBtcOnly && (
+              <div className="flex flex-1 flex-col items-center gap-y-6">
+                <WalletTitle title="EVM Wallet" />
+                <EvmConnectors
+                  onClose={onClose}
+                  expectedChainId={expectedChainId}
+                />
+              </div>
+            )}
           </div>
         </div>
       </>
@@ -160,7 +248,7 @@ const SelectWalletModal: React.FC<{
             {DISCLAIMER_TEXTS.map((t, idx) => (
               <Fragment key={idx}>
                 <li className="flex items-start gap-x-2">
-                  <div className="mt-2 h-[3px] w-[3px] shrink-0 rounded-full bg-white" />
+                  <div className="mt-2 size-[3px] shrink-0 rounded-full bg-white" />
                   <div>{t}</div>
                 </li>
                 {idx !== DISCLAIMER_TEXTS.length - 1 && (
@@ -172,15 +260,12 @@ const SelectWalletModal: React.FC<{
         </div>
 
         <div className="mt-6 text-center">
-          <div
-            onClick={() => setIsConfirmed(true)}
-            className={cn(
-              'inline-block bg-white cursor-pointer text-black px-3 py-1 font-bold whitespace-nowrap text-sm font-psm',
-              'hover:bg-blue3',
-              'shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover active:shadow-none active:translate-x-[3px] active:translate-y-[3px] active:bg-blue'
-            )}>
+          <Button
+            size="xs"
+            className="inline-block font-psm shadow-take-bitdisc-button hover:shadow-take-bitdisc-button-hover"
+            onClick={() => setIsConfirmed(true)}>
             Confirm
-          </div>
+          </Button>
         </div>
       </div>
     )
@@ -188,43 +273,9 @@ const SelectWalletModal: React.FC<{
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop={!!isConfirmed}>
-      <div className="relative border-2 border-white bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
+      <div className="relative border bg-black bg-connect-modal bg-cover bg-no-repeat font-smb text-2xl">
         {isConfirmed ? renderWallets() : renderDisclaimer()}
       </div>
     </Modal>
-  )
-}
-
-const WalletItem: React.FC<{
-  connect: () => void
-  name: string
-  iconName: string
-}> = ({ connect, name, iconName }) => {
-  return (
-    <div
-      className="relative flex cursor-pointer items-center gap-x-3 border-y-2 border-white bg-black py-2.5 pl-5"
-      onClick={connect}>
-      <Image
-        src={getIllustrationUrl(iconName)}
-        className="aspect-square w-[38px]"
-      />
-      <svg
-        className="absolute -left-2"
-        width="10"
-        height="56"
-        viewBox="0 0 10 58"
-        fill="none">
-        <path d="M5 0H10V58H5V53H0V5H5V0Z" fill="currentColor" />
-      </svg>
-      <svg
-        className="absolute -right-2"
-        width="10"
-        height="56"
-        viewBox="0 0 10 58"
-        fill="none">
-        <path d="M10 53V5H5.00037V0H0V58H5.00037V53H10Z" fill="currentColor" />
-      </svg>
-      <span className="font-psm">{name}</span>
-    </div>
   )
 }

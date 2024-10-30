@@ -1,0 +1,37 @@
+.sliderInput {
+  appearance: none;
+  -webkit-appearance: none;
+  border-top: 2px solid #5a5a5a;
+  border-right: 4px solid #5a5a5a;
+  border-bottom: 2px solid #5a5a5a;
+  border-left: 4px solid #5a5a5a;
+
+  &::-webkit-slider-runnable-track {
+    height: 100%;
+    background: #373737;
+  }
+  &::-moz-range-track {
+    height: 100%;
+    background: #373737;
+  }
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 38px;
+    width: 31px;
+    transform-origin: center;
+    transform: translateY(-10px);
+    background: url('../../../assets/icons/stake-slider-thumb.svg');
+    cursor: pointer;
+  }
+  &::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 38px;
+    width: 31px;
+    transform-origin: center;
+    transform: translateY(-10px);
+    background: url('../../../assets/icons/stake-slider-thumb.svg');
+    cursor: pointer;
+  }
+}

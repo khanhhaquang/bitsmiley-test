@@ -12,10 +12,16 @@ export const displayAddress = (
   )
 }
 
-export const getBtcScanUrl = (txid: string) => {
-  return `https://mempool.space/tx/${txid}`
+const SATS_BTC_CONVERSION = 100000000 // 100,000,000
+
+export const satsToBTC = (sats: number | bigint) => {
+  if (!sats) return 0
+  if (typeof sats === 'number') return sats / SATS_BTC_CONVERSION
+  return Number(sats) / SATS_BTC_CONVERSION
 }
 
-export const getOrdScanUrl = (inscriptionId: string) => {
-  return `https://ordinals.com/inscription/${inscriptionId}`
+export const btcToSats = (btc: number | bigint) => {
+  if (!btc) return 0
+  if (typeof btc === 'number') return btc * SATS_BTC_CONVERSION
+  return Number(btc) * SATS_BTC_CONVERSION
 }

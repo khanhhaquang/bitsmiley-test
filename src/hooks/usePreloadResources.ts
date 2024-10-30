@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
-import resourcePaths from './resourcePaths.json'
 import FontFaceObserver from 'fontfaceobserver'
+import { useCallback, useEffect, useState } from 'react'
+
+import resourcePaths from './resourcePaths.json'
 import { useFetchArticles } from './useFetchArticles'
 
 export const usePreloadResources = () => {
@@ -21,7 +22,7 @@ export const usePreloadResources = () => {
       })
     })
 
-    const mediumImgs = items?.slice(0, 3)?.map((i) => {
+    const mediumImgs = items?.slice(0, 4)?.map((i) => {
       return new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
         img.src = i.img as string
@@ -40,28 +41,18 @@ export const usePreloadResources = () => {
   }, [items])
 
   const loadFonts = async () => {
-    const psm = new FontFaceObserver('psm', {
-      weight: 400,
-      style: 'normal'
-    })
-
-    const pss = new FontFaceObserver('pss', {
-      weight: 700,
-      style: 'normal'
-    })
-
-    const smb = new FontFaceObserver('smb', {
-      weight: 400,
-      style: 'normal'
-    })
-
-    const sdm = new FontFaceObserver('sdm', {
-      weight: 400,
-      style: 'normal'
-    })
+    const fonts = ['psm', 'pss', 'smb', 'sdm', 'ibmb', 'ibmr', 'ppnb', 'ppbr']
 
     try {
-      await Promise.all([psm.load(), pss.load(), smb.load(), sdm.load()])
+      await Promise.all(
+        fonts.map(
+          (v) =>
+            new FontFaceObserver(v, {
+              weight: 400,
+              style: 'normal'
+            })
+        )
+      )
     } catch (error) {
       console.error('Error loading fonts:', error)
     } finally {

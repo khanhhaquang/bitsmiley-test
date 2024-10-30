@@ -1,5 +1,7 @@
+import { Address, Hash } from 'viem'
+
 import { axiosInstance } from '@/config/axios'
-import { IReseponse } from '@/types/common'
+import { IResponse } from '@/types/common'
 
 export enum InvalidReasonEnum {
   NotStarted = 'minting not started yet',
@@ -8,34 +10,98 @@ export enum InvalidReasonEnum {
   PublicMaxCountReached = 'max number of inscriptions in public sale round already inscribed',
   NotWhitelisted = 'address not whitelisted for inscription'
 }
-
-export interface INftsData {
-  count?: number
-  nfts?: INft[]
+export interface INft {
+  blockNumber: number
+  id: number
+  mintOwner: Address
+  mintTime: Date
+  mintTxHash: Hash
+  nftStatus: number
+  owner: Address
+  tokenID: number
+  txHash: Hash
+  updateTime: Date
 }
 
-export interface INft {
-  txid?: string
-  nft_id?: string
-  address?: string
-  inscription_id?: string
-  invalid_reason?: InvalidReasonEnum | null
+export interface ILiquidatedDetail {
+  transactionHash: Address
+  recipient: Address
+  collateral: string
+  bitUSD: string
+  penalty: string
+  blockNumber: number
+  timestamp: number
+}
+
+export interface ILiquidated {
+  vaultAddress?: string
+  liquidated?: ILiquidatedDetail[]
+}
+
+interface ILiquidatedParams {
+  vault: { network: string; vaultAddress: Address }[]
+}
+
+export interface IFeaturesEnabled {
+  Staking: boolean
+  AlphaNet: boolean
+  BitPoint: boolean
+}
+
+export interface IAirdropProofAndAmount {
+  airdropContractAddress: Address
+  id: number
+  amountStr: string
+  chainId: number
+  proof: Hash[]
+  userAddress: Address
+}
+
+export interface LoginPayload {
+  owner: string
+  signature: string
+}
+
+export interface LoginResponse {
+  token: string
 }
 
 export const UserService = {
-  getHasActivatedInvitation: {
-    key: 'user.getHasActivatedInvitation',
-    call: (address: string) =>
-      axiosInstance.post<IReseponse<boolean>>(
-        `/user/hasActivatedInvitation?address=${address}`
-      )
-  },
-
   getNFTs: {
     key: 'user.getNFTs',
-    call: (address: string) =>
-      axiosInstance.post<IReseponse<INftsData>>(
-        `/user/getNFTs?address=${address}&pageNumber=0`
-      )
+    call: (address: Address): Promise<IResponse<INft[]>> =>
+      axiosInstance.get(`/l2nft/getNFT/${address}`).then((res) => res.data)
+  },
+  getLiquidated: {
+    key: 'user.getLiquidated',
+    call: (params: ILiquidatedParams): Promise<IResponse<ILiquidated>> =>
+      axiosInstance.post('/user/getLiquidated', params).then((res) => res.data)
+  },
+  getEnabledFeatures: {
+    key: 'user.getEnabledFeatures',
+    call: (address: Address): Promise<IResponse<IFeaturesEnabled>> =>
+      axiosInstance
+        .get(`/bsInfo/v2/getFunctionalModuleInfo/${address}`)
+        .then((res) => res.data)
+  },
+  getAirdropProofAndAmount: {
+    key: 'user.getAirdropProofAndAmount',
+    call: (
+      chainId: number,
+      userAddress: Address,
+      airdropContractAddress: Address
+    ): Promise<IResponse<IAirdropProofAndAmount>> =>
+      axiosInstance
+        .get(
+          `/user/getUserProof/${chainId}/${airdropContractAddress}/${userAddress}`
+        )
+        .then((res) => res.data)
+  },
+  login: {
+    key: 'user.login',
+    call: (payload: LoginPayload) =>
+      axiosInstance
+        .post<IResponse<LoginResponse>>('/user/login', payload)
+        .then((res) => res.data)
   }
 }

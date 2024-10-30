@@ -1,38 +1,53 @@
+import { Address } from 'viem'
+
 import { axiosInstance } from '@/config/axios'
-import { IReseponse } from '@/types/common'
+import { IResponse } from '@/types/common'
 
+export interface IAirdrop {
+  address: Address
+  airdropContractAddress: Address
+  icon: string
+  name: string
+  symbol: string
+  chainId: number
+}
+
+export interface IContractAddresses {
+  BitSmiley: Address
+  BitUSDL2: Address
+  VaultManager: Address
+  WBTC: Address
+  oracle: Address
+  staking: Address | null
+  l2nft: Address | null
+  bitSmileyQuery: Address | null
+  register: Address
+  airdrop: IAirdrop[]
+
+  bitsmileyZetaConnector?: Address | null
+  signatureUtil?: Address | null
+}
+export interface INetworkInfo {
+  network: string
+  chainId: number
+  contract: IContractAddresses
+  blockTime: number
+  bridgeURL: string
+}
 export interface IProject {
-  nftCount: string
-  blockHeight: string
-  publicMax: string
-  whitelistMax: string
-  publicStartBlockHeight: string
-  whitelistEndBlockHeight: string
-  whitelistStartBlockHeight: string
-}
-
-export enum InscriptionType {
-  VALID = 1,
-  VALID_INVALID = 2,
-  INVALID = 3
-}
-
-export interface ICheckInscription {
-  code?: number
-  message?: {
-    reason?: string
-    valid_type?: InscriptionType
-  }
+  nowTime: string
+  startTime: string
+  tgeTime: string
+  arcadeStartTime: string
+  web3Info: INetworkInfo[]
 }
 
 export const ProjectService = {
   getProjectInfo: {
     key: 'project.getProjectInfo',
-    call: () => axiosInstance.get<IReseponse<IProject>>('/bsInfo/projectInfo ')
-  },
-  checkInscription: {
-    key: 'project.checkInscription',
-    call: (inscriptionId: string) =>
-      axiosInstance.get<ICheckInscription>(`/nft/check/${inscriptionId}`)
+    call: () =>
+      axiosInstance
+        .get<IResponse<IProject>>('/bsInfo/projectInfo ')
+        .then((res) => res.data)
   }
 }

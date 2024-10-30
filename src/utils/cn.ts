@@ -1,6 +1,6 @@
-import classNames, { Argument } from 'classnames'
+import clxs, { ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-export const cn = (...classes: Argument[]) => {
-  return twMerge(classNames(...classes))
+export const cn = (...classes: ClassValue[]) => {
+  return twMerge(clxs(...classes))
 }

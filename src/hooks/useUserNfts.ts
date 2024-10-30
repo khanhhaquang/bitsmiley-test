@@ -1,81 +1,47 @@
-import { UserService } from '@/services/user'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useCallback, useMemo } from 'react'
+
+import { INft, UserService } from '@/services/user'
+import { IResponse } from '@/types/common'
+
 import { useUserInfo } from './useUserInfo'
-import { useEffect, useMemo } from 'react'
-import { useStoreActions } from './useStoreActions'
-// import { useProjectInfo } from './useProjectInfo'
-import { useSelector } from 'react-redux'
-import { getUserNfts } from '@/store/account/reducer'
 
 export const useUserNfts = () => {
-  const { address } = useUserInfo()
-  // const { isDuringWhitelist } = useProjectInfo()
+  const { address, isConnected } = useUserInfo()
+  const queryClient = useQueryClient()
 
-  const userNfts = useSelector(getUserNfts)
-  const { setUserNfts } = useStoreActions()
+  const { data: nftsDataRes, ...rest } = useQuery({
+    queryKey: [UserService.getNFTs.key, address],
+    queryFn: () => (address ? UserService.getNFTs.call(address) : null),
+    enabled: !!address && isConnected,
+    refetchOnWindowFocus: true,
+    refetchInterval: 5000,
+    select: (res) => res?.data
+  })
 
-  const { data: nftsDataRes, isLoading } = useQuery(
-    [UserService.getNFTs.key, address],
-    () => UserService.getNFTs.call(address),
-    {
-      enabled: !!address
-    }
+  const nfts = useMemo(() => nftsDataRes || [], [nftsDataRes])
+
+  const removeLocalNft = useCallback(
+    (tokenId: number) => {
+      const newLocal = (old: IResponse<INft[]> | undefined) => {
+        return (
+          old && {
+            ...old,
+            data: old?.data?.filter((v) => v.tokenID !== tokenId)
+          }
+        )
+      }
+      queryClient.setQueryData<IResponse<INft[]>>(
+        [UserService.getNFTs.key, address],
+        newLocal
+      )
+    },
+    [address, queryClient]
   )
-
-  const getDisbleMinting = () => {}
-
-  // const getDisbleMinting = useCallback(
-  //   (nfts?: INft[]) => {
-  //     if (!nfts?.length) return false
-
-  //     if (isDuringWhitelist) {
-  //       return !!nfts.some(
-  //         (n) =>
-  //           !!n.inscription_id &&
-  //           !!n.invalid_reason &&
-  //           n.invalid_reason !== InvalidReasonEnum.NotStarted
-  //       )
-  //     }
-
-  //     return !!nfts.some(
-  //       (n) =>
-  //         !!n.inscription_id &&
-  //         !!n.invalid_reason &&
-  //         n.invalid_reason !== InvalidReasonEnum.NotStarted &&
-  //         n.invalid_reason !== InvalidReasonEnum.WhitelistMaxCountReached &&
-  //         n.invalid_reason !== InvalidReasonEnum.NotWhitelisted
-  //     )
-  //   },
-  //   [isDuringWhitelist]
-  // )
-
-  const mintedNft = useMemo(
-    () =>
-      nftsDataRes?.data?.data?.nfts?.find(
-        (n) => !!n.inscription_id && !n.invalid_reason
-      ),
-    [nftsDataRes]
-  )
-
-  // useEffect(() => {
-  //   if (mintedNft) {
-  //     setTxId(mintedNft.txid)
-  //     setInscriptionId(mintedNft.inscription_id)
-  //     return
-  //   }
-  // }, [mintedNft, setInscriptionId, setTxId])
-
-  useEffect(() => {
-    const nfts = nftsDataRes?.data?.data?.nfts
-
-    if (!userNfts.length && !!nfts?.length) {
-      setUserNfts(nfts || [])
-    }
-  }, [nftsDataRes, setUserNfts, userNfts])
 
   return {
-    hasNftMinted: !!mintedNft,
-    isLoading,
-    getDisbleMinting
+    nfts,
+    removeLocalNft,
+    ...rest
   }
 }
