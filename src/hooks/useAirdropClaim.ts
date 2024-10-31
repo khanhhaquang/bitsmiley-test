@@ -13,7 +13,7 @@ export enum AirdropClaimType {
   UnStake
 }
 
-export const useAirdropClaim = (type: AirdropClaimType) => {
+export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
   const { toast } = useToast()
   const { evmChainId, isConnected } = useUserInfo()
   const { projectInfo } = useProjectInfo()
@@ -25,7 +25,7 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
     const airdropInfo = projectInfo?.web3Info?.find(
       (item) => item.chainId === ETH_CHAIN
     )
-    // console.log(airdropInfo)
+
     if (!airdropInfo) return undefined
 
     if (
@@ -61,21 +61,16 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
     return undefined
   }, [projectInfo, type])
 
-  const { canClaim, claim, isLoading, isClaiming, isClaimed } =
-    useAirdrop(airdrop)
+  const { canClaim, claim, isLoading, isClaiming, isClaimed } = useAirdrop(
+    airdrop,
+    disabled
+  )
   const isContractValid = useMemo(() => !!airdrop, [airdrop])
 
-  const isActive = useMemo(() => {
-    // console.log(
-    //   'isContractValid:',
-    //   isContractValid,
-    //   'isLoading:',
-    //   isLoading,
-    //   'isClaiming:',
-    //   isClaiming
-    // )
-    return !isLoading && !isContractValid && !isClaiming
-  }, [isClaiming, isLoading, isContractValid])
+  const isActive = useMemo(
+    () => !isLoading && isContractValid && !isClaiming,
+    [isClaiming, isLoading, isContractValid]
+  )
 
   const handleProceed = () => {
     if (!canClaim) {

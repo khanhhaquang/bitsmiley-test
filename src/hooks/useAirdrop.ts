@@ -8,7 +8,6 @@ import {
   useReadAirdropCanClaim,
   useReadAirdropClaimed
 } from '@/contracts/Airdrop'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { UserService } from '@/services/user'
@@ -19,21 +18,9 @@ interface IAirdropInput {
   chainId: number
 }
 
-export const useAirdrop = (airdrop?: IAirdropInput) => {
+export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
   const currentChainId = useChainId()
-  const { projectInfo } = useProjectInfo()
   const { address: userAddress } = useUserInfo()
-
-  const airdrops = useMemo(
-    () =>
-      projectInfo?.web3Info
-        ?.filter((item) => item.chainId === currentChainId)
-        .map(
-          (w) => w.contract.airdrop?.map((a) => ({ ...a, chainId: w.chainId }))
-        )
-        .flatMap((i) => i),
-    [projectInfo?.web3Info, currentChainId]
-  )
 
   const {
     data: airdropProofAndAmount,
@@ -53,7 +40,8 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     enabled:
       !!airdrop?.airdropContractAddress &&
       !!userAddress &&
-      currentChainId === airdrop.chainId,
+      currentChainId === airdrop.chainId &&
+      !disable,
     select: (res) => (!res ? undefined : res.data)
   })
 
@@ -66,7 +54,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     address: airdrop?.airdropContractAddress,
     args: userAddress && [userAddress],
     query: {
-      enabled: currentChainId === airdrop?.chainId
+      enabled: currentChainId === airdrop?.chainId && !disable
     }
   })
   const {
@@ -87,7 +75,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
           ]
         : undefined,
     query: {
-      enabled: currentChainId === airdrop?.chainId
+      enabled: currentChainId === airdrop?.chainId && !disable
     }
   })
 
@@ -135,7 +123,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
   )
 
   return {
-    airdrops,
+    // airdrops,
     airdropProofAndAmount,
     isClaimed,
     canClaim,

@@ -115,7 +115,10 @@ export const ClaimUnlockedModal: FC<{
 }> = ({ onClose, isOpen }) => {
   const [value, setValue] = useState('')
 
-  const { isActive, handleClaim } = useAirdropClaim(AirdropClaimType.TGE)
+  const { isActive, handleClaim } = useAirdropClaim(
+    AirdropClaimType.TGE,
+    !isOpen
+  )
 
   return (
     <ExitTokenModal
