@@ -5,6 +5,7 @@ import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import StyledInput from '@/components/StyledInput'
+import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
 import { useGetMyPreStake, useUnStake } from '@/queries/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
@@ -113,14 +114,16 @@ export const ClaimUnlockedModal: FC<{
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
   const [value, setValue] = useState('')
-  const handleProceed = () => {}
+
+  const { isActive, handleClaim } = useAirdropClaim(AirdropClaimType.TGE)
 
   return (
     <ExitTokenModal
       isOpen={isOpen}
       title="Claim unlocked  $Smile"
       onCancel={onClose}
-      onProceed={handleProceed}>
+      isPending={!isActive}
+      onProceed={handleClaim}>
       <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
           Unlocked $SMILE <SmileyIcon />

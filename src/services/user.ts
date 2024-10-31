@@ -57,6 +57,15 @@ export interface IAirdropProofAndAmount {
   userAddress: Address
 }
 
+export interface IAirdropProofResponse {
+  airdropContractAddress: Address
+  id: number
+  amount: string
+  chainId: number
+  proof: Hash[]
+  userAddress: Address
+}
+
 export interface LoginPayload {
   owner: string
   signature: string
@@ -102,6 +111,15 @@ export const UserService = {
     call: (payload: LoginPayload) =>
       axiosInstance
         .post<IResponse<LoginResponse>>('/user/login', payload)
+        .then((res) => res.data)
+  },
+  getAirdropProof: {
+    key: 'user.getAirdropProof',
+    call: (address: Address) =>
+      axiosInstance
+        .get<IResponse<IAirdropProofResponse>>(
+          `/user/getAirdropProof/${address}`
+        )
         .then((res) => res.data)
   }
 }

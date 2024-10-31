@@ -26,6 +26,11 @@ export interface IContractAddresses {
 
   bitsmileyZetaConnector?: Address | null
   signatureUtil?: Address | null
+
+  PreStakeUnStakeAirdropContract: Address
+  PreStakeRewardAirdropContract: Address
+  stakeContract: Address
+  TGEAirdropContract: Address
 }
 export interface INetworkInfo {
   network: string

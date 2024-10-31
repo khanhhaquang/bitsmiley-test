@@ -14,7 +14,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { UserService } from '@/services/user'
 
 interface IAirdropInput {
-  address: Address
+  address?: Address
   airdropContractAddress: Address
   chainId: number
 }
