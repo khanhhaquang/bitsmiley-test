@@ -25,7 +25,7 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
     const airdropInfo = projectInfo?.web3Info?.find(
       (item) => item.chainId === ETH_CHAIN
     )
-    console.log(airdropInfo)
+    // console.log(airdropInfo)
     if (!airdropInfo) return undefined
 
     if (
@@ -66,14 +66,14 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
   const isContractValid = useMemo(() => !!airdrop, [airdrop])
 
   const isActive = useMemo(() => {
-    console.log(
-      'isContractValid:',
-      isContractValid,
-      'isLoading:',
-      isLoading,
-      'isClaiming:',
-      isClaiming
-    )
+    // console.log(
+    //   'isContractValid:',
+    //   isContractValid,
+    //   'isLoading:',
+    //   isLoading,
+    //   'isClaiming:',
+    //   isClaiming
+    // )
     return !isLoading && !isContractValid && !isClaiming
   }, [isClaiming, isLoading, isContractValid])
 
