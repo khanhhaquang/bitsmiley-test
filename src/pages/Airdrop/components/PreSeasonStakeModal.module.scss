@@ -3,7 +3,7 @@
   text-stroke: 12px #00221c;
 
   &::before {
-    content: attr(data-storke);
+    content: attr(data-stroke);
     position: absolute;
     -webkit-text-stroke: 0;
     background: linear-gradient(

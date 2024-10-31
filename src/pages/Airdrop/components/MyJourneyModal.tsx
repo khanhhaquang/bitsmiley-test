@@ -4,8 +4,10 @@ import { CloseIcon } from '@/assets/icons'
 import { Modal } from '@/components/Modal'
 import { useGetMyBitsmileyJourney } from '@/hooks/useAirdropQueries'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { useGetArcadeLuckyAccount } from '@/queries/airdrop'
 import { BitsmileyJourneyNames, BitsmileyJourneyType } from '@/services/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { formatNumberWithSeparator } from '@/utils/number'
 
 import BitsmileyJourneyCard from './BitsmileyJourneyCard'
 import CommunityJourneyCard from './CommunityJourneyCard'
@@ -14,24 +16,25 @@ const MyJourneyModal: FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
-  const { data } = useGetMyBitsmileyJourney()
-  const cardsRef = useRef<HTMLDivElement>(null)
+  const { data: luckyAccount } = useGetArcadeLuckyAccount()
+  const { data: myJourney } = useGetMyBitsmileyJourney()
   const { isMobile } = useMediaQuery()
+  const cardsRef = useRef<HTMLDivElement>(null)
 
   const communityJourney = useMemo(
     () =>
-      data?.find(
+      myJourney?.find(
         (item) => item?.type === BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS
       ),
-    [data]
+    [myJourney]
   )
 
   const listNormalJourney = useMemo(
     () =>
-      data?.filter(
+      myJourney?.filter(
         (item) => item?.type !== BitsmileyJourneyType.SPECIAL_COMMUNITY_EVENTS
-      ),
-    [data]
+      ) || [],
+    [myJourney]
   )
 
   const onWheel = (event: WheelEvent) => {
@@ -102,10 +105,18 @@ const MyJourneyModal: FC<{
 
         <div className="mx-[92px] mt-6 border-y border-dashed border-[#FFB800]/40 py-2 font-psm text-base text-[#FFB800]">
           <p className="flex items-center justify-between">
-            Total $SMILE: <span>8,212,031.32</span>
+            Total $SMILE:{' '}
+            <span>
+              {formatNumberWithSeparator(luckyAccount?.data.totalAirdrop || 0)}
+            </span>
           </p>
           <p className="mt-2 flex items-center justify-between">
-            Unlocked $SMILE now: <span>2,031.32</span>
+            Unlocked $SMILE now:{' '}
+            <span>
+              {formatNumberWithSeparator(
+                luckyAccount?.data.availableAirdrop || 0
+              )}
+            </span>
           </p>
         </div>
       </div>
