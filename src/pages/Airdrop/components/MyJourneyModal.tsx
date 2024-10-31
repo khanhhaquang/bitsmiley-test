@@ -7,10 +7,10 @@ import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useGetArcadeLuckyAccount } from '@/queries/airdrop'
 import { BitsmileyJourneyNames, BitsmileyJourneyType } from '@/services/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { formatNumberWithSeparator } from '@/utils/number'
 
 import BitsmileyJourneyCard from './BitsmileyJourneyCard'
 import CommunityJourneyCard from './CommunityJourneyCard'
-import { formatNumberWithSeparator } from '@/utils/number'
 
 const MyJourneyModal: FC<{
   isOpen: boolean

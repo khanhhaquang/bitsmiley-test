@@ -7,7 +7,7 @@ import {
 } from '@/services/airdrop'
 import { cn } from '@/utils/cn'
 
-import { getJourneyStatusTitle } from './BitsmileyJourneyCard'
+import { getJourneyStatusTitle } from './BitSmileyJourneyCard.util'
 
 const CommunityJourneyCard: FC<BitsmileyJourney> = ({
   mediumLink,

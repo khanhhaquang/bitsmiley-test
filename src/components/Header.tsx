@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { HeaderIcon, RightAngleThin } from '@/assets/icons'
@@ -10,7 +11,6 @@ import {
   AirdropButton as EnterAirdropButton
 } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
-import { useMemo } from 'react'
 
 export const Header: React.FC<{
   isAirdropPage?: boolean
