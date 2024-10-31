@@ -45,8 +45,8 @@ export const PreSeasonStakeInfo: React.FC<{
             styles.apyText,
             'absolute inset-x-0 bottom-0 m-auto font-smb2 text-[32px] leading-none'
           )}
-          data-storke={`${formatNumberAsTrunc(apy * 100, 0)}% APY`}>
-          {formatNumberAsTrunc(apy * 100, 0)}% APY
+          data-stroke={`${formatNumberAsTrunc(apy * 100, 0)}% APR`}>
+          {formatNumberAsTrunc(apy * 100, 0)}% APR
         </div>
       </div>
 

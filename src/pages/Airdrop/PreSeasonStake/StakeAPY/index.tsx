@@ -32,7 +32,7 @@ const StakeAPY = () => {
   return (
     <div className="flex w-[340px] flex-col border border-[#FFAA00]/30">
       <div className="bg-[#FA0] px-4 py-[6px] font-smb text-xs uppercase text-black">
-        Current APY
+        Current APR
       </div>
       <div className="flex flex-1 items-center justify-center bg-[#1C1703] px-4">
         <div
