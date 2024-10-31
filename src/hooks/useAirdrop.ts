@@ -40,7 +40,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     isLoading: isLoadingAirdropProofAndAmount
   } = useQuery({
     queryKey: [
-      UserService.getAirdropProofAndAmount.key,
+      UserService.getAirdropProof.key,
       currentChainId,
       userAddress,
       airdrop?.chainId,
@@ -48,11 +48,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     ],
     queryFn: () =>
       !!airdrop?.airdropContractAddress && !!userAddress
-        ? UserService.getAirdropProofAndAmount.call(
-            airdrop.chainId,
-            userAddress,
-            airdrop.airdropContractAddress
-          )
+        ? UserService.getAirdropProof.call(airdrop.airdropContractAddress)
         : undefined,
     enabled:
       !!airdrop?.airdropContractAddress &&
@@ -82,11 +78,11 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     address: airdrop?.airdropContractAddress,
     args:
       !!userAddress &&
-      !!airdropProofAndAmount?.amountStr &&
+      !!airdropProofAndAmount?.amount &&
       !!airdropProofAndAmount?.proof?.length
         ? [
             userAddress,
-            BigInt(airdropProofAndAmount.amountStr),
+            BigInt(airdropProofAndAmount.amount),
             airdropProofAndAmount.proof
           ]
         : undefined,
@@ -109,10 +105,10 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
         address: airdrop.airdropContractAddress,
         functionName: 'claim',
         args:
-          !!airdropProofAndAmount?.amountStr &&
+          !!airdropProofAndAmount?.amount &&
           !!airdropProofAndAmount?.proof?.length
             ? [
-                BigInt(airdropProofAndAmount.amountStr),
+                BigInt(airdropProofAndAmount.amount),
                 airdropProofAndAmount.proof
               ]
             : undefined
