@@ -42,11 +42,6 @@ const GameScroller: React.FC<{
   const itemWidth = 180
   const halfIndex = Math.floor(data.length / 2)
 
-  // console.log(
-  //   '🚀 ~ returndata.map ~ speedSteps[`${step}`]:',
-  //   speedSteps[`${step}`]
-  // )
-
   const items = useMemo(() => {
     return data.map((prizeItem, i) => {
       const pos = indexArray.indexOf(i)
@@ -159,14 +154,6 @@ const GameScroller: React.FC<{
           lastStep = prizeStep + 1
         }
       }
-      // console.log(
-      //   'isWin:',
-      //   isWin,
-      //   'prizeStep:',
-      //   prizeStep,
-      //   'lastStep:',
-      //   lastStep
-      // )
 
       setTimeout(
         () => {
