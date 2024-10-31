@@ -34,7 +34,8 @@ const Arcade = () => {
     isPending: isBuying,
     data: buyResp
   } = useBuyArcadeLucky({})
-  const { data: luckAccount } = useGetArcadeLuckyAccount()
+  const { data: luckAccount, refetch: fetchLuckAccount } =
+    useGetArcadeLuckyAccount()
   const { projectInfo } = useProjectInfo()
 
   const isReady = useMemo(
@@ -76,6 +77,7 @@ const Arcade = () => {
 
   const onScrollResult = (isWin: boolean) => {
     setIsScrolling(false)
+    fetchLuckAccount()
     if (isWin) {
       setShowCongratsModal(true)
     } else {
