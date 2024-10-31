@@ -7,9 +7,9 @@ import { PrizeType } from '../index.types'
 
 export const PrizeStyle: Record<PrizeType, [number, string, number, number]> = {
   [PrizeType.SMILE_100]: [100, 'prize-100-icon', 90, 60.6],
-  [PrizeType.SMILE_1000]: [1000, 'prize-1000-icon', 90, 60.6],
-  [PrizeType.SMILE_5000]: [5000, 'prize-5000-icon', 90, 60.6],
-  [PrizeType.SMILE_10000]: [10000, 'prize-10000-icon', 90, 60.6]
+  [PrizeType.SMILE_1000]: [1000, 'prize-1000-icon', 90, 60],
+  [PrizeType.SMILE_5000]: [5000, 'prize-5000-icon', 90, 60],
+  [PrizeType.SMILE_10000]: [10000, 'prize-10000-icon', 90, 74]
 } as const
 
 export const Prizes: Record<PrizeType, number> = {
