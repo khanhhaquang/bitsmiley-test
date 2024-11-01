@@ -44,14 +44,6 @@ const SelectStage: React.FC = () => {
     return projectInfo.nowTime >= projectInfo.tgeTime
   }, [projectInfo])
 
-  const isStakeEnded = useMemo(() => {
-    return (
-      !!preStakeInfo?.data.nowTime &&
-      !!preStakeInfo.data.preStakeEndTime &&
-      preStakeInfo?.data.nowTime >= preStakeInfo?.data.preStakeEndTime
-    )
-  }, [preStakeInfo?.data.nowTime, preStakeInfo?.data.preStakeEndTime])
-
   const isStakeNotStarted = useMemo(() => {
     return (
       !!preStakeInfo?.data.nowTime &&
@@ -74,7 +66,7 @@ const SelectStage: React.FC = () => {
         }}
       />
       <PreSeasonStakeModal
-        isReady={!isStakeEnded && !isStakeNotStarted}
+        isReady={!isStakeNotStarted}
         isOpen={isPrecheckModalOpen}
         onClose={() => {
           setIsPrecheckModalOpen(false)
@@ -141,18 +133,14 @@ const SelectStage: React.FC = () => {
               />
             </PreSeasonStakeInfo>
             <ActionButton
-              disabled={isStakeEnded || isStakeNotStarted}
+              disabled={isStakeNotStarted}
               onClick={() => navigate('pre-stake')}
               className={cn(
                 'mx-auto mt-10 w-40 border-[#FFAA00]/80 bg-[#FFAA00]/80 text-2xl uppercase text-black/75',
                 'hover:bg-[#FFAA00] active:bg-[#FFAA00]/60 hover:!text-black/75 active:!text-black/75',
                 'w-fit min-w-[152px] disabled:border-grey2 disabled:bg-grey2/80 disabled:!text-white/50'
               )}>
-              {isStakeEnded
-                ? 'Ended'
-                : isStakeNotStarted
-                  ? 'Not started'
-                  : 'Stake'}
+              {isStakeNotStarted ? 'Not started' : 'Stake'}
             </ActionButton>
           </div>
 

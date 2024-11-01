@@ -15,12 +15,22 @@ const PreSeasonStake: FC = () => {
 
   const [isUnstakeModalOpen, setIsUnstakeModalOpen] = useState(false)
   const { data } = useGetPreStakeInfo()
-  const showUnStake = useMemo(() => {
+
+  const isNotStarted = useMemo(() => {
+    if (!data?.data.preStakeStartTime || !data?.data.nowTime) {
+      return false
+    }
+    return data?.data.nowTime < data?.data.preStakeStartTime
+  }, [data])
+
+  const isEnded = useMemo(() => {
     if (!data?.data.preStakeEndTime || !data?.data.nowTime) {
       return false
     }
     return data?.data.nowTime >= data?.data.preStakeEndTime
   }, [data])
+
+  if (isNotStarted) return null
 
   return (
     <div className="relative mt-[45px] flex flex-col items-center gap-[50px]">
@@ -42,7 +52,7 @@ const PreSeasonStake: FC = () => {
         <StakeAPY />
         <AvailableToStake />
       </div>
-      {showUnStake && (
+      {isEnded && (
         <button
           onClick={() => setIsUnstakeModalOpen(true)}
           className="mx-auto flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
