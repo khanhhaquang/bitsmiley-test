@@ -8,6 +8,7 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { PrizeStyle } from './PrizeOption'
 
 import { PrizeType } from '../index.types'
+import { useSound } from '@/hooks/useSound'
 
 const TokenPrize: FC<{ prizeType: PrizeType }> = ({ prizeType }) => {
   const [amount, iconName, iconWidth, iconHeight] = PrizeStyle[`${prizeType}`]
@@ -76,6 +77,10 @@ const RewardScroll: React.FC<{
   const [randomIndex, setRandomIndex] = useState(getRandomIndex())
   const [isEnded, setIsEnded] = useState(false)
 
+  const reelingAudio = useSound('arcade-reeling')
+  const winningAudio = useSound('arcade-winning')
+  const losingAudio = useSound('arcade-losing')
+
   const landingIndex = useMemo(
     () => (isWinning ? 4 : randomIndex === 4 ? randomIndex - 1 : randomIndex),
     [isWinning, randomIndex]
@@ -104,6 +109,7 @@ const RewardScroll: React.FC<{
 
   useEffect(() => {
     if (isScrolling) {
+      reelingAudio.play()
       setIsEnded(false)
       setTimeout(
         () => {
@@ -112,7 +118,7 @@ const RewardScroll: React.FC<{
           setResetPos(INITIAL_POS)
           setRandomIndex(getRandomIndex())
         },
-        isWinning ? DURATION : DURATION + 3000
+        isWinning ? DURATION + 2000 : DURATION + 3000
       )
     }
   }, [isScrolling])
@@ -126,7 +132,14 @@ const RewardScroll: React.FC<{
 
       <div
         className={cn('flex items-center flex-nowrap gap-x-6 w-fit px-6')}
-        onTransitionEnd={() => setIsEnded(true)}
+        onTransitionEnd={() => {
+          setIsEnded(true)
+          if (isWinning) {
+            winningAudio.play()
+          } else {
+            losingAudio.play()
+          }
+        }}
         style={
           isScrolling
             ? {

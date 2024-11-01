@@ -14,8 +14,8 @@ import { UserService } from '@/services/user'
 
 interface IAirdropInput {
   address?: Address
+  chainId?: number
   airdropContractAddress: Address
-  chainId: number
 }
 
 export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
@@ -83,7 +83,7 @@ export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
   const { writeContractAsync } = useWriteContract()
   const [isClaiming, setIsClaiming] = useState(false)
 
-  const claim = async () => {
+  const claim = async (onCallback?: (error?: unknown) => void) => {
     if (!airdrop?.airdropContractAddress || isClaiming) return
 
     try {
@@ -104,7 +104,9 @@ export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
       addTransaction(txId)
       refetchIsClaimed()
       refetchCanClaim()
+      onCallback?.()
     } catch (e) {
+      onCallback?.(e)
       console.error(e)
     } finally {
       setIsClaiming(false)

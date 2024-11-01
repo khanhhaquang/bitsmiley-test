@@ -1,7 +1,4 @@
-import { useMemo } from 'react'
-
 import { Image } from '@/components/Image'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useGetMyPreStake } from '@/queries/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
@@ -9,18 +6,11 @@ import AirdropCheckModal from './AirdropCheckModal'
 
 const ArcadeModal: React.FC<{
   isOpen: boolean
+  isReady?: boolean
   onCheck: () => void
   onClose: () => void
-}> = ({ isOpen, onCheck, onClose }) => {
+}> = ({ isOpen, isReady, onCheck, onClose }) => {
   const { data } = useGetMyPreStake()
-  const { projectInfo } = useProjectInfo()
-
-  const isReady = useMemo(
-    () =>
-      !!projectInfo?.arcadeStartTime &&
-      projectInfo.nowTime >= projectInfo.arcadeStartTime,
-    [projectInfo?.arcadeStartTime, projectInfo?.nowTime]
-  )
 
   return (
     <AirdropCheckModal

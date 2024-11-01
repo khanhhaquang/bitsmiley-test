@@ -7,6 +7,7 @@ import {
 } from 'react'
 
 import { useScrollPosition } from '@/hooks/useScrollPosition'
+import { getSoundUrl } from '@/utils/getAssetsUrl'
 
 export type MusicPlayerRef = {
   playMusic: () => void
@@ -22,9 +23,7 @@ export const MusicPlayer = forwardRef<MusicPlayerRef, MusicPlayerProps>(
     const scrollPosition = useScrollPosition()
 
     const audio = useMemo(() => {
-      const newAudio = new Audio(
-        new URL('/src/assets/mint.mp3', import.meta.url).href
-      )
+      const newAudio = new Audio(getSoundUrl('mint'))
       newAudio.preload = 'auto'
       newAudio.volume = 0.5
       newAudio.loop = true

@@ -9,7 +9,7 @@ import {
 import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
-import { useGetMyPreStake } from '@/queries/airdrop'
+import { useGetMyPreStake, useGetPreStakeInfo } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
@@ -29,6 +29,7 @@ const SelectStage: React.FC = () => {
   const [isClaimUnlockedModalOpen, setIsClaimUnlockedModalOpen] =
     useState(false)
   const { data } = useGetMyPreStake()
+  const { data: preStakeInfo } = useGetPreStakeInfo()
   const { projectInfo } = useProjectInfo()
 
   const isArcadeReady = useMemo(() => {
@@ -43,9 +44,26 @@ const SelectStage: React.FC = () => {
     return projectInfo.nowTime >= projectInfo.tgeTime
   }, [projectInfo])
 
+  const isStakeEnded = useMemo(() => {
+    return (
+      !!preStakeInfo?.data.nowTime &&
+      !!preStakeInfo.data.preStakeEndTime &&
+      preStakeInfo?.data.nowTime >= preStakeInfo?.data.preStakeEndTime
+    )
+  }, [preStakeInfo?.data.nowTime, preStakeInfo?.data.preStakeEndTime])
+
+  const isStakeNotStarted = useMemo(() => {
+    return (
+      !!preStakeInfo?.data.nowTime &&
+      !!preStakeInfo.data.preStakeStartTime &&
+      preStakeInfo?.data.nowTime < preStakeInfo?.data.preStakeStartTime
+    )
+  }, [preStakeInfo?.data.nowTime, preStakeInfo?.data.preStakeStartTime])
+
   return (
     <div className="relative">
       <ArcadeModal
+        isReady={isArcadeReady}
         isOpen={isArcadeModalOpen}
         onClose={() => {
           setIsArcadeModalOpen(false)
@@ -56,6 +74,7 @@ const SelectStage: React.FC = () => {
         }}
       />
       <PreSeasonStakeModal
+        isReady={!isStakeEnded && !isStakeNotStarted}
         isOpen={isPrecheckModalOpen}
         onClose={() => {
           setIsPrecheckModalOpen(false)
@@ -122,12 +141,18 @@ const SelectStage: React.FC = () => {
               />
             </PreSeasonStakeInfo>
             <ActionButton
+              disabled={isStakeEnded || isStakeNotStarted}
               onClick={() => navigate('pre-stake')}
               className={cn(
                 'mx-auto mt-10 w-40 border-[#FFAA00]/80 bg-[#FFAA00]/80 text-2xl uppercase text-black/75',
-                'hover:bg-[#FFAA00] active:bg-[#FFAA00]/60 hover:!text-black/75 active:!text-black/75'
+                'hover:bg-[#FFAA00] active:bg-[#FFAA00]/60 hover:!text-black/75 active:!text-black/75',
+                'w-fit min-w-[152px] disabled:border-grey2 disabled:bg-grey2/80 disabled:!text-white/50'
               )}>
-              Stake
+              {isStakeEnded
+                ? 'Ended'
+                : isStakeNotStarted
+                  ? 'Not started'
+                  : 'Stake'}
             </ActionButton>
           </div>
 

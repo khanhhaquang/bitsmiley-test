@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useChainId, useSwitchChain } from 'wagmi'
 
 import { useToast } from '@/components/ui/use-toast'
 
@@ -15,68 +14,79 @@ export enum AirdropClaimType {
 
 export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
   const { toast } = useToast()
-  const { evmChainId, isConnected } = useUserInfo()
+  const { evmChainId } = useUserInfo()
   const { projectInfo } = useProjectInfo()
-  const { switchChain } = useSwitchChain()
-  const chainID = useChainId()
-  const ETH_CHAIN = 17000
+
+  const airdropContracts = useMemo(() => {
+    return projectInfo?.web3Info?.find((item) => item.chainId === evmChainId)
+      ?.contract
+  }, [evmChainId, projectInfo?.web3Info])
 
   const airdrop = useMemo(() => {
-    const airdropInfo = projectInfo?.web3Info?.find(
-      (item) => item.chainId === ETH_CHAIN
-    )
-
-    if (!airdropInfo) return undefined
+    if (!airdropContracts) return undefined
 
     if (
-      !airdropInfo?.contract.TGEAirdropContract ||
-      !airdropInfo?.contract.PreStakeRewardAirdropContract ||
-      !airdropInfo?.contract.PreStakeUnStakeAirdropContract
+      !airdropContracts.TGEAirdropContract ||
+      !airdropContracts.PreStakeRewardAirdropContract ||
+      !airdropContracts.PreStakeUnStakeAirdropContract
     )
       return undefined
+
     if (type === AirdropClaimType.TGE)
-      return airdropInfo?.contract.TGEAirdropContract
+      return airdropContracts.TGEAirdropContract
         ? {
-            airdropContractAddress: airdropInfo?.contract.TGEAirdropContract,
-            chainId: airdropInfo.chainId
+            airdropContractAddress: airdropContracts.TGEAirdropContract,
+            chainId: evmChainId
           }
         : undefined
     if (type === AirdropClaimType.Award)
-      return airdropInfo?.contract.PreStakeRewardAirdropContract
+      return airdropContracts.PreStakeRewardAirdropContract
         ? {
             airdropContractAddress:
-              airdropInfo?.contract.PreStakeRewardAirdropContract,
-            chainId: airdropInfo.chainId
+              airdropContracts.PreStakeRewardAirdropContract,
+            chainId: evmChainId
           }
         : undefined
     if (type === AirdropClaimType.UnStake)
-      return airdropInfo?.contract.PreStakeUnStakeAirdropContract
+      return airdropContracts.PreStakeUnStakeAirdropContract
         ? {
             airdropContractAddress:
-              airdropInfo?.contract.PreStakeUnStakeAirdropContract,
-            chainId: airdropInfo.chainId
+              airdropContracts.PreStakeUnStakeAirdropContract,
+            chainId: evmChainId
           }
         : undefined
 
     return undefined
-  }, [projectInfo, type])
+  }, [airdropContracts, evmChainId, type])
 
   const { canClaim, claim, isLoading, isClaiming, isClaimed } = useAirdrop(
     airdrop,
     disabled
   )
-  const isContractValid = useMemo(() => !!airdrop, [airdrop])
 
   const isActive = useMemo(
-    () => !isLoading && isContractValid && !isClaiming,
-    [isClaiming, isLoading, isContractValid]
+    () => !isLoading && !!airdrop && !isClaiming,
+    [airdrop, isClaiming, isLoading]
   )
 
-  const handleProceed = () => {
+  const handleClaim = (
+    title: string = '',
+    callback?: (error?: unknown) => void
+  ) => {
+    if (!airdropContracts) {
+      toast({
+        variant: 'destructive',
+        title: title || 'Claim Airdrop',
+        description: 'Unavailable contract',
+        duration: 2000
+      })
+      return
+    }
+
     if (!canClaim) {
       toast({
         variant: 'destructive',
-        title: `Claim Airdrop`,
+        title: title || 'Claim Airdrop',
         description: 'Can not claim.',
         duration: 2000
       })
@@ -85,34 +95,14 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
 
     if (isClaimed) {
       toast({
-        title: `Claim Airdrop`,
-        description: 'This airdrop is already claimed.',
+        title: title || 'Claim Airdrop',
+        description: 'This amount is already claimed.',
         duration: 2000
       })
       return
     }
 
-    claim()
-  }
-
-  const handleClaim = () => {
-    if (evmChainId && isConnected && chainID !== ETH_CHAIN) {
-      switchChain(
-        { chainId: ETH_CHAIN },
-        {
-          onSuccess: (newChain) => {
-            console.log('Switched to: ', newChain.id)
-            handleProceed()
-          },
-          onError: () => {
-            console.error('Switching network failed')
-          }
-        }
-      )
-      return
-    }
-
-    handleProceed()
+    claim(callback)
   }
 
   return {

@@ -1,10 +1,9 @@
-import { FC, ReactNode, useMemo, useState } from 'react'
+import { FC, ReactNode, useMemo } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
-import StyledInput from '@/components/StyledInput'
 import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
 import { useGetMyPreStake, useUnStake } from '@/queries/airdrop'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -96,11 +95,11 @@ export const UnstakeModal: FC<{
           You are about to unstake
         </p>
         <p className="flex items-center justify-center gap-x-1.5 text-2xl text-[#FFD000]">
-          <SmileyIcon width={17} height={19} />
+          <SmileyIcon width={17} height={19} className="text-white" />
           {formatNumberWithSeparator(stakedAmount)}
         </p>
 
-        <p className="w-[418px] text-center text-base uppercase text-white">
+        <p className="w-[418px] text-center text-base text-white">
           We'll stop calculating your yield now. You will be able to collect
           your $SMILE in 72 hours{' '}
         </p>
@@ -113,7 +112,8 @@ export const ClaimUnlockedModal: FC<{
   onClose: () => void
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
-  const [value, setValue] = useState('')
+  // const [value, setValue] = useState('')
+  const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
 
   const { isActive, handleClaim } = useAirdropClaim(
     AirdropClaimType.TGE,
@@ -123,19 +123,21 @@ export const ClaimUnlockedModal: FC<{
   return (
     <ExitTokenModal
       isOpen={isOpen}
-      title="Claim unlocked  $Smile"
+      title="Claim unlocked $Smile"
       onCancel={onClose}
       isPending={!isActive}
-      onProceed={handleClaim}>
+      onProceed={() =>
+        handleClaim('Claim unlocked airdrop', () => refetchMyPreStake())
+      }>
       <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
           Unlocked $SMILE <SmileyIcon />
         </p>
         <p className="mt-1.5 font-ibmb text-2xl text-[#FFD000]">
-          {formatNumberWithSeparator(4930223)}
+          {formatNumberWithSeparator(data?.data.availableAirdrop || 0)}
         </p>
 
-        <div className="mt-6 flex flex-col items-center gap-y-3">
+        {/* <div className="mt-6 flex flex-col items-center gap-y-3">
           <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
             Claim $SMILE <SmileyIcon />
           </p>
@@ -145,7 +147,7 @@ export const ClaimUnlockedModal: FC<{
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
-        </div>
+        </div> */}
       </div>
     </ExitTokenModal>
   )
