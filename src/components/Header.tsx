@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { HeaderIcon, RightAngleThin } from '@/assets/icons'
@@ -6,7 +7,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 
 import {
-  Airdrop as AirdropBindingWallet,
+  Airdrop as AirdropIntro,
   AirdropButton as EnterAirdropButton
 } from './Airdrop'
 import { ConnectWallet } from './ConnectWallet'
@@ -21,6 +22,10 @@ export const Header: React.FC<{
   const isRoot = pathname === '/'
   const isMainApp = pathname.startsWith('/app')
 
+  const showAirdropEntryButton = useMemo(() => {
+    return pathname !== '/airdrop'
+  }, [pathname])
+
   return (
     <div className="pointer-events-none absolute left-0 top-[50px] z-50 flex w-full items-start justify-between px-12 text-white sm:justify-center">
       <Link
@@ -34,8 +39,8 @@ export const Header: React.FC<{
           <ConnectWallet />
           {!isRoot && <EnterHomeButton />}
           {!isMainApp && <EnterAppButton />}
-          <AirdropBindingWallet />
-          {isConnected && !isAirdropPage && <EnterAirdropButton />}
+          {isConnected && showAirdropEntryButton && <EnterAirdropButton />}
+          <AirdropIntro isAirdropPage={isAirdropPage} />
         </div>
       )}
     </div>

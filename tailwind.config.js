@@ -125,7 +125,12 @@ export default {
         yourPointStats:
           'linear-gradient(124deg, rgba(38, 72, 239, 0.30) 16.19%, rgba(0, 8, 45, 0.30) 96.03%)',
         apyText:
-          'linear-gradient(180deg, #86FFA8 11.11%, #86FFA8 30.28%, #00FF22 30.63%, #00FF22 60.85%, #00B221 61.48%, #00B221 74.07%)'
+          'linear-gradient(180deg, #86FFA8 11.11%, #86FFA8 30.28%, #00FF22 30.63%, #00FF22 60.85%, #00B221 61.48%, #00B221 74.07%)',
+        arcadeMachineBg:
+          'url("/src/assets/illustrations/arcade-machine-bg.gif")',
+        prizeBg: 'url("/src/assets/illustrations/prize-bg.webp")',
+        prizeBgActive:
+          'url("/src/assets/illustrations/prize-bg-active.webp")'
       }
     }
   },

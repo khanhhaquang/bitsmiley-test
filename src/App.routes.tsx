@@ -13,6 +13,9 @@ const BitPoint = lazy(() => import('@/pages/BitPoint/BitPoint'))
 const BitPointHistory = lazy(() => import('@/pages/BitPoint/BitPointHistory'))
 
 const Airdrop = lazy(() => import('@/pages/Airdrop'))
+const AirdropSelectStage = lazy(() => import('@/pages/Airdrop/SelectStage'))
+const AirdropArcade = lazy(() => import('@/pages/Airdrop/Arcade'))
+const AirdropPreStake = lazy(() => import('@/pages/Airdrop/PreSeasonStake'))
 
 const Routes = () => {
   const routes: RouteObject[] = [
@@ -65,7 +68,21 @@ const Routes = () => {
     {
       path: 'airdrop',
       id: 'airdrop',
-      element: <Airdrop />
+      element: <Airdrop />,
+      children: [
+        {
+          index: true,
+          element: <AirdropSelectStage />
+        },
+        {
+          path: 'pre-stake',
+          element: <AirdropPreStake />
+        },
+        {
+          path: 'arcade',
+          element: <AirdropArcade />
+        }
+      ]
     },
     {
       path: '*',

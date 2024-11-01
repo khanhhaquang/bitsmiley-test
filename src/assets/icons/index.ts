@@ -5,6 +5,7 @@ import AlertBg from './alert-bg.svg'
 import ArrowDownDoubleIcon from './arrow-down-double.svg'
 import ArrowDownIcon from './arrow-down.svg'
 import ArrowLeftDoubleIcon from './arrow-left-double.svg'
+import ArrowLeftFilledIcon from './arrow-left-filled.svg'
 import ArrowLeftThinIcon from './arrow-left-thin.svg'
 import ArrowLeftIcon from './arrow-left.svg'
 import ArrowRightDoubleIcon from './arrow-right-double.svg'
@@ -33,6 +34,8 @@ import CrownIcon from './crown.svg'
 import DollarShadowIcon from './dollar-shadow.svg'
 import DollarIcon from './dollar.svg'
 import DotIcon from './dot.svg'
+import DropArrowDownIcon from './drop-arrow-down.svg'
+import DropArrowUpIcon from './drop-arrow-up.svg'
 import FailIcon from './fail.svg'
 import GoldCoinIcon from './gold-coin.svg'
 import HeaderIcon from './header.svg'
@@ -96,6 +99,7 @@ export {
   CloseIcon,
   HeaderIcon,
   ArrowLeftThinIcon,
+  ArrowLeftFilledIcon,
   ArrowLeftIcon,
   ArrowDownIcon,
   CopyrightIcon,
@@ -159,5 +163,7 @@ export {
   CrossRedIcon,
   CheckGreenIcon,
   MinimizeIcon,
-  UnionIcon
+  UnionIcon,
+  DropArrowDownIcon,
+  DropArrowUpIcon
 }

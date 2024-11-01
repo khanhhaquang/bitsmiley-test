@@ -24,7 +24,7 @@ const StyledInput: React.FC<NumberInputProps> = ({
     <div className="flex w-full flex-col items-start gap-y-1">
       <div
         className={cn(
-          'relative border border-blue border-l-[18px] bg-black/50 pl-3 pr-1.5 py-1',
+          'relative border border-blue border-l-[18px] bg-black/50 pl-3 pr-1.5 py-1 w-full',
           greyOut && 'bg-white/10',
           disabled && 'bg-white/20 border-white/20',
           className

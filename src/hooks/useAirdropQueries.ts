@@ -12,7 +12,7 @@ export const useGetMyBitsmileyJourney = () => {
     queryFn: () =>
       address && AirdropService.getMyBitsmileyJourney.call(address),
     enabled: !!address,
-    select: (res) => (!res ? undefined : res.data)
+    select: (res) => res && res.data
   })
 
   return data

@@ -26,6 +26,11 @@ export interface IContractAddresses {
 
   bitsmileyZetaConnector?: Address | null
   signatureUtil?: Address | null
+
+  PreStakeUnStakeAirdropContract: Address
+  PreStakeRewardAirdropContract: Address
+  stakeContract: Address
+  TGEAirdropContract: Address
 }
 export interface INetworkInfo {
   network: string
@@ -37,6 +42,8 @@ export interface INetworkInfo {
 export interface IProject {
   nowTime: string
   startTime: string
+  tgeTime: string
+  arcadeStartTime: string
   web3Info: INetworkInfo[]
 }
 

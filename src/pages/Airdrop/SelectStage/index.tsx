@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import {
   ArrowLeftDoubleIcon,
@@ -7,25 +8,75 @@ import {
 } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
+import { useGetMyPreStake, useGetPreStakeInfo } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
-import { ClaimUnlockedModal } from './ExitTokenModals'
-import MyJourneyModal from './MyJourneyModal'
-import { PreSeasonStakeInfo } from './PreSeasonStakeModal'
+import ArcadeModal from '../components/ArcadeModal'
+import { ClaimUnlockedModal } from '../components/ExitTokenModals'
+import MyJourneyModal from '../components/MyJourneyModal'
+import PreSeasonStakeModal, {
+  PreSeasonStakeInfo
+} from '../components/PreSeasonStakeModal'
 
-import { STAGE } from '../index.types'
-
-const StageSelect: React.FC<{
-  onSelect: (v: STAGE) => void
-}> = ({ onSelect }) => {
+const SelectStage: React.FC = () => {
+  const navigate = useNavigate()
+  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(true)
+  const [isArcadeModalOpen, setIsArcadeModalOpen] = useState(false)
   const [isMyJourneyModalOpen, setIsMyJourneyModalOpen] = useState(false)
   const [isClaimUnlockedModalOpen, setIsClaimUnlockedModalOpen] =
     useState(false)
+  const { data } = useGetMyPreStake()
+  const { data: preStakeInfo } = useGetPreStakeInfo()
+  const { projectInfo } = useProjectInfo()
+
+  const isArcadeReady = useMemo(() => {
+    return (
+      !!projectInfo?.arcadeStartTime &&
+      projectInfo.nowTime >= projectInfo?.arcadeStartTime
+    )
+  }, [projectInfo?.arcadeStartTime, projectInfo?.nowTime])
+
+  const showClaim = useMemo(() => {
+    if (!projectInfo?.nowTime || !projectInfo.tgeTime) return false
+    return projectInfo.nowTime >= projectInfo.tgeTime
+  }, [projectInfo])
+
+  const isStakeNotStarted = useMemo(() => {
+    return (
+      !!preStakeInfo?.data.nowTime &&
+      !!preStakeInfo.data.preStakeStartTime &&
+      preStakeInfo?.data.nowTime < preStakeInfo?.data.preStakeStartTime
+    )
+  }, [preStakeInfo?.data.nowTime, preStakeInfo?.data.preStakeStartTime])
 
   return (
     <div className="relative">
+      <ArcadeModal
+        isReady={isArcadeReady}
+        isOpen={isArcadeModalOpen}
+        onClose={() => {
+          setIsArcadeModalOpen(false)
+        }}
+        onCheck={() => {
+          setIsArcadeModalOpen(false)
+          navigate('arcade')
+        }}
+      />
+      <PreSeasonStakeModal
+        isReady={!isStakeNotStarted}
+        isOpen={isPrecheckModalOpen}
+        onClose={() => {
+          setIsPrecheckModalOpen(false)
+          setIsArcadeModalOpen(true)
+        }}
+        onCheck={() => {
+          navigate('pre-stake')
+          setIsPrecheckModalOpen(false)
+        }}
+      />
       <MyJourneyModal
         onClose={() => setIsMyJourneyModalOpen(false)}
         isOpen={isMyJourneyModalOpen}
@@ -52,7 +103,7 @@ const StageSelect: React.FC<{
           <div className="flex h-[84px] items-center justify-between px-4">
             <p className="flex items-center gap-x-3 text-4xl font-bold text-[#FA0]">
               <SmileyIcon className="h-[48px] w-[44px] text-white" />
-              {formatNumberWithSeparator(30291.19)}
+              {formatNumberWithSeparator(data?.data.totalAirdrop ?? 0)}
             </p>
 
             <button
@@ -65,7 +116,9 @@ const StageSelect: React.FC<{
 
         <div className="mt-1 flex justify-between">
           <div className="mt-12 flex flex-col">
-            <PreSeasonStakeInfo className="h-[272px]">
+            <PreSeasonStakeInfo
+              apy={data?.data.preStakeAPY ?? 0}
+              className="h-[272px]">
               <Image
                 width={164}
                 height={77}
@@ -80,12 +133,14 @@ const StageSelect: React.FC<{
               />
             </PreSeasonStakeInfo>
             <ActionButton
-              onClick={() => onSelect(STAGE.STAKE)}
+              disabled={isStakeNotStarted}
+              onClick={() => navigate('pre-stake')}
               className={cn(
                 'mx-auto mt-10 w-40 border-[#FFAA00]/80 bg-[#FFAA00]/80 text-2xl uppercase text-black/75',
-                'hover:bg-[#FFAA00] active:bg-[#FFAA00]/60 hover:!text-black/75 active:!text-black/75'
+                'hover:bg-[#FFAA00] active:bg-[#FFAA00]/60 hover:!text-black/75 active:!text-black/75',
+                'w-fit min-w-[152px] disabled:border-grey2 disabled:bg-grey2/80 disabled:!text-white/50'
               )}>
-              Stake
+              {isStakeNotStarted ? 'Not started' : 'Stake'}
             </ActionButton>
           </div>
 
@@ -133,23 +188,27 @@ const StageSelect: React.FC<{
               />
             </div>
             <ActionButton
-              onClick={() => onSelect(STAGE.ARCADE)}
+              disabled={!isArcadeReady}
+              onClick={() => navigate('arcade')}
               className={cn(
                 'absolute bottom-0 z-10 left-1/2 -translate-x-1/2 ml-6 w-40 border-green/80 bg-green/80 text-2xl uppercase text-black/75',
-                'hover:bg-green active:bg-green/60 hover:!text-black/75 active:!text-black/75'
+                'hover:bg-green active:bg-green/60 hover:!text-black/75 active:!text-black/75',
+                'w-fit min-w-[152px] disabled:border-grey2 disabled:bg-grey2/80 disabled:!text-white/50'
               )}>
-              Play
+              {isArcadeReady ? 'Play' : 'Coming soon'}
             </ActionButton>
           </div>
         </div>
 
-        <button
-          onClick={() => setIsClaimUnlockedModalOpen(true)}
-          className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
-          <ArrowLeftDoubleIcon width={13} height={9} />
-          I want to claim unlocked airdrop
-          <ArrowRightDoubleIcon width={13} height={9} />
-        </button>
+        {showClaim && (
+          <button
+            onClick={() => setIsClaimUnlockedModalOpen(true)}
+            className="mx-auto mt-10 flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">
+            <ArrowLeftDoubleIcon width={13} height={9} />
+            I want to claim unlocked airdrop
+            <ArrowRightDoubleIcon width={13} height={9} />
+          </button>
+        )}
 
         <ClaimUnlockedModal
           isOpen={isClaimUnlockedModalOpen}
@@ -160,4 +219,4 @@ const StageSelect: React.FC<{
   )
 }
 
-export default StageSelect
+export default SelectStage

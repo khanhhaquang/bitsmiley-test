@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 
+import { useGetPreStakeInfo } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
-
-const mockStakeAPY = 10000
+import { formatNumberAsTrunc } from '@/utils/number'
 
 const stakeFontSize = [
   '84px', // 0 char
@@ -14,16 +14,25 @@ const stakeFontSize = [
 ]
 
 const StakeAPY = () => {
+  const { data } = useGetPreStakeInfo()
+  const stakeAPY = useMemo(
+    () =>
+      data?.data.preStakeAPY
+        ? formatNumberAsTrunc(data?.data.preStakeAPY * 100, 0)
+        : 0,
+    [data]
+  )
+
   const fontSize = useMemo(() => {
-    const apyLength = mockStakeAPY?.toString()?.length || 0
+    const apyLength = stakeAPY?.toString()?.length || 0
     if (apyLength > stakeFontSize.length) return stakeFontSize[5]
     return stakeFontSize[`${apyLength}`]
-  }, [])
+  }, [stakeAPY])
 
   return (
     <div className="flex w-[340px] flex-col border border-[#FFAA00]/30">
       <div className="bg-[#FA0] px-4 py-[6px] font-smb text-xs uppercase text-black">
-        Current APY
+        Current APR
       </div>
       <div className="flex flex-1 items-center justify-center bg-[#1C1703] px-4">
         <div
@@ -35,7 +44,7 @@ const StakeAPY = () => {
             WebkitTextStroke: 2,
             WebkitTextStrokeColor: '#301610'
           }}>
-          {mockStakeAPY}%
+          {stakeAPY}%
         </div>
       </div>
     </div>

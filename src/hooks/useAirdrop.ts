@@ -8,39 +8,26 @@ import {
   useReadAirdropCanClaim,
   useReadAirdropClaimed
 } from '@/contracts/Airdrop'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useStoreActions } from '@/hooks/useStoreActions'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { UserService } from '@/services/user'
 
 interface IAirdropInput {
-  address: Address
+  address?: Address
+  chainId?: number
   airdropContractAddress: Address
-  chainId: number
 }
 
-export const useAirdrop = (airdrop?: IAirdropInput) => {
+export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
   const currentChainId = useChainId()
-  const { projectInfo } = useProjectInfo()
   const { address: userAddress } = useUserInfo()
-
-  const airdrops = useMemo(
-    () =>
-      projectInfo?.web3Info
-        ?.filter((item) => item.chainId === currentChainId)
-        .map((w) =>
-          w.contract.airdrop.map((a) => ({ ...a, chainId: w.chainId }))
-        )
-        .flatMap((i) => i),
-    [projectInfo?.web3Info, currentChainId]
-  )
 
   const {
     data: airdropProofAndAmount,
     isLoading: isLoadingAirdropProofAndAmount
   } = useQuery({
     queryKey: [
-      UserService.getAirdropProofAndAmount.key,
+      UserService.getAirdropProof.key,
       currentChainId,
       userAddress,
       airdrop?.chainId,
@@ -48,16 +35,13 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     ],
     queryFn: () =>
       !!airdrop?.airdropContractAddress && !!userAddress
-        ? UserService.getAirdropProofAndAmount.call(
-            airdrop.chainId,
-            userAddress,
-            airdrop.airdropContractAddress
-          )
+        ? UserService.getAirdropProof.call(airdrop.airdropContractAddress)
         : undefined,
     enabled:
       !!airdrop?.airdropContractAddress &&
       !!userAddress &&
-      currentChainId === airdrop.chainId,
+      currentChainId === airdrop.chainId &&
+      !disable,
     select: (res) => (!res ? undefined : res.data)
   })
 
@@ -70,7 +54,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     address: airdrop?.airdropContractAddress,
     args: userAddress && [userAddress],
     query: {
-      enabled: currentChainId === airdrop?.chainId
+      enabled: currentChainId === airdrop?.chainId && !disable
     }
   })
   const {
@@ -82,16 +66,16 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     address: airdrop?.airdropContractAddress,
     args:
       !!userAddress &&
-      !!airdropProofAndAmount?.amountStr &&
+      !!airdropProofAndAmount?.amount &&
       !!airdropProofAndAmount?.proof?.length
         ? [
             userAddress,
-            BigInt(airdropProofAndAmount.amountStr),
+            BigInt(airdropProofAndAmount.amount),
             airdropProofAndAmount.proof
           ]
         : undefined,
     query: {
-      enabled: currentChainId === airdrop?.chainId
+      enabled: currentChainId === airdrop?.chainId && !disable
     }
   })
 
@@ -99,7 +83,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
   const { writeContractAsync } = useWriteContract()
   const [isClaiming, setIsClaiming] = useState(false)
 
-  const claim = async () => {
+  const claim = async (onCallback?: (error?: unknown) => void) => {
     if (!airdrop?.airdropContractAddress || isClaiming) return
 
     try {
@@ -109,10 +93,10 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
         address: airdrop.airdropContractAddress,
         functionName: 'claim',
         args:
-          !!airdropProofAndAmount?.amountStr &&
+          !!airdropProofAndAmount?.amount &&
           !!airdropProofAndAmount?.proof?.length
             ? [
-                BigInt(airdropProofAndAmount.amountStr),
+                BigInt(airdropProofAndAmount.amount),
                 airdropProofAndAmount.proof
               ]
             : undefined
@@ -120,7 +104,9 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
       addTransaction(txId)
       refetchIsClaimed()
       refetchCanClaim()
+      onCallback?.()
     } catch (e) {
+      onCallback?.(e)
       console.error(e)
     } finally {
       setIsClaiming(false)
@@ -139,7 +125,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
   )
 
   return {
-    airdrops,
+    // airdrops,
     airdropProofAndAmount,
     isClaimed,
     canClaim,

@@ -57,6 +57,24 @@ export interface IAirdropProofAndAmount {
   userAddress: Address
 }
 
+export interface IAirdropProofResponse {
+  airdropContractAddress: Address
+  id: number
+  amount: string
+  chainId: number
+  proof: Hash[]
+  userAddress: Address
+}
+
+export interface LoginPayload {
+  owner: string
+  signature: string
+}
+
+export interface LoginResponse {
+  token: string
+}
+
 export const UserService = {
   getNFTs: {
     key: 'user.getNFTs',
@@ -85,6 +103,22 @@ export const UserService = {
       axiosInstance
         .get(
           `/user/getUserProof/${chainId}/${airdropContractAddress}/${userAddress}`
+        )
+        .then((res) => res.data)
+  },
+  login: {
+    key: 'user.login',
+    call: (payload: LoginPayload) =>
+      axiosInstance
+        .post<IResponse<LoginResponse>>('/user/login', payload)
+        .then((res) => res.data)
+  },
+  getAirdropProof: {
+    key: 'user.getAirdropProof',
+    call: (address: Address) =>
+      axiosInstance
+        .get<IResponse<IAirdropProofResponse>>(
+          `/user/getAirdropProof/${address}`
         )
         .then((res) => res.data)
   }

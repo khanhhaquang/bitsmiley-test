@@ -21,3 +21,7 @@ export const getIllustrationUrl = (name: string, format: string = 'png') => {
 export const openUrl = (url: string) => {
   window.open(url, '_blank')
 }
+
+export const getSoundUrl = (name: string) => {
+  return new URL(`/src/assets/sounds/${name}.mp3`, import.meta.url).href
+}

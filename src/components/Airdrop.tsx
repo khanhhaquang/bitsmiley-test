@@ -1,35 +1,43 @@
-import { useETHProvider } from '@particle-network/btc-connectkit'
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { isAddress } from 'viem'
 
 import { SmileAirdropIcon, RightAngleThin, CloseIcon } from '@/assets/icons'
 import { Modal } from '@/components/Modal'
-import { useNativeBtcProvider } from '@/hooks/useNativeBtcProvider'
-import { useBindEvmAddress, useBtcCheckWallet } from '@/queries/btcWallet'
+import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { ActionButton } from './ActionButton'
 import styles from './Airdrop.module.scss'
-import { NativeBtcWalletModal } from './ConnectWallet/NativeBtcWalletModal'
+import { SelectWalletModal } from './ConnectWallet'
 import { Image } from './Image'
-import { Input } from './ui/input'
 
-export const Airdrop: React.FC = () => {
-  const [isIntroModalOpen, setIsIntroModalOpen] = useState(true)
-  const [isAirdropModalOpen, setIsAirdropModalOpen] = useState(false)
+export const Airdrop: React.FC<{ isAirdropPage?: boolean }> = ({
+  isAirdropPage
+}) => {
+  const [isIntroModalOpen, setIsIntroModalOpen] = useState(!isAirdropPage)
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false)
+
+  const navigate = useNavigate()
+  const { isConnected } = useUserInfo()
 
   return (
     <>
       <AirdropIntroModal
         isOpen={isIntroModalOpen}
         onClose={() => setIsIntroModalOpen(false)}
-        handleOpenAirdrop={() => setIsAirdropModalOpen(true)}
+        handleOpenAirdrop={() => {
+          if (isConnected) {
+            navigate('/airdrop')
+            return
+          }
+          setIsConnectModalOpen(true)
+        }}
       />
-      <AirdropModal
-        isOpen={isAirdropModalOpen}
-        onClose={() => setIsAirdropModalOpen(false)}
+      <SelectWalletModal
+        hideParticle
+        isOpen={isConnectModalOpen}
+        onClose={() => setIsConnectModalOpen(false)}
       />
     </>
   )
@@ -89,70 +97,12 @@ export const AirdropModal: React.FC<{
   isOpen: boolean
   onClose: () => void
 }> = ({ isOpen, onClose }) => {
-  const { accounts, customSignMessage } = useNativeBtcProvider()
-  const { account: aaEthAccount } = useETHProvider()
-
-  const { mutateAsync: bindEvm, isPending: isBinding } = useBindEvmAddress({})
-  const {
-    data: btcWalletCheckResult,
-    isFetching: isCheckingBtcWallet,
-    refetch: refetchBtcWalletCheck
-  } = useBtcCheckWallet(accounts[0], {
-    enabled: !!accounts[0]
-  })
-
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false)
-  const [bindEvmAddress, setBindEvmAddress] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
 
   const handleClose = useCallback(() => {
     onClose()
-    setErrorMsg('')
     setIsConnectModalOpen(false)
   }, [onClose])
-
-  const handleSubmit = useCallback(async () => {
-    if (!isAddress(bindEvmAddress)) {
-      setErrorMsg('This address is not valid')
-      return
-    }
-
-    try {
-      const signature = await customSignMessage(bindEvmAddress)
-      const data = await bindEvm({
-        signature,
-        message: bindEvmAddress,
-        address: accounts[0]
-      })
-
-      if (data.code === 0) {
-        refetchBtcWalletCheck()
-      } else {
-        setErrorMsg(data.message)
-      }
-    } catch (e) {
-      console.log('error', e)
-      setErrorMsg('Something went wrong')
-    }
-  }, [
-    accounts,
-    bindEvmAddress,
-    bindEvm,
-    customSignMessage,
-    refetchBtcWalletCheck
-  ])
-
-  const isNotEligible = useMemo(() => {
-    return btcWalletCheckResult && btcWalletCheckResult.code === -12
-  }, [btcWalletCheckResult])
-
-  const isBound = useMemo(() => {
-    return btcWalletCheckResult && btcWalletCheckResult.code === -13
-  }, [btcWalletCheckResult])
-
-  const isLimitedForBinding = useMemo(() => {
-    return btcWalletCheckResult && btcWalletCheckResult.code === -14
-  }, [btcWalletCheckResult])
 
   const connectWallet = useMemo(() => {
     return (
@@ -165,142 +115,22 @@ export const AirdropModal: React.FC<{
         </p>
 
         <ActionButton
-          disabled={isCheckingBtcWallet}
           className="h-[30px] w-[159px] uppercase"
           onClick={() => setIsConnectModalOpen(true)}>
-          {isCheckingBtcWallet ? 'Waiting...' : 'Connect wallet'}
+          Connect wallet
         </ActionButton>
-        <NativeBtcWalletModal
-          whitelistWallets={['okx', 'unisat']}
+        <SelectWalletModal
+          hideParticle
           isOpen={isConnectModalOpen}
           onClose={() => setIsConnectModalOpen(false)}
         />
       </div>
     )
-  }, [isCheckingBtcWallet, isConnectModalOpen])
-
-  const evmAddressInput = useMemo(() => {
-    return (
-      <div className="flex flex-col items-center gap-y-6 text-center">
-        <h2 className="text-center font-ibmb text-2xl uppercase text-[#FA0]">
-          Dear BTC Wallet User
-        </h2>
-        <p className="w-[494px] font-ibmr text-sm text-white">
-          {isBound
-            ? 'Your wallet has been bound successfully!'
-            : 'Your wallet address is qualified for airdrop! Please provide an EVM wallet address to receive the airdrop.'}
-        </p>
-
-        {isBound ? (
-          <p className="text-xs">
-            Bound EVM Address:{' '}
-            <span className="text-white/70">
-              {btcWalletCheckResult?.data.bindEVM}
-            </span>
-          </p>
-        ) : (
-          <div className="flex min-w-[475px] flex-col items-center">
-            <p className="text-xs">
-              Current AA Address:{' '}
-              <span className="text-white/70">{aaEthAccount}</span>
-            </p>
-
-            <Input
-              className="mt-2 w-full border-white/20 bg-white/5 px-3 font-bold"
-              placeholder="Input wallet address"
-              value={bindEvmAddress}
-              onChange={(e) => {
-                setErrorMsg('')
-                setBindEvmAddress(e.target.value)
-              }}
-            />
-            <span className="mt-1 text-left text-xs text-error">
-              {errorMsg}
-            </span>
-          </div>
-        )}
-
-        {isBound ? (
-          <ActionButton className="h-[30px] w-[110px]" onClick={onClose}>
-            OK
-          </ActionButton>
-        ) : (
-          <ActionButton
-            disabled={!bindEvmAddress || isBinding}
-            className="h-[30px] w-[110px]"
-            onClick={() => handleSubmit()}>
-            {isBinding ? 'Waiting...' : 'Confirm'}
-          </ActionButton>
-        )}
-      </div>
-    )
-  }, [
-    isBound,
-    btcWalletCheckResult?.data.bindEVM,
-    aaEthAccount,
-    bindEvmAddress,
-    errorMsg,
-    isBinding,
-    onClose,
-    handleSubmit
-  ])
-
-  const notEligible = useMemo(() => {
-    return (
-      <div className="flex flex-col items-center gap-y-6 bg-black/75 px-12 py-9 pb-6 text-center">
-        <h2 className="text-center font-ibmb text-2xl uppercase text-white">
-          Dear BTC Wallet User
-        </h2>
-        <p className="w-[323px] font-ibmr text-sm text-white">
-          Unfortunately, your BTC address is not eligible for $SMILE airdrops.
-        </p>
-
-        <ActionButton
-          className="h-[30px] w-[110px]"
-          onClick={() => handleClose()}>
-          OK
-        </ActionButton>
-      </div>
-    )
-  }, [handleClose])
-
-  const limitedOfRequest = useMemo(() => {
-    return (
-      <div className="flex flex-col items-center gap-y-6 bg-black/75 px-12 py-9 pb-6 text-center">
-        <h2 className="text-center font-ibmb text-2xl uppercase text-white">
-          Dear BTC Wallet User
-        </h2>
-        <p className="w-[323px] font-ibmr text-sm text-white">
-          Please retry later for binding request.
-        </p>
-
-        <ActionButton
-          className="h-[30px] w-[110px]"
-          onClick={() => handleClose()}>
-          OK
-        </ActionButton>
-      </div>
-    )
-  }, [handleClose])
+  }, [isConnectModalOpen])
 
   const renderContent = useMemo(() => {
-    if (!accounts.length || isCheckingBtcWallet) {
-      return connectWallet
-    }
-    if (isNotEligible) return notEligible
-    if (isLimitedForBinding) return limitedOfRequest
-
-    return evmAddressInput
-  }, [
-    accounts.length,
-    connectWallet,
-    evmAddressInput,
-    isCheckingBtcWallet,
-    isLimitedForBinding,
-    isNotEligible,
-    limitedOfRequest,
-    notEligible
-  ])
+    return connectWallet
+  }, [connectWallet])
 
   return (
     <Modal
@@ -311,38 +141,26 @@ export const AirdropModal: React.FC<{
       }}>
       <div
         className={cn(
-          'relative flex min-w-[400px] flex-col items-center border bg-black/75 px-12 py-9 pb-6',
-          isNotEligible
-            ? 'border-white/20 p-0.5 bg-transparent'
-            : 'border-[#EAC641]'
+          'relative flex min-w-[400px] flex-col items-center border bg-black/75 px-12 py-9 pb-6'
         )}>
         <button
           className="absolute right-3 top-3 cursor-pointer text-white/70"
           onClick={onClose}>
           <CloseIcon width={13} height={13} />
         </button>
-        {!isNotEligible && (
-          <>
-            <Image
-              src={getIllustrationUrl(
-                'bind-wallet-modal-decorator-left',
-                'webp'
-              )}
-              width={170}
-              height={160}
-              className="pointer-events-none absolute bottom-0 left-0 origin-bottom-left scale-[70%]"
-            />
-            <Image
-              src={getIllustrationUrl(
-                'bind-wallet-modal-decorator-right',
-                'webp'
-              )}
-              width={168}
-              height={158}
-              className="pointer-events-none absolute bottom-0 right-0 origin-bottom-right scale-[70%]"
-            />
-          </>
-        )}
+
+        <Image
+          src={getIllustrationUrl('bind-wallet-modal-decorator-left', 'webp')}
+          width={170}
+          height={160}
+          className="pointer-events-none absolute bottom-0 left-0 origin-bottom-left scale-[70%]"
+        />
+        <Image
+          src={getIllustrationUrl('bind-wallet-modal-decorator-right', 'webp')}
+          width={168}
+          height={158}
+          className="pointer-events-none absolute bottom-0 right-0 origin-bottom-right scale-[70%]"
+        />
 
         {renderContent}
       </div>

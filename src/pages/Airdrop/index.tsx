@@ -1,40 +1,25 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Suspense } from 'react'
+import { useSelector } from 'react-redux'
+import { Outlet } from 'react-router-dom'
 
 import { Image } from '@/components/Image'
-import { useUserInfo } from '@/hooks/useUserInfo'
+import { getIsLoggedIn } from '@/store/airdrop/reducer'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-import ArcadeModal from './components/ArcadeModal'
-import PreSeasonStake from './components/PreSeasonStake'
-import PreSeasonStakeModal from './components/PreSeasonStakeModal'
-import StageSelect from './components/StageSelect'
-import { STAGE } from './index.types'
+import { useAirdropLogin } from './index.hooks'
 
 const Airdrop = () => {
-  const navigate = useNavigate()
-  const { isConnected } = useUserInfo()
+  const isLoggedIn = useSelector(getIsLoggedIn)
 
-  const [stage, setStage] = useState(STAGE.INIT)
-  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(true)
-  const [isArcadeModalOpen, setIsArcadeModalOpen] = useState(false)
+  useAirdropLogin()
 
-  const renderStage = useMemo(() => {
-    switch (stage) {
-      case STAGE.SELECT:
-        return <StageSelect onSelect={(v) => setStage(v)} />
-      case STAGE.STAKE:
-        return <PreSeasonStake onBack={() => setStage(STAGE.SELECT)} />
-      case STAGE.ARCADE:
-        return <div>Arcade</div>
-      default:
-        return null
-    }
-  }, [stage])
-
-  useEffect(() => {
-    if (!isConnected) navigate('/')
-  }, [isConnected, navigate])
+  if (!isLoggedIn) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center text-white">
+        Authorizing...
+      </div>
+    )
+  }
 
   return (
     <div className="relative flex min-h-svh w-full flex-col items-center overflow-x-hidden">
@@ -46,28 +31,9 @@ const Airdrop = () => {
         src={getIllustrationUrl('airdrop-page-cover-bottom', 'webp')}
         className="absolute inset-x-0 bottom-0 aspect-[1920/435] select-none"
       />
-      <ArcadeModal
-        isOpen={isArcadeModalOpen}
-        onClose={() => {
-          setIsArcadeModalOpen(false)
-          setStage(STAGE.SELECT)
-        }}
-        onCheck={() => {
-          setIsArcadeModalOpen(false)
-        }}
-      />
-      <PreSeasonStakeModal
-        isOpen={isPrecheckModalOpen}
-        onClose={() => {
-          setIsPrecheckModalOpen(false)
-          setIsArcadeModalOpen(true)
-        }}
-        onCheck={() => {
-          setIsPrecheckModalOpen(false)
-          setStage(STAGE.STAKE)
-        }}
-      />
-      {renderStage}
+      <Suspense fallback="...">
+        <Outlet />
+      </Suspense>
     </div>
   )
 }

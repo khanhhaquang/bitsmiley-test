@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 
-import { axiosInstance } from '@/config/axios'
+import { axiosInstance, privateAxiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
 
 export enum BitsmileyJourneyType {
@@ -38,6 +38,44 @@ export interface BitsmileyJourney {
   name?: string
 }
 
+export interface ArcadeLuckyAccount {
+  totalAirdrop: number
+  availableAirdrop: number
+  haveWon: number
+  locked: number
+}
+
+export interface BuyArcadeLuckyPayload {
+  type: number
+  participationAmount: string
+}
+
+export interface BuyArcadeLuckyResponse {
+  winAmount: number
+  locked: number
+  lockedFor: number
+  isWin: boolean
+}
+
+export interface MyPreStakeResponse {
+  reward: number
+  totalAirdrop: number
+  availableAirdrop: number
+  staked: number
+  preStakeAPY: number
+}
+
+export interface PreStakeInfo {
+  preStakeAPY: number
+  preStakeStartTime: number
+  nowTime: number
+  preStakeEndTime: number
+}
+
+export interface StakePayload {
+  amount: number
+}
+
 export const AirdropService = {
   getMyBitsmileyJourney: {
     key: 'airdrop.getMyBitsmileyJourney',
@@ -46,6 +84,55 @@ export const AirdropService = {
         .get<IResponse<BitsmileyJourney[]>>(
           `/airdrop/getMyBitSmileyJourney/${address}`
         )
+        .then((res) => res.data)
+  },
+  getArcadeLuckyAccount: {
+    key: 'airdrop.getArcadeLuckyAccount',
+    call: () =>
+      privateAxiosInstance
+        .get<IResponse<ArcadeLuckyAccount>>(`/arcade/getAccount`)
+        .then((res) => res.data)
+  },
+  buyArcadeLucky: {
+    key: 'airdrop.buyArcadeLucky',
+    call: (payload: BuyArcadeLuckyPayload) =>
+      privateAxiosInstance
+        .post<IResponse<BuyArcadeLuckyResponse>>(`/arcade/run`, payload)
+        .then((res) => res.data)
+  },
+  getMyReward: {
+    key: 'airdrop.getMyReward',
+    call: () =>
+      privateAxiosInstance
+        .get<IResponse<string>>(`/preStake/getMyReward`)
+        .then((res) => res.data)
+  },
+  getMyPreStake: {
+    key: 'airdrop.getMyPreStake',
+    call: () =>
+      privateAxiosInstance
+        .get<IResponse<MyPreStakeResponse>>(`/preStake/getMyPreStake`)
+        .then((res) => res.data)
+  },
+  getPreStakeInfo: {
+    key: 'airdrop.getPreStakeInfo',
+    call: () =>
+      privateAxiosInstance
+        .get<IResponse<PreStakeInfo>>(`/preStake/getPreStakeInfo`)
+        .then((res) => res.data)
+  },
+  stake: {
+    key: 'airdrop.stake',
+    call: (payload: StakePayload) =>
+      privateAxiosInstance
+        .post<IResponse<MyPreStakeResponse>>(`/preStake/stake`, payload)
+        .then((res) => res.data)
+  },
+  unStake: {
+    key: 'airdrop.unStake',
+    call: (payload: StakePayload) =>
+      privateAxiosInstance
+        .post<IResponse<MyPreStakeResponse>>(`/preStake/unStake`, payload)
         .then((res) => res.data)
   }
 }
