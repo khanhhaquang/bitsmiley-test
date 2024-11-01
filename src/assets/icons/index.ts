@@ -34,6 +34,8 @@ import CrownIcon from './crown.svg'
 import DollarShadowIcon from './dollar-shadow.svg'
 import DollarIcon from './dollar.svg'
 import DotIcon from './dot.svg'
+import DropArrowDownIcon from './drop-arrow-down.svg'
+import DropArrowUpIcon from './drop-arrow-up.svg'
 import FailIcon from './fail.svg'
 import GoldCoinIcon from './gold-coin.svg'
 import HeaderIcon from './header.svg'
@@ -161,5 +163,7 @@ export {
   CrossRedIcon,
   CheckGreenIcon,
   MinimizeIcon,
-  UnionIcon
+  UnionIcon,
+  DropArrowDownIcon,
+  DropArrowUpIcon
 }
