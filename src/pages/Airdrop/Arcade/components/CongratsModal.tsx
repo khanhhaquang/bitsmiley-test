@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { SmileyIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
+import StrokeText from '@/components/StrokeText'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
@@ -64,16 +65,13 @@ const CongratsModal: React.FC<{
                 Your prize
                 <SmileyIcon width={18} height={20} />
               </span>
-              <p
-                className="font-smb2 text-[45px] text-[#FFD000]"
-                style={{
-                  textShadow: '2.524px -2.524px 0px rgba(0, 0, 0, 0.25)',
-                  WebkitTextStrokeWidth: 2,
-                  WebkitTextStrokeColor: '#4D2202',
-                  fontVariantNumeric: 'slashed-zero'
-                }}>
+              <StrokeText
+                color="#FFD000"
+                strokeColor="#4D2202"
+                strokeWidth={6}
+                className="font-smb2 text-[45px]">
                 {formatNumberWithSeparator(amount)}
-              </p>
+              </StrokeText>
             </div>
             <p className="w-[390px] text-center font-ibmr">
               The prize has been credited directly to your Available $SMILE!

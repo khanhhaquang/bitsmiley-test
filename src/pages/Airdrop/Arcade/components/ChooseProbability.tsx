@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { ArrowLeftFilledIcon, SmileyIcon } from '@/assets/icons'
 import StyledInput from '@/components/StyledInput'
@@ -10,7 +10,8 @@ import { Prizes } from './PrizeOption'
 import Slider from '../../components/Slider'
 import { PrizeType } from '../index.types'
 
-const MAX_PROBABILITY = 46
+const MAX_PROBABILITY = 45
+const MIN_PROBABILITY = 1
 
 const ChooseProbability: React.FC<{
   prizeType: PrizeType
@@ -18,7 +19,7 @@ const ChooseProbability: React.FC<{
   setAmount: React.Dispatch<React.SetStateAction<string>>
 }> = ({ prizeType, amount, setAmount }) => {
   const { data: luckAccount } = useGetArcadeLuckyAccount()
-  const [probability, setProbability] = useState(0.2)
+  const [probability, setProbability] = useState(MIN_PROBABILITY)
 
   const available = luckAccount?.data.availableAirdrop || 0
 
@@ -34,11 +35,14 @@ const ChooseProbability: React.FC<{
       : '--'
   }, [amount, prizeType])
 
-  const onChangeProbability = (v: number) => {
-    setProbability(v)
-    const matchedAmount = Math.floor((v / 100) * 2 * Prizes[`${prizeType}`])
-    setAmount(matchedAmount > max ? max.toString() : matchedAmount.toString())
-  }
+  const onChangeProbability = useCallback(
+    (v: number) => {
+      setProbability(v)
+      const matchedAmount = Math.floor((v / 100) * 2 * Prizes[`${prizeType}`])
+      setAmount(matchedAmount > max ? max.toString() : matchedAmount.toString())
+    },
+    [max, prizeType, setAmount]
+  )
 
   const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (
     event
@@ -52,6 +56,10 @@ const ChooseProbability: React.FC<{
     setProbability(prob > MAX_PROBABILITY ? MAX_PROBABILITY : prob)
   }
 
+  useEffect(() => {
+    onChangeProbability(probability)
+  }, [onChangeProbability, probability])
+
   return (
     <div className="flex w-[640px] flex-col gap-y-3">
       <div className="flex w-full flex-col border border-blue/40 bg-blue/10 px-4 py-3">
@@ -62,10 +70,10 @@ const ChooseProbability: React.FC<{
               <Slider
                 disabled={!available}
                 className="w-[310px] shrink-0"
-                range={[0.05, 11, 22, 33, MAX_PROBABILITY]}
-                min={0.05}
+                range={[MIN_PROBABILITY, 11, 22, 33, MAX_PROBABILITY]}
+                min={MIN_PROBABILITY}
                 max={MAX_PROBABILITY}
-                step={0.01}
+                step={1}
                 value={probability}
                 onInputChange={onChangeProbability}
               />

@@ -16,12 +16,20 @@ interface SpeedStep {
   timeout: number
 }
 
+export enum ScrollerStatus {
+  Idel,
+  Scrolling,
+  ShowFaceAnimation,
+  ShowResult
+}
+
 const GameScroller: React.FC<{
   isScrolling: boolean
   prize: PrizeType
   isWin: boolean
   onResult: (isWin: boolean) => void
-}> = ({ isScrolling, prize, isWin, onResult }) => {
+  resultDelay?: number
+}> = ({ isScrolling, prize, isWin, onResult, resultDelay = 1000 }) => {
   const speedSteps: SpeedStep[] = useMemo(() => {
     return [
       { speed: 500, timeout: 500 },
@@ -32,7 +40,7 @@ const GameScroller: React.FC<{
     ]
   }, [isScrolling])
   const [step, setStep] = useState(0)
-  const [showFaceAnimation, setShowFaceAnimation] = useState(false)
+  const [status, setStatus] = useState(ScrollerStatus.Idel)
   const data = [false, false, false, false, true, false, false]
   const [indexArray, setIndexArray] = useState(
     Array.from({ length: data.length }, (_, index) => index)
@@ -41,11 +49,6 @@ const GameScroller: React.FC<{
   const [amount, icon, iconWidth, iconHeight] = PrizeStyle[`${prize}`]
   const itemWidth = 180
   const halfIndex = Math.floor(data.length / 2)
-
-  // console.log(
-  //   '🚀 ~ returndata.map ~ speedSteps[`${step}`]:',
-  //   speedSteps[`${step}`]
-  // )
 
   const items = useMemo(() => {
     return data.map((prizeItem, i) => {
@@ -60,7 +63,9 @@ const GameScroller: React.FC<{
           key={i}
           className="absolute size-[160px]"
           style={
-            showFaceAnimation && pos === halfIndex && !prizeItem
+            status === ScrollerStatus.ShowFaceAnimation &&
+            pos === halfIndex &&
+            !prizeItem
               ? {
                   backgroundImage: `url(${getIllustrationUrl(
                     'arcade-face',
@@ -127,18 +132,23 @@ const GameScroller: React.FC<{
     }
   }, [prize])
 
+  //scrolling effect
   useEffect(() => {
-    if (showFaceAnimation) {
+    // console.log('status:', status)
+    if (status === ScrollerStatus.Idel) return
+    if (status === ScrollerStatus.ShowFaceAnimation) {
       setTimeout(() => {
-        setShowFaceAnimation(false)
-      }, 5000)
+        setStatus(ScrollerStatus.ShowResult)
+      }, 3000)
       return
     }
-
-    if (!isScrolling) {
-      setStep(0)
+    if (status === ScrollerStatus.ShowResult) {
+      setTimeout(() => {
+        onResult(isWin)
+      }, resultDelay)
       return
     }
+    //scrolling
     const intervalId = setInterval(() => {
       scrollToLeft()
     }, speedSteps[`${step}`].speed)
@@ -159,20 +169,12 @@ const GameScroller: React.FC<{
           lastStep = prizeStep + 1
         }
       }
-      // console.log(
-      //   'isWin:',
-      //   isWin,
-      //   'prizeStep:',
-      //   prizeStep,
-      //   'lastStep:',
-      //   lastStep
-      // )
-
       setTimeout(
         () => {
-          onResult(isWin)
           if (!isWin) {
-            setShowFaceAnimation(true)
+            setStatus(ScrollerStatus.ShowFaceAnimation)
+          } else {
+            setStatus(ScrollerStatus.ShowResult)
           }
         },
         speedSteps[`${step}`].speed * lastStep
@@ -182,7 +184,16 @@ const GameScroller: React.FC<{
     return () => {
       clearInterval(intervalId)
     }
-  }, [isScrolling, step, showFaceAnimation, speedSteps])
+  }, [status, step, speedSteps])
+
+  useEffect(() => {
+    if (!isScrolling) {
+      setStatus(ScrollerStatus.Idel)
+      setStep(0)
+    } else {
+      setStatus(ScrollerStatus.Scrolling)
+    }
+  }, [isScrolling])
 
   return (
     <div className="relative mt-3 flex h-[220px] w-[775px] items-center overflow-hidden pt-3">

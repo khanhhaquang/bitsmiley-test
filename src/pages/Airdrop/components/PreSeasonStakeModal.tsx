@@ -63,14 +63,15 @@ export const PreSeasonStakeInfo: React.FC<{
 
 const PreSeasonStakeModal: React.FC<{
   isOpen: boolean
+  isReady?: boolean
   onCheck: () => void
   onClose: () => void
-}> = ({ isOpen, onCheck, onClose }) => {
+}> = ({ isOpen, isReady, onCheck, onClose }) => {
   const { data } = useGetMyPreStake()
 
   return (
     <AirdropCheckModal
-      isEventReady
+      isEventReady={isReady}
       isOpen={isOpen}
       onCheck={onCheck}
       onClose={onClose}
