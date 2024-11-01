@@ -94,6 +94,7 @@ const ChooseProbability: React.FC<{
               onChange={onChangeAmount}
               type="number"
               max={max}
+              min={0}
               disabled={!available}
             />
           </div>
