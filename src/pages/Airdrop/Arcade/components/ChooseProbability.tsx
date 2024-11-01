@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 import { ArrowLeftFilledIcon, SmileyIcon } from '@/assets/icons'
 import StyledInput from '@/components/StyledInput'
@@ -10,16 +10,17 @@ import { Prizes } from './PrizeOption'
 import Slider from '../../components/Slider'
 import { PrizeType } from '../index.types'
 
-const MAX_PROBABILITY = 45
-const MIN_PROBABILITY = 1
+export const MAX_PROBABILITY = 45
+export const MIN_PROBABILITY = 1
 
 const ChooseProbability: React.FC<{
   prizeType: PrizeType
   amount: string
   setAmount: React.Dispatch<React.SetStateAction<string>>
-}> = ({ prizeType, amount, setAmount }) => {
+  probability: number
+  setProbability: React.Dispatch<React.SetStateAction<number>>
+}> = ({ prizeType, amount, probability, setAmount, setProbability }) => {
   const { data: luckAccount } = useGetArcadeLuckyAccount()
-  const [probability, setProbability] = useState(MIN_PROBABILITY)
 
   const available = luckAccount?.data.availableAirdrop || 0
 
@@ -41,7 +42,7 @@ const ChooseProbability: React.FC<{
       const matchedAmount = Math.floor((v / 100) * 2 * Prizes[`${prizeType}`])
       setAmount(matchedAmount > max ? max.toString() : matchedAmount.toString())
     },
-    [max, prizeType, setAmount]
+    [max, prizeType, setAmount, setProbability]
   )
 
   const onChangeAmount: React.ChangeEventHandler<HTMLInputElement> = (
