@@ -161,14 +161,11 @@ const Arcade = () => {
         {buyResp?.code !== 0 && buyResp?.message}
       </p>
       <div className=" flex w-full items-center justify-center gap-3">
-        <SimulateButton
-          disabled={isScrolling || isBuying}
-          onClick={() => simulate()}
-        />
+        <SimulateButton disabled={isPlayDisabled} onClick={() => simulate()} />
         <ArcadeButton
           onClick={() => handleStartSpinning()}
           disabled={isPlayDisabled}
-          className="mt-3 h-[45px] w-[265px]">
+          className="mt-2 h-[50px] w-[265px]">
           Play
         </ArcadeButton>
       </div>

@@ -7,7 +7,7 @@ export const SimulateButton: React.FC<
 > = ({ className, disabled, ...rest }) => {
   const { RiveComponent: SimulateRive, rive: simulateBtnRive } = useRive({
     src: '/rive/simulate-button-interaction.riv',
-    animations: 'Timeline 3',
+    animations: disabled ? 'Timeline 6' : 'Timeline 3',
     autoplay: true
   })
 
@@ -31,7 +31,7 @@ export const SimulateButton: React.FC<
       type="button"
       className={cn(
         'w-[168px] h-[56px] uppercase text-black/75 text-base font-ibmb pb-2 group cursor-pointer relative',
-        'disabled:cursor-not-allowed',
+        'disabled:cursor-not-allowed disabled:saturate-50',
         className
       )}
       style={{
