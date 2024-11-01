@@ -8,13 +8,14 @@ import {
 } from '@/components/ui/tooltip'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useBuyArcadeLucky, useGetArcadeLuckyAccount } from '@/queries/airdrop'
-import { formatNumberWithSeparator, getRandomBool } from '@/utils/number'
+import { formatNumberWithSeparator, getRandomInt } from '@/utils/number'
 
 import { ArcadeButton } from './components/ArcadeButton'
 import ChoosePrize from './components/ChoosePrize'
-import ChooseProbability from './components/ChooseProbability'
+import ChooseProbability, {
+  MIN_PROBABILITY
+} from './components/ChooseProbability'
 import CongratsModal from './components/CongratsModal'
-// import GameScroller from './components/GameScroller'
 import LockedTokensModal from './components/LockedTokensModal'
 import { Prizes } from './components/PrizeOption'
 import RewardScroll from './components/RewardScroll'
@@ -29,6 +30,7 @@ const Arcade = () => {
   const [showCongratsModal, setShowCongratsModal] = useState(false)
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
   const [amount, setAmount] = useState('0')
+  const [probability, setProbability] = useState(MIN_PROBABILITY)
   const [winAmount, setWinAmount] = useState(0)
   const {
     mutateAsync: buyLucky,
@@ -69,7 +71,8 @@ const Arcade = () => {
 
   const simulate = (resultFromServer?: boolean) => {
     if (!isScrolling) {
-      const result = resultFromServer ?? getRandomBool()
+      const randomResult = getRandomInt(100) < probability
+      const result = resultFromServer ?? randomResult
       setIsWin(result)
       if (!resultFromServer) setWinAmount(Prizes[`${prizeType}`])
       setIsScrolling(true)
@@ -147,15 +150,11 @@ const Arcade = () => {
         isScrolling={isScrolling}
         onEnd={onScrollResult}
       />
-      {/* <GameScroller
-        isScrolling={isScrolling}
-        prize={prizeType}
-        isWin={isWin}
-        onResult={onScrollResult}
-      /> */}
       <ChooseProbability
+        probability={probability}
         prizeType={prizeType}
         amount={amount}
+        setProbability={setProbability}
         setAmount={setAmount}
       />
       <p className="mt-1 flex w-full justify-center font-ibmr text-sm text-error">
