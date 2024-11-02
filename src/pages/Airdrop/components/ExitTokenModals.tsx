@@ -89,7 +89,7 @@ export const UnstakeModal: FC<{
     <ExitTokenModal
       isOpen={isOpen}
       title="Confirm Unstake $Smile"
-      isPending={isUnStaking}
+      isPending={stakedAmount === 0 || isUnStaking}
       onCancel={onClose}
       onProceed={handleProceed}>
       <div className="my-6 flex flex-col items-center gap-y-3 font-ibmb">
@@ -125,7 +125,7 @@ export const ClaimUnlockedModal: FC<{
       isOpen={isOpen}
       title="Claim unlocked $Smile"
       onCancel={onClose}
-      isPending={!canClaim || !isActive}
+      isPending={amount === 0 || !canClaim || !isActive}
       proceedButtonText={isClaimed ? 'Claimed' : 'Proceed'}
       onProceed={() => handleClaim('Claim unlocked airdrop', () => onClose())}>
       <div className="my-6 flex flex-col items-center font-ibmb">

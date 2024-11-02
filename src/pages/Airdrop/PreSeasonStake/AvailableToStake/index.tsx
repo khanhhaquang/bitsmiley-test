@@ -89,7 +89,7 @@ const AvailableToStake = () => {
           min={0}
           max={MAX_PERCENTAGE}
           step={1}
-          disabled={!max}
+          disabled={!max || isPreStakeEnd}
           value={stakePercentage}
           onInputChange={onChangePercentage}
           stepsClassName="text-sm text-white/60"
@@ -106,7 +106,7 @@ const AvailableToStake = () => {
           value={stakeAmount}
           onChange={onChangeStakeAmount}
           type="number"
-          disabled={!max}
+          disabled={!max || isPreStakeEnd}
           inputClassName="w-full"
         />
         <ActionButton
