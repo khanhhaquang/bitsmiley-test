@@ -29,11 +29,12 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
-  const { isClaimed, canClaim, amount, handleClaim, isActive } =
-    useAirdropClaim(AirdropClaimType.UnStake)
+  const { isClaimed, amount, handleClaim, isActive } = useAirdropClaim(
+    AirdropClaimType.UnStake
+  )
   const showUnStaked = useMemo(() => {
     if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
-    console.log('unstaked:', data?.data.unStaked, 'canClaim:', canClaim)
+    // console.log('unstaked:', data?.data.unStaked, 'canClaim:', canClaim)
     return true
   }, [data])
   const [enableCollect, setEnableCollect] = useState(false)
