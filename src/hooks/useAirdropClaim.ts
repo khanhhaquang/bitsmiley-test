@@ -5,6 +5,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { useAirdrop } from './useAirdrop'
 import { useProjectInfo } from './useProjectInfo'
 import { useUserInfo } from './useUserInfo'
+import { formatEther } from 'viem'
 
 export enum AirdropClaimType {
   TGE,
@@ -70,7 +71,7 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
 
   const amount = useMemo(() => {
     if (!airdropProofAndAmount) return 0
-    return BigInt(airdropProofAndAmount.amount) / 1000000000000000000n
+    return Number(formatEther(BigInt(airdropProofAndAmount.amount)))
   }, [airdropProofAndAmount, type])
 
   const isActive = useMemo(
