@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useMemo, useState } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
@@ -26,21 +26,62 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
   )
 }
 
-const Unstaked: React.FC<{
-  amount: number
-  onUnstaked: () => void
-}> = ({ amount, onUnstaked }) => {
-  const { handleClaim, isActive } = useAirdropClaim(AirdropClaimType.UnStake)
+const Unstaked = () => {
+  const { data } = useGetMyPreStake()
+  const { canClaim, handleClaim, isActive } = useAirdropClaim(
+    AirdropClaimType.UnStake
+  )
+  const showUnStaked = useMemo(() => {
+    if (!data?.data.unStaked || data?.data.unStaked <= 0) return
+    console.log('unstaked:', data?.data.unStaked, 'canClaim:', canClaim)
+    return canClaim
+  }, [data, canClaim])
+  const [enableCollect, setEnableCollect] = useState(false)
+  const [countdownStr, setCountdownStr] = useState('')
+
+  useEffect(() => {
+    const unStakedTime = data?.data.unStakedTime ?? 0
+    const now = data?.data.now ?? 0
+    console.log('unStakedTime:', unStakedTime, 'now:', now)
+    if (unStakedTime === 0) {
+      setEnableCollect(false)
+      return
+    }
+    if (unStakedTime <= now) {
+      setEnableCollect(true)
+      return
+    }
+    let countdown = Math.round((unStakedTime - now) / 1000)
+    const interval = setInterval(() => {
+      if (countdown > 0) {
+        countdown = countdown - 1
+        const hour = Math.floor(countdown / 3600)
+        const minites = Math.floor(countdown / 60)
+        // const seconds = (countdown % 60).toString().padStart(2, '0')
+        setCountdownStr(`${hour}M:${minites}M`)
+      } else {
+        setEnableCollect(true)
+        console.log('Time up')
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [data?.data.unStakedTime])
+
+  if (!showUnStaked) return null
+
   return (
-    <div>
-      <div>Unstaked $SMILE: {amount}</div>
-      <div>
+    <div className="flex w-full justify-between items-center">
+      <div className="text-[#FFAA00]">
+        Unstaked $SMILE: {formatNumberAsTrunc(data?.data.unStaked ?? 0)}
+      </div>
+      <div className="flex text-white gap-3">
+        {!enableCollect && <span>Collectable in: {countdownStr}</span>}
         <ActionButton
-          className="h-[25px] w-[92px]"
+          className="h-[25px] w-[95px] bg-white text-black text-base leading-none text-center"
           onClick={() => {
-            handleClaim('Claim staking reward', onUnstaked)
+            handleClaim('Claim staking reward')
           }}
-          disabled={!isActive}>
+          disabled={!enableCollect || !isActive}>
           Collect
         </ActionButton>
       </div>
@@ -54,31 +95,10 @@ const AirdropStatistic = () => {
     AirdropClaimType.Award,
     !!data?.data.reward
   )
-  const [showUnstaked, setShowUnstaked] = useState(false)
-
-  useEffect(() => {
-    const unStakedTime = data?.data.unStakedTime ?? 0
-    const now = Date.now()
-    if (unStakedTime === 0) {
-      setShowUnstaked(false)
-      return
-    }
-    if (unStakedTime <= now) {
-      setShowUnstaked(true)
-      return
-    }
-    const timeountId = setTimeout(
-      () => setShowUnstaked(true),
-      unStakedTime - now
-    )
-    return () => {
-      clearTimeout(timeountId)
-    }
-  }, [data?.data.unStakedTime])
 
   return (
-    <div className="flex flex-col h-[124px] min-w-[1000px] items-center justify-evenly border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
-      <div className="flex">
+    <div className="flex flex-col min-w-[1000px] items-center justify-evenly border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px] gap-4">
+      <div className="flex w-full">
         <AirdropStatisticItem
           label="Your Total Airdrop"
           content={formatNumberAsTrunc(data?.data.totalAirdrop ?? 0)}
@@ -108,11 +128,7 @@ const AirdropStatistic = () => {
           }
         />
       </div>
-      {showUnstaked && (
-        <Unstaked
-          amount={data?.data.unStaked ?? 0}
-          onUnstaked={() => refetch()}></Unstaked>
-      )}
+      <Unstaked></Unstaked>
     </div>
   )
 }

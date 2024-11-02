@@ -106,6 +106,7 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
   }
 
   return {
+    canClaim,
     isActive,
     handleClaim
   }

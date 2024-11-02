@@ -65,6 +65,7 @@ export interface MyPreStakeResponse {
   preStakeAPY: number
   unStakedTime: number
   unStaked: number
+  now: number
 }
 
 export interface PreStakeInfo {
