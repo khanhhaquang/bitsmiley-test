@@ -5,6 +5,7 @@ import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
 import { useGetMyPreStake } from '@/queries/airdrop'
 import { formatNumberAsTrunc } from '@/utils/number'
 import ActionButton from '@/components/ActionButton'
+import { cn } from '@/utils/cn'
 
 interface AirdropStatisticItemProps {
   label: ReactNode
@@ -28,14 +29,13 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
-  const { canClaim, amount, handleClaim, isActive } = useAirdropClaim(
-    AirdropClaimType.UnStake
-  )
+  const { isClaimed, canClaim, amount, handleClaim, isActive } =
+    useAirdropClaim(AirdropClaimType.UnStake)
   const showUnStaked = useMemo(() => {
-    if (!data?.data.unStaked || data?.data.unStaked <= 0) return
+    if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
     console.log('unstaked:', data?.data.unStaked, 'canClaim:', canClaim)
-    return canClaim
-  }, [data, canClaim])
+    return true
+  }, [data])
   const [enableCollect, setEnableCollect] = useState(false)
   const [countdownStr, setCountdownStr] = useState('')
 
@@ -80,8 +80,8 @@ const Unstaked = () => {
           onClick={() => {
             handleClaim('Claim staking reward')
           }}
-          disabled={!enableCollect || !isActive}>
-          Collect
+          disabled={!enableCollect || !isActive || isClaimed}>
+          {isClaimed ? 'Claimed' : 'Collect'}
         </ActionButton>
       </div>
     </div>
@@ -90,9 +90,8 @@ const Unstaked = () => {
 
 const AirdropStatistic = () => {
   const { data, refetch } = useGetMyPreStake()
-  const { canClaim, amount, handleClaim, isActive } = useAirdropClaim(
-    AirdropClaimType.Award
-  )
+  const { isClaimed, canClaim, amount, handleClaim, isActive } =
+    useAirdropClaim(AirdropClaimType.Award)
 
   return (
     <div className="flex flex-col min-w-[1000px] items-center justify-evenly border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px] gap-4">
@@ -114,12 +113,16 @@ const AirdropStatistic = () => {
               <div>{formatNumberAsTrunc(amount ?? 0)}</div>
               {amount > 0 && (
                 <button
-                  disabled={!isActive || !canClaim}
+                  disabled={!isActive || !canClaim || isClaimed}
                   onClick={() => {
+                    if (isClaimed) return
                     handleClaim('Claim staking reward', () => refetch())
                   }}
-                  className="cursor-pointer bg-transparent text-sm font-bold text-[#FFAA00]/60 hover:text-[#FFAA00]">
-                  Claim
+                  className={cn(
+                    'bg-transparent text-sm font-bold text-[#FFAA00]/60 hover:text-[#FFAA00]',
+                    !isClaimed && 'cursor-pointer '
+                  )}>
+                  {isClaimed ? 'Claimed' : 'Claim'}
                 </button>
               )}
             </div>

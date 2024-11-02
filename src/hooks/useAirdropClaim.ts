@@ -125,6 +125,7 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
   }
 
   return {
+    isClaimed,
     canClaim,
     amount,
     isActive,

@@ -16,6 +16,7 @@ type ExitTokenModalProps = {
   onCancel: () => void
   onProceed: () => void
   isPending?: boolean
+  proceedButtonText?: string
 }
 
 const ExitTokenModal: FC<ExitTokenModalProps> = ({
@@ -24,7 +25,8 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
   children,
   onCancel,
   onProceed,
-  isPending
+  isPending,
+  proceedButtonText
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onCancel} backdrop={false}>
@@ -57,7 +59,7 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
             className="h-[47px] w-[166px] border-blue bg-blue/80 font-ibmb text-2xl text-white hover:bg-blue active:bg-blue/70"
             disabled={isPending}
             onClick={onProceed}>
-            Proceed
+            {proceedButtonText ?? 'Proceed'}
           </ActionButton>
         </div>
       </div>
@@ -115,9 +117,8 @@ export const ClaimUnlockedModal: FC<{
   // const [value, setValue] = useState('')
   // const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
 
-  const { canClaim, isActive, amount, handleClaim } = useAirdropClaim(
-    AirdropClaimType.TGE
-  )
+  const { isClaimed, canClaim, isActive, amount, handleClaim } =
+    useAirdropClaim(AirdropClaimType.TGE)
 
   return (
     <ExitTokenModal
@@ -125,6 +126,7 @@ export const ClaimUnlockedModal: FC<{
       title="Claim unlocked $Smile"
       onCancel={onClose}
       isPending={!canClaim || !isActive}
+      proceedButtonText={isClaimed ? 'Claimed' : 'Proceed'}
       onProceed={() => handleClaim('Claim unlocked airdrop', () => onClose())}>
       <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
