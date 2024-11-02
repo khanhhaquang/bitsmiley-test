@@ -28,7 +28,7 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
-  const { canClaim, handleClaim, isActive } = useAirdropClaim(
+  const { canClaim, amount, handleClaim, isActive } = useAirdropClaim(
     AirdropClaimType.UnStake
   )
   const showUnStaked = useMemo(() => {
@@ -71,7 +71,7 @@ const Unstaked = () => {
   return (
     <div className="flex w-full justify-between items-center">
       <div className="text-[#FFAA00]">
-        Unstaked $SMILE: {formatNumberAsTrunc(data?.data.unStaked ?? 0)}
+        Unstaked $SMILE: {formatNumberAsTrunc(amount)}
       </div>
       <div className="flex text-white gap-3">
         {!enableCollect && <span>Collectable in: {countdownStr}</span>}
