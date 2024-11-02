@@ -63,6 +63,8 @@ export interface MyPreStakeResponse {
   availableAirdrop: number
   staked: number
   preStakeAPY: number
+  unStakedTime: number
+  unStaked: number
 }
 
 export interface PreStakeInfo {
