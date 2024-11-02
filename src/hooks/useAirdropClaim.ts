@@ -59,10 +59,19 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
     return undefined
   }, [airdropContracts, evmChainId, type])
 
-  const { canClaim, claim, isLoading, isClaiming, isClaimed } = useAirdrop(
-    airdrop,
-    disabled
-  )
+  const {
+    canClaim,
+    airdropProofAndAmount,
+    claim,
+    isLoading,
+    isClaiming,
+    isClaimed
+  } = useAirdrop(airdrop, disabled)
+
+  const amount = useMemo(() => {
+    if (!airdropProofAndAmount) return 0
+    return BigInt(airdropProofAndAmount.amount) / 1000000000000000000n
+  }, [airdropProofAndAmount, type])
 
   const isActive = useMemo(
     () => !isLoading && !!airdrop && !isClaiming,
@@ -107,6 +116,7 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
 
   return {
     canClaim,
+    amount,
     isActive,
     handleClaim
   }

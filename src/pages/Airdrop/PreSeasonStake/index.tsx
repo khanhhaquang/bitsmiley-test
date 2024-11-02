@@ -29,7 +29,7 @@ const PreSeasonStake: FC = () => {
       return false
     }
     if (
-      !!myPreStakeInfo?.data.unStakedTime &&
+      myPreStakeInfo?.data.unStakedTime &&
       myPreStakeInfo?.data.unStakedTime > 0
     ) {
       return false

@@ -42,7 +42,7 @@ const Unstaked = () => {
   useEffect(() => {
     const unStakedTime = data?.data.unStakedTime ?? 0
     const now = data?.data.now ?? 0
-    console.log('unStakedTime:', unStakedTime, 'now:', now)
+    // console.log('unStakedTime:', unStakedTime, 'now:', now)
     if (unStakedTime === 0) {
       setEnableCollect(false)
       return
@@ -56,16 +56,15 @@ const Unstaked = () => {
       if (countdown > 0) {
         countdown = countdown - 1
         const hour = Math.floor(countdown / 3600)
-        const minites = Math.floor(countdown / 60)
-        // const seconds = (countdown % 60).toString().padStart(2, '0')
-        setCountdownStr(`${hour}M:${minites}M`)
+        const minites = Math.ceil(countdown / 60) % 3600
+        setCountdownStr(`${hour}H${minites}M`)
       } else {
         setEnableCollect(true)
         console.log('Time up')
       }
     }, 1000)
     return () => clearInterval(interval)
-  }, [data?.data.unStakedTime])
+  }, [data?.data.unStakedTime, enableCollect])
 
   if (!showUnStaked) return null
 
@@ -91,7 +90,7 @@ const Unstaked = () => {
 
 const AirdropStatistic = () => {
   const { data, refetch } = useGetMyPreStake()
-  const { handleClaim, isActive } = useAirdropClaim(
+  const { canClaim, amount, handleClaim, isActive } = useAirdropClaim(
     AirdropClaimType.Award,
     !!data?.data.reward
   )
@@ -113,10 +112,10 @@ const AirdropStatistic = () => {
           label="Reward"
           content={
             <div className="flex items-center gap-4">
-              <div>{formatNumberAsTrunc(data?.data.reward ?? 0)}</div>
+              <div>{formatNumberAsTrunc(amount ?? 0)}</div>
               {!!data?.data.reward && (
                 <button
-                  disabled={!isActive}
+                  disabled={!isActive || !canClaim}
                   onClick={() => {
                     handleClaim('Claim staking reward', () => refetch())
                   }}
