@@ -2,13 +2,22 @@ import { FC, useEffect, useMemo, useState } from 'react'
 
 import { Image } from '@/components/Image'
 import StrokeText from '@/components/StrokeText'
+import { useSound } from '@/hooks/useSound'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { PrizeStyle } from './PrizeOption'
 
 import { PrizeType } from '../index.types'
-import { useSound } from '@/hooks/useSound'
+import {
+  CAR_WINNING_INDEX,
+  getRandomRewardIndex,
+  getRandomTokensWinningIndex,
+  Reward,
+  REWARDS_NO_CAR,
+  REWARDS_WITH_CAR,
+  TOKENS_WINNING_INDEXS
+} from './RewardsScroll.types'
 
 const TokenPrize: FC<{ prizeType: PrizeType }> = ({ prizeType }) => {
   const [amount, iconName, iconWidth, iconHeight] = PrizeStyle[`${prizeType}`]
@@ -45,6 +54,18 @@ const TokenPrize: FC<{ prizeType: PrizeType }> = ({ prizeType }) => {
   )
 }
 
+const CarPrize: FC = () => {
+  return (
+    <div className="relative flex size-[160px] flex-col items-center justify-center">
+      <Image
+        src={getIllustrationUrl('tesla-car-prize', 'webp')}
+        width={186}
+        height={112}
+      />
+    </div>
+  )
+}
+
 const EmptyPrize: FC<{ isReached: boolean }> = ({ isReached }) => {
   return (
     <div
@@ -61,64 +82,81 @@ const EmptyPrize: FC<{ isReached: boolean }> = ({ isReached }) => {
 }
 
 const itemDimension = 160 + 24
-const getRandomIndex = () => Math.floor(Math.random() * REWARDS.length)
-
-const REWARDS = [false, false, false, false, true, false, false]
 const DURATION = 3000
 const INITIAL_POS = 0
 
 const RewardScroll: React.FC<{
   prizeType: PrizeType
   isScrolling: boolean
-  isWinning?: boolean
-  onEnd?: (v: boolean) => void
-}> = ({ prizeType, isWinning, isScrolling, onEnd }) => {
+  displayCar?: boolean
+  reward?: Reward
+  onEnd?: (v: Reward) => void
+}> = ({ prizeType, displayCar, isScrolling, reward = Reward.Empty, onEnd }) => {
   const [resetPos, setResetPos] = useState(INITIAL_POS)
-  const [randomIndex, setRandomIndex] = useState(getRandomIndex())
+  const [randomIndex, setRandomIndex] = useState(getRandomRewardIndex())
   const [isEnded, setIsEnded] = useState(false)
 
   const reelingAudio = useSound('arcade-reeling')
   const winningAudio = useSound('arcade-winning')
   const losingAudio = useSound('arcade-losing')
 
-  const landingIndex = useMemo(
-    () => (isWinning ? 4 : randomIndex === 4 ? randomIndex - 1 : randomIndex),
-    [isWinning, randomIndex]
-  )
+  const rewards = useMemo(() => {
+    return !displayCar ? REWARDS_WITH_CAR : REWARDS_NO_CAR
+  }, [displayCar])
+
+  const landingIndex = useMemo(() => {
+    if (reward === Reward.Car) {
+      return CAR_WINNING_INDEX
+    }
+
+    if (reward === Reward.Tokens) {
+      return TOKENS_WINNING_INDEXS.includes(randomIndex)
+        ? randomIndex
+        : getRandomTokensWinningIndex()
+    }
+
+    return TOKENS_WINNING_INDEXS.includes(randomIndex)
+      ? randomIndex - 1
+      : randomIndex
+  }, [reward, randomIndex])
 
   const landingPos = useMemo(() => {
+    const rewardsCount = rewards.length
     const landingPos =
-      itemDimension * 4 + // set to start of order
-      itemDimension * REWARDS.length * 4 + // move to next 4 orders
+      itemDimension * (Math.floor(rewardsCount / 2) + 1) + // set to start of order: ;
+      itemDimension * rewardsCount * 3 + // move to next 3 orders
       landingIndex * itemDimension // move to reward index
     return landingPos
-  }, [landingIndex])
+  }, [landingIndex, rewards])
 
   const rewardElements = useMemo(() => {
-    return REWARDS.map((i, index) =>
-      i ? (
-        <TokenPrize key={`${i}- ${index}`} prizeType={prizeType} />
-      ) : (
-        <EmptyPrize
-          key={`${i}- ${index}`}
-          isReached={landingIndex === index && isEnded}
-        />
-      )
-    )
-  }, [isEnded, landingIndex, prizeType])
+    return rewards.map((i, index) => {
+      if (i === Reward.Empty) {
+        return (
+          <EmptyPrize
+            key={`${i}- ${index}`}
+            isReached={landingIndex === index && isEnded}
+          />
+        )
+      } else if (i === Reward.Tokens) {
+        return <TokenPrize key={`${i}- ${index}`} prizeType={prizeType} />
+      } else {
+        return <CarPrize key={`${i}- ${index}`} />
+      }
+    })
+  }, [isEnded, landingIndex, prizeType, rewards])
 
   useEffect(() => {
     if (isScrolling) {
       reelingAudio.play()
-      setIsEnded(false)
       setTimeout(
         () => {
-          onEnd?.(!!isWinning)
+          onEnd?.(reward)
           setIsEnded(false)
           setResetPos(INITIAL_POS)
-          setRandomIndex(getRandomIndex())
+          setRandomIndex(getRandomRewardIndex())
         },
-        isWinning ? DURATION + 2000 : DURATION + 3000
+        reward !== Reward.Empty ? DURATION + 2000 : DURATION + 3000
       )
     }
   }, [isScrolling])
@@ -134,7 +172,7 @@ const RewardScroll: React.FC<{
         className={cn('flex items-center flex-nowrap gap-x-6 w-fit px-6')}
         onTransitionEnd={() => {
           setIsEnded(true)
-          if (isWinning) {
+          if (reward !== Reward.Empty) {
             winningAudio.play()
           } else {
             losingAudio.play()
@@ -153,8 +191,6 @@ const RewardScroll: React.FC<{
                 transform: `translateX(${resetPos}px)`
               }
         }>
-        {rewardElements}
-        {rewardElements}
         {rewardElements}
         {rewardElements}
         {rewardElements}

@@ -15,10 +15,14 @@ import ChoosePrize from './components/ChoosePrize'
 import ChooseProbability, {
   MIN_PROBABILITY
 } from './components/ChooseProbability'
-import CongratsModal from './components/CongratsModal'
+import {
+  CarCongratsModal,
+  TokenCongratsModal
+} from './components/CongratsModal'
 import LockedTokensModal from './components/LockedTokensModal'
 import { Prizes } from './components/PrizeOption'
 import RewardScroll from './components/RewardScroll'
+import { Reward } from './components/RewardsScroll.types'
 import { SimulateButton } from './components/SimulateButton'
 import { SmileIndicator } from './components/SmileIndicator'
 import { PrizeType } from './index.types'
@@ -26,8 +30,9 @@ import { PrizeType } from './index.types'
 const Arcade = () => {
   const [prizeType, setPrizeType] = useState(PrizeType.SMILE_1000)
   const [isScrolling, setIsScrolling] = useState(false)
-  const [isWin, setIsWin] = useState(false)
+  const [reward, setReward] = useState(Reward.Empty)
   const [showCongratsModal, setShowCongratsModal] = useState(false)
+  const [showCarCongratsModal, setShowCarCongratsModal] = useState(false)
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
   const [amount, setAmount] = useState('0')
   const [probability, setProbability] = useState(MIN_PROBABILITY)
@@ -60,29 +65,39 @@ const Arcade = () => {
         participationAmount: amount
       })
       if (resp.code === 0) {
-        setIsWin(resp.data.isWin)
         setWinAmount(resp.data.winAmount)
-        simulate(resp.data.isWin)
+        simulate(resp.data.isWin, resp.data.luckCar)
       }
     } catch (error) {
       console.log('🚀 ~ handleStartSpinning ~ error:', error)
     }
   }
 
-  const simulate = (resultFromServer?: boolean) => {
+  const simulate = (isWinningFromServer?: boolean, isLuckyCar?: boolean) => {
     if (!isScrolling) {
       const randomResult = getRandomInt(100) < probability
-      const result = resultFromServer ?? randomResult
-      setIsWin(result)
-      if (!resultFromServer) setWinAmount(Prizes[`${prizeType}`])
+      const isWinning = isWinningFromServer ?? randomResult
+
+      if (isWinning) {
+        setReward(isLuckyCar ? Reward.Car : Reward.Tokens)
+      } else {
+        setReward(Reward.Empty)
+      }
+
+      if (!isWinningFromServer) {
+        setWinAmount(Prizes[`${prizeType}`])
+      }
+
       setIsScrolling(true)
     }
   }
 
-  const onScrollResult = (isWin: boolean) => {
+  const onScrollResult = (reward: Reward) => {
     setIsScrolling(false)
     fetchLuckAccount()
-    if (isWin) {
+    if (reward === Reward.Car) {
+      setShowCarCongratsModal(true)
+    } else if (reward === Reward.Tokens) {
       setShowCongratsModal(true)
     } else {
       setShowLockedTokensModal(true)
@@ -146,9 +161,10 @@ const Arcade = () => {
       />
       <RewardScroll
         prizeType={prizeType}
-        isWinning={isWin}
+        reward={reward}
         isScrolling={isScrolling}
         onEnd={onScrollResult}
+        displayCar={luckAccount?.data.display}
       />
       <ChooseProbability
         probability={probability}
@@ -169,11 +185,17 @@ const Arcade = () => {
           Play
         </ArcadeButton>
       </div>
-      <CongratsModal
+      <TokenCongratsModal
         isOpen={showCongratsModal}
         amount={winAmount}
         onClose={() => {
           setShowCongratsModal(false)
+        }}
+      />
+      <CarCongratsModal
+        isOpen={showCarCongratsModal}
+        onClose={() => {
+          setShowCarCongratsModal(false)
         }}
       />
       <LockedTokensModal
