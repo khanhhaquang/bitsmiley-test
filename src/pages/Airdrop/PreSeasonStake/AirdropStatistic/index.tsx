@@ -38,7 +38,13 @@ const Unstaked = () => {
     return true
   }, [data])
   const [enableCollect, setEnableCollect] = useState(false)
-  const [countdownStr, setCountdownStr] = useState('')
+  const [countdown, setCountdown] = useState(0)
+
+  const formatTime = (time: number) => {
+    const hour = Math.floor(time / 3600)
+    const minites = Math.ceil(time / 60) % 3600
+    return `${hour}H${minites}M`
+  }
 
   useEffect(() => {
     const unStakedTime = data?.data.unStakedTime ?? 0
@@ -52,17 +58,14 @@ const Unstaked = () => {
       setEnableCollect(true)
       return
     }
-    let countdown = Math.round((unStakedTime - now) / 1000)
+    setCountdown(Math.round((unStakedTime - now) / 1000))
     const interval = setInterval(() => {
-      if (countdown > 0) {
-        countdown = countdown - 1
-        const hour = Math.floor(countdown / 3600)
-        const minites = Math.ceil(countdown / 60) % 3600
-        setCountdownStr(`${hour}H${minites}M`)
-      } else {
+      setCountdown((v) => {
+        if (v > 0) return v - 1
         setEnableCollect(true)
         console.log('Time up')
-      }
+        return v
+      })
     }, 1000)
     return () => clearInterval(interval)
   }, [data?.data.unStakedTime, enableCollect])
@@ -75,7 +78,7 @@ const Unstaked = () => {
         Unstaked $SMILE: {formatNumberAsTrunc(amount)}
       </div>
       <div className="flex text-white gap-3">
-        {!enableCollect && <span>Collectable in: {countdownStr}</span>}
+        {!enableCollect && <span>Collectable in: {formatTime(countdown)}</span>}
         <ActionButton
           className="h-[25px] w-[95px] bg-white text-black text-base leading-none text-center"
           onClick={() => {
