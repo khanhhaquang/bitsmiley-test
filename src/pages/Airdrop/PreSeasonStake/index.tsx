@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
-import { useGetPreStakeInfo } from '@/queries/airdrop'
+import { useGetMyPreStake, useGetPreStakeInfo } from '@/queries/airdrop'
 
 import AirdropStatistic from './AirdropStatistic'
 import AvailableToStake from './AvailableToStake'
@@ -15,6 +15,7 @@ const PreSeasonStake: FC = () => {
 
   const [isUnstakeModalOpen, setIsUnstakeModalOpen] = useState(false)
   const { data } = useGetPreStakeInfo()
+  const { data: myPreStakeInfo } = useGetMyPreStake()
 
   const isNotStarted = useMemo(() => {
     if (!data?.data.preStakeStartTime || !data?.data.nowTime) {
@@ -23,8 +24,14 @@ const PreSeasonStake: FC = () => {
     return data?.data.nowTime < data?.data.preStakeStartTime
   }, [data])
 
-  const isEnded = useMemo(() => {
+  const showUnStakeButton = useMemo(() => {
     if (!data?.data.preStakeEndTime || !data?.data.nowTime) {
+      return false
+    }
+    if (
+      myPreStakeInfo?.data.unStakedTime &&
+      myPreStakeInfo?.data.unStakedTime > 0
+    ) {
       return false
     }
     return (
@@ -55,7 +62,7 @@ const PreSeasonStake: FC = () => {
         <StakeAPY />
         <AvailableToStake />
       </div>
-      {isEnded && (
+      {showUnStakeButton && (
         <button
           onClick={() => setIsUnstakeModalOpen(true)}
           className="mx-auto flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">

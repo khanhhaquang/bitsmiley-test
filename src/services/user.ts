@@ -1,6 +1,6 @@
 import { Address, Hash } from 'viem'
 
-import { axiosInstance } from '@/config/axios'
+import { axiosInstance, privateAxiosInstance } from '@/config/axios'
 import { IResponse } from '@/types/common'
 
 export enum InvalidReasonEnum {
@@ -116,7 +116,7 @@ export const UserService = {
   getAirdropProof: {
     key: 'user.getAirdropProof',
     call: (address: Address) =>
-      axiosInstance
+      privateAxiosInstance
         .get<IResponse<IAirdropProofResponse>>(
           `/user/getAirdropProof/${address}`
         )

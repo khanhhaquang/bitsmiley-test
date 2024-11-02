@@ -8,7 +8,11 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { useGetMyPreStake, useStake } from '@/queries/airdrop'
+import {
+  useGetMyPreStake,
+  useGetPreStakeInfo,
+  useStake
+} from '@/queries/airdrop'
 import { formatNumberAsTrunc } from '@/utils/number'
 
 import Slider from '../../components/Slider'
@@ -17,6 +21,7 @@ const MAX_PERCENTAGE = 100
 
 const AvailableToStake = () => {
   const { data: myPreStake, refetch: refetchMyPreStake } = useGetMyPreStake()
+  const { data: preStakeInfo } = useGetPreStakeInfo()
   const [stakeAmount, setStakeAmount] = useState('0')
   const [stakePercentage, setStakePercentage] = useState(0)
   const { mutateAsync: stakeMutate, isPending: isStaking } = useStake({})
@@ -25,6 +30,13 @@ const AvailableToStake = () => {
     () => myPreStake?.data.availableAirdrop ?? 0,
     [myPreStake]
   )
+
+  const isPreStakeEnd = useMemo(() => {
+    if (!preStakeInfo?.data.preStakeEndTime || !preStakeInfo?.data.nowTime) {
+      return false
+    }
+    return preStakeInfo?.data.nowTime >= preStakeInfo?.data.preStakeEndTime
+  }, [preStakeInfo])
 
   const onChangeStakeAmount: React.ChangeEventHandler<HTMLInputElement> = (
     event
@@ -77,7 +89,7 @@ const AvailableToStake = () => {
           min={0}
           max={MAX_PERCENTAGE}
           step={1}
-          disabled={!max}
+          disabled={!max || isPreStakeEnd}
           value={stakePercentage}
           onInputChange={onChangePercentage}
           stepsClassName="text-sm text-white/60"
@@ -94,12 +106,12 @@ const AvailableToStake = () => {
           value={stakeAmount}
           onChange={onChangeStakeAmount}
           type="number"
-          disabled={!max}
+          disabled={!max || isPreStakeEnd}
           inputClassName="w-full"
         />
         <ActionButton
           className="w-[129px] bg-white/70 text-2xl text-black/75 hover:bg-white hover:text-black/75 active:bg-white/60 active:text-black/75"
-          disabled={stakePercentage === 0 || isStaking}
+          disabled={stakePercentage === 0 || isStaking || isPreStakeEnd}
           onClick={stake}>
           Stake
         </ActionButton>

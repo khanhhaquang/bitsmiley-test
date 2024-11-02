@@ -16,6 +16,7 @@ type ExitTokenModalProps = {
   onCancel: () => void
   onProceed: () => void
   isPending?: boolean
+  proceedButtonText?: string
 }
 
 const ExitTokenModal: FC<ExitTokenModalProps> = ({
@@ -24,7 +25,8 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
   children,
   onCancel,
   onProceed,
-  isPending
+  isPending,
+  proceedButtonText
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onCancel} backdrop={false}>
@@ -57,7 +59,7 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
             className="h-[47px] w-[166px] border-blue bg-blue/80 font-ibmb text-2xl text-white hover:bg-blue active:bg-blue/70"
             disabled={isPending}
             onClick={onProceed}>
-            Proceed
+            {proceedButtonText ?? 'Proceed'}
           </ActionButton>
         </div>
       </div>
@@ -87,7 +89,7 @@ export const UnstakeModal: FC<{
     <ExitTokenModal
       isOpen={isOpen}
       title="Confirm Unstake $Smile"
-      isPending={isUnStaking}
+      isPending={stakedAmount === 0 || isUnStaking}
       onCancel={onClose}
       onProceed={handleProceed}>
       <div className="my-6 flex flex-col items-center gap-y-3 font-ibmb">
@@ -113,28 +115,25 @@ export const ClaimUnlockedModal: FC<{
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
   // const [value, setValue] = useState('')
-  const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
+  // const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
 
-  const { isActive, handleClaim } = useAirdropClaim(
-    AirdropClaimType.TGE,
-    !isOpen
-  )
+  const { isClaimed, canClaim, isActive, amount, handleClaim } =
+    useAirdropClaim(AirdropClaimType.TGE)
 
   return (
     <ExitTokenModal
       isOpen={isOpen}
       title="Claim unlocked $Smile"
       onCancel={onClose}
-      isPending={!isActive}
-      onProceed={() =>
-        handleClaim('Claim unlocked airdrop', () => refetchMyPreStake())
-      }>
+      isPending={amount === 0 || !canClaim || !isActive}
+      proceedButtonText={isClaimed ? 'Claimed' : 'Proceed'}
+      onProceed={() => handleClaim('Claim unlocked airdrop', () => onClose())}>
       <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
           Unlocked $SMILE <SmileyIcon />
         </p>
         <p className="mt-1.5 font-ibmb text-2xl text-[#FFD000]">
-          {formatNumberWithSeparator(data?.data.availableAirdrop || 0)}
+          {formatNumberWithSeparator(amount)}
         </p>
 
         {/* <div className="mt-6 flex flex-col items-center gap-y-3">
