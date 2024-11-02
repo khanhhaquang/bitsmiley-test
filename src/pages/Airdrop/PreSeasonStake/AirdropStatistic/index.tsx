@@ -91,8 +91,7 @@ const Unstaked = () => {
 const AirdropStatistic = () => {
   const { data, refetch } = useGetMyPreStake()
   const { canClaim, amount, handleClaim, isActive } = useAirdropClaim(
-    AirdropClaimType.Award,
-    !!data?.data.reward
+    AirdropClaimType.Award
   )
 
   return (
@@ -113,7 +112,7 @@ const AirdropStatistic = () => {
           content={
             <div className="flex items-center gap-4">
               <div>{formatNumberAsTrunc(amount ?? 0)}</div>
-              {!!data?.data.reward && (
+              {amount > 0 && (
                 <button
                   disabled={!isActive || !canClaim}
                   onClick={() => {

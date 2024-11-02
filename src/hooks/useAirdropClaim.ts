@@ -12,7 +12,7 @@ export enum AirdropClaimType {
   UnStake
 }
 
-export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
+export const useAirdropClaim = (type: AirdropClaimType) => {
   const { toast } = useToast()
   const { evmChainId } = useUserInfo()
   const { projectInfo } = useProjectInfo()
@@ -66,7 +66,7 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
     isLoading,
     isClaiming,
     isClaimed
-  } = useAirdrop(airdrop, disabled)
+  } = useAirdrop(airdrop)
 
   const amount = useMemo(() => {
     if (!airdropProofAndAmount) return 0
@@ -87,6 +87,16 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
         variant: 'destructive',
         title: title || 'Claim Airdrop',
         description: 'Unavailable contract',
+        duration: 2000
+      })
+      return
+    }
+
+    if (isClaiming) {
+      toast({
+        variant: 'destructive',
+        title: title || 'Claim Airdrop',
+        description: 'Claiming...',
         duration: 2000
       })
       return
