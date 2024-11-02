@@ -27,7 +27,10 @@ const PreSeasonStake: FC = () => {
     if (!data?.data.preStakeEndTime || !data?.data.nowTime) {
       return false
     }
-    return data?.data.nowTime >= data?.data.preStakeEndTime
+    return (
+      data?.data.nowTime >= data?.data.preStakeEndTime &&
+      import.meta.env.VITE_AIRDROP_UNSTAKE_ENABLE === 'true'
+    )
   }, [data])
 
   if (isNotStarted) return null
