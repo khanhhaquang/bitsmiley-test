@@ -90,7 +90,7 @@ const RewardScroll: React.FC<{
   isScrolling: boolean
   displayCar?: boolean
   reward?: Reward
-  onEnd?: (v: Reward) => void
+  onEnd?: () => void
 }> = ({ prizeType, displayCar, isScrolling, reward = Reward.Empty, onEnd }) => {
   const [resetPos, setResetPos] = useState(INITIAL_POS)
   const [randomIndex, setRandomIndex] = useState(getRandomRewardIndex())
@@ -151,7 +151,7 @@ const RewardScroll: React.FC<{
       reelingAudio.play()
       setTimeout(
         () => {
-          onEnd?.(reward)
+          onEnd?.()
           setIsEnded(false)
           setResetPos(INITIAL_POS)
           setRandomIndex(getRandomRewardIndex())
