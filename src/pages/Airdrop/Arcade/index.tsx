@@ -34,6 +34,7 @@ const Arcade = () => {
   const [showCongratsModal, setShowCongratsModal] = useState(false)
   const [showCarCongratsModal, setShowCarCongratsModal] = useState(false)
   const [showLockedTokensModal, setShowLockedTokensModal] = useState(false)
+  const [isSimulate, setIsSimulate] = useState(false)
   const [amount, setAmount] = useState('0')
   const [probability, setProbability] = useState(MIN_PROBABILITY)
   const [winAmount, setWinAmount] = useState(0)
@@ -59,6 +60,7 @@ const Arcade = () => {
   )
 
   const handleStartSpinning = async () => {
+    setIsSimulate(false)
     try {
       const resp = await buyLucky({
         type: prizeType,
@@ -73,13 +75,20 @@ const Arcade = () => {
     }
   }
 
+  const onStartSimulate = () => {
+    setIsSimulate(true)
+    simulate()
+  }
+
   const simulate = (isWinningFromServer?: boolean, isLuckyCar?: boolean) => {
     if (!isScrolling) {
       const randomResult = getRandomInt(100) < probability
       const isWinning = isWinningFromServer ?? randomResult
 
-      if (isWinning) {
-        setReward(isLuckyCar ? Reward.Car : Reward.Tokens)
+      if (isLuckyCar) {
+        setReward(Reward.Car)
+      } else if (isWinning) {
+        setReward(Reward.Tokens)
       } else {
         setReward(Reward.Empty)
       }
@@ -177,7 +186,7 @@ const Arcade = () => {
         {buyResp?.code !== 0 && buyResp?.message}
       </p>
       <div className=" flex w-full items-center justify-center gap-3">
-        <SimulateButton disabled={isPlayDisabled} onClick={() => simulate()} />
+        <SimulateButton disabled={isPlayDisabled} onClick={onStartSimulate} />
         <ArcadeButton
           onClick={() => handleStartSpinning()}
           disabled={isPlayDisabled}
@@ -200,8 +209,8 @@ const Arcade = () => {
       />
       <LockedTokensModal
         isOpen={showLockedTokensModal}
-        lockedFor={buyResp?.data?.lockedFor}
-        locked={buyResp?.data?.locked}
+        lockedFor={!isSimulate ? buyResp?.data?.lockedFor : 100}
+        locked={!isSimulate ? buyResp?.data?.locked : Number(amount) || 0}
         onClose={() => {
           setShowLockedTokensModal(false)
         }}
