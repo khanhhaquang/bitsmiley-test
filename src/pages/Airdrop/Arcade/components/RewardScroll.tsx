@@ -101,7 +101,7 @@ const RewardScroll: React.FC<{
   const losingAudio = useSound('arcade-losing')
 
   const rewards = useMemo(() => {
-    return !displayCar ? REWARDS_WITH_CAR : REWARDS_NO_CAR
+    return displayCar ? REWARDS_WITH_CAR : REWARDS_NO_CAR
   }, [displayCar])
 
   const landingIndex = useMemo(() => {
