@@ -17,28 +17,39 @@ const PreSeasonStake: FC = () => {
   const { data } = useGetPreStakeInfo()
   const { data: myPreStakeInfo } = useGetMyPreStake()
 
+  const preStakeStartTime = useMemo(
+    () => data?.data.preStakeStartTime,
+    [data?.data.preStakeStartTime]
+  )
+  const preStakeEndTime = useMemo(
+    () => data?.data.preStakeEndTime,
+    [data?.data.preStakeEndTime]
+  )
+  const unStakedTime = useMemo(
+    () => myPreStakeInfo?.data.unStakedTime,
+    [myPreStakeInfo?.data.unStakedTime]
+  )
+  const nowTime = useMemo(() => data?.data.nowTime, [data?.data.nowTime])
+
   const isNotStarted = useMemo(() => {
-    if (!data?.data.preStakeStartTime || !data?.data.nowTime) {
+    if (!preStakeStartTime || !nowTime) {
       return false
     }
-    return data?.data.nowTime < data?.data.preStakeStartTime
-  }, [data])
+    return nowTime < preStakeStartTime
+  }, [nowTime, preStakeStartTime])
 
   const showUnStakeButton = useMemo(() => {
-    if (!data?.data.preStakeEndTime || !data?.data.nowTime) {
+    if (!preStakeEndTime || !nowTime) {
       return false
     }
-    if (
-      myPreStakeInfo?.data.unStakedTime &&
-      myPreStakeInfo?.data.unStakedTime > 0
-    ) {
+    if (unStakedTime && unStakedTime > 0) {
       return false
     }
     return (
-      data?.data.nowTime >= data?.data.preStakeEndTime &&
+      nowTime >= preStakeEndTime &&
       import.meta.env.VITE_AIRDROP_UNSTAKE_ENABLE === 'true'
     )
-  }, [data])
+  }, [nowTime, preStakeEndTime, unStakedTime])
 
   if (isNotStarted) return null
 

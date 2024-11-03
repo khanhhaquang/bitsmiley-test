@@ -101,7 +101,7 @@ const Arcade = () => {
     }
   }
 
-  const onScrollResult = (reward: Reward) => {
+  const onScrollResult = () => {
     setIsScrolling(false)
     fetchLuckAccount()
     if (reward === Reward.Car) {
