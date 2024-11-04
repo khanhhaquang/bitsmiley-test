@@ -7,8 +7,6 @@ import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { PrizeStyle } from './PrizeOption'
-
-import { PrizeType } from '../index.types'
 import {
   CAR_WINNING_INDEX,
   getRandomRewardIndex,
@@ -18,6 +16,8 @@ import {
   REWARDS_WITH_CAR,
   TOKENS_WINNING_INDEXS
 } from './RewardsScroll.types'
+
+import { PrizeType } from '../index.types'
 
 const TokenPrize: FC<{ prizeType: PrizeType }> = ({ prizeType }) => {
   const [amount, iconName, iconWidth, iconHeight] = PrizeStyle[`${prizeType}`]

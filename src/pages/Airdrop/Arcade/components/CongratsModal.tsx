@@ -5,12 +5,12 @@ import { SmileyIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import StrokeText from '@/components/StrokeText'
+import { MEDIA } from '@/config/links'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
 import { ArcadeButton } from './ArcadeButton'
-import { MEDIA } from '@/config/links'
 
 export const TokenCongratsModal: React.FC<{
   isOpen: boolean

@@ -3,9 +3,9 @@ import React, { ReactNode, useEffect, useMemo, useState } from 'react'
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useGetMyPreStake } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { formatNumberAsTrunc } from '@/utils/number'
 
 interface AirdropStatisticItemProps {
@@ -36,9 +36,15 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
-  const { isClaimed, canClaim, handleClaim, isActive, amount, refetchProofAndAmount } =
-    useAirdropClaim(AirdropClaimType.UnStake)
-    console.log('UnStake:', isClaimed, canClaim, isActive, amount)
+  const {
+    isClaimed,
+    canClaim,
+    handleClaim,
+    isActive,
+    amount,
+    refetchProofAndAmount
+  } = useAirdropClaim(AirdropClaimType.UnStake)
+  console.log('UnStake:', isClaimed, canClaim, isActive, amount)
   const showUnStaked = useMemo(() => {
     if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
     return true
