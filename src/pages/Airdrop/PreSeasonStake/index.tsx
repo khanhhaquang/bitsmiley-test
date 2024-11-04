@@ -9,12 +9,14 @@ import AvailableToStake from './AvailableToStake'
 import StakeAPY from './StakeAPY'
 
 import { UnstakeModal } from '../components/ExitTokenModals'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const PreSeasonStake: FC = () => {
   const navigate = useNavigate()
 
   const [isUnstakeModalOpen, setIsUnstakeModalOpen] = useState(false)
   const { data } = useGetPreStakeInfo()
+  const { projectInfo } = useProjectInfo()
   const { data: myPreStakeInfo } = useGetMyPreStake()
 
   const isNotStarted = useMemo(() => {
@@ -25,9 +27,6 @@ const PreSeasonStake: FC = () => {
   }, [data])
 
   const showUnStakeButton = useMemo(() => {
-    if (!data?.data.preStakeEndTime || !data?.data.nowTime) {
-      return false
-    }
     if (
       myPreStakeInfo?.data.unStakedTime &&
       myPreStakeInfo?.data.unStakedTime > 0
@@ -35,10 +34,11 @@ const PreSeasonStake: FC = () => {
       return false
     }
     return (
-      data?.data.nowTime >= data?.data.preStakeEndTime &&
+      !!projectInfo?.tgeTime &&
+      projectInfo?.nowTime >= projectInfo?.tgeTime &&
       import.meta.env.VITE_AIRDROP_UNSTAKE_ENABLE === 'true'
     )
-  }, [data])
+  }, [projectInfo, myPreStakeInfo])
 
   if (isNotStarted) return null
 
