@@ -124,6 +124,11 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     [isRefetchingCanClaim, isRefetchingIsClaimed]
   )
 
+  const refetchClaimStatus = () => {
+    refetchIsClaimed()
+    refetchCanClaim()
+  }
+
   return {
     // airdrops,
     airdropProofAndAmount,
@@ -134,6 +139,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
     isRefetching,
     isLoadingAirdropProofAndAmount,
     claim,
-    isClaiming
+    isClaiming,
+    refetchClaimStatus
   }
 }

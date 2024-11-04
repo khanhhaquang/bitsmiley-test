@@ -67,7 +67,8 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
     claim,
     isLoading,
     isClaiming,
-    isClaimed
+    isClaimed,
+    refetchClaimStatus
   } = useAirdrop(airdrop)
 
   const amount = useMemo(() => {
@@ -131,6 +132,7 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
     canClaim,
     amount,
     refetchProofAndAmount,
+    refetchClaimStatus,
     isActive,
     handleClaim
   }

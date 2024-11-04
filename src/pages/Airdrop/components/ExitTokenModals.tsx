@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo } from 'react'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
@@ -114,15 +114,25 @@ export const ClaimUnlockedModal: FC<{
   onClose: () => void
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
-  const { isClaimed, canClaim, isActive, amount, handleClaim } =
-    useAirdropClaim(AirdropClaimType.TGE)
+  const {
+    isClaimed,
+    canClaim,
+    isActive,
+    amount,
+    handleClaim,
+    refetchClaimStatus
+  } = useAirdropClaim(AirdropClaimType.TGE)
+
+  useEffect(() => {
+    if (isOpen) refetchClaimStatus()
+  }, [isOpen])
 
   return (
     <ExitTokenModal
       isOpen={isOpen}
       title="Claim unlocked $Smile"
       onCancel={onClose}
-      isPending={amount === 0 || !canClaim || !isActive}
+      isPending={amount === 0 || !canClaim || !isActive || isClaimed}
       proceedButtonText={isClaimed ? 'Claimed' : 'Proceed'}
       onProceed={() =>
         handleClaim('Claim unlocked airdrop', (error) => {

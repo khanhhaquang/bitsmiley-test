@@ -115,6 +115,8 @@ const AirdropStatistic = () => {
   )
   const [claimedReward, setClaimedReward] = useState(false)
 
+  // console.log('Reward: canClaim', canClaim, 'amount', amount)
+
   useEffect(() => setClaimedReward(!!isClaimed && isClaimed), [isClaimed])
 
   return (
@@ -134,12 +136,11 @@ const AirdropStatistic = () => {
           label="Reward"
           content={
             <div className="flex items-center gap-4">
-              <span>{formatNumberAsTrunc(amount)}</span>
+              <span>{formatNumberAsTrunc(data?.data.reward ?? 0)}</span>
               {showClaimReward && (
                 <button
                   disabled={!isActive || !canClaim || claimedReward || !amount}
                   onClick={() => {
-                    console.log(claimedReward)
                     handleClaim('Claim staking reward', (error) => {
                       console.log(error)
                       if (!error) {
