@@ -36,15 +36,10 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
-  const {
-    isClaimed,
-    canClaim,
-    handleClaim,
-    isActive,
-    amount,
-    refetchProofAndAmount
-  } = useAirdropClaim(AirdropClaimType.UnStake)
-  console.log('UnStake:', isClaimed, canClaim, isActive, amount)
+  const [collected, setCollected] = useState(false)
+  const { isClaimed, canClaim, handleClaim, isActive, refetchProofAndAmount } =
+    useAirdropClaim(AirdropClaimType.UnStake)
+
   const showUnStaked = useMemo(() => {
     if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
     return true
@@ -57,6 +52,7 @@ const Unstaked = () => {
     [data?.data.unStakedTime]
   )
   const now = useMemo(() => data?.data.now ?? 0, [data?.data.now])
+  useEffect(() => setCollected(!!isClaimed && isClaimed), [isClaimed])
 
   useEffect(() => {
     if (unStakedTime === 0) {
@@ -91,12 +87,14 @@ const Unstaked = () => {
       <div className="flex gap-3 text-white">
         {!enableCollect && <span>Collectable in: {formatTime(countdown)}</span>}
         <ActionButton
-          className="h-[25px] w-[95px] bg-white text-center text-base leading-none text-black"
+          className="h-[25px] w-[115px] bg-white text-center text-base leading-none text-black"
           onClick={() => {
-            handleClaim('Claim staking reward')
+            handleClaim('Claim staking reward', (error) => {
+              if (!error) setCollected(true)
+            })
           }}
-          disabled={!enableCollect || !isActive || isClaimed}>
-          {isClaimed ? 'Claimed' : 'Collect'}
+          disabled={!enableCollect || !isActive || collected || !canClaim}>
+          {collected ? 'Collected' : 'Collect'}
         </ActionButton>
       </div>
     </div>
@@ -115,7 +113,9 @@ const AirdropStatistic = () => {
       amount > 0,
     [projectInfo, amount]
   )
-  console.log('Reward:', isClaimed, canClaim, isActive, amount)
+  const [claimedReward, setClaimedReward] = useState(false)
+
+  useEffect(() => setClaimedReward(!!isClaimed && isClaimed), [isClaimed])
 
   return (
     <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
@@ -137,17 +137,22 @@ const AirdropStatistic = () => {
               <span>{formatNumberAsTrunc(amount)}</span>
               {showClaimReward && (
                 <button
-                  disabled={!isActive || !canClaim || isClaimed || !amount}
+                  disabled={!isActive || !canClaim || claimedReward || !amount}
                   onClick={() => {
-                    console.log(isClaimed)
-                    if (isClaimed) return
-                    handleClaim('Claim staking reward', () => refetch())
+                    console.log(claimedReward)
+                    handleClaim('Claim staking reward', (error) => {
+                      console.log(error)
+                      if (!error) {
+                        refetch()
+                        setClaimedReward(true)
+                      }
+                    })
                   }}
                   className={cn(
                     'bg-transparent text-sm font-bold text-[#FFAA00]/60 hover:text-[#FFAA00]',
                     !isClaimed && 'cursor-pointer'
                   )}>
-                  {isClaimed ? 'Claimed' : 'Claim'}
+                  {claimedReward ? 'Claimed' : 'Claim'}
                 </button>
               )}
             </div>

@@ -114,9 +114,6 @@ export const ClaimUnlockedModal: FC<{
   onClose: () => void
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
-  // const [value, setValue] = useState('')
-  // const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
-
   const { isClaimed, canClaim, isActive, amount, handleClaim } =
     useAirdropClaim(AirdropClaimType.TGE)
 
@@ -127,7 +124,13 @@ export const ClaimUnlockedModal: FC<{
       onCancel={onClose}
       isPending={amount === 0 || !canClaim || !isActive}
       proceedButtonText={isClaimed ? 'Claimed' : 'Proceed'}
-      onProceed={() => handleClaim('Claim unlocked airdrop', () => onClose())}>
+      onProceed={() =>
+        handleClaim('Claim unlocked airdrop', (error) => {
+          if (!error) {
+            onClose()
+          }
+        })
+      }>
       <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
           Unlocked $SMILE <SmileyIcon />
