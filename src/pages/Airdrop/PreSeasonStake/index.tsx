@@ -23,14 +23,6 @@ const PreSeasonStake: FC = () => {
     () => data?.data.preStakeStartTime,
     [data?.data.preStakeStartTime]
   )
-  const preStakeEndTime = useMemo(
-    () => data?.data.preStakeEndTime,
-    [data?.data.preStakeEndTime]
-  )
-  const unStakedTime = useMemo(
-    () => myPreStakeInfo?.data.unStakedTime,
-    [myPreStakeInfo?.data.unStakedTime]
-  )
   const nowTime = useMemo(() => data?.data.nowTime, [data?.data.nowTime])
 
   const isNotStarted = useMemo(() => {
