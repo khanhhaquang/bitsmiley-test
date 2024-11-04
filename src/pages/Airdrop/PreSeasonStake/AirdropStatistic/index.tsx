@@ -5,6 +5,7 @@ import { ActionButton } from '@/components/ActionButton'
 import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
 import { useGetMyPreStake } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { formatNumberAsTrunc } from '@/utils/number'
 
 interface AirdropStatisticItemProps {
@@ -97,8 +98,16 @@ const Unstaked = () => {
 
 const AirdropStatistic = () => {
   const { data, refetch } = useGetMyPreStake()
+  const { projectInfo } = useProjectInfo()
   const { isClaimed, canClaim, amount, handleClaim, isActive } =
     useAirdropClaim(AirdropClaimType.Award)
+  const showClaimReward = useMemo(
+    () =>
+      !!projectInfo?.tgeTime &&
+      projectInfo?.nowTime >= projectInfo?.tgeTime &&
+      amount > 0,
+    [projectInfo, amount]
+  )
 
   return (
     <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
@@ -117,8 +126,8 @@ const AirdropStatistic = () => {
           label="Reward"
           content={
             <div className="flex items-center gap-4">
-              <span>{formatNumberAsTrunc(amount ?? 0)}</span>
-              {amount > 0 && (
+              <span>{formatNumberAsTrunc(amount)}</span>
+              {showClaimReward && (
                 <button
                   disabled={!isActive || !canClaim || isClaimed}
                   onClick={() => {
