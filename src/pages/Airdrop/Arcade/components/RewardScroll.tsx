@@ -96,9 +96,9 @@ const RewardScroll: React.FC<{
   const [randomIndex, setRandomIndex] = useState(getRandomRewardIndex())
   const [isEnded, setIsEnded] = useState(false)
 
-  const reelingAudio = useSound('arcade-reeling')
-  const winningAudio = useSound('arcade-winning')
-  const losingAudio = useSound('arcade-losing')
+  const reelingAudio = useSound('arcade-reeling', { volume: 0.6 })
+  const winningAudio = useSound('arcade-winning', { volume: 0.6 })
+  const losingAudio = useSound('arcade-losing', { volume: 0.6 })
 
   const rewards = useMemo(() => {
     return displayCar ? REWARDS_WITH_CAR : REWARDS_NO_CAR
@@ -156,7 +156,7 @@ const RewardScroll: React.FC<{
           setResetPos(INITIAL_POS)
           setRandomIndex(getRandomRewardIndex())
         },
-        reward !== Reward.Empty ? DURATION + 2000 : DURATION + 3000
+        reward !== Reward.Empty ? DURATION + 1000 : DURATION + 3000
       )
     }
   }, [isScrolling])
