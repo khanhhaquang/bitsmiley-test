@@ -126,7 +126,7 @@ const AirdropStatistic = () => {
           label="Reward"
           content={
             <div className="flex items-center gap-4">
-              <span>{formatNumberAsTrunc(amount ?? 0)}</span>
+              <span>{formatNumberAsTrunc(amount)}</span>
               {showClaimReward && (
                 <button
                   disabled={!isActive || !canClaim || isClaimed}
