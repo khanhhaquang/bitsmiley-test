@@ -1,16 +1,22 @@
 import React, { ReactNode, useEffect, useMemo, useState } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
+import { ActionButton } from '@/components/ActionButton'
 import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
 import { useGetMyPreStake } from '@/queries/airdrop'
-import { formatNumberAsTrunc } from '@/utils/number'
-import ActionButton from '@/components/ActionButton'
 import { cn } from '@/utils/cn'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
+import { formatNumberAsTrunc } from '@/utils/number'
 
 interface AirdropStatisticItemProps {
   label: ReactNode
   content: ReactNode
+}
+
+const formatTime = (time: number) => {
+  const hour = Math.floor(time / 3600)
+  const minites = Math.ceil(time / 60) % 3600
+  return `${hour}H${minites}M`
 }
 
 const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
@@ -35,22 +41,18 @@ const Unstaked = () => {
   )
   const showUnStaked = useMemo(() => {
     if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
-    // console.log('unstaked:', data?.data.unStaked, 'canClaim:', canClaim)
     return true
   }, [data])
   const [enableCollect, setEnableCollect] = useState(false)
   const [countdown, setCountdown] = useState(0)
 
-  const formatTime = (time: number) => {
-    const hour = Math.floor(time / 3600)
-    const minites = Math.ceil(time / 60) % 3600
-    return `${hour}H${minites}M`
-  }
+  const unStakedTime = useMemo(
+    () => data?.data.unStakedTime ?? 0,
+    [data?.data.unStakedTime]
+  )
+  const now = useMemo(() => data?.data.now ?? 0, [data?.data.now])
 
   useEffect(() => {
-    const unStakedTime = data?.data.unStakedTime ?? 0
-    const now = data?.data.now ?? 0
-    // console.log('unStakedTime:', unStakedTime, 'now:', now)
     if (unStakedTime === 0) {
       setEnableCollect(false)
       return
@@ -68,20 +70,21 @@ const Unstaked = () => {
         return v
       })
     }, 1000)
+
     return () => clearInterval(interval)
-  }, [data?.data.unStakedTime, enableCollect])
+  }, [enableCollect, now, unStakedTime])
 
   if (!showUnStaked) return null
 
   return (
-    <div className="flex w-full justify-between items-center">
+    <div className="flex w-full items-center justify-between">
       <div className="text-[#FFAA00]">
         Unstaked $SMILE: {formatNumberAsTrunc(amount)}
       </div>
-      <div className="flex text-white gap-3">
+      <div className="flex gap-3 text-white">
         {!enableCollect && <span>Collectable in: {formatTime(countdown)}</span>}
         <ActionButton
-          className="h-[25px] w-[95px] bg-white text-black text-base leading-none text-center"
+          className="h-[25px] w-[95px] bg-white text-center text-base leading-none text-black"
           onClick={() => {
             handleClaim('Claim staking reward')
           }}
@@ -107,7 +110,7 @@ const AirdropStatistic = () => {
   )
 
   return (
-    <div className="flex flex-col min-w-[1000px] items-center justify-evenly border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px] gap-4">
+    <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
       <div className="flex w-full">
         <AirdropStatisticItem
           label="Your Total Airdrop"
@@ -133,7 +136,7 @@ const AirdropStatistic = () => {
                   }}
                   className={cn(
                     'bg-transparent text-sm font-bold text-[#FFAA00]/60 hover:text-[#FFAA00]',
-                    !isClaimed && 'cursor-pointer '
+                    !isClaimed && 'cursor-pointer'
                   )}>
                   {isClaimed ? 'Claimed' : 'Claim'}
                 </button>
@@ -142,7 +145,7 @@ const AirdropStatistic = () => {
           }
         />
       </div>
-      <Unstaked></Unstaked>
+      <Unstaked />
     </div>
   )
 }

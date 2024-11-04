@@ -53,7 +53,7 @@ const ChooseProbability: React.FC<{
 
     setAmount(expectedValue.toString())
 
-    const prob = Math.floor((expectedValue / Prizes[`${prizeType}`] / 2) * 100)
+    const prob = (expectedValue / Prizes[`${prizeType}`] / 2) * 100
     setProbability(prob > MAX_PROBABILITY ? MAX_PROBABILITY : prob)
   }
 
@@ -107,7 +107,7 @@ const ChooseProbability: React.FC<{
         </div>
         <div className="flex justify-between">
           <span>Winning Probability</span>
-          <span>{probability}%</span>
+          <span>{formatNumberWithSeparator(probability)}%</span>
         </div>
         <div className="flex justify-between">
           <span>USE $SMILE</span>

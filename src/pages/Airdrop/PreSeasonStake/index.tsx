@@ -19,12 +19,26 @@ const PreSeasonStake: FC = () => {
   const { projectInfo } = useProjectInfo()
   const { data: myPreStakeInfo } = useGetMyPreStake()
 
+  const preStakeStartTime = useMemo(
+    () => data?.data.preStakeStartTime,
+    [data?.data.preStakeStartTime]
+  )
+  const preStakeEndTime = useMemo(
+    () => data?.data.preStakeEndTime,
+    [data?.data.preStakeEndTime]
+  )
+  const unStakedTime = useMemo(
+    () => myPreStakeInfo?.data.unStakedTime,
+    [myPreStakeInfo?.data.unStakedTime]
+  )
+  const nowTime = useMemo(() => data?.data.nowTime, [data?.data.nowTime])
+
   const isNotStarted = useMemo(() => {
-    if (!data?.data.preStakeStartTime || !data?.data.nowTime) {
+    if (!preStakeStartTime || !nowTime) {
       return false
     }
-    return data?.data.nowTime < data?.data.preStakeStartTime
-  }, [data])
+    return nowTime < preStakeStartTime
+  }, [nowTime, preStakeStartTime])
 
   const showUnStakeButton = useMemo(() => {
     if (
