@@ -63,6 +63,7 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
   const {
     canClaim,
     airdropProofAndAmount,
+    refetchProofAndAmount,
     claim,
     isLoading,
     isClaiming,
@@ -129,6 +130,7 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
     isClaimed,
     canClaim,
     amount,
+    refetchProofAndAmount,
     isActive,
     handleClaim
   }

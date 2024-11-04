@@ -15,7 +15,7 @@ interface AirdropStatisticItemProps {
 
 const formatTime = (time: number) => {
   const hour = Math.floor(time / 3600)
-  const minites = Math.ceil(time / 60) % 3600
+  const minites = Math.ceil(time / 60) % 60
   return `${hour}H${minites}M`
 }
 
@@ -36,9 +36,9 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
-  const { isClaimed, amount, handleClaim, isActive } = useAirdropClaim(
-    AirdropClaimType.UnStake
-  )
+  const { isClaimed, canClaim, handleClaim, isActive, amount, refetchProofAndAmount } =
+    useAirdropClaim(AirdropClaimType.UnStake)
+    console.log('UnStake:', isClaimed, canClaim, isActive, amount)
   const showUnStaked = useMemo(() => {
     if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
     return true
@@ -66,7 +66,8 @@ const Unstaked = () => {
       setCountdown((v) => {
         if (v > 0) return v - 1
         setEnableCollect(true)
-        console.log('Time up')
+        refetchProofAndAmount()
+        // console.log('Time up')
         return v
       })
     }, 1000)
@@ -79,7 +80,7 @@ const Unstaked = () => {
   return (
     <div className="flex w-full items-center justify-between">
       <div className="text-[#FFAA00]">
-        Unstaked $SMILE: {formatNumberAsTrunc(amount)}
+        Unstaked $SMILE: {formatNumberAsTrunc(data?.data.unStaked ?? 0)}
       </div>
       <div className="flex gap-3 text-white">
         {!enableCollect && <span>Collectable in: {formatTime(countdown)}</span>}
@@ -108,6 +109,7 @@ const AirdropStatistic = () => {
       amount > 0,
     [projectInfo, amount]
   )
+  console.log('Reward:', isClaimed, canClaim, isActive, amount)
 
   return (
     <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
@@ -129,8 +131,9 @@ const AirdropStatistic = () => {
               <span>{formatNumberAsTrunc(amount)}</span>
               {showClaimReward && (
                 <button
-                  disabled={!isActive || !canClaim || isClaimed}
+                  disabled={!isActive || !canClaim || isClaimed || !amount}
                   onClick={() => {
+                    console.log(isClaimed)
                     if (isClaimed) return
                     handleClaim('Claim staking reward', () => refetch())
                   }}

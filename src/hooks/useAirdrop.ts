@@ -24,6 +24,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
 
   const {
     data: airdropProofAndAmount,
+    refetch: refetchProofAndAmount,
     isLoading: isLoadingAirdropProofAndAmount
   } = useQuery({
     queryKey: [
@@ -126,6 +127,7 @@ export const useAirdrop = (airdrop?: IAirdropInput) => {
   return {
     // airdrops,
     airdropProofAndAmount,
+    refetchProofAndAmount,
     isClaimed,
     canClaim,
     isLoading,
