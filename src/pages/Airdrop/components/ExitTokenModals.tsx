@@ -114,6 +114,7 @@ export const ClaimUnlockedModal: FC<{
   onClose: () => void
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
+  const { data } = useGetMyPreStake()
   const {
     isClaimed,
     canClaim,
@@ -146,7 +147,7 @@ export const ClaimUnlockedModal: FC<{
           Unlocked $SMILE <SmileyIcon />
         </p>
         <p className="mt-1.5 font-ibmb text-2xl text-[#FFD000]">
-          {formatNumberWithSeparator(amount)}
+          {formatNumberWithSeparator(data?.data.availableAirdrop ?? 0)}
         </p>
 
         {/* <div className="mt-6 flex flex-col items-center gap-y-3">
