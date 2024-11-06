@@ -1,3 +1,5 @@
+import { holesky, mainnet } from 'viem/chains'
+
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import {
@@ -21,7 +23,9 @@ export const chainsIconUrl: { [key: string]: string } = {
   [bitLayerTestnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp'),
   [bitLayerMainnet.id]: getIllustrationUrl('bitlayer-chain-logo', 'webp'),
   [zetaTestnet.id]: getIllustrationUrl('zeta-chain-logo', 'webp'),
-  [zetaMainnet.id]: getIllustrationUrl('zeta-chain-logo', 'webp')
+  [zetaMainnet.id]: getIllustrationUrl('zeta-chain-logo', 'webp'),
+  [holesky.id]: getIllustrationUrl('ethereum-chain-logo', 'webp'),
+  [mainnet.id]: getIllustrationUrl('ethereum-chain-logo', 'webp')
 } as const
 
 export const stakeSupportedChainIds = [
