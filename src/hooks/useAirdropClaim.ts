@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
+import { formatEther } from 'viem'
 
 import { useToast } from '@/components/ui/use-toast'
 
 import { useAirdrop } from './useAirdrop'
 import { useProjectInfo } from './useProjectInfo'
 import { useUserInfo } from './useUserInfo'
-import { formatEther } from 'viem'
 
 export enum AirdropClaimType {
   TGE,
@@ -63,10 +63,12 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
   const {
     canClaim,
     airdropProofAndAmount,
+    refetchProofAndAmount,
     claim,
     isLoading,
     isClaiming,
-    isClaimed
+    isClaimed,
+    refetchClaimStatus
   } = useAirdrop(airdrop)
 
   const amount = useMemo(() => {
@@ -129,6 +131,8 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
     isClaimed,
     canClaim,
     amount,
+    refetchProofAndAmount,
+    refetchClaimStatus,
     isActive,
     handleClaim
   }

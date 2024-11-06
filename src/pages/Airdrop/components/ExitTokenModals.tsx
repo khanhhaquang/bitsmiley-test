@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo } from 'react'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
@@ -114,26 +114,40 @@ export const ClaimUnlockedModal: FC<{
   onClose: () => void
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
-  // const [value, setValue] = useState('')
-  // const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
+  const { data } = useGetMyPreStake()
+  const {
+    isClaimed,
+    canClaim,
+    isActive,
+    amount,
+    handleClaim,
+    refetchClaimStatus
+  } = useAirdropClaim(AirdropClaimType.TGE)
 
-  const { isClaimed, canClaim, isActive, amount, handleClaim } =
-    useAirdropClaim(AirdropClaimType.TGE)
+  useEffect(() => {
+    if (isOpen) refetchClaimStatus()
+  }, [isOpen])
 
   return (
     <ExitTokenModal
       isOpen={isOpen}
       title="Claim unlocked $Smile"
       onCancel={onClose}
-      isPending={amount === 0 || !canClaim || !isActive}
+      isPending={amount === 0 || !canClaim || !isActive || isClaimed}
       proceedButtonText={isClaimed ? 'Claimed' : 'Proceed'}
-      onProceed={() => handleClaim('Claim unlocked airdrop', () => onClose())}>
+      onProceed={() =>
+        handleClaim('Claim unlocked airdrop', (error) => {
+          if (!error) {
+            onClose()
+          }
+        })
+      }>
       <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
           Unlocked $SMILE <SmileyIcon />
         </p>
         <p className="mt-1.5 font-ibmb text-2xl text-[#FFD000]">
-          {formatNumberWithSeparator(amount)}
+          {formatNumberWithSeparator(data?.data.availableAirdrop ?? 0)}
         </p>
 
         {/* <div className="mt-6 flex flex-col items-center gap-y-3">

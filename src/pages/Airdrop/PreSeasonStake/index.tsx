@@ -2,6 +2,7 @@ import { FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useGetMyPreStake, useGetPreStakeInfo } from '@/queries/airdrop'
 
 import AirdropStatistic from './AirdropStatistic'
@@ -9,7 +10,6 @@ import AvailableToStake from './AvailableToStake'
 import StakeAPY from './StakeAPY'
 
 import { UnstakeModal } from '../components/ExitTokenModals'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const PreSeasonStake: FC = () => {
   const navigate = useNavigate()

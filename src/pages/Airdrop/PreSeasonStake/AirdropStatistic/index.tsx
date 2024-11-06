@@ -3,9 +3,9 @@ import React, { ReactNode, useEffect, useMemo, useState } from 'react'
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useGetMyPreStake } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { formatNumberAsTrunc } from '@/utils/number'
 
 interface AirdropStatisticItemProps {
@@ -15,7 +15,7 @@ interface AirdropStatisticItemProps {
 
 const formatTime = (time: number) => {
   const hour = Math.floor(time / 3600)
-  const minites = Math.ceil(time / 60) % 3600
+  const minites = Math.ceil(time / 60) % 60
   return `${hour}H${minites}M`
 }
 
@@ -36,9 +36,10 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
-  const { isClaimed, amount, handleClaim, isActive } = useAirdropClaim(
-    AirdropClaimType.UnStake
-  )
+  const [collected, setCollected] = useState(false)
+  const { isClaimed, canClaim, handleClaim, isActive, refetchProofAndAmount } =
+    useAirdropClaim(AirdropClaimType.UnStake)
+
   const showUnStaked = useMemo(() => {
     if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
     return true
@@ -51,6 +52,7 @@ const Unstaked = () => {
     [data?.data.unStakedTime]
   )
   const now = useMemo(() => data?.data.now ?? 0, [data?.data.now])
+  useEffect(() => setCollected(!!isClaimed && isClaimed), [isClaimed])
 
   useEffect(() => {
     if (unStakedTime === 0) {
@@ -66,7 +68,8 @@ const Unstaked = () => {
       setCountdown((v) => {
         if (v > 0) return v - 1
         setEnableCollect(true)
-        console.log('Time up')
+        refetchProofAndAmount()
+        // console.log('Time up')
         return v
       })
     }, 1000)
@@ -79,17 +82,19 @@ const Unstaked = () => {
   return (
     <div className="flex w-full items-center justify-between">
       <div className="text-[#FFAA00]">
-        Unstaked $SMILE: {formatNumberAsTrunc(amount)}
+        Unstaked $SMILE: {formatNumberAsTrunc(data?.data.unStaked ?? 0)}
       </div>
       <div className="flex gap-3 text-white">
         {!enableCollect && <span>Collectable in: {formatTime(countdown)}</span>}
         <ActionButton
-          className="h-[25px] w-[95px] bg-white text-center text-base leading-none text-black"
+          className="h-[25px] w-[115px] bg-white text-center text-base leading-none text-black"
           onClick={() => {
-            handleClaim('Claim staking reward')
+            handleClaim('Claim staking reward', (error) => {
+              if (!error) setCollected(true)
+            })
           }}
-          disabled={!enableCollect || !isActive || isClaimed}>
-          {isClaimed ? 'Claimed' : 'Collect'}
+          disabled={!enableCollect || !isActive || collected || !canClaim}>
+          {collected ? 'Collected' : 'Collect'}
         </ActionButton>
       </div>
     </div>
@@ -108,6 +113,11 @@ const AirdropStatistic = () => {
       amount > 0,
     [projectInfo, amount]
   )
+  const [claimedReward, setClaimedReward] = useState(false)
+
+  // console.log('Reward: canClaim', canClaim, 'amount', amount)
+
+  useEffect(() => setClaimedReward(!!isClaimed && isClaimed), [isClaimed])
 
   return (
     <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
@@ -129,16 +139,21 @@ const AirdropStatistic = () => {
               <span>{formatNumberAsTrunc(data?.data.reward ?? 0)}</span>
               {showClaimReward && (
                 <button
-                  disabled={!isActive || !canClaim || isClaimed}
+                  disabled={!isActive || !canClaim || claimedReward || !amount}
                   onClick={() => {
-                    if (isClaimed) return
-                    handleClaim('Claim staking reward', () => refetch())
+                    handleClaim('Claim staking reward', (error) => {
+                      console.log(error)
+                      if (!error) {
+                        refetch()
+                        setClaimedReward(true)
+                      }
+                    })
                   }}
                   className={cn(
                     'bg-transparent text-sm font-bold text-[#FFAA00]/60 hover:text-[#FFAA00]',
                     !isClaimed && 'cursor-pointer'
                   )}>
-                  {isClaimed ? 'Claimed' : 'Claim'}
+                  {claimedReward ? 'Claimed' : 'Claim'}
                 </button>
               )}
             </div>

@@ -31,11 +31,19 @@ const AvailableToStake = () => {
     [myPreStake]
   )
 
-  const isPreStakeEnd = useMemo(() => {
-    if (!preStakeInfo?.data.preStakeEndTime || !preStakeInfo?.data.nowTime) {
+  const canStake = useMemo(() => {
+    if (
+      !preStakeInfo?.data.preStakeStartTime ||
+      !preStakeInfo?.data.preStakeEndTime ||
+      !preStakeInfo?.data.nowTime
+    ) {
       return false
     }
-    return preStakeInfo?.data.nowTime >= preStakeInfo?.data.preStakeEndTime
+    return (
+      preStakeInfo?.data.nowTime >= preStakeInfo?.data.preStakeStartTime &&
+      preStakeInfo?.data.nowTime < preStakeInfo?.data.preStakeEndTime &&
+      max > 0
+    )
   }, [preStakeInfo])
 
   const onChangeStakeAmount: React.ChangeEventHandler<HTMLInputElement> = (
@@ -61,6 +69,8 @@ const AvailableToStake = () => {
     stakeMutate({ amount: Number(stakeAmount) }).then((res) => {
       if (res.code === 0) {
         refetchMyPreStake()
+        setStakeAmount('0')
+        setStakePercentage(0)
       }
     })
   }
@@ -89,7 +99,7 @@ const AvailableToStake = () => {
           min={0}
           max={MAX_PERCENTAGE}
           step={1}
-          disabled={!max || isPreStakeEnd}
+          disabled={!canStake}
           value={stakePercentage}
           onInputChange={onChangePercentage}
           stepsClassName="text-sm text-white/60"
@@ -106,12 +116,12 @@ const AvailableToStake = () => {
           value={stakeAmount}
           onChange={onChangeStakeAmount}
           type="number"
-          disabled={!max || isPreStakeEnd}
+          disabled={!canStake}
           inputClassName="w-full"
         />
         <ActionButton
           className="w-[129px] bg-white/70 text-2xl text-black/75 hover:bg-white hover:text-black/75 active:bg-white/60 active:text-black/75"
-          disabled={stakePercentage === 0 || isStaking || isPreStakeEnd}
+          disabled={stakePercentage === 0 || isStaking || !canStake}
           onClick={stake}>
           Stake
         </ActionButton>
