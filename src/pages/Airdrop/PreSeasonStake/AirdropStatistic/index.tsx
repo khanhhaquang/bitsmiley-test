@@ -54,7 +54,7 @@ const Unstaked = () => {
   )
   const now = useMemo(() => data?.data.now ?? 0, [data?.data.now])
 
-  useEffect(() => setCollected(!!isClaimed && isClaimed), [isClaimed])
+  useEffect(() => setCollected(!!isClaimed), [isClaimed])
 
   useEffect(() => {
     if (unStakedTime === 0) {
