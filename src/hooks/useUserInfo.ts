@@ -31,7 +31,9 @@ export const useUserInfo = () => {
           ? null
           : UserService.getEnabledFeatures.call(addressForDisplay),
       enabled: !!addressForDisplay,
-      select: (res) => res?.data
+      select: (res) => res?.data,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false
     })
 
   const evmChain = useMemo(

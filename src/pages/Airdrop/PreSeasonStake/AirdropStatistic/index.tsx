@@ -37,6 +37,9 @@ const AirdropStatisticItem: React.FC<AirdropStatisticItemProps> = ({
 const Unstaked = () => {
   const { data } = useGetMyPreStake()
   const [collected, setCollected] = useState(false)
+  const [enableCollect, setEnableCollect] = useState(false)
+  const [countdown, setCountdown] = useState(0)
+
   const { isClaimed, canClaim, handleClaim, isActive, refetchProofAndAmount } =
     useAirdropClaim(AirdropClaimType.UnStake)
 
@@ -44,14 +47,13 @@ const Unstaked = () => {
     if (!data?.data.unStaked || data?.data.unStaked <= 0) return false
     return true
   }, [data])
-  const [enableCollect, setEnableCollect] = useState(false)
-  const [countdown, setCountdown] = useState(0)
 
   const unStakedTime = useMemo(
     () => data?.data.unStakedTime ?? 0,
     [data?.data.unStakedTime]
   )
   const now = useMemo(() => data?.data.now ?? 0, [data?.data.now])
+
   useEffect(() => setCollected(!!isClaimed && isClaimed), [isClaimed])
 
   useEffect(() => {
@@ -115,13 +117,11 @@ const AirdropStatistic = () => {
   )
   const [claimedReward, setClaimedReward] = useState(false)
 
-  // console.log('Reward: canClaim', canClaim, 'amount', amount)
-
   useEffect(() => setClaimedReward(!!isClaimed && isClaimed), [isClaimed])
 
   return (
     <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
-      <div className="flex w-full">
+      <div className="flex h-[102px] w-full items-center justify-evenly">
         <AirdropStatisticItem
           label="Your Total Airdrop"
           content={formatNumberAsTrunc(data?.data.totalAirdrop ?? 0)}
