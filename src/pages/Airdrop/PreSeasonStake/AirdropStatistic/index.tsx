@@ -82,7 +82,7 @@ const Unstaked = () => {
   if (!showUnStaked) return null
 
   return (
-    <div className="flex w-full items-center justify-between">
+    <div className="flex h-9 w-full items-center justify-between bg-white/5 px-12">
       <div className="text-[#FFAA00]">
         Unstaked $SMILE: {formatNumberAsTrunc(data?.data.unStaked ?? 0)}
       </div>
@@ -120,8 +120,8 @@ const AirdropStatistic = () => {
   useEffect(() => setClaimedReward(!!isClaimed && isClaimed), [isClaimed])
 
   return (
-    <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-[72px] py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
-      <div className="flex h-[102px] w-full items-center justify-evenly">
+    <div className="flex min-w-[1000px] flex-col items-center justify-evenly gap-4 border-x-[14px] border-y border-white/40 bg-white/5 px-6 py-[18px] font-ibmr font-semibold backdrop-blur-[10px]">
+      <div className="flex h-[102px] w-full items-center justify-evenly px-12">
         <AirdropStatisticItem
           label="Your Total Airdrop"
           content={formatNumberAsTrunc(data?.data.totalAirdrop ?? 0)}
