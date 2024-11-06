@@ -135,7 +135,7 @@ export const ConnectWallet: React.FC<{
       </div>
 
       <WrongNetworkModal
-        isOpen={true || isNetworkError}
+        isOpen={isNetworkError}
         onClose={() => setIsNetworkError(false)}
       />
       <SelectWalletModal
