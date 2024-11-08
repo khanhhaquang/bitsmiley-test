@@ -8,6 +8,7 @@ import {
 } from '@particle-network/btc-connectkit'
 import { ReactNode, useMemo, useState } from 'react'
 import { fallback, Transport } from 'viem'
+import { mainnet } from 'viem/chains'
 import { WagmiProvider, createConfig, http, unstable_connector } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 
@@ -17,7 +18,6 @@ import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import LoadingResourcesPage from '@/pages/LoadingResources'
 import NetworkErrorPage from '@/pages/NetworkError'
-import { mainnet } from 'viem/chains'
 
 const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
   const [isEntered, setIsEntered] = useState(false)
