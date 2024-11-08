@@ -7,8 +7,9 @@ import {
   XverseConnector
 } from '@particle-network/btc-connectkit'
 import { ReactNode, useMemo, useState } from 'react'
-import { Transport } from 'viem'
-import { WagmiProvider, createConfig, http } from 'wagmi'
+import { fallback, Transport } from 'viem'
+import { WagmiProvider, createConfig, http, unstable_connector } from 'wagmi'
+import { injected } from 'wagmi/connectors'
 
 import { chainsNotSupportedByParticle } from '@/config/wagmi'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
@@ -30,7 +31,7 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
     const transports = supportedChains.reduce<Record<number, Transport>>(
       (acc, c) => ({
         ...acc,
-        [c.id]: http()
+        [c.id]: fallback([unstable_connector(injected), http()])
       }),
       {}
     )
