@@ -103,7 +103,7 @@ export const UnstakeModal: FC<{
 
         <p className="w-[418px] text-center text-base text-white">
           We'll stop calculating your yield now. You will be able to collect
-          your $SMILE in 72 hours{' '}
+          your $SMILE
         </p>
       </div>
     </ExitTokenModal>
