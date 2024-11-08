@@ -8,6 +8,7 @@ import {
 } from '@particle-network/btc-connectkit'
 import { ReactNode, useMemo, useState } from 'react'
 import { fallback, Transport } from 'viem'
+import { mainnet } from 'viem/chains'
 import { WagmiProvider, createConfig, http, unstable_connector } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 
@@ -31,7 +32,14 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
     const transports = supportedChains.reduce<Record<number, Transport>>(
       (acc, c) => ({
         ...acc,
-        [c.id]: fallback([unstable_connector(injected), http()])
+        [c.id]:
+          c.id === mainnet.id
+            ? fallback([
+                unstable_connector(injected),
+                http('https://ethereum.blockpi.network/v1/rpc/public'),
+                http()
+              ])
+            : fallback([unstable_connector(injected), http()])
       }),
       {}
     )
