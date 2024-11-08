@@ -100,11 +100,6 @@ export const UnstakeModal: FC<{
           <SmileyIcon width={17} height={19} className="text-white" />
           {formatNumberWithSeparator(stakedAmount)}
         </p>
-
-        <p className="w-[418px] text-center text-base text-white">
-          We'll stop calculating your yield now. You will be able to collect
-          your $SMILE
-        </p>
       </div>
     </ExitTokenModal>
   )
