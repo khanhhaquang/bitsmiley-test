@@ -307,8 +307,8 @@ const Articles: React.FC = () => {
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-center gap-12',
-        'sm:w-screen sm:gap-x-6 sm:overflow-x-auto sm:px-0 scrollbar-none sm:flex-nowrap justify-start'
+        'grid grid-cols-3 items-center justify-start gap-12',
+        'sm:flex sm:w-screen sm:gap-x-6 sm:overflow-x-auto sm:px-0 scrollbar-none sm:flex-nowrap'
       )}>
       {items?.slice(0, 4).map((i, idx) => (
         <div
