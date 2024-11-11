@@ -148,6 +148,101 @@ const BackedBy: React.FC = () => {
             width={208}
             height={55}
           />
+          <Image
+            src={getIllustrationUrl('mt-logo', 'webp')}
+            width={245}
+            height={61}
+          />
+          <Image
+            src={getIllustrationUrl('veris-logo', 'webp')}
+            width={230}
+            height={82}
+          />
+          <Image
+            src={getIllustrationUrl('side-door-logo', 'webp')}
+            width={202}
+            height={65}
+          />
+          <Image
+            src={getIllustrationUrl('kucoin-logo', 'webp')}
+            width={162}
+            height={48}
+          />
+          <Image
+            src={getIllustrationUrl('tpc-logo', 'webp')}
+            width={124}
+            height={37}
+          />
+          <Image
+            src={getIllustrationUrl('pragma-logo', 'webp')}
+            width={158}
+            height={38}
+          />
+          <Image
+            src={getIllustrationUrl('newtribe-logo', 'webp')}
+            width={173}
+            height={44}
+          />
+          <Image
+            src={getIllustrationUrl('kinetic-logo', 'webp')}
+            width={381}
+            height={50}
+          />
+          <Image
+            src={getIllustrationUrl('perlone-logo', 'webp')}
+            width={140}
+            height={62}
+          />
+          <Image
+            src={getIllustrationUrl('rbc-logo', 'webp')}
+            width={140}
+            height={62}
+          />
+          <Image
+            src={getIllustrationUrl('guildqb-logo', 'webp')}
+            width={164}
+            height={40}
+          />
+          <Image
+            src={getIllustrationUrl('nxgen-logo', 'webp')}
+            width={130}
+            height={35}
+          />
+          <Image
+            src={getIllustrationUrl('dutch-logo', 'webp')}
+            width={103}
+            height={51}
+          />
+          <Image
+            src={getIllustrationUrl('aegis-logo', 'webp')}
+            width={216}
+            height={33}
+          />
+          <Image
+            src={getIllustrationUrl('zc-logo', 'webp')}
+            width={54}
+            height={46}
+          />
+          <Image
+            src={getIllustrationUrl('skyland-logo', 'webp')}
+            width={86}
+            height={68}
+          />
+          <Image
+            src={getIllustrationUrl('ce-logo', 'webp')}
+            width={67}
+            height={64}
+          />
+          <Image
+            src={getIllustrationUrl('cypher-logo', 'webp')}
+            width={82}
+            height={61}
+          />
+          <Image
+            src={getIllustrationUrl('comma3-logo', 'webp')}
+            width={156}
+            height={72}
+          />
         </div>
       ) : (
         <>
@@ -170,6 +265,37 @@ const BackedBy: React.FC = () => {
             <Image src={getIllustrationUrl('mtcapital-logo')} />
             <Image src={getIllustrationUrl('candaq-logo')} />
             <Image src={getIllustrationUrl('foresight-logo')} />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <Image src={getIllustrationUrl('mt-logo', 'webp')} />
+            <Image src={getIllustrationUrl('veris-logo', 'webp')} />
+            <Image src={getIllustrationUrl('side-door-logo', 'webp')} />
+            <Image src={getIllustrationUrl('kucoin-logo', 'webp')} />
+            <Image src={getIllustrationUrl('tpc-logo', 'webp')} />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <Image src={getIllustrationUrl('pragma-logo', 'webp')} />
+            <Image src={getIllustrationUrl('newtribe-logo', 'webp')} />
+            <Image src={getIllustrationUrl('kinetic-logo', 'webp')} />
+            <Image src={getIllustrationUrl('perlone-logo', 'webp')} />
+            <Image src={getIllustrationUrl('rbc-logo', 'webp')} />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <Image src={getIllustrationUrl('guildqb-logo', 'webp')} />
+            <Image src={getIllustrationUrl('nxgen-logo', 'webp')} />
+            <Image src={getIllustrationUrl('dutch-logo', 'webp')} />
+            <Image src={getIllustrationUrl('aegis-logo', 'webp')} />
+            <Image src={getIllustrationUrl('zc-logo', 'webp')} />
+            <Image src={getIllustrationUrl('skyland-logo', 'webp')} />
+            <Image src={getIllustrationUrl('ce-logo', 'webp')} />
+            <Image src={getIllustrationUrl('cypher-logo', 'webp')} />
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <Image src={getIllustrationUrl('comma3-logo', 'webp')} />
           </div>
         </>
       )}
