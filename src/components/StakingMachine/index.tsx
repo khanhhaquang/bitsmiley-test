@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { ArrowDownIcon } from '@/assets/icons'
 import { CanvasFrames } from '@/components/CanvasFrames'
@@ -8,13 +8,11 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-import { BoxContent } from './BoxContent'
-import { HistoryButton } from './HistoryButton'
+import { SmileyExpress } from './SmileyExpress'
 
 export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
-  const [isHistoryPage, setIsHistoryPage] = useState(false)
   const { width } = useWindowSize()
 
   const responsiveScaling = useMemo(() => {
@@ -30,15 +28,11 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
       style={{
         transform: `scale(${responsiveScaling})`
       }}>
-      <BoxContent
-        isHistoryPage={isHistoryPage}
-        onBackClick={() => setIsHistoryPage(false)}
-      />
+      <SmileyExpress></SmileyExpress>
       <StaticMachine />
       <Lights />
       <MarqueeText />
       <NumberPad />
-      <HistoryButton onClick={() => setIsHistoryPage(true)} />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )
