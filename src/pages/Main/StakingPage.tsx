@@ -108,6 +108,7 @@ const Inventor: React.FC = () => {
 const BackedBy: React.FC = () => {
   const { isMobile } = useMediaQuery()
 
+  console.log('backed by')
   return (
     <div className="flex flex-col flex-wrap items-center gap-5">
       {isMobile ? (
