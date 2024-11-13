@@ -25,8 +25,6 @@ export const BoxContent: React.FC<BoxContentProps> = ({
   const { address, isLoading: isConnecting } = useUserInfo()
   const { userStakes, isFetchingAll, isStakingEnded } = useUserStakes()
 
-  console.log('isMobile:', isMobile, 'isStakingEnded:', isStakingEnded)
-
   const renderContent = useMemo(() => {
     if (isMobile) return <MobileNotSupported />
     if (isConnecting) return <OnChainLoading />
