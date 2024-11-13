@@ -1,15 +1,18 @@
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 export const BuyButton: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement>
 > = ({ className, disabled, ...rest }) => {
+  const { isMobile } = useMediaQuery()
   return (
     <button
       disabled={disabled}
       type="button"
       className={cn(
-        'w-[144px] h-[47px] group relative cursor-pointer',
+        isMobile ? 'w-[158px] h-[51px]' : 'w-[144px] h-[47px]',
+        'group relative cursor-pointer',
         'disabled:cursor-not-allowed disabled:saturate-50',
         className
       )}

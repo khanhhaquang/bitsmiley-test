@@ -331,7 +331,7 @@ const Articles: React.FC = () => {
   )
 }
 
-const Divider: React.FC<{
+export const Divider: React.FC<{
   titleRef?: RefObject<HTMLDivElement> | null
   title: string
   className?: string

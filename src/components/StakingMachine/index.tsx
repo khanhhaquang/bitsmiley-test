@@ -22,38 +22,34 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
     return 0.89
   }, [width])
 
+  const isMobile = useMemo(() => width <= 639, [width])
+
   return (
     <div
-      className="relative z-10 flex h-[995px] w-[1423px] shrink-0 items-center justify-center sm:mt-[-150px]"
+      className={cn(
+        !isMobile && 'w-[1423px]',
+        'relative z-10 flex h-[995px] shrink-0 items-center justify-center sm:mt-[-150px]'
+      )}
       style={{
-        transform: `scale(${responsiveScaling})`
+        transform: isMobile ? '' : `scale(${responsiveScaling})`
       }}>
       <SmileyExpress></SmileyExpress>
-      <StaticMachine />
+      {!isMobile && <StaticMachine />}
       <Lights />
-      <MarqueeText />
-      <NumberPad />
+      {!isMobile && <MarqueeText />}
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )
 }
 
 const MarqueeText: React.FC = () => {
-  const label = 'NFT STAKING IS HERE'
+  const label = 'FUELS THE FUTURE OF BTC-FI'
 
   return (
     <div className="absolute bottom-[132px] left-[205px] z-[-1] h-fit w-[660px] bg-black">
       <Marquee speed={75} className="font-sdm text-[80px] text-yellow2">
         <span className="mr-6">{label}</span>
       </Marquee>
-    </div>
-  )
-}
-
-const NumberPad: React.FC = () => {
-  return (
-    <div className="absolute left-[515px] top-[648px] z-[100] h-[69px] w-[133px]">
-      <Image src={getIllustrationUrl('numberpad-default')} />
     </div>
   )
 }
@@ -70,6 +66,7 @@ const StaticMachine: React.FC = () => {
 const ArrowDown: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
+  console.log(hideScrollDown)
   return (
     <a
       href="#whoIsBitSmiley"
