@@ -53,31 +53,55 @@ export const SmileyExpress: React.FC = () => {
   const { isMobile } = useMediaQuery()
   if (isMobile)
     return (
-      <div className="relative flex flex-col items-center gap-y-3 pt-8 font-psm">
-        <div className="flex items-center gap-3">
+      <div className="absolute z-10 flex flex-col items-center gap-y-3 pt-8 font-psm">
+        <div className="flex h-[280px] w-[384px] flex-col">
           <Image
-            src={getIllustrationUrl('red-lines', 'webp')}
-            className="h-[9px] w-[55px]"
+            className="shrink-0"
+            src={getIllustrationUrl('mobile-enter-title', 'webp')}
           />
-          <div className="text-xs text-[#FF64AE]">
-            THE No.1 Stablecoin PROTOCOL in BTC
+          <Image
+            className=" mb-[70px] h-[94px] w-[384px]"
+            src={getIllustrationUrl('mobile-bg-top', 'webp')}
+          />
+          <Image
+            className=" h-[94px] w-[384px]"
+            src={getIllustrationUrl('mobile-bg-bottom', 'webp')}
+          />
+          <Image
+            className="absolute -left-[40px] top-[28px] h-[200px] w-[286px]"
+            src={getIllustrationUrl('light-left', 'gif')}
+          />
+          <Image
+            className="absolute -right-[230px] top-[28px] h-[200px] w-[286px]"
+            src={getIllustrationUrl('light-right', 'gif')}
+          />
+          <div className="absolute top-[170px] flex flex-col items-center gap-1">
+            <div className="flex items-center gap-3">
+              <Image
+                src={getIllustrationUrl('red-lines', 'webp')}
+                className="h-[9px] w-[50px]"
+              />
+              <div className="text-xs text-[#FF64AE]">
+                THE No.1 Stablecoin PROTOCOL in BTC
+              </div>
+              <Image
+                src={getIllustrationUrl('red-lines', 'webp')}
+                className="h-[9px] w-[50px]"
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <Image
+                src={getIllustrationUrl('white-smile-icon', 'webp')}
+                className="h-[56px] w-[52px]"
+              />
+              <div className="font-smb2 text-[50px] leading-none text-white [text-shadow:_6px_0px_0px_#5B5B5B]">
+                $SMILE
+              </div>
+            </div>
           </div>
-          <Image
-            src={getIllustrationUrl('red-lines', 'webp')}
-            className="h-[9px] w-[55px]"
-          />
         </div>
-        <div className="flex items-center gap-4">
-          <Image
-            src={getIllustrationUrl('white-smile-icon', 'webp')}
-            className="h-[56px] w-[52px]"
-          />
-          <div className="font-smb2 text-[40px] leading-none text-white [text-shadow:_6px_0px_0px_#5B5B5B]">
-            $SMILE
-          </div>
-        </div>
-        <Divider title="buy smile from" className="relative my-0"></Divider>
-        {/* <div>buy smile from</div> */}
+
+        <Divider title="Buy $SMILE from" className="relative my-0"></Divider>
         <BuySmile></BuySmile>
       </div>
     )

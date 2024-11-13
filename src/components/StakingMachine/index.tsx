@@ -15,6 +15,8 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
 }) => {
   const { width } = useWindowSize()
 
+  const isMobile = useMemo(() => width <= 639, [width])
+
   const responsiveScaling = useMemo(() => {
     if (width <= 639) return 0.4
     if (width <= 1200) return 0.7
@@ -22,21 +24,23 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
     return 0.89
   }, [width])
 
-  const isMobile = useMemo(() => width <= 639, [width])
+  if (isMobile)
+    return (
+      <div className="relative z-10 flex h-[995px] shrink-0 items-center justify-center sm:mt-[-150px]">
+        <SmileyExpress></SmileyExpress>
+      </div>
+    )
 
   return (
     <div
-      className={cn(
-        !isMobile && 'w-[1423px]',
-        'relative z-10 flex h-[995px] shrink-0 items-center justify-center sm:mt-[-150px]'
-      )}
+      className="relative z-10 flex h-[995px] w-[1423px] shrink-0 items-center justify-center sm:mt-[-150px]"
       style={{
-        transform: isMobile ? '' : `scale(${responsiveScaling})`
+        transform: `scale(${responsiveScaling})`
       }}>
       <SmileyExpress></SmileyExpress>
-      {!isMobile && <StaticMachine />}
+      <StaticMachine />
       <Lights />
-      {!isMobile && <MarqueeText />}
+      <MarqueeText />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )
