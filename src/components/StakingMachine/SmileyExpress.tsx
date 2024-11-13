@@ -4,7 +4,7 @@ import { Divider } from '@/pages/Main/StakingPage'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-import { BuyButton } from './BuyButton'
+import { BuyButton, BuyFromType } from './BuyButton'
 
 const BuySmile: React.FC = () => {
   const { isMobile } = useMediaQuery()
@@ -15,36 +15,11 @@ const BuySmile: React.FC = () => {
           ? 'flex flex-wrap gap-2 w-full items-center justify-center'
           : 'flex gap-1'
       )}>
-      <BuyButton>
-        <Image
-          src={getIllustrationUrl('bybit-icon', 'webp')}
-          className="h-[31px] w-[83px]"
-        />
-      </BuyButton>
-      <BuyButton>
-        <Image
-          src={getIllustrationUrl('gate-io-icon', 'webp')}
-          className="h-[26px] w-[93px]"
-        />
-      </BuyButton>
-      <BuyButton>
-        <Image
-          src={getIllustrationUrl('mexc-icon', 'webp')}
-          className="h-[17px] w-[91px]"
-        />
-      </BuyButton>
-      <BuyButton>
-        <Image
-          src={getIllustrationUrl('bitget-icon', 'webp')}
-          className="h-[26px] w-[85px]"
-        />
-      </BuyButton>
-      <BuyButton>
-        <Image
-          src={getIllustrationUrl('kucoin-icon', 'webp')}
-          className="h-[31px] w-[112px]"
-        />
-      </BuyButton>
+      <BuyButton from={BuyFromType.BYBIT} />
+      <BuyButton from={BuyFromType.GateIo} />
+      <BuyButton from={BuyFromType.MEXC} />
+      <BuyButton from={BuyFromType.Bitget} />
+      <BuyButton from={BuyFromType.KUCOIN} />
     </div>
   )
 }
@@ -60,11 +35,11 @@ export const SmileyExpress: React.FC = () => {
             src={getIllustrationUrl('mobile-enter-title', 'webp')}
           />
           <Image
-            className=" mb-[70px] h-[94px] w-[384px]"
+            className="mb-[70px] h-[94px] w-[384px]"
             src={getIllustrationUrl('mobile-bg-top', 'webp')}
           />
           <Image
-            className=" h-[94px] w-[384px]"
+            className="h-[94px] w-[384px]"
             src={getIllustrationUrl('mobile-bg-bottom', 'webp')}
           />
           <Image
@@ -106,8 +81,8 @@ export const SmileyExpress: React.FC = () => {
       </div>
     )
   return (
-    <div className="absolute left-[300px] top-[300px] z-10">
-      <div className="relative flex w-[800px] flex-col items-center gap-y-3 pt-8 font-psm">
+    <div className="absolute left-[293px] top-[300px] z-10">
+      <div className="relative flex w-[810px] flex-col items-center gap-y-3 pt-8 font-psm">
         <div className="flex items-center gap-3">
           <Image
             src={getIllustrationUrl('red-lines', 'webp')}
