@@ -70,7 +70,6 @@ const StaticMachine: React.FC = () => {
 const ArrowDown: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
-  console.log(hideScrollDown)
   return (
     <a
       href="#whoIsBitSmiley"
