@@ -1,6 +1,5 @@
 import { RefObject, useRef } from 'react'
 
-import { BitUsdPixelIcon, CoinIcon } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import { CanvasFrames } from '@/components/CanvasFrames'
 import { Image } from '@/components/Image'
@@ -24,7 +23,7 @@ export const StakingPage: React.FC = () => {
         <div className="relative" id="whoIsBitSmiley">
           <Divider
             title="Who is bitSmiley"
-            className="mb-[200px] mt-[136px] sm:mb-20 sm:mt-[-200px]"
+            className="mb-[200px] mt-[136px] sm:my-[72px]"
             titleRef={whoIsBitSmileyRef}
           />
           <GlobalBg wrapperClassName="top-[280px] sm:top-[320px]" />
@@ -32,7 +31,7 @@ export const StakingPage: React.FC = () => {
         <Inventor />
         <Divider
           title="Backed By"
-          className="mb-[240px] mt-[400px] sm:mb-20 sm:mt-[140px]"
+          className="mb-[240px] mt-[400px] sm:my-[72px]"
         />
         <BackedBy />
         <div className="relative">
@@ -42,7 +41,7 @@ export const StakingPage: React.FC = () => {
           />
           <Divider
             title="Articles"
-            className="mb-[200px] mt-[400px] sm:mb-20 sm:mt-[140px]"
+            className="mb-[200px] mt-[400px] sm:my-[72px]"
           />
         </div>
         <div className="flex w-[1423px]  justify-center pb-[280px] sm:w-full sm:px-6 sm:pb-[100px]">
@@ -56,48 +55,77 @@ export const StakingPage: React.FC = () => {
 const Inventor: React.FC = () => {
   const { isMobile } = useMediaQuery()
   return (
-    <div className="flex cursor-default flex-wrap items-center justify-center gap-x-28 gap-y-10 sm:gap-y-7">
-      <div className="shrink-0 sm:flex sm:w-full sm:justify-center sm:gap-x-7">
-        <CanvasFrames
-          fps={8}
-          width={isMobile ? 125 : 215}
-          height={isMobile ? 134 : 230}
-          imgLocalPaths={[
-            ...Array(14)
-              .fill(1)
-              .map(() => getFrameUrl('smiley-logo', 'smiley-1', 'svg')),
-            getFrameUrl('smiley-logo', 'smiley-2', 'svg'),
-            getFrameUrl('smiley-logo', 'smiley-1', 'svg'),
-            getFrameUrl('smiley-logo', 'smiley-2', 'svg')
-          ]}
-        />
+    <div className="flex cursor-default flex-col items-center justify-center gap-y-[72px] lg:flex-row lg:gap-x-[72px]">
+      <div className="flex w-[432px] shrink-0 flex-wrap items-center justify-center gap-x-[35px] gap-y-[10px] sm:w-[221px] sm:gap-x-7">
+        <div className="flex w-full justify-center lg:block lg:w-fit">
+          <CanvasFrames
+            fps={8}
+            width={isMobile ? 92 : 177}
+            height={isMobile ? 99 : 200}
+            imgLocalPaths={[
+              ...Array(14)
+                .fill(1)
+                .map(() => getFrameUrl('smiley-logo', 'smiley-1', 'svg')),
+              getFrameUrl('smiley-logo', 'smiley-2', 'svg'),
+              getFrameUrl('smiley-logo', 'smiley-1', 'svg'),
+              getFrameUrl('smiley-logo', 'smiley-2', 'svg')
+            ]}
+          />
+        </div>
         <img
           alt="bitusd"
           src={getIllustrationUrl('large-bit-usd', 'webp')}
-          width={125}
-          height={135}
-          className="hidden sm:block"
+          width={isMobile ? 92 : 182}
+          height={isMobile ? 92 : 192}
+        />
+        <img
+          alt="bitcoin"
+          src={getIllustrationUrl('large-bitcoin', 'webp')}
+          width={isMobile ? 92 : 182}
+          height={isMobile ? 92 : 182}
+          className=""
         />
       </div>
-      <div className="flex h-[230px] w-[700px] flex-col justify-between sm:h-auto sm:w-[286px] sm:text-center">
-        <div className="flex items-center justify-start gap-x-2 text-[32px] sm:mb-9 sm:justify-center sm:text-center sm:font-psm sm:text-lg sm:font-bold sm:text-[#FF8D00]">
-          <span>Inventor of bitUSD</span>
-          <span className="pb-1">
-            <CoinIcon className="sm:hidden" />
-            <BitUsdPixelIcon className="hidden sm:block" />
-          </span>
-        </div>
-        <div>
-          <div className="mb-4 text-2xl sm:mb-6 sm:text-justify sm:text-base">
-            We are the OG of Bitcoin{' '}
-            <span className="text-yellow">stablecoin</span> based on
-            over-collateralization, building its peripheral{' '}
-            <span className="text-yellow">Fintegra</span> products at the same
-            time.
+      <div className="flex h-auto w-[700px] flex-col justify-between gap-x-[72px] gap-y-12 sm:w-full sm:gap-y-6 sm:px-[10px] sm:text-center">
+        <div className="flex flex-col gap-y-6 sm:gap-y-[6px]">
+          <div
+            className="flex items-center justify-center gap-x-2 font-smb text-[32px] uppercase text-[#FF8D00] sm:gap-x-[2px] sm:text-center sm:text-xs lg:justify-start"
+            style={{
+              textShadow: '0px 4px 0px #692800'
+            }}>
+            <span>Inventor of bitUSD</span>
+            <img
+              alt="bitusd"
+              src={getIllustrationUrl('small-bit-usd', 'webp')}
+              width={isMobile ? 12 : 34}
+              height={isMobile ? 12 : 34}
+            />
           </div>
+          <div className="text-center text-2xl sm:text-xs lg:text-start">
+            We are the OG of Bitcoin stablecoin based on over-collateralization,
+            building its peripheral Fintegra products at the same time.
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-y-3 sm:gap-y-1">
+          <div
+            className="flex items-center justify-center gap-x-2 font-smb text-[32px] uppercase leading-[55px] text-pink sm:gap-x-[2px] sm:text-center sm:text-lg sm:leading-6 lg:justify-start"
+            style={{
+              textShadow: '0px 4px 0px #8F0044'
+            }}>
+            <span className="text-[55px] sm:text-2xl">30+</span>
+            Million
+          </div>
+          <div className="text-center text-2xl sm:text-xs lg:text-start">
+            With 30+ million TVL in bitSmiley stablecoin protocol, bitUSD is the
+            biggest stablecoin in BTC ecosystem.
+          </div>
+        </div>
+
+        <div className="flex w-full justify-center lg:block lg:w-fit">
           <Button
             onClick={() => openUrl(MEDIA.whitePaper)}
-            className="inline-block h-10 bg-blue text-white shadow-whitepaper-button hover:bg-blue1">
+            className="inline-block h-10 w-[141px] bg-blue uppercase text-white shadow-whitepaper-button hover:bg-blue1">
             Whitepaper
           </Button>
         </div>
@@ -106,200 +134,131 @@ const Inventor: React.FC = () => {
   )
 }
 const BackedBy: React.FC = () => {
-  const { isMobile } = useMediaQuery()
-
-  console.log('backed by')
   return (
-    <div className="flex flex-col flex-wrap items-center gap-5">
-      {isMobile ? (
-        <div className="scrollbar-none flex w-screen flex-nowrap items-center justify-start gap-x-12 overflow-auto px-6">
-          <Image src={getIllustrationUrl('okx-logo')} width={186} height={98} />
-          <Image
-            src={getIllustrationUrl('abcde-logo')}
-            width={287}
-            height={98}
-          />
-          <Image
-            src={getIllustrationUrl('cms-logo')}
-            width={220}
-            height={100}
-          />
-          <Image
-            src={getIllustrationUrl('arkstream-logo')}
-            width={236}
-            height={68}
-          />
-          <Image
-            src={getIllustrationUrl('7updao-logo')}
-            width={374}
-            height={72}
-          />
-          <Image
-            src={getIllustrationUrl('mtcapital-logo')}
-            width={274}
-            height={72}
-          />
-          <Image
-            src={getIllustrationUrl('candaq-logo')}
-            width={248}
-            height={60}
-          />
-          <Image
-            src={getIllustrationUrl('foresight-logo')}
-            width={208}
-            height={55}
-          />
-          <Image
-            src={getIllustrationUrl('mt-logo', 'webp')}
-            width={245}
-            height={61}
-          />
-          <Image
-            src={getIllustrationUrl('veris-logo', 'webp')}
-            width={230}
-            height={82}
-          />
-          <Image
-            src={getIllustrationUrl('side-door-logo', 'webp')}
-            width={202}
-            height={65}
-          />
-          <Image
-            src={getIllustrationUrl('kucoin-logo', 'webp')}
-            width={162}
-            height={48}
-          />
-          <Image
-            src={getIllustrationUrl('tpc-logo', 'webp')}
-            width={124}
-            height={37}
-          />
-          <Image
-            src={getIllustrationUrl('pragma-logo', 'webp')}
-            width={158}
-            height={38}
-          />
-          <Image
-            src={getIllustrationUrl('newtribe-logo', 'webp')}
-            width={173}
-            height={44}
-          />
-          <Image
-            src={getIllustrationUrl('kinetic-logo', 'webp')}
-            width={381}
-            height={50}
-          />
-          <Image
-            src={getIllustrationUrl('perlone-logo', 'webp')}
-            width={140}
-            height={62}
-          />
-          <Image
-            src={getIllustrationUrl('rbc-logo', 'webp')}
-            width={140}
-            height={62}
-          />
-          <Image
-            src={getIllustrationUrl('guildqb-logo', 'webp')}
-            width={164}
-            height={40}
-          />
-          <Image
-            src={getIllustrationUrl('nxgen-logo', 'webp')}
-            width={130}
-            height={35}
-          />
-          <Image
-            src={getIllustrationUrl('dutch-logo', 'webp')}
-            width={103}
-            height={51}
-          />
-          <Image
-            src={getIllustrationUrl('aegis-logo', 'webp')}
-            width={216}
-            height={33}
-          />
-          <Image
-            src={getIllustrationUrl('zc-logo', 'webp')}
-            width={54}
-            height={46}
-          />
-          <Image
-            src={getIllustrationUrl('skyland-logo', 'webp')}
-            width={86}
-            height={68}
-          />
-          <Image
-            src={getIllustrationUrl('ce-logo', 'webp')}
-            width={67}
-            height={64}
-          />
-          <Image
-            src={getIllustrationUrl('cypher-logo', 'webp')}
-            width={82}
-            height={61}
-          />
-          <Image
-            src={getIllustrationUrl('comma3-logo', 'webp')}
-            width={156}
-            height={72}
-          />
+    <div className="flex flex-col flex-wrap items-center gap-5 sm:w-full sm:gap-0 sm:px-[10px]">
+      <div className="mb-12 flex flex-wrap items-center justify-center gap-x-40 sm:mb-4 sm:gap-x-[53px] ">
+        <div className="h-[153px] w-[288px] mix-blend-lighten sm:h-[50px] sm:w-[96px] ">
+          <Image src={getIllustrationUrl('okx-logo')} />
         </div>
-      ) : (
-        <>
-          <div className="mb-12 flex flex-wrap items-center justify-center gap-x-40 gap-y-10">
-            <div className="h-[153px] shrink-0 mix-blend-lighten">
-              <Image src={getIllustrationUrl('okx-logo')} />
-            </div>
-            <div className="h-[153px] w-[445px] shrink-0">
-              <Image src={getIllustrationUrl('abcde-logo')} />
-            </div>
-          </div>
+        <div className="h-[153px] w-[445px] shrink-0 sm:h-[50px] sm:w-[148px]">
+          <Image src={getIllustrationUrl('abcde-logo')} />
+        </div>
+      </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <Image src={getIllustrationUrl('cms-logo')} />
-            <Image src={getIllustrationUrl('arkstream-logo')} />
-            <Image src={getIllustrationUrl('7updao-logo')} />
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-6 sm:mb-1 sm:w-full sm:justify-between sm:gap-0">
+        <Image src={getIllustrationUrl('cms-logo')} className="sm:h-[44px]" />
+        <Image
+          src={getIllustrationUrl('arkstream-logo')}
+          className="sm:h-[25px]"
+        />
+        <Image
+          src={getIllustrationUrl('7updao-logo')}
+          className="sm:h-[21px] sm:w-[111px]"
+        />
+      </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <Image src={getIllustrationUrl('mtcapital-logo')} />
-            <Image src={getIllustrationUrl('candaq-logo')} />
-            <Image src={getIllustrationUrl('foresight-logo')} />
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-6 sm:mb-4 sm:w-full sm:justify-between sm:gap-0">
+        <Image
+          src={getIllustrationUrl('mtcapital-logo')}
+          className="sm:h-[24px]"
+        />
+        <Image
+          src={getIllustrationUrl('candaq-logo')}
+          className="sm:h-[24px]"
+        />
+        <Image
+          src={getIllustrationUrl('foresight-logo')}
+          className="sm:h-[24px]"
+        />
+      </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <Image src={getIllustrationUrl('mt-logo', 'webp')} />
-            <Image src={getIllustrationUrl('veris-logo', 'webp')} />
-            <Image src={getIllustrationUrl('side-door-logo', 'webp')} />
-            <Image src={getIllustrationUrl('kucoin-logo', 'webp')} />
-            <Image src={getIllustrationUrl('tpc-logo', 'webp')} />
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-6 sm:mb-2 sm:w-full sm:justify-between sm:gap-0">
+        <Image
+          src={getIllustrationUrl('mt-logo', 'webp')}
+          className="sm:h-[20px]"
+        />
+        <Image
+          src={getIllustrationUrl('veris-logo', 'webp')}
+          className="sm:h-[27px]"
+        />
+        <Image
+          src={getIllustrationUrl('side-door-logo', 'webp')}
+          className="sm:h-[21px]"
+        />
+        <Image
+          src={getIllustrationUrl('kucoin-logo', 'webp')}
+          className="sm:h-[16px]"
+        />
+        <Image
+          src={getIllustrationUrl('tpc-logo', 'webp')}
+          className="sm:h-[13px]"
+        />
+      </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <Image src={getIllustrationUrl('pragma-logo', 'webp')} />
-            <Image src={getIllustrationUrl('newtribe-logo', 'webp')} />
-            <Image src={getIllustrationUrl('kinetic-logo', 'webp')} />
-            <Image src={getIllustrationUrl('perlone-logo', 'webp')} />
-            <Image src={getIllustrationUrl('rbc-logo', 'webp')} />
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-6 sm:mb-2 sm:w-full sm:justify-between sm:gap-0">
+        <Image
+          src={getIllustrationUrl('pragma-logo', 'webp')}
+          className="sm:h-[13px]"
+        />
+        <Image
+          src={getIllustrationUrl('newtribe-logo', 'webp')}
+          className="sm:h-[14px]"
+        />
+        <Image
+          src={getIllustrationUrl('kinetic-logo', 'webp')}
+          className="sm:h-[16px]"
+        />
+        <Image
+          src={getIllustrationUrl('perlone-logo', 'webp')}
+          className="sm:h-[20px]"
+        />
+        <Image
+          src={getIllustrationUrl('rbc-logo', 'webp')}
+          className="sm:h-[18px]"
+        />
+      </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <Image src={getIllustrationUrl('guildqb-logo', 'webp')} />
-            <Image src={getIllustrationUrl('nxgen-logo', 'webp')} />
-            <Image src={getIllustrationUrl('dutch-logo', 'webp')} />
-            <Image src={getIllustrationUrl('aegis-logo', 'webp')} />
-            <Image src={getIllustrationUrl('zc-logo', 'webp')} />
-            <Image src={getIllustrationUrl('skyland-logo', 'webp')} />
-            <Image src={getIllustrationUrl('ce-logo', 'webp')} />
-            <Image src={getIllustrationUrl('cypher-logo', 'webp')} />
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-6 sm:mb-2 sm:w-full sm:justify-between sm:gap-0">
+        <Image
+          src={getIllustrationUrl('guildqb-logo', 'webp')}
+          className="sm:h-[13px]"
+        />
+        <Image
+          src={getIllustrationUrl('nxgen-logo', 'webp')}
+          className="sm:h-[11px]"
+        />
+        <Image
+          src={getIllustrationUrl('dutch-logo', 'webp')}
+          className="sm:h-[17px]"
+        />
+        <Image
+          src={getIllustrationUrl('aegis-logo', 'webp')}
+          className="sm:h-[11px]"
+        />
+        <Image
+          src={getIllustrationUrl('zc-logo', 'webp')}
+          className="sm:h-[15px]"
+        />
+        <Image
+          src={getIllustrationUrl('skyland-logo', 'webp')}
+          className="sm:h-[22px]"
+        />
+        <Image
+          src={getIllustrationUrl('ce-logo', 'webp')}
+          className="sm:h-[21px]"
+        />
+        <Image
+          src={getIllustrationUrl('cypher-logo', 'webp')}
+          className="sm:h-[27px]"
+        />
+      </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            <Image src={getIllustrationUrl('comma3-logo', 'webp')} />
-          </div>
-        </>
-      )}
+      <div className="flex flex-wrap items-center justify-between gap-6">
+        <Image
+          src={getIllustrationUrl('comma3-logo', 'webp')}
+          className="sm:h-[24px]"
+        />
+      </div>
     </div>
   )
 }
