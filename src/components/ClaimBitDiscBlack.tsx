@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { CloseIcon, RightAngleThin } from '@/assets/icons'
+import { useUserStakes } from '@/hooks/useUserStakes'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
@@ -9,17 +10,16 @@ import { Image } from './Image'
 import { Modal } from './Modal'
 
 const ClaimBitDiscBlack = () => {
+  const { userStakes, handleWithdraw, isClaiming } = useUserStakes()
   const [isOpen, setOpen] = useState(false)
 
-  const isReady = true
-  const claimableDisks = 2
-  const isClaimable = true
+  const claimableNfts = useMemo(() => userStakes || [], [userStakes])
 
   const onClose = () => {
     setOpen(false)
   }
 
-  if (!isReady) return null
+  if (!claimableNfts.length) return null
 
   return (
     <>
@@ -55,21 +55,21 @@ const ClaimBitDiscBlack = () => {
             <CloseIcon width={18} height={17} />
           </button>
           <div className="p-[42px]">
-            <div className="mb-8 text-center font-smb text-2xl uppercase">
+            <h2 className="mb-8 text-center font-smb text-2xl uppercase">
               CLAIM BITDISC-BLACK
-            </div>
+            </h2>
             <div className="flex flex-col items-center gap-6 ">
-              <div className="text-center">
+              <p className="text-center">
                 Dear bitSmiler, below are the bitDisc-Black you have staked.You
                 can claim one each time
-              </div>
+              </p>
               <div className="relative flex items-center">
                 <Image
                   alt="Claimable BitDisc"
                   src={getIllustrationUrl('claimable-bit-disc', 'webp')}
                   className="z-[2] h-[151px] w-[156px]"
                 />
-                {claimableDisks > 1 && (
+                {claimableNfts.length > 1 && (
                   <div className="relative ml-[-100px] ">
                     <Image
                       alt="Remain BitDisc"
@@ -80,13 +80,20 @@ const ClaimBitDiscBlack = () => {
                       className="h-[151px] w-[156px]"
                     />
                     <div className="absolute right-4 top-[60px] font-pss text-2xl text-cyan">
-                      +{claimableDisks - 1}
+                      +{claimableNfts.length - 1}
                     </div>
                   </div>
                 )}
               </div>
-              <Button className="h-[26px] w-[120px]" disabled={!isClaimable}>
-                Claim
+              <Button
+                onClick={() => {
+                  handleWithdraw((e) => {
+                    if (!e) onClose()
+                  })
+                }}
+                className="h-[26px] w-[120px]"
+                disabled={isClaiming}>
+                {isClaiming ? 'Claiming' : 'Claim'}
               </Button>
             </div>
           </div>
