@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { ArrowDownIcon } from '@/assets/icons'
 import { CanvasFrames } from '@/components/CanvasFrames'
@@ -8,14 +8,14 @@ import { useWindowSize } from '@/hooks/useWindowSize'
 import { cn } from '@/utils/cn'
 import { getFrameUrl, getIllustrationUrl } from '@/utils/getAssetsUrl'
 
-import { BoxContent } from './BoxContent'
-import { HistoryButton } from './HistoryButton'
+import { SmileyExpress } from './SmileyExpress'
 
 export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
   hideScrollDown
 }) => {
-  const [isHistoryPage, setIsHistoryPage] = useState(false)
   const { width } = useWindowSize()
+
+  const isMobile = useMemo(() => width <= 639, [width])
 
   const responsiveScaling = useMemo(() => {
     if (width <= 639) return 0.4
@@ -24,42 +24,36 @@ export const StakingMachine: React.FC<{ hideScrollDown: boolean }> = ({
     return 0.89
   }, [width])
 
+  if (isMobile)
+    return (
+      <div className="relative z-10 flex h-[995px] shrink-0 items-center justify-center sm:mt-[-150px]">
+        <SmileyExpress></SmileyExpress>
+      </div>
+    )
+
   return (
     <div
       className="relative z-10 flex h-[995px] w-[1423px] shrink-0 items-center justify-center sm:mt-[-150px]"
       style={{
         transform: `scale(${responsiveScaling})`
       }}>
-      <BoxContent
-        isHistoryPage={isHistoryPage}
-        onBackClick={() => setIsHistoryPage(false)}
-      />
+      <SmileyExpress></SmileyExpress>
       <StaticMachine />
       <Lights />
       <MarqueeText />
-      <NumberPad />
-      <HistoryButton onClick={() => setIsHistoryPage(true)} />
       <ArrowDown hideScrollDown={hideScrollDown} />
     </div>
   )
 }
 
 const MarqueeText: React.FC = () => {
-  const label = 'NFT STAKING IS HERE'
+  const label = 'FUELS THE FUTURE OF BTC-FI'
 
   return (
     <div className="absolute bottom-[132px] left-[205px] z-[-1] h-fit w-[660px] bg-black">
       <Marquee speed={75} className="font-sdm text-[80px] text-yellow2">
         <span className="mr-6">{label}</span>
       </Marquee>
-    </div>
-  )
-}
-
-const NumberPad: React.FC = () => {
-  return (
-    <div className="absolute left-[515px] top-[648px] z-[100] h-[69px] w-[133px]">
-      <Image src={getIllustrationUrl('numberpad-default')} />
     </div>
   )
 }

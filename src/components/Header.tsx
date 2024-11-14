@@ -10,6 +10,7 @@ import {
   Airdrop as AirdropIntro,
   AirdropButton as EnterAirdropButton
 } from './Airdrop'
+import ClaimBitDiscBlack from './ClaimBitDiscBlack'
 import { ConnectWallet } from './ConnectWallet'
 
 export const Header: React.FC<{
@@ -39,6 +40,7 @@ export const Header: React.FC<{
           <ConnectWallet />
           {!isRoot && <EnterHomeButton />}
           {!isMainApp && <EnterAppButton />}
+          <ClaimBitDiscBlack />
           {isConnected && showAirdropEntryButton && <EnterAirdropButton />}
           <AirdropIntro isAirdropPage={isAirdropPage} />
         </div>
