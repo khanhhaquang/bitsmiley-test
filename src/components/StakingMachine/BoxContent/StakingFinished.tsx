@@ -1,41 +1,14 @@
-import { useState } from 'react'
-import { useWriteContract } from 'wagmi'
-
-import stakingAbi from '@/abi/Staking.json'
 import { BitJade, RightAngle } from '@/assets/icons'
 import { Button } from '@/components/Button'
 import { Image } from '@/components/Image'
-import { useContractAddresses } from '@/hooks/useContractAddresses'
-import { useStoreActions } from '@/hooks/useStoreActions'
 import { useUserStakes } from '@/hooks/useUserStakes'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 
 import { PlayerInfo } from '../Common'
 
 export const StakingFinished: React.FC = () => {
-  const [isRetrieving, setIsRetrieving] = useState(false)
-  const { addTransaction } = useStoreActions()
-  const contractAddresses = useContractAddresses()
-  const { writeContractAsync } = useWriteContract()
-  const { jadeBalance } = useUserStakes()
-
-  const handleWithdraw = async () => {
-    if (contractAddresses?.staking) {
-      try {
-        setIsRetrieving(true)
-        const txid = await writeContractAsync({
-          abi: stakingAbi,
-          functionName: 'withdraw',
-          address: contractAddresses.staking
-        })
-        addTransaction(txid)
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setIsRetrieving(false)
-      }
-    }
-  }
+  const { jadeBalance, handleWithdraw, isClaiming, userStakes } =
+    useUserStakes()
 
   return (
     <div className="pt-4">
@@ -55,9 +28,9 @@ export const StakingFinished: React.FC = () => {
             <Button
               size="xs"
               className="w-[100px]"
-              onClick={handleWithdraw}
-              disabled={isRetrieving}>
-              {isRetrieving ? 'Retrieving' : 'Retrieve'}
+              onClick={() => handleWithdraw()}
+              disabled={isClaiming || !userStakes?.length}>
+              {isClaiming ? 'Retrieving' : 'Retrieve'}
             </Button>
           </div>
           <div className="absolute left-0 top-0 size-full bg-black/50"></div>
