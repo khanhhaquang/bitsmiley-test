@@ -60,8 +60,7 @@ const ClaimBitDiscBlack = () => {
             </h2>
             <div className="flex flex-col items-center gap-6 ">
               <p className="text-center">
-                Dear bitSmiler, below are the bitDisc-Black you have staked.You
-                can claim one each time
+                Dear bitSmiler, below are the bitDisc-Black you have staked.
               </p>
               <div className="relative flex items-center">
                 <Image
