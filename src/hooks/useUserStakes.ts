@@ -1,6 +1,8 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useWriteContract } from 'wagmi'
 
+import stakingAbi from '@/abi/Staking.json'
 import {
   useReadStakingContractGetStakeRewards,
   useReadStakingContractGetUserStakes,
@@ -10,12 +12,17 @@ import {
 import { getTransactions } from '@/store/common/reducer'
 
 import { useContractAddresses } from './useContractAddresses'
+import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
 
 export const useUserStakes = () => {
   const contractAddresses = useContractAddresses()
   const { address } = useUserInfo()
   const transactions = useSelector(getTransactions)
+  const { addTransaction } = useStoreActions()
+  const { writeContractAsync } = useWriteContract()
+
+  const [isClaiming, setIsClaiming] = useState(false)
 
   const stakingAddress = contractAddresses?.staking
     ? contractAddresses?.staking
@@ -63,6 +70,26 @@ export const useUserStakes = () => {
     [isFetchingIsStakingEnded, isFetchingUserStakes, isFetchingPerAddressLimit]
   )
 
+  const handleWithdraw = async (callback?: (error?: unknown) => void) => {
+    if (contractAddresses?.staking) {
+      try {
+        setIsClaiming(true)
+        const txid = await writeContractAsync({
+          abi: stakingAbi,
+          functionName: 'withdraw',
+          address: contractAddresses.staking
+        })
+        addTransaction(txid)
+        callback?.()
+      } catch (error) {
+        console.error(error)
+        callback?.(error)
+      } finally {
+        setIsClaiming(false)
+      }
+    }
+  }
+
   useEffect(() => {
     refetchStakingState()
     refetchUserStakes()
@@ -80,6 +107,9 @@ export const useUserStakes = () => {
     refetchUserStakes,
     perAddressLimit,
     jadeBalance,
-    stakeRewards
+    stakeRewards,
+    stakingAddress,
+    isClaiming,
+    handleWithdraw
   }
 }
