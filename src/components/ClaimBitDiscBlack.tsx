@@ -20,7 +20,12 @@ const ClaimBitDiscBlack = () => {
     setOpen(false)
   }
 
-  if (!claimableNfts.length || isWithdrawn) return null
+  const claimButtonText = useMemo(() => {
+    if (isWithdrawn) return 'Claimed'
+    if (isClaiming) return 'Claiming'
+    return 'Claim'
+  }, [isClaiming, isWithdrawn])
+  if (!claimableNfts.length) return null
 
   return (
     <>
@@ -92,8 +97,8 @@ const ClaimBitDiscBlack = () => {
                   })
                 }}
                 className="h-[26px] w-[120px]"
-                disabled={isClaiming}>
-                {isClaiming ? 'Claiming' : 'Claim'}
+                disabled={isWithdrawn || isClaiming}>
+                {claimButtonText}
               </Button>
             </div>
           </div>
