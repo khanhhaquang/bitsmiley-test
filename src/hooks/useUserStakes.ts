@@ -7,7 +7,8 @@ import {
   useReadStakingContractGetStakeRewards,
   useReadStakingContractGetUserStakes,
   useReadStakingContractPerAddressLimit,
-  useReadStakingContractStakingEnded
+  useReadStakingContractStakingEnded,
+  useReadStakingContractWithdrawn
 } from '@/contracts/Staking'
 import { getTransactions } from '@/store/common/reducer'
 
@@ -33,6 +34,15 @@ export const useUserStakes = () => {
     isLoading: isFetchingUserStakes,
     refetch: refetchUserStakes
   } = useReadStakingContractGetUserStakes({
+    address: stakingAddress,
+    args: address && [address]
+  })
+
+  const {
+    data: isWithdrawn,
+    isLoading: isFetchingWithdrawnData,
+    refetch: refetchWithdrawnData
+  } = useReadStakingContractWithdrawn({
     address: stakingAddress,
     args: address && [address]
   })
@@ -66,8 +76,14 @@ export const useUserStakes = () => {
     () =>
       isFetchingUserStakes ||
       isFetchingIsStakingEnded ||
+      isFetchingPerAddressLimit ||
+      isFetchingWithdrawnData,
+    [
+      isFetchingIsStakingEnded,
+      isFetchingUserStakes,
       isFetchingPerAddressLimit,
-    [isFetchingIsStakingEnded, isFetchingUserStakes, isFetchingPerAddressLimit]
+      isFetchingWithdrawnData
+    ]
   )
 
   const handleWithdraw = async (callback?: (error?: unknown) => void) => {
@@ -94,11 +110,13 @@ export const useUserStakes = () => {
     refetchStakingState()
     refetchUserStakes()
     refetchStakesReward()
+    refetchWithdrawnData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactions])
 
   return {
     userStakes,
+    isWithdrawn,
     isFetchingAll,
     isFetchingUserStakes,
     isFetchingIsStakingEnded,

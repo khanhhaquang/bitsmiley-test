@@ -10,7 +10,8 @@ import { Image } from './Image'
 import { Modal } from './Modal'
 
 const ClaimBitDiscBlack = () => {
-  const { userStakes, handleWithdraw, isClaiming } = useUserStakes()
+  const { userStakes, handleWithdraw, isClaiming, isWithdrawn } =
+    useUserStakes()
   const [isOpen, setOpen] = useState(false)
 
   const claimableNfts = useMemo(() => userStakes || [], [userStakes])
@@ -19,7 +20,7 @@ const ClaimBitDiscBlack = () => {
     setOpen(false)
   }
 
-  if (!claimableNfts.length) return null
+  if (!claimableNfts.length || isWithdrawn) return null
 
   return (
     <>
