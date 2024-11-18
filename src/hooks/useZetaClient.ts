@@ -24,6 +24,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const { projectInfo } = useProjectInfo()
   const { btcNetwork } = useBtcNetwork()
 
+  const btcAddress = useMemo(() => btcAccounts[0], [btcAccounts])
   const isZeta = useMemo(() => isZetaChain(chain), [chain])
 
   const {
@@ -121,10 +122,15 @@ export const useZetaClient = (chain: number, collateralId: string) => {
               ? ZetaBtcClient.mainnet()
               : ZetaBtcClient.testnet()
           const callData = callDataInstance.openVault(
-            collateralId,
-            mint || '0',
-            evmAddress,
-            signature
+            {
+              revertAddress: btcAddress
+            },
+            {
+              bitusd: mint || '0',
+              ownerAddress: evmAddress,
+              collateralId,
+              signature
+            }
           )
 
           console.log('🚀 ~ openVault callData:', callData)
@@ -153,6 +159,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       callDataInstance,
       signature,
       btcNetwork,
+      btcAddress,
       collateralId,
       sendBitcoin,
       recommendedFee?.halfHourFee
@@ -168,9 +175,14 @@ export const useZetaClient = (chain: number, collateralId: string) => {
               ? ZetaBtcClient.mainnet()
               : ZetaBtcClient.testnet()
           const callData = callDataInstance.mint(
-            evmAddress,
-            mint || '0',
-            signature
+            {
+              revertAddress: btcAddress
+            },
+            {
+              ownerAddress: evmAddress,
+              bitusd: mint || '0',
+              signature
+            }
           )
           console.log('🚀 ~ mint callData:', callData)
           const satsAmount = btcToSats(btcAmount)
@@ -198,6 +210,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       callDataInstance,
       signature,
       btcNetwork,
+      btcAddress,
       sendBitcoin,
       recommendedFee?.halfHourFee
     ]
@@ -206,7 +219,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   return {
     sign,
     isZeta,
-    btcAddress: btcAccounts[0],
+    btcAddress,
     openVault,
     mint,
     broadcastTxn
