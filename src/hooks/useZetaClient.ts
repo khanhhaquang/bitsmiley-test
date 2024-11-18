@@ -194,11 +194,19 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           )
           console.log('🚀 ~ mint callData:', callData)
           const satsAmount = btcToSats(btcAmount)
+          const memo = Buffer.from(callData, 'hex')
+
           const commitTxn = await sendBitcoin(
-            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
+            zetaClient.call(memo).toString(),
             satsAmount
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
+          const fee = zetaClient.estimateRevealTxnFee(
+            memo,
+            satsAmount,
+            recommendedFee?.halfHourFee || 0
+          )
+          console.log('🚀 ~ estimated fee:', fee)
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
             satsAmount,
