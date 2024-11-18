@@ -25,6 +25,10 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
   const { isLoading: isLoadingProject, isError } = useProjectInfo()
   const { supportedChains, supportedChainIds } = useSupportedChains()
   const { isLoading: isLoadingResources } = usePreloadResources()
+  console.log(
+    '🚀 ~ CustomWagmiProvider ~ new OrangeConnector():',
+    new OrangeConnector()
+  )
 
   const config = useMemo(() => {
     if (supportedChains.length === 0) return undefined

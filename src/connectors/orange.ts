@@ -25,6 +25,14 @@ export class OrangeConnector extends InjectedConnector {
 
   constructor() {
     super('OrangeBitcoinProvider')
+    this.#event.setMaxListeners(100)
+  }
+
+  isReady(): boolean {
+    return (
+      typeof window !== 'undefined' &&
+      typeof window.OrangeBitcoinProvider !== 'undefined'
+    )
   }
 
   private loadAccounts = async (network: 'Mainnet' | 'Testnet') => {
