@@ -28,12 +28,12 @@ export class OrangeConnector extends InjectedConnector {
     this.#event.setMaxListeners(100)
   }
 
-  isReady(): boolean {
-    return (
-      typeof window !== 'undefined' &&
-      typeof window.OrangeBitcoinProvider !== 'undefined'
-    )
-  }
+  //   isReady(): boolean {
+  //     return (
+  //       typeof window !== 'undefined' &&
+  //       typeof window.OrangeBitcoinProvider !== 'undefined'
+  //     )
+  //   }
 
   private loadAccounts = async (network: 'Mainnet' | 'Testnet') => {
     const { getAddress, AddressPurpose } = await import(

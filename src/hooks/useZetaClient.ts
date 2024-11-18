@@ -140,10 +140,16 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             satsAmount
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
+          const fee = zetaClient.estimateRevealTxnFee(
+            Buffer.from(callData, 'hex'),
+            satsAmount,
+            recommendedFee?.halfHourFee || 0
+          )
+          console.log('🚀 ~ fee:', fee)
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
             satsAmount,
-            recommendedFee?.halfHourFee || 2
+            fee
           )
           const rawTx = buffer.toString('hex')
           console.log('rawTx:', rawTx)
