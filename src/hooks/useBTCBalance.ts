@@ -45,6 +45,7 @@ export const useBTCBalance = () => {
     if (!accounts?.length) return 0 // not connect btc yet
     switch (btcLoginType) {
       case LoginType.XVERSE:
+      case LoginType.ORANGE:
         return await getXverseBalance()
       default: {
         return await getCommonWalletsBalance()
