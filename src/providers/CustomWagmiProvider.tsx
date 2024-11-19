@@ -13,6 +13,7 @@ import { WagmiProvider, createConfig, http, unstable_connector } from 'wagmi'
 import { injected } from 'wagmi/connectors'
 
 import { chainsNotSupportedByParticle } from '@/config/wagmi'
+import { OrangeConnector } from '@/connectors/orange'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
@@ -88,7 +89,8 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
         new UnisatConnector(),
         new BybitConnector(),
         new BitgetConnector(),
-        new XverseConnector()
+        new XverseConnector(),
+        new OrangeConnector()
       ]}>
       <WagmiProvider reconnectOnMount={false} config={config}>
         {children}

@@ -10,6 +10,7 @@ import { useBtcFee } from './useBtcFee'
 import { useBtcNetwork } from './useBtcNetwork'
 import { useNativeBtcProvider } from './useNativeBtcProvider'
 import { useProjectInfo } from './useProjectInfo'
+import { bitcoin, testnet } from 'bitcoinjs-lib/src/networks'
 
 export interface VerifyInfo {
   user: Address
@@ -117,10 +118,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (btcAmount: number, mint: string) => {
       try {
         if (evmAddress && callDataInstance && signature) {
-          const zetaClient =
-            btcNetwork === 'livenet'
-              ? ZetaBtcClient.mainnet()
-              : ZetaBtcClient.testnet()
           const callData = callDataInstance.openVault(
             {
               revertAddress: btcAddress
@@ -135,18 +132,38 @@ export const useZetaClient = (chain: number, collateralId: string) => {
 
           console.log('🚀 ~ openVault callData:', callData)
           const satsAmount = btcToSats(btcAmount)
+          const memo = Buffer.from(callData, 'hex')
+          const feeRate = recommendedFee?.halfHourFee || 2
+          const network = btcNetwork === 'livenet' ? testnet : bitcoin
+
+          const fee = ZetaBtcClient.estimateRevealTxnFee(
+            network,
+            memo,
+            satsAmount,
+            feeRate
+          )
+
+          console.log('🚀 ~ estimated fee:', fee)
+
+          const total = satsAmount + fee
+
+          const zetaClient =
+            btcNetwork === 'livenet'
+              ? ZetaBtcClient.mainnet()
+              : ZetaBtcClient.testnet()
           const commitTxn = await sendBitcoin(
-            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
-            satsAmount
+            zetaClient.call(memo).toString(),
+            total
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
+
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
-            satsAmount,
-            recommendedFee?.halfHourFee || 2
+            total,
+            feeRate
           )
           const rawTx = buffer.toString('hex')
-          console.log('rawTx:', rawTx)
+          console.log('🚀 ~ rawTx:', rawTx)
           return rawTx
         }
       } catch (error) {
@@ -170,10 +187,6 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (btcAmount: number, mint: string) => {
       try {
         if (evmAddress && callDataInstance && signature) {
-          const zetaClient =
-            btcNetwork === 'livenet'
-              ? ZetaBtcClient.mainnet()
-              : ZetaBtcClient.testnet()
           const callData = callDataInstance.mint(
             {
               revertAddress: btcAddress
@@ -186,15 +199,34 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           )
           console.log('🚀 ~ mint callData:', callData)
           const satsAmount = btcToSats(btcAmount)
+          const memo = Buffer.from(callData, 'hex')
+          const feeRate = recommendedFee?.halfHourFee || 2
+          const network = btcNetwork === 'livenet' ? testnet : bitcoin
+
+          const fee = ZetaBtcClient.estimateRevealTxnFee(
+            network,
+            memo,
+            satsAmount,
+            feeRate
+          )
+          console.log('🚀 ~ estimated fee:', fee)
+
+          const total = satsAmount + fee
+
+          const zetaClient =
+            btcNetwork === 'livenet'
+              ? ZetaBtcClient.mainnet()
+              : ZetaBtcClient.testnet()
+
           const commitTxn = await sendBitcoin(
-            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
-            satsAmount
+            zetaClient.call(memo).toString(),
+            total
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
-            satsAmount,
-            recommendedFee?.halfHourFee || 2
+            total,
+            feeRate
           )
           const rawTx = buffer.toString('hex')
           console.log('rawTx:', rawTx)

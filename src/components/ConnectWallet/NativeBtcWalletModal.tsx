@@ -24,9 +24,9 @@ export const NativeBtcWalletModal: React.FC<{
   const { chain: evmChain } = useAccount()
 
   const filteredConnectors = useMemo(() => {
-    if (whitelistWallets.length === 0) return connectors
-
-    return connectors.filter((c) => whitelistWallets.includes(c.metadata.id))
+    const newConnectors = connectors
+    if (whitelistWallets.length === 0) return newConnectors
+    return newConnectors.filter((c) => whitelistWallets.includes(c.metadata.id))
   }, [connectors, whitelistWallets])
 
   useEffect(() => {
