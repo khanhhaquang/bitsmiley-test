@@ -1,7 +1,11 @@
 import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
+import {
+  BitSmileyCalldataGenerator,
+  NETWORK,
+  ZetaBtcClient
+} from 'zeta-btc-client'
 
 import { isZetaChain } from '@/utils/chain'
 import { btcToSats } from '@/utils/formatter'
@@ -10,7 +14,6 @@ import { useBtcFee } from './useBtcFee'
 import { useBtcNetwork } from './useBtcNetwork'
 import { useNativeBtcProvider } from './useNativeBtcProvider'
 import { useProjectInfo } from './useProjectInfo'
-import { bitcoin, testnet } from 'bitcoinjs-lib/src/networks'
 
 export interface VerifyInfo {
   user: Address
@@ -134,7 +137,8 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           const satsAmount = btcToSats(btcAmount)
           const memo = Buffer.from(callData, 'hex')
           const feeRate = recommendedFee?.halfHourFee || 2
-          const network = btcNetwork === 'livenet' ? testnet : bitcoin
+          const network =
+            btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
 
           const fee = ZetaBtcClient.estimateRevealTxnFee(
             network,
@@ -151,6 +155,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             btcNetwork === 'livenet'
               ? ZetaBtcClient.mainnet()
               : ZetaBtcClient.testnet()
+
           const commitTxn = await sendBitcoin(
             zetaClient.call(memo).toString(),
             total
@@ -201,7 +206,8 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           const satsAmount = btcToSats(btcAmount)
           const memo = Buffer.from(callData, 'hex')
           const feeRate = recommendedFee?.halfHourFee || 2
-          const network = btcNetwork === 'livenet' ? testnet : bitcoin
+          const network =
+            btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
 
           const fee = ZetaBtcClient.estimateRevealTxnFee(
             network,
