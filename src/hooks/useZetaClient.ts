@@ -136,25 +136,26 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           console.log('🚀 ~ openVault callData:', callData)
           const satsAmount = btcToSats(btcAmount)
           const memo = Buffer.from(callData, 'hex')
+          const feeRate = recommendedFee?.halfHourFee || 0
+
+          const fee = zetaClient.estimateRevealTxnFee(memo, satsAmount, feeRate)
+          console.log('🚀 ~ estimated fee:', fee)
+
+          const total = satsAmount + fee
 
           const commitTxn = await sendBitcoin(
             zetaClient.call(memo).toString(),
-            satsAmount
+            total
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
-          const fee = zetaClient.estimateRevealTxnFee(
-            memo,
-            satsAmount,
-            recommendedFee?.halfHourFee || 0
-          )
-          console.log('🚀 ~ estimated fee:', fee)
+
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
-            satsAmount,
-            fee
+            total,
+            feeRate
           )
           const rawTx = buffer.toString('hex')
-          console.log('rawTx:', rawTx)
+          console.log('🚀 ~ rawTx:', rawTx)
           return rawTx
         }
       } catch (error) {
