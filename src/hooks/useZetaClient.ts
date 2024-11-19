@@ -136,7 +136,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           console.log('🚀 ~ openVault callData:', callData)
           const satsAmount = btcToSats(btcAmount)
           const memo = Buffer.from(callData, 'hex')
-          const feeRate = recommendedFee?.halfHourFee || 2
+          const feeRate = recommendedFee?.fastestFee || 2
           const network =
             btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
 
@@ -180,11 +180,11 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       evmAddress,
       callDataInstance,
       signature,
-      btcNetwork,
       btcAddress,
       collateralId,
-      sendBitcoin,
-      recommendedFee?.halfHourFee
+      recommendedFee?.fastestFee,
+      btcNetwork,
+      sendBitcoin
     ]
   )
 
@@ -205,7 +205,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           console.log('🚀 ~ mint callData:', callData)
           const satsAmount = btcToSats(btcAmount)
           const memo = Buffer.from(callData, 'hex')
-          const feeRate = recommendedFee?.halfHourFee || 2
+          const feeRate = recommendedFee?.fastestFee || 2
           const network =
             btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
 
@@ -247,10 +247,10 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       evmAddress,
       callDataInstance,
       signature,
-      btcNetwork,
       btcAddress,
-      sendBitcoin,
-      recommendedFee?.halfHourFee
+      recommendedFee?.fastestFee,
+      btcNetwork,
+      sendBitcoin
     ]
   )
 
