@@ -31,6 +31,7 @@ export interface IContractAddresses {
   PreStakeRewardAirdropContract: Address
   stakeContract: Address
   TGEAirdropContract: Address
+  bitDiscAirdropContract: Address
 }
 export interface INetworkInfo {
   network: string

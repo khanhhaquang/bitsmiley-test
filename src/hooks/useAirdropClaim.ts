@@ -10,7 +10,8 @@ import { useUserInfo } from './useUserInfo'
 export enum AirdropClaimType {
   TGE,
   Award,
-  UnStake
+  UnStake,
+  BitDisc
 }
 
 export const useAirdropClaim = (type: AirdropClaimType) => {
@@ -25,13 +26,6 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
 
   const airdrop = useMemo(() => {
     if (!airdropContracts) return undefined
-
-    if (
-      !airdropContracts.TGEAirdropContract ||
-      !airdropContracts.PreStakeRewardAirdropContract ||
-      !airdropContracts.PreStakeUnStakeAirdropContract
-    )
-      return undefined
 
     if (type === AirdropClaimType.TGE)
       return airdropContracts.TGEAirdropContract
@@ -53,6 +47,13 @@ export const useAirdropClaim = (type: AirdropClaimType) => {
         ? {
             airdropContractAddress:
               airdropContracts.PreStakeUnStakeAirdropContract,
+            chainId: evmChainId
+          }
+        : undefined
+    if (type === AirdropClaimType.BitDisc)
+      return airdropContracts.bitDiscAirdropContract
+        ? {
+            airdropContractAddress: airdropContracts.bitDiscAirdropContract,
             chainId: evmChainId
           }
         : undefined
