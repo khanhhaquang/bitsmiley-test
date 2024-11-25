@@ -4,15 +4,16 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 const WalletItem: React.FC<{
   connect: () => void
   name: string
-  iconName: string
-}> = ({ connect, name, iconName }) => {
+  iconName?: string
+  iconSrc?: string
+}> = ({ connect, name, iconName, iconSrc }) => {
   return (
     <div className="relative h-[58px] w-full px-2">
       <button
         className="flex size-full items-center gap-x-3 border-y-2  border-white bg-black py-2.5 pl-5"
         onClick={connect}>
         <Image
-          src={getIllustrationUrl(`${iconName}-wallet`, 'webp')}
+          src={iconSrc || getIllustrationUrl(`${iconName}-wallet`, 'webp')}
           className="aspect-square size-7"
         />
         <svg

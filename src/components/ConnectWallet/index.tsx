@@ -1,9 +1,11 @@
+import { useAccounts as useSuiAccounts } from '@mysten/dapp-kit'
 import { useBTCProvider } from '@particle-network/btc-connectkit'
 import {
   CSSProperties,
   Fragment,
   memo,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -29,6 +31,7 @@ import BtcConnectors from './BtcConnectors'
 import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
+import SuiConnectors from './SuiConnectors'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -63,12 +66,18 @@ export const ConnectWallet: React.FC<{
     isConnected: isEvmConnected,
     chain: evmChain
   } = useAccount()
+  const [suiAccount] = useSuiAccounts()
+
+  const isConnected = useMemo(
+    () => isEvmConnected || !!suiAccount?.address,
+    [isEvmConnected, suiAccount?.address]
+  )
 
   const handlePress = () => {
-    if (!isEvmConnected) {
+    if (!isConnected) {
       setIsConnectWalletModalOpen(true)
     }
-    if (isEvmConnected && !isDropdownOpen) {
+    if (isConnected && !isDropdownOpen) {
       setIsDropdownOpen(true)
     }
   }
@@ -93,11 +102,15 @@ export const ConnectWallet: React.FC<{
         className={cn(
           'relative bg-white cursor-pointer text-center text-black px-5 py-2 font-bold whitespace-nowrap text-sm h-[34px] w-[158px]',
           !isDropdownOpen && 'hover:bg-blue3',
-          !isEvmConnected && 'active:bg-blue',
+          !isConnected && 'active:bg-blue',
           className
         )}>
-        {isEvmConnected
-          ? displayAddress(btcAccounts[0] || evmAddress, 4, 4)
+        {isConnected
+          ? displayAddress(
+              btcAccounts[0] || suiAccount?.address || evmAddress,
+              4,
+              4
+            )
           : 'Connect wallet'}
 
         <div
@@ -222,6 +235,10 @@ export const SelectWalletModal: React.FC<{
                 />
               </div>
             )}
+            <div className="flex flex-1 flex-col items-center gap-y-6">
+              <WalletTitle title="SUI Wallet" />
+              <SuiConnectors onClose={onClose} />
+            </div>
           </div>
         </div>
       </>

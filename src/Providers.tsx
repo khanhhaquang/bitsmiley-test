@@ -12,6 +12,7 @@ import CustomWagmiProvider from '@/providers/CustomWagmiProvider'
 import store from '@/store/rootReducer'
 
 import { PageLayout } from './components/PageLayout'
+import SuiProvider from './providers/SuiProvider'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,11 +30,13 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
         <ModalsContainer />
         <CustomWagmiProvider>
           <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} position="bottom" />
-            <Toaster />
-            <TooltipProvider>
-              <PageLayout>{children}</PageLayout>
-            </TooltipProvider>
+            <SuiProvider>
+              <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+              <Toaster />
+              <TooltipProvider>
+                <PageLayout>{children}</PageLayout>
+              </TooltipProvider>
+            </SuiProvider>
           </QueryClientProvider>
         </CustomWagmiProvider>
       </BrowserRouter>

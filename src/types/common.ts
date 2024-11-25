@@ -17,7 +17,12 @@ export enum LoginType {
   BYBIT = 'bybit',
   BITGET = 'bitget',
   XVERSE = 'xverse',
-  ORANGE = 'orange'
+  ORANGE = 'orange',
+
+  //SUI
+  OKX_SUI = 'okx_sui',
+  BYBIT_SUI = 'bybit_sui',
+  BITGET_SUI = 'bitget_sui'
 }
 
 export enum TransactionStatus {

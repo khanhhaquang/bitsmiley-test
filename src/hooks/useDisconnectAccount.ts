@@ -1,3 +1,4 @@
+import { useDisconnectWallet } from '@mysten/dapp-kit'
 import { useConnectModal as useParticleConnect } from '@particle-network/btc-connectkit'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -12,6 +13,7 @@ export const useDisconnectAccount = () => {
   const { setAirdropIsLoggedIn } = useStoreActions()
   const { disconnect: disConnectParticle } = useParticleConnect()
   const { disconnect: disconnectEvm, connectors } = useDisconnect()
+  const { mutate: disconnectSui } = useDisconnectWallet()
 
   const disconnectWagmi = useCallback(() => {
     disconnectEvm(
@@ -34,7 +36,8 @@ export const useDisconnectAccount = () => {
   const disconnect = useCallback(() => {
     disconnectWagmi()
     disConnectParticle?.()
-  }, [disConnectParticle, disconnectWagmi])
+    disconnectSui?.()
+  }, [disConnectParticle, disconnectWagmi, disconnectSui])
 
   return disconnect
 }
