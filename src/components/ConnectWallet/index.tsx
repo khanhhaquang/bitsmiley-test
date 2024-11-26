@@ -30,8 +30,17 @@ import BtcConnectors from './BtcConnectors'
 import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
-import { ConnectNetworkType, NetworkTab } from './NetworkTab'
+import { NetworkTab } from './NetworkTab'
 import SuiConnectors from './SuiConnectors'
+
+import { useSupportedChains } from '@/hooks/useSupportedChains'
+import { connectChains } from '@/config/chain'
+import {
+  bitLayerMainnet,
+  bitLayerTestnet,
+  suiMainnet,
+  suiTestnet
+} from '@/config/wagmi'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -170,9 +179,13 @@ export const SelectWalletModal: React.FC<{
   const [isConfirmed, setIsConfirmed] = useState(
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
-
+  const { supportedChainIds } = useSupportedChains()
+  const chains = useMemo(
+    () => connectChains.filter((v) => supportedChainIds.includes(v.id)) || [],
+    [supportedChainIds]
+  )
   const [selectedNetwork, setSelectedNetwork] = useState(
-    ConnectNetworkType.MERLIN
+    chains.length > 0 ? chains[0].id : 0
   )
 
   // const WalletTitle = memo(({ title }: { title: string }) => {
@@ -197,6 +210,12 @@ export const SelectWalletModal: React.FC<{
     }
   }, [isConfirmed])
 
+  useEffect(() => {
+    if (expectedChainId) {
+      setSelectedNetwork(expectedChainId)
+    }
+  }, [expectedChainId])
+
   const renderWallets = () => {
     return (
       <>
@@ -210,23 +229,26 @@ export const SelectWalletModal: React.FC<{
           </h2>
           <div className="flex w-full flex-col gap-6">
             <NetworkTab
+              chains={chains}
               selectedNetwork={selectedNetwork}
               onNetworkChange={(network) => setSelectedNetwork(network)}
             />
             <div className="flex flex-1 flex-col items-center gap-y-6">
-              {selectedNetwork === ConnectNetworkType.MERLIN ? (
+              {selectedNetwork === suiTestnet.id ||
+              selectedNetwork === suiMainnet.id ? (
+                <SuiConnectors onClose={onClose} />
+              ) : selectedNetwork === bitLayerTestnet.id ||
+                selectedNetwork === bitLayerMainnet.id ? (
+                <EvmConnectors
+                  onClose={onClose}
+                  expectedChainId={expectedChainId ?? selectedNetwork}
+                />
+              ) : (
                 <BtcConnectors
                   whitelistWallets={whitelistBtcWallets}
                   onClose={onClose}
-                  expectedChainId={expectedChainId}
+                  expectedChainId={expectedChainId ?? selectedNetwork}
                 />
-              ) : selectedNetwork === ConnectNetworkType.BITLAYER ? (
-                <EvmConnectors
-                  onClose={onClose}
-                  expectedChainId={expectedChainId}
-                />
-              ) : (
-                <SuiConnectors onClose={onClose} />
               )}
             </div>
           </div>
