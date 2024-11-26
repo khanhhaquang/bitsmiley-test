@@ -15,7 +15,9 @@ import {
   bobTestnet,
   bSquaredTestnet,
   merlinMainnet,
-  merlinTestnet
+  merlinTestnet,
+  suiMainnet,
+  suiTestnet
 } from '@/config/wagmi'
 import { bitSmileyAbi } from '@/contracts/BitSmiley'
 import { bitSmileyQueryAbi } from '@/contracts/BitSmileyQuery'
@@ -23,12 +25,16 @@ import { UserService } from '@/services/user'
 import {
   ICollateral,
   ICollateralFromChain,
-  IDetailedCollateral
+  IDetailedCollateral,
+  IDetailedCollateralFromChain
 } from '@/types/vault'
 
 import { useProjectInfo } from './useProjectInfo'
+import { collateralHash } from './useSuiUtils'
+import { useSuiVault } from './useSuiVault'
 import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
+
 export const queryKeys = {
   collaterals: (chainId?: number, userAddress?: Address) => [
     'collaterals',
@@ -44,6 +50,8 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   const { clients } = useSupportedChains()
   const queryClient = useQueryClient()
 
+  const { vaultAddress: suiVaultAddress } = useSuiVault()
+
   const filterClients = useMemo(
     () =>
       clients.filter(
@@ -53,6 +61,17 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
           !!projectInfo?.web3Info.find((w) => w.chainId === s.chain.id)
             ?.contract?.bitSmileyQuery
       ),
+    [projectInfo?.web3Info, clients]
+  )
+
+  const suiClient = useMemo(
+    () =>
+      clients.find((s) => {
+        const chainInfo = projectInfo?.web3Info.find(
+          (w) => w.chainId === s.chain.id
+        )
+        return !!chainInfo?.contract?.bitSmileyObjectId
+      }),
     [projectInfo?.web3Info, clients]
   )
 
@@ -79,7 +98,9 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     [bobTestnet.id]: 'Bob',
     [bSquaredTestnet.id]: 'B2',
     [bitLayerTestnet.id]: 'BitLayer',
-    [bitLayerMainnet.id]: 'BitLayer'
+    [bitLayerMainnet.id]: 'BitLayer',
+    [suiMainnet.id]: 'Sui',
+    [suiTestnet.id]: 'Sui'
   }
 
   const query = {
@@ -137,167 +158,332 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   }
 
   const queryRes = useQueries({
-    queries: filterClients.map((client) => ({
-      ...query,
-      retry: 5,
-      retryDelay: 10000,
-      queryKey: queryKeys.collaterals(client.chain.id, address),
-      queryFn:
-        !client || !address
-          ? undefined
-          : async () => {
-              const contractAddresses = projectInfo?.web3Info.find(
-                (w) => w.chainId === client.chain.id
-              )?.contract
-              const bitSmileyAddress = contractAddresses?.BitSmiley
-              const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery
+    queries: [
+      ...filterClients.map((client) => ({
+        ...query,
+        retry: 5,
+        retryDelay: 10000,
+        queryKey: queryKeys.collaterals(client.chain.id, address),
+        queryFn:
+          !client || !address
+            ? undefined
+            : async () => {
+                const contractAddresses = projectInfo?.web3Info.find(
+                  (w) => w.chainId === client.chain.id
+                )?.contract
+                const bitSmileyAddress = contractAddresses?.BitSmiley
+                const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery
 
-              // if (
-              //   !bitSmileyQueryAddress ||
-              //   !bitSmileyAddress
-              //   ){
-              //   return {
-              //     chainId,
-              //     vaultAddress: undefined,
-              //     // collaterals: collaterals.map((c) => ({
-              //     //   ...c,
-              //     //   isOpenVault: false
-              //     // }))
-              //   }
-              // }
+                // if (
+                //   !bitSmileyQueryAddress ||
+                //   !bitSmileyAddress
+                //   ){
+                //   return {
+                //     chainId,
+                //     vaultAddress: undefined,
+                //     // collaterals: collaterals.map((c) => ({
+                //     //   ...c,
+                //     //   isOpenVault: false
+                //     // }))
+                //   }
+                // }
 
-              // collaterals information
-              const collateralsRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyQueryAbi,
-                      functionName: 'listCollaterals'
-                    }),
-                    to: bitSmileyQueryAddress
-                  },
-                  'latest'
-                ]
-              })
+                // collaterals information
+                const collateralsRes = await client.request({
+                  method: 'eth_call',
+                  params: [
+                    {
+                      data: encodeFunctionData({
+                        abi: bitSmileyQueryAbi,
+                        functionName: 'listCollaterals'
+                      }),
+                      to: bitSmileyQueryAddress
+                    },
+                    'latest'
+                  ]
+                })
 
-              const collaterals = decodeFunctionResult({
-                abi: bitSmileyQueryAbi,
-                functionName: 'listCollaterals',
-                data: collateralsRes
-              })
+                const collaterals = decodeFunctionResult({
+                  abi: bitSmileyQueryAbi,
+                  functionName: 'listCollaterals',
+                  data: collateralsRes
+                })
 
-              // vaultAddress
-              const vaultAddressRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyAbi,
-                      functionName: 'owners',
-                      args: [address]
-                    }),
-                    to: bitSmileyAddress
-                  },
-                  'latest'
-                ]
-              })
+                // vaultAddress
+                const vaultAddressRes = await client.request({
+                  method: 'eth_call',
+                  params: [
+                    {
+                      data: encodeFunctionData({
+                        abi: bitSmileyAbi,
+                        functionName: 'owners',
+                        args: [address]
+                      }),
+                      to: bitSmileyAddress
+                    },
+                    'latest'
+                  ]
+                })
 
-              const vaultAddress = decodeFunctionResult({
-                abi: bitSmileyAbi,
-                functionName: 'owners',
-                data: vaultAddressRes
-              })
+                const vaultAddress = decodeFunctionResult({
+                  abi: bitSmileyAbi,
+                  functionName: 'owners',
+                  data: vaultAddressRes
+                })
 
-              if (
-                isAddressEqual(
-                  vaultAddress,
-                  '0x0000000000000000000000000000000000000000'
-                )
-              ) {
+                if (
+                  isAddressEqual(
+                    vaultAddress,
+                    '0x0000000000000000000000000000000000000000'
+                  )
+                ) {
+                  return {
+                    chainId: client.chain.id,
+                    vaultAddress: undefined,
+                    collaterals: collaterals.map((c) => ({
+                      ...c,
+                      isOpenVault: false
+                    }))
+                  }
+                }
+
+                // get vault liquidated info
+                const liquidatedRes = await UserService.getLiquidated.call({
+                  vault: [
+                    {
+                      network: chainIdToNetwork[client.chain.id],
+                      vaultAddress
+                    }
+                  ]
+                })
+
+                // getVault collateralId
+                const bitSmileyVaultRes = await client.request({
+                  method: 'eth_call',
+                  params: [
+                    {
+                      data: encodeFunctionData({
+                        abi: bitSmileyAbi,
+                        functionName: 'vaults',
+                        args: [vaultAddress]
+                      }),
+                      to: bitSmileyAddress
+                    },
+                    'latest'
+                  ]
+                })
+
+                const bitSmileyVault = decodeFunctionResult({
+                  abi: bitSmileyAbi,
+                  functionName: 'vaults',
+                  data: bitSmileyVaultRes
+                })
+                const collateralId = bitSmileyVault?.[1]
+
+                // vault details
+                const vaultDetailRes = await client.request({
+                  method: 'eth_call',
+                  params: [
+                    {
+                      data: encodeFunctionData({
+                        abi: bitSmileyQueryAbi,
+                        functionName: 'getVaultDetail',
+                        args: [vaultAddress, BigInt(0), BigInt(0)]
+                      }),
+                      to: bitSmileyQueryAddress
+                    },
+                    'latest'
+                  ]
+                })
+
+                const vaultDetail = decodeFunctionResult({
+                  abi: bitSmileyQueryAbi,
+                  functionName: 'getVaultDetail',
+                  data: vaultDetailRes
+                })
+
+                const filteredCollaterals = (
+                  collateralId
+                    ? collaterals.filter((c) => c.collateralId === collateralId)
+                    : collaterals
+                ).map((c) => ({
+                  ...c,
+                  isOpenVault:
+                    !!collateralId && c.collateralId === collateralId,
+                  ...(c.collateralId === collateralId ? vaultDetail : {}),
+                  liquidated: liquidatedRes?.data?.liquidated
+                }))
+
                 return {
                   chainId: client.chain.id,
-                  vaultAddress: undefined,
-                  collaterals: collaterals.map((c) => ({
-                    ...c,
-                    isOpenVault: false
-                  }))
+                  vaultAddress,
+                  collaterals: filteredCollaterals
                 }
               }
-
-              // get vault liquidated info
-              const liquidatedRes = await UserService.getLiquidated.call({
-                vault: [
-                  {
-                    network: chainIdToNetwork[client.chain.id],
-                    vaultAddress
-                  }
-                ]
-              })
-
-              // getVault collateralId
-              const bitSmileyVaultRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyAbi,
-                      functionName: 'vaults',
-                      args: [vaultAddress]
-                    }),
-                    to: bitSmileyAddress
-                  },
-                  'latest'
-                ]
-              })
-
-              const bitSmileyVault = decodeFunctionResult({
-                abi: bitSmileyAbi,
-                functionName: 'vaults',
-                data: bitSmileyVaultRes
-              })
-              const collateralId = bitSmileyVault?.[1]
-
-              // vault details
-              const vaultDetailRes = await client.request({
-                method: 'eth_call',
-                params: [
-                  {
-                    data: encodeFunctionData({
-                      abi: bitSmileyQueryAbi,
-                      functionName: 'getVaultDetail',
-                      args: [vaultAddress, BigInt(0), BigInt(0)]
-                    }),
-                    to: bitSmileyQueryAddress
-                  },
-                  'latest'
-                ]
-              })
-
-              const vaultDetail = decodeFunctionResult({
-                abi: bitSmileyQueryAbi,
-                functionName: 'getVaultDetail',
-                data: vaultDetailRes
-              })
-
-              const filteredCollaterals = (
-                collateralId
-                  ? collaterals.filter((c) => c.collateralId === collateralId)
-                  : collaterals
-              ).map((c) => ({
-                ...c,
-                isOpenVault: !!collateralId && c.collateralId === collateralId,
-                ...(c.collateralId === collateralId ? vaultDetail : {}),
-                liquidated: liquidatedRes?.data?.liquidated
-              }))
-
-              return {
-                chainId: client.chain.id,
-                vaultAddress,
-                collaterals: filteredCollaterals
+      })),
+      // SUI
+      {
+        ...query,
+        retry: 5,
+        retryDelay: 10000,
+        queryKey: queryKeys.collaterals(suiClient?.chain?.id, address),
+        queryFn:
+          !suiClient || !address
+            ? undefined
+            : async () => {
+                // const contractAddresses = projectInfo?.web3Info.find(
+                //   (w) => w.chainId === suiClient.chain.id
+                // )?.contract
+                const collateralId = collateralHash('BTC')
+                //           // const bitSmileyAddress = contractAddresses?.BitSmiley
+                //           // const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery
+                //           // if (
+                //           //   !bitSmileyQueryAddress ||
+                //           //   !bitSmileyAddress
+                //           //   ){
+                //           //   return {
+                //           //     chainId,
+                //           //     vaultAddress: undefined,
+                //           //     // collaterals: collaterals.map((c) => ({
+                //           //     //   ...c,
+                //           //     //   isOpenVault: false
+                //           //     // }))
+                //           //   }
+                //           // }
+                //           // collaterals information
+                //           // const collateralsRes = await client.request({
+                //           //   method: 'eth_call',
+                //           //   params: [
+                //           //     {
+                //           //       data: encodeFunctionData({
+                //           //         abi: bitSmileyQueryAbi,
+                //           //         functionName: 'listCollaterals'
+                //           //       }),
+                //           //       to: bitSmileyQueryAddress
+                //           //     },
+                //           //     'latest'
+                //           //   ]
+                //           // })
+                //           // const collaterals = decodeFunctionResult({
+                //           //   abi: bitSmileyQueryAbi,
+                //           //   functionName: 'listCollaterals',
+                //           //   data: collateralsRes
+                //           // })
+                //           // vaultAddress
+                if (suiVaultAddress) {
+                  return {
+                    chainId: suiClient.chain.id,
+                    vaultAddress: suiVaultAddress,
+                    collateralId,
+                    collaterals: [
+                      {
+                        collateralId,
+                        isOpenVault: false,
+                        maxLTV: 0,
+                        liquidationFeeRate: 0,
+                        collateral: {
+                          maxDebt: BigInt(0),
+                          safetyFactor: BigInt(0),
+                          tokenAddress: '',
+                          totalDebt: BigInt(0),
+                          totalLocked: BigInt(0),
+                          vaultMaxDebt: BigInt(0),
+                          vaultMinDebt: BigInt(0)
+                        }
+                      } as unknown as IDetailedCollateralFromChain
+                    ]
+                    // collaterals: collaterals.map((c) => ({
+                    //   ...c,
+                    //   isOpenVault: false
+                    // }))
+                  } as ICollateralFromChain
+                }
+                //           // get vault liquidated info
+                //           // const liquidatedRes = await UserService.getLiquidated.call({
+                //           //   vault: [
+                //           //     {
+                //           //       network: chainIdToNetwork[client.chain.id],
+                //           //       vaultAddress
+                //           //     }
+                //           //   ]
+                //           // })
+                //           // // getVault collateralId
+                //           // const bitSmileyVaultRes = await client.request({
+                //           //   method: 'eth_call',
+                //           //   params: [
+                //           //     {
+                //           //       data: encodeFunctionData({
+                //           //         abi: bitSmileyAbi,
+                //           //         functionName: 'vaults',
+                //           //         args: [vaultAddress]
+                //           //       }),
+                //           //       to: bitSmileyAddress
+                //           //     },
+                //           //     'latest'
+                //           //   ]
+                //           // })
+                //           // const bitSmileyVault = decodeFunctionResult({
+                //           //   abi: bitSmileyAbi,
+                //           //   functionName: 'vaults',
+                //           //   data: bitSmileyVaultRes
+                //           // })
+                //           // const collateralId = bitSmileyVault?.[1]
+                //           // // vault details
+                //           // const vaultDetailRes = await client.request({
+                //           //   method: 'eth_call',
+                //           //   params: [
+                //           //     {
+                //           //       data: encodeFunctionData({
+                //           //         abi: bitSmileyQueryAbi,
+                //           //         functionName: 'getVaultDetail',
+                //           //         args: [vaultAddress, BigInt(0), BigInt(0)]
+                //           //       }),
+                //           //       to: bitSmileyQueryAddress
+                //           //     },
+                //           //     'latest'
+                //           //   ]
+                //           // })
+                //           // const vaultDetail = decodeFunctionResult({
+                //           //   abi: bitSmileyQueryAbi,
+                //           //   functionName: 'getVaultDetail',
+                //           //   data: vaultDetailRes
+                //           // })
+                //           // const filteredCollaterals = (
+                //           //   collateralId
+                //           //     ? collaterals.filter((c) => c.collateralId === collateralId)
+                //           //     : collaterals
+                //           // ).map((c) => ({
+                //           //   ...c,
+                //           //   isOpenVault:
+                //           //     !!collateralId && c.collateralId === collateralId,
+                //           //   ...(c.collateralId === collateralId ? vaultDetail : {}),
+                //           //   liquidated: liquidatedRes?.data?.liquidated
+                //           // }))
+                return {
+                  chainId: suiClient.chain.id,
+                  collateralId,
+                  collaterals: [
+                    {
+                      collateralId,
+                      chainId: suiClient.chain.id.toString(),
+                      maxLTV: 0,
+                      liquidationFeeRate: 0,
+                      isOpenVault: true,
+                      collateral: {
+                        maxDebt: BigInt(0),
+                        safetyFactor: BigInt(0),
+                        tokenAddress: '',
+                        totalDebt: BigInt(0),
+                        totalLocked: BigInt(0),
+                        vaultMaxDebt: BigInt(0),
+                        vaultMinDebt: BigInt(0)
+                      }
+                    } as unknown as IDetailedCollateralFromChain
+                  ]
+                } as ICollateralFromChain
               }
-            }
-    }))
+      }
+    ]
   })
 
   const chainWithCollaterals = useMemo(() => {

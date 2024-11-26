@@ -184,7 +184,6 @@ export const suiMainnet = {
   },
   testnet: true
 } as const satisfies Chain
-
 //TODO: PARTICLE DOES NOT SUPPORT THESE CHAINS YET
 export const chainsNotSupportedByParticle: number[] = [
   botanixTestnet.id,
@@ -207,5 +206,7 @@ export const customChains = [
   zetaTestnet,
   zetaMainnet,
   holesky,
-  mainnet
+  mainnet,
+  suiMainnet,
+  suiTestnet
 ] as Chain[]

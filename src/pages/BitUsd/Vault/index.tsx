@@ -1,13 +1,14 @@
 import { useMemo } from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useChainId } from 'wagmi'
 
 import { OnChainLoader } from '@/components/OnchainLoader'
 import { useCollaterals } from '@/hooks/useCollaterals'
-import { isZetaChain } from '@/utils/chain'
+import { isSuiChain, isZetaChain } from '@/utils/chain'
 
 import { ManageVault } from './ManageVault'
 import { MemoizedOpenVault as OpenVault } from './OpenVault'
+import { SuiOpenVault } from './SuiOpenVault'
 import { ZetaManageVault } from './ZetaManageVault'
 import { ZetaOpenVault } from './ZetaOpenVault'
 
@@ -21,6 +22,11 @@ const Vault: React.FC = () => {
 
   const vaultSection = useMemo(() => {
     if (collateralId) {
+      if (isSuiChain(Number(chainId))) {
+        return (
+          <SuiOpenVault chainId={Number(chainId)} collateralId={collateralId} />
+        )
+      }
       if (isZetaChain(Number(chainId))) {
         return isMyVault ? (
           <ZetaManageVault
@@ -49,8 +55,9 @@ const Vault: React.FC = () => {
 
   if (isLoading) return <OnChainLoader />
 
-  if (!collateral || currentChainId !== Number(chainId))
-    return <Navigate to="/app/alphanet" replace />
+  console.log('collateral', { collateral, currentChainId, chainId })
+  // if (!collateral || currentChainId !== Number(chainId))
+  //   return <Navigate to="/app/alphanet" replace />
 
   return (
     <div className="relative size-full overflow-hidden pt-9">
