@@ -161,7 +161,7 @@ export const suiTestnet = {
   blockExplorers: {
     default: {
       name: 'Sui Testnet Scan',
-      url: 'https://athens.explorer.zetachain.com'
+      url: 'https://suiscan.xyz/testnet'
     }
   },
   testnet: true
@@ -179,7 +179,7 @@ export const suiMainnet = {
   blockExplorers: {
     default: {
       name: 'Sui Mainnet Scan',
-      url: 'https://explorer.sui.network/'
+      url: 'https://suiscan.xyz/mainnet'
     }
   },
   testnet: true
