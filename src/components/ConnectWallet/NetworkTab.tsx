@@ -32,6 +32,7 @@ export const NetworkTab: React.FC<{
     <div className="flex gap-4">
       {chains.map((c) => (
         <NetworkButton
+          key={c.id}
           text={chainsTitle[c.id]}
           icon={chainsIconUrl[c.id]}
           selected={selectedNetwork === c.id}

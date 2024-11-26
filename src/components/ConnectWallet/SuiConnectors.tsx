@@ -1,7 +1,8 @@
-import { useConnectWallet, useWallets } from '@mysten/dapp-kit'
+import { useWallet } from '@suiet/wallet-kit'
+import { useMemo } from 'react'
 
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
-import { LoginType } from '@/types/common'
+import { openUrl } from '@/utils/getAssetsUrl'
 import { setLocalStorage } from '@/utils/storage'
 
 import WalletItem from './WalletItem'
@@ -11,35 +12,36 @@ type SuiConnectorProps = {
 }
 
 const SuiConnectors: React.FC<SuiConnectorProps> = ({ onClose }) => {
-  const { mutate: connect } = useConnectWallet()
-  const wallets = useWallets()
+  const { select, configuredWallets, detectedWallets } = useWallet()
+
+  const wallets = useMemo(
+    () => [...configuredWallets, ...detectedWallets],
+    [configuredWallets, detectedWallets]
+  )
 
   return (
     <>
-      {wallets?.map((item) => {
-        const walletName = item?.name?.split(' ')?.[0] || ''
-        const loginType = `${walletName.toUpperCase()}_SUI`
+      {wallets?.map((wallet) => {
         return (
           <WalletItem
-            iconSrc={item?.icon}
-            name={walletName}
+            key={wallet.name}
+            iconSrc={wallet.iconUrl}
+            name={wallet.name}
             connect={() => {
-              connect(
-                { wallet: item },
-                {
-                  onSuccess: () => {
-                    if (Object.keys(LoginType).includes(loginType)) {
-                      setLocalStorage(
-                        LOCAL_STORAGE_KEYS.LOGIN_TYPE,
-                        LoginType[
-                          loginType as unknown as keyof typeof LoginType
-                        ]
-                      )
-                    }
-                    onClose()
-                  }
-                }
-              )
+              if (!wallet.installed) {
+                openUrl(wallet.downloadUrl.browserExtension ?? '')
+                return
+              }
+
+              select(wallet.name)
+                .then(() => {
+                  setLocalStorage(
+                    LOCAL_STORAGE_KEYS.LOGIN_TYPE,
+                    `${wallet.name.toLowerCase()}_sui`
+                  )
+                  onClose()
+                })
+                .catch((v) => console.log('connect error: ', v))
             }}
           />
         )
