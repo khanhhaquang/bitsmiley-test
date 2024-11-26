@@ -3,7 +3,6 @@ import { useBTCProvider } from '@particle-network/btc-connectkit'
 import {
   CSSProperties,
   Fragment,
-  memo,
   useEffect,
   useMemo,
   useRef,
@@ -31,6 +30,7 @@ import BtcConnectors from './BtcConnectors'
 import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
+import { ConnectNetworkType, NetworkTab } from './NetworkTab'
 import SuiConnectors from './SuiConnectors'
 
 const DISCLAIMER_TEXTS = [
@@ -166,33 +166,30 @@ export const SelectWalletModal: React.FC<{
   isBtcOnly?: boolean
   isOpen: boolean
   onClose: () => void
-}> = ({
-  isBtcOnly,
-  isOpen,
-  hideParticle,
-  onClose,
-  whitelistBtcWallets,
-  expectedChainId
-}) => {
+}> = ({ isOpen, onClose, whitelistBtcWallets, expectedChainId }) => {
   const [isConfirmed, setIsConfirmed] = useState(
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
 
-  const WalletTitle = memo(({ title }: { title: string }) => {
-    return (
-      <div className="flex items-center justify-center gap-x-1">
-        <div className="flex w-[62px] flex-col gap-y-1">
-          <p className="h-[1px] w-full bg-white/50" />
-          <p className="h-[1px] w-full bg-white/50" />
-        </div>
-        <span className="font-psm text-lg ">{title}</span>
-        <div className="flex w-[62px] flex-col gap-y-1">
-          <p className="h-[1px] w-full bg-white/50" />
-          <p className="h-[1px] w-full bg-white/50" />
-        </div>
-      </div>
-    )
-  })
+  const [selectedNetwork, setSelectedNetwork] = useState(
+    ConnectNetworkType.MERLIN
+  )
+
+  // const WalletTitle = memo(({ title }: { title: string }) => {
+  //   return (
+  //     <div className="flex items-center justify-center gap-x-1">
+  //       <div className="flex w-[62px] flex-col gap-y-1">
+  //         <p className="h-[1px] w-full bg-white/50" />
+  //         <p className="h-[1px] w-full bg-white/50" />
+  //       </div>
+  //       <span className="font-psm text-lg ">{title}</span>
+  //       <div className="flex w-[62px] flex-col gap-y-1">
+  //         <p className="h-[1px] w-full bg-white/50" />
+  //         <p className="h-[1px] w-full bg-white/50" />
+  //       </div>
+  //     </div>
+  //   )
+  // })
 
   useEffect(() => {
     if (isConfirmed) {
@@ -211,7 +208,29 @@ export const SelectWalletModal: React.FC<{
           <h2 className="mb-9 text-center font-smb text-2xl text-white">
             CONNECT WALLET
           </h2>
-          <div
+          <div className="flex w-full flex-col gap-6">
+            <NetworkTab
+              selectedNetwork={selectedNetwork}
+              onNetworkChange={(network) => setSelectedNetwork(network)}
+            />
+            <div className="flex flex-1 flex-col items-center gap-y-6">
+              {selectedNetwork === ConnectNetworkType.MERLIN ? (
+                <BtcConnectors
+                  whitelistWallets={whitelistBtcWallets}
+                  onClose={onClose}
+                  expectedChainId={expectedChainId}
+                />
+              ) : selectedNetwork === ConnectNetworkType.BITLAYER ? (
+                <EvmConnectors
+                  onClose={onClose}
+                  expectedChainId={expectedChainId}
+                />
+              ) : (
+                <SuiConnectors onClose={onClose} />
+              )}
+            </div>
+          </div>
+          {/* <div
             className={cn(
               'flex w-full',
               hideParticle || isBtcOnly ? 'gap-x-0' : 'gap-x-6'
@@ -239,7 +258,7 @@ export const SelectWalletModal: React.FC<{
               <WalletTitle title="SUI Wallet" />
               <SuiConnectors onClose={onClose} />
             </div>
-          </div>
+          </div> */}
         </div>
       </>
     )
