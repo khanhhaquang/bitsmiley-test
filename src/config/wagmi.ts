@@ -210,3 +210,13 @@ export const customChains = [
   suiMainnet,
   suiTestnet
 ] as Chain[]
+
+export const getSuiChainConfigByName = (name?: string) => {
+  const record = {
+    'sui:testnet': suiTestnet,
+    'sui:mainnet': suiMainnet
+  }
+  if (name && Object.hasOwn(record, name))
+    return record[name as keyof typeof record]
+  return undefined
+}

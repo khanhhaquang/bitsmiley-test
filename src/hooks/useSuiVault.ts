@@ -5,12 +5,16 @@ import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { Address } from 'viem'
 
+import { getSuiChainConfigByName } from '@/config/wagmi'
+
 import { useContractAddresses } from './useContractAddresses'
 
 export const useSuiVault = () => {
   const suiClient = useSuiClient() as SuiClient
-  const contractAddresses = useContractAddresses()
-  const { account } = useWallet()
+  const { account, chain } = useWallet()
+  const contractAddresses = useContractAddresses(
+    getSuiChainConfigByName(chain?.id)?.id
+  )
 
   const getVaultAddress = async (
     owner?: Address,

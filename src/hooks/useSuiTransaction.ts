@@ -4,14 +4,18 @@ import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useCallback } from 'react'
 import { Address, hexToBytes } from 'viem'
 
+import { getSuiChainConfigByName } from '@/config/wagmi'
+
 import { useContractAddresses } from './useContractAddresses'
 import { convertToMist, useSuiExecute } from './useSuiUtils'
 import { useSuiVault } from './useSuiVault'
 
 export const useSuiTransaction = () => {
   const suiClient = useSuiClient() as SuiClient
-  const { account } = useWallet()
-  const contractAddresses = useContractAddresses()
+  const { account, chain } = useWallet()
+  const contractAddresses = useContractAddresses(
+    getSuiChainConfigByName(chain?.id)?.id
+  )
   const { validateTransaction, ...transationState } = useSuiExecute()
   const { vaultAddress } = useSuiVault()
 
