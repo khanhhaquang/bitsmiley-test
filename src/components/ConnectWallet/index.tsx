@@ -1,9 +1,7 @@
-import { useAccounts as useSuiAccounts } from '@mysten/dapp-kit'
 import { useBTCProvider } from '@particle-network/btc-connectkit'
 import {
   CSSProperties,
   Fragment,
-  memo,
   useEffect,
   useMemo,
   useRef,
@@ -17,6 +15,7 @@ import { CopyButton } from '@/components/CopyButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import WrongNetworkModal from '@/components/WrongNetworkModal'
+import { connectChains } from '@/config/chain'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
@@ -27,11 +26,16 @@ import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 
-import BtcConnectors from './BtcConnectors'
 import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
+import { NetworkTab } from './NetworkTab'
 import SuiConnectors from './SuiConnectors'
+
+import { useSupportedChains } from '@/hooks/useSupportedChains'
+import { suiMainnet, suiTestnet } from '@/config/wagmi'
+
+import { useWallet } from '@suiet/wallet-kit'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -66,11 +70,11 @@ export const ConnectWallet: React.FC<{
     isConnected: isEvmConnected,
     chain: evmChain
   } = useAccount()
-  const [suiAccount] = useSuiAccounts()
+  const wallet = useWallet()
 
   const isConnected = useMemo(
-    () => isEvmConnected || !!suiAccount?.address,
-    [isEvmConnected, suiAccount?.address]
+    () => isEvmConnected || wallet.connected,
+    [isEvmConnected, wallet.connected]
   )
 
   const handlePress = () => {
@@ -106,11 +110,7 @@ export const ConnectWallet: React.FC<{
           className
         )}>
         {isConnected
-          ? displayAddress(
-              btcAccounts[0] || suiAccount?.address || evmAddress,
-              4,
-              4
-            )
+          ? displayAddress(btcAccounts[0] || wallet.address || evmAddress, 4, 4)
           : 'Connect wallet'}
 
         <div
@@ -166,39 +166,30 @@ export const SelectWalletModal: React.FC<{
   isBtcOnly?: boolean
   isOpen: boolean
   onClose: () => void
-}> = ({
-  isBtcOnly,
-  isOpen,
-  hideParticle,
-  onClose,
-  whitelistBtcWallets,
-  expectedChainId
-}) => {
+}> = ({ isOpen, onClose, expectedChainId }) => {
   const [isConfirmed, setIsConfirmed] = useState(
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
-
-  const WalletTitle = memo(({ title }: { title: string }) => {
-    return (
-      <div className="flex items-center justify-center gap-x-1">
-        <div className="flex w-[62px] flex-col gap-y-1">
-          <p className="h-[1px] w-full bg-white/50" />
-          <p className="h-[1px] w-full bg-white/50" />
-        </div>
-        <span className="font-psm text-lg ">{title}</span>
-        <div className="flex w-[62px] flex-col gap-y-1">
-          <p className="h-[1px] w-full bg-white/50" />
-          <p className="h-[1px] w-full bg-white/50" />
-        </div>
-      </div>
-    )
-  })
+  const { supportedChainIds } = useSupportedChains()
+  const chains = useMemo(
+    () => connectChains.filter((v) => supportedChainIds.includes(v.id)) || [],
+    [supportedChainIds]
+  )
+  const [selectedNetwork, setSelectedNetwork] = useState(
+    chains.length > 0 ? chains[0].id : 0
+  )
 
   useEffect(() => {
     if (isConfirmed) {
       setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER, 'true')
     }
   }, [isConfirmed])
+
+  useEffect(() => {
+    if (expectedChainId) {
+      setSelectedNetwork(expectedChainId)
+    }
+  }, [expectedChainId])
 
   const renderWallets = () => {
     return (
@@ -211,33 +202,22 @@ export const SelectWalletModal: React.FC<{
           <h2 className="mb-9 text-center font-smb text-2xl text-white">
             CONNECT WALLET
           </h2>
-          <div
-            className={cn(
-              'flex w-full',
-              hideParticle || isBtcOnly ? 'gap-x-0' : 'gap-x-6'
-            )}>
-            {!hideParticle && (
-              <div className="flex flex-1 flex-col items-center gap-y-6">
-                <WalletTitle title="BTC Wallet" />
-                <BtcConnectors
-                  whitelistWallets={whitelistBtcWallets}
-                  onClose={onClose}
-                  expectedChainId={expectedChainId}
-                />
-              </div>
-            )}
-            {!isBtcOnly && (
-              <div className="flex flex-1 flex-col items-center gap-y-6">
-                <WalletTitle title="EVM Wallet" />
+          <div className="flex w-full flex-col gap-6">
+            <NetworkTab
+              chains={chains}
+              selectedNetwork={selectedNetwork}
+              onNetworkChange={(network) => setSelectedNetwork(network)}
+            />
+            <div className="flex flex-1 flex-col items-center gap-y-6">
+              {selectedNetwork === suiTestnet.id ||
+              selectedNetwork === suiMainnet.id ? (
+                <SuiConnectors onClose={onClose} />
+              ) : (
                 <EvmConnectors
                   onClose={onClose}
-                  expectedChainId={expectedChainId}
+                  expectedChainId={expectedChainId ?? selectedNetwork}
                 />
-              </div>
-            )}
-            <div className="flex flex-1 flex-col items-center gap-y-6">
-              <WalletTitle title="SUI Wallet" />
-              <SuiConnectors onClose={onClose} />
+              )}
             </div>
           </div>
         </div>
