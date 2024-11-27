@@ -33,8 +33,8 @@ export const useSuiTransaction = () => {
       console.log(`>>> ${account?.address} btc balance:`, coins)
       if (coins?.data?.length >= 0) {
         const coinId = coins?.data?.[0]?.coinObjectId
-        const collateral = convertToMist(BigInt(Number(deposit)))
-        const bitUSD = convertToMist(BigInt(Number(mint)))
+        const collateral = convertToMist(Number(deposit))
+        const bitUSD = convertToMist(Number(mint))
 
         tx.moveCall({
           target: `${contractAddresses?.bitSmileyPackageId}::bitsmiley::open_vault`,
@@ -79,7 +79,7 @@ export const useSuiTransaction = () => {
         const coinId = coins?.data?.[0]?.coinObjectId
 
         const collateral = 0n
-        const bitUSD = convertToMist(BigInt(Number(mint)))
+        const bitUSD = convertToMist(Number(mint))
         tx.moveCall({
           target: `${contractAddresses?.bitSmileyPackageId}::bitsmiley::mint`,
           typeArguments: [btcType],
@@ -120,7 +120,7 @@ export const useSuiTransaction = () => {
       console.log(`>>> ${account?.address} btc balance:`, btcCoins)
 
       const collateral = 0n
-      const bitUSD = convertToMist(BigInt(Number(mint)))
+      const bitUSD = convertToMist(Number(mint))
 
       const bitUSDCoins = await suiClient.getCoins({
         owner: account?.address as string,
@@ -183,7 +183,7 @@ export const useSuiTransaction = () => {
       console.log(`>>> ${account?.address} btc balance:`, btcCoins)
 
       const collateral = 0n
-      const bitUSD = convertToMist(BigInt(Number(mint)))
+      const bitUSD = convertToMist(Number(mint))
 
       const bitUSDCoins = await suiClient.getCoins({
         owner: account?.address as string,

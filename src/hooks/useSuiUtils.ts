@@ -6,8 +6,8 @@ import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { keccak256, toHex } from 'viem'
 
-export const convertToMist = (amount: bigint) => {
-  return amount * MIST_PER_SUI
+export const convertToMist = (amount: number) => {
+  return (BigInt(Number(MIST_PER_SUI) * amount) * MIST_PER_SUI) / MIST_PER_SUI
 }
 
 export const collateralHash = (collateral: string) => {
