@@ -9,7 +9,7 @@ import {
 } from '@suiet/wallet-kit'
 import { ReactNode } from 'react'
 
-import { SuiNetworkType } from '@/utils/chain'
+import { isProduction } from '@/utils/helpers'
 
 // Config options for the networks you want to connect to
 const SupportedChains: Chain[] = [

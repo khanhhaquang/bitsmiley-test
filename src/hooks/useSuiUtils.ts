@@ -1,7 +1,8 @@
-import { useSuiClient, useSignAndExecuteTransaction } from '@mysten/dapp-kit'
 import { SuiClient, SuiTransactionBlockResponse } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
 import { MIST_PER_SUI } from '@mysten/sui/utils'
+import { useSuiClient, useWallet } from '@suiet/wallet-kit'
+import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { keccak256, toHex } from 'viem'
 
@@ -28,14 +29,6 @@ type ResponseCallback = (
 ) => void | Promise<void>
 type ExecuteResponse = { digest: string; rawEffects?: number[] }
 
-type ExecuteCallback = ({
-  bytes,
-  signature
-}: {
-  bytes: string
-  signature: string
-}) => Promise<ExecuteResponse>
-
 type Executor = (options: Options, then?: ResponseCallback) => void
 
 export type ExecutorResult = {
@@ -52,13 +45,12 @@ export type ExecutorResult = {
   transactionResponse?: SuiTransactionBlockResponse
 }
 
-export const useSuiExecute = ({
-  execute
-}: { execute?: ExecuteCallback } = {}): ExecutorResult => {
-  const client = useSuiClient()
+export const useSuiExecute = (): ExecutorResult => {
+  const client = useSuiClient() as SuiClient
+  const wallet = useWallet()
   const [txResponse, setTxResponse] = useState<SuiTransactionBlockResponse>()
   const {
-    mutate: signAndExecute,
+    mutateAsync: signAndExecute,
     status,
     isIdle,
     isPending,
@@ -68,29 +60,29 @@ export const useSuiExecute = ({
     reset,
     data,
     error
-  } = useSignAndExecuteTransaction({ execute })
-
-  const mutate: Executor = ({ tx, ...options }, then) => {
-    reset()
-    signAndExecute(
-      {
+  } = useMutation({
+    mutationFn: async (tx: Transaction) =>
+      wallet.signAndExecuteTransaction({
         transaction: tx
-      },
-      {
-        onSuccess: ({ digest }) => {
-          console.log('digest', digest)
-          client.waitForTransaction({ digest, ...options }).then((value) => {
-            then?.(value)
-            console.log('tx', value)
-            setTxResponse(value)
-          })
-        },
+      })
+  })
 
-        onError: (error) => {
-          console.error('Failed to execute transaction', tx, error)
-        }
+  const mutate: Executor = async ({ tx, ...options }, then) => {
+    try {
+      const result = await signAndExecute(tx)
+      if (result?.digest) {
+        const waitResult = await client.waitForTransaction({
+          digest: result.digest,
+          ...options
+        })
+
+        then?.(waitResult)
+        setTxResponse(waitResult)
       }
-    )
+      return
+    } catch (error) {
+      console.error('Failed to execute transaction', tx, error)
+    }
   }
 
   return {

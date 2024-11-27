@@ -1,5 +1,6 @@
-import { useSuiClient, useAccounts as useSuiAccounts } from '@mysten/dapp-kit'
+import { SuiClient } from '@mysten/sui/client'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
+import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useCallback } from 'react'
 import { Address, hexToBytes } from 'viem'
 
@@ -8,10 +9,10 @@ import { convertToMist, useSuiExecute } from './useSuiUtils'
 import { useSuiVault } from './useSuiVault'
 
 export const useSuiTransaction = () => {
-  const suiClient = useSuiClient()
+  const suiClient = useSuiClient() as SuiClient
+  const { account } = useWallet()
   const contractAddresses = useContractAddresses()
   const { validateTransaction, ...transationState } = useSuiExecute()
-  const [account] = useSuiAccounts()
   const { vaultAddress } = useSuiVault()
 
   const btcType = `${contractAddresses?.btcPackageId}::btc::BTC`
@@ -22,7 +23,7 @@ export const useSuiTransaction = () => {
       const tx = new Transaction()
 
       const coins = await suiClient.getCoins({
-        owner: account?.address,
+        owner: account?.address as string,
         coinType: btcType
       })
       console.log(`>>> ${account?.address} btc balance:`, coins)
@@ -66,7 +67,7 @@ export const useSuiTransaction = () => {
       const tx = new Transaction()
 
       const coins = await suiClient.getCoins({
-        owner: account?.address,
+        owner: account?.address as string,
         coinType: btcType
       })
       console.log(`>>> ${account?.address} btc balance:`, coins)
@@ -109,7 +110,7 @@ export const useSuiTransaction = () => {
       const tx = new Transaction()
 
       const btcCoins = await suiClient.getCoins({
-        owner: account?.address,
+        owner: account?.address as string,
         coinType: btcType
       })
       console.log(`>>> ${account?.address} btc balance:`, btcCoins)
@@ -118,7 +119,7 @@ export const useSuiTransaction = () => {
       const bitUSD = convertToMist(BigInt(Number(mint)))
 
       const bitUSDCoins = await suiClient.getCoins({
-        owner: account?.address,
+        owner: account?.address as string,
         coinType: bitUSDType
       })
 
@@ -172,7 +173,7 @@ export const useSuiTransaction = () => {
       const tx = new Transaction()
 
       const btcCoins = await suiClient.getCoins({
-        owner: account?.address,
+        owner: account?.address as string,
         coinType: btcType
       })
       console.log(`>>> ${account?.address} btc balance:`, btcCoins)
@@ -181,7 +182,7 @@ export const useSuiTransaction = () => {
       const bitUSD = convertToMist(BigInt(Number(mint)))
 
       const bitUSDCoins = await suiClient.getCoins({
-        owner: account?.address,
+        owner: account?.address as string,
         coinType: bitUSDType
       })
 

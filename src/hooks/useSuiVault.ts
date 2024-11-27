@@ -1,15 +1,16 @@
-import { useSuiClient, useAccounts as useSuiAccounts } from '@mysten/dapp-kit'
 import { bcs } from '@mysten/sui/bcs'
+import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
+import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { Address } from 'viem'
 
 import { useContractAddresses } from './useContractAddresses'
 
 export const useSuiVault = () => {
-  const suiClient = useSuiClient()
+  const suiClient = useSuiClient() as SuiClient
   const contractAddresses = useContractAddresses()
-  const [account] = useSuiAccounts()
+  const { account } = useWallet()
 
   const getVaultAddress = async (
     owner?: Address,
