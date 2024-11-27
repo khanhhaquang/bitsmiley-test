@@ -43,7 +43,6 @@ export const queryKeys = {
   ]
 }
 
-//TODO: change the way we'r fetching
 export const useCollaterals = (chainId?: number, collateralId?: string) => {
   const { address } = useUserInfo()
   const { projectInfo } = useProjectInfo()

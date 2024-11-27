@@ -22,6 +22,16 @@ export const isSuiChain = (chain: number) => {
   return ([suiMainnet.id, suiTestnet.id] as number[]).includes(chain) // TO DO
 }
 
+export const getSuiChainConfig = (name?: string) => {
+  const record = {
+    [SuiChainId.TEST_NET]: suiTestnet,
+    [SuiChainId.MAIN_NET]: suiMainnet
+  }
+  if (name && Object.hasOwn(record, name))
+    return record[name as keyof typeof record]
+  return undefined
+}
+
 export const isBtcTaprootAddress = (btcAddress: string) => {
   try {
     const decoded = address.fromBech32(btcAddress)
