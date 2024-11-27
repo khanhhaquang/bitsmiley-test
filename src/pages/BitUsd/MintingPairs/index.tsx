@@ -12,7 +12,6 @@ import {
 import { SelectWalletModal } from '@/components/ConnectWallet'
 import { Image } from '@/components/Image'
 import { InfoIndicator } from '@/components/InfoIndicator'
-import DropDown, { DropdownItem } from '@/components/ui/dropdown'
 import {
   Table,
   TableRow,
@@ -42,6 +41,7 @@ import {
   MyVaultsMintingPairsTable,
   TTable
 } from '../tables'
+import Selector, { SelectorItem } from '@/components/ui/selector'
 
 const MintingPairs: React.FC = () => {
   const { hasOpenedCollaterals } = useCollaterals()
@@ -136,7 +136,7 @@ const MintingPairsTable: React.FC<{
     filterSupportedChains.length > 0 ? filterSupportedChains[0] : null
   )
 
-  const onChainChange = (item: DropdownItem) => {
+  const onChainChange = (item: SelectorItem) => {
     const chain = filterSupportedChains.find((c) => c.id === item.id)
     setCurrentChain(chain ?? null)
   }
@@ -161,10 +161,10 @@ const MintingPairsTable: React.FC<{
               <TableHeader className="[&_tr]:mb-0">
                 <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
                   <TableHead>
-                    <DropDown
+                    <Selector
                       className="w-[130px]"
                       items={items}
-                      onChange={onChainChange}></DropDown>
+                      onChange={onChainChange}></Selector>
                   </TableHead>
                   {table
                     .filter((t) => t.key != 'pairName')

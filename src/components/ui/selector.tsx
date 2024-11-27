@@ -5,18 +5,18 @@ import { Image } from '@/components/Image'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { cn } from '@/utils/cn'
 
-export type DropdownItem = {
+export type SelectorItem = {
   id: number
   name: string
   icon?: string
 }
-type DropdownProps = {
-  items: DropdownItem[]
-  onChange: (item: DropdownItem) => void
+type SelectorProps = {
+  items: SelectorItem[]
+  onChange: (item: SelectorItem) => void
   className?: string
 }
 
-const DropDown: React.FC<DropdownProps> = ({ items, onChange, className }) => {
+const Selector: React.FC<SelectorProps> = ({ items, onChange, className }) => {
   const dropDownRef = useRef<HTMLDivElement>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [currentItem, setCurrentItem] = useState(
@@ -95,4 +95,4 @@ const DropDown: React.FC<DropdownProps> = ({ items, onChange, className }) => {
   )
 }
 
-export default DropDown
+export default Selector
