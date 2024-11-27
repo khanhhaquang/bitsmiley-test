@@ -20,7 +20,12 @@ import {
   TableHead,
   TableHeader
 } from '@/components/ui/table'
-import { chainsIconUrl, aaSupportedChainIds } from '@/config/chain'
+import {
+  chainsIconUrl,
+  aaSupportedChainIds,
+  connectChains,
+  chainsTitle
+} from '@/config/chain'
 import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
@@ -37,6 +42,7 @@ import {
   MyVaultsMintingPairsTable,
   TTable
 } from '../tables'
+import DropDown from '@/components/ui/dropdown'
 
 const MintingPairs: React.FC = () => {
   const { hasOpenedCollaterals } = useCollaterals()
@@ -158,6 +164,21 @@ const MintingPairsTable: React.FC<{
     [projectInfo?.web3Info, supportedChains]
   )
 
+  const { supportedChainIds } = useSupportedChains()
+  const chains = useMemo(
+    () =>
+      connectChains
+        .filter((v) => supportedChainIds.includes(v.id))
+        .map((c) => ({
+          id: c.id,
+          name: chainsTitle[c.id],
+          icon: chainsIconUrl[c.id]
+        })),
+    [supportedChainIds]
+  )
+
+  const onChainChange = () => {}
+
   return (
     <div className="w-full">
       <div className="mb-6">
@@ -169,6 +190,10 @@ const MintingPairsTable: React.FC<{
       </div>
       <div className="w-full px-5">
         <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
+          <DropDown
+            className="w-[130px]"
+            items={chains}
+            onChange={onChainChange}></DropDown>
           {filterSupportedChains.map((c, index) => (
             <ChainPairsTable
               isOpenedVaults={isOpenedVaults}
