@@ -4,14 +4,16 @@ import { useChainId } from 'wagmi'
 
 import { OnChainLoader } from '@/components/OnchainLoader'
 import { useCollaterals } from '@/hooks/useCollaterals'
-import { isZetaChain } from '@/utils/chain'
+import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
+import { isSuiChain, isZetaChain } from '@/utils/chain'
 
 import { ManageVault } from './ManageVault'
 import { MemoizedOpenVault as OpenVault } from './OpenVault'
+import { SuiOpenVault } from './SuiOpenVault'
 import { ZetaManageVault } from './ZetaManageVault'
 import { ZetaOpenVault } from './ZetaOpenVault'
 
-const Vault: React.FC = () => {
+const EvmVault: React.FC = () => {
   const currentChainId = useChainId()
   const { chainId, collateralId } = useParams()
   const { isMyVault, isLoading, collateral } = useCollaterals(
@@ -45,7 +47,7 @@ const Vault: React.FC = () => {
     return null
   }, [chainId, collateralId, isMyVault])
 
-  if (!chainId || !collateralId || !currentChainId) return null
+  if (!collateralId || !currentChainId) return null
 
   if (isLoading) return <OnChainLoader />
 
@@ -57,6 +59,30 @@ const Vault: React.FC = () => {
       {vaultSection}
     </div>
   )
+}
+
+const SuiVault: React.FC = () => {
+  const { chainId, collateralId } = useParams()
+  const { isLoading } = useSuiCollaterals(Number(chainId), collateralId)
+
+  if (!collateralId) return null
+
+  if (isLoading) return <OnChainLoader />
+
+  return (
+    <div className="relative size-full overflow-hidden pt-9">
+      <SuiOpenVault chainId={Number(chainId)} collateralId={collateralId} />
+    </div>
+  )
+}
+
+const Vault: React.FC = () => {
+  const { chainId } = useParams()
+
+  if (!chainId) return null
+
+  if (isSuiChain(Number(chainId))) return <SuiVault />
+  return <EvmVault />
 }
 
 export default Vault

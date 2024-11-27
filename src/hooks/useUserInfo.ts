@@ -1,11 +1,8 @@
 import {
-  useAccounts as useSuiAccounts,
-  useConnectWallet as useConnectSuiWallet
-} from '@mysten/dapp-kit'
-import {
   useBTCProvider,
   useETHProvider
 } from '@particle-network/btc-connectkit'
+import { useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address, isAddressEqual } from 'viem'
@@ -17,7 +14,6 @@ import { IFeaturesEnabled, UserService } from '@/services/user'
 export const useUserInfo = () => {
   const { accounts: btcAccounts } = useBTCProvider()
   const { account: aaEthAccount } = useETHProvider()
-  const { isPending } = useConnectSuiWallet()
   const {
     address: evmAddress,
     chainId: evmChainId,
@@ -25,15 +21,16 @@ export const useUserInfo = () => {
     isConnecting,
     isReconnecting
   } = useAccount()
-  const [suiAccount] = useSuiAccounts()
+
+  const wallet = useWallet()
 
   const isConnected = useMemo(
-    () => isEvmConnected || !!suiAccount?.address,
-    [isEvmConnected, suiAccount?.address]
+    () => isEvmConnected || wallet.connected,
+    [isEvmConnected, wallet.connected]
   )
   const displayAddress = useMemo(
-    () => suiAccount?.address || evmAddress,
-    [suiAccount?.address, evmAddress]
+    () => (wallet.address as Address) || evmAddress,
+    [wallet.address, evmAddress]
   )
   const addressForDisplay = (btcAccounts[0] as Address) || displayAddress
 
@@ -62,8 +59,11 @@ export const useUserInfo = () => {
 
   const isLoading = useMemo(
     () =>
-      isConnecting || isReconnecting || isLoadingEnabledFeatures || isPending,
-    [isConnecting, isLoadingEnabledFeatures, isReconnecting, isPending]
+      isConnecting ||
+      isReconnecting ||
+      isLoadingEnabledFeatures ||
+      wallet.connecting,
+    [isConnecting, isLoadingEnabledFeatures, isReconnecting, wallet.connecting]
   )
 
   const isConnectedWithAA = useMemo(() => {

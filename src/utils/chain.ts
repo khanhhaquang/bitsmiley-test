@@ -1,9 +1,22 @@
 import { address } from 'bitcoinjs-lib'
 
-import { zetaMainnet, zetaTestnet } from '@/config/wagmi'
+import {
+  suiMainnet,
+  suiTestnet,
+  zetaMainnet,
+  zetaTestnet
+} from '@/config/wagmi'
+
+import { isProduction } from './helpers'
 
 export const isZetaChain = (chain: number) => {
   return ([zetaTestnet.id, zetaMainnet.id] as number[]).includes(chain)
+}
+
+export const SuiNetworkType = isProduction() ? 'mainnet' : 'testnet'
+
+export const isSuiChain = (chain: number) => {
+  return ([suiMainnet.id, suiTestnet.id] as number[]).includes(chain) // TO DO
 }
 
 export const isBtcTaprootAddress = (btcAddress: string) => {
