@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 
 import { DropArrowDownIcon, DropArrowUpIcon } from '@/assets/icons'
+import { Image } from '@/components/Image'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { cn } from '@/utils/cn'
-import { Image } from '@/components/Image'
 
 export type DropdownItem = {
   id: number
@@ -46,8 +46,8 @@ const DropDown: React.FC<DropdownProps> = ({ items, onChange, className }) => {
             toggleDropdown(e)
           }
         }}
-        className="group flex h-[33px] items-center justify-between gap-1 border border-white/60 px-3 bg-white/10 font-ibmr">
-        <div className="flex gap-2 items-center">
+        className="group flex h-[33px] items-center justify-between gap-1 border border-white/60 bg-white/10 px-3 font-ibmr">
+        <div className="flex items-center gap-2">
           {currentItem?.icon && (
             <Image src={currentItem?.icon} className="aspect-square size-4" />
           )}
@@ -83,7 +83,7 @@ const DropDown: React.FC<DropdownProps> = ({ items, onChange, className }) => {
               setIsDropdownOpen(false)
               onChange(item)
             }}
-            className="flex w-full h-[33px] cursor-pointer items-center gap-2 border border-white/60 border-t-transparent px-3 text-white/75 hover:bg-white/50 hover:text-black bg-white/10">
+            className="flex h-[33px] w-full cursor-pointer items-center gap-2 border border-white/60 border-t-transparent bg-white/10 px-3 text-white/75 hover:bg-white/50 hover:text-black">
             {item.icon && (
               <Image src={item.icon} className="aspect-square size-4" />
             )}

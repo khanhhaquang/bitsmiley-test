@@ -12,6 +12,7 @@ import {
 import { SelectWalletModal } from '@/components/ConnectWallet'
 import { Image } from '@/components/Image'
 import { InfoIndicator } from '@/components/InfoIndicator'
+import DropDown, { DropdownItem } from '@/components/ui/dropdown'
 import {
   Table,
   TableRow,
@@ -28,7 +29,6 @@ import {
 } from '@/config/chain'
 import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
-import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IDetailedCollateral } from '@/types/vault'
@@ -42,7 +42,6 @@ import {
   MyVaultsMintingPairsTable,
   TTable
 } from '../tables'
-import DropDown from '@/components/ui/dropdown'
 
 const MintingPairs: React.FC = () => {
   const { hasOpenedCollaterals } = useCollaterals()
@@ -62,24 +61,13 @@ const MintingPairs: React.FC = () => {
 
 const ChainPairsTable: React.FC<{
   chain: Chain
-  index: number
   table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
-}> = ({ chain, index, table, isOpenedVaults }) => {
-  const {
-    isFetching,
-    availableCollaterals,
-    openedCollaterals,
-    isError,
-    isSuccess
-  } = useCollaterals(chain.id)
+}> = ({ chain, table, isOpenedVaults }) => {
+  const { isFetching, availableCollaterals, openedCollaterals, isError } =
+    useCollaterals(chain.id)
 
   const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
-
-  const hideHeaderChainName = useMemo(
-    () => isSuccess && !collaterals.length,
-    [collaterals.length, isSuccess]
-  )
 
   const rows = useMemo(() => {
     if (!collaterals.length) {
@@ -97,51 +85,30 @@ const ChainPairsTable: React.FC<{
   }, [collaterals, table])
 
   return (
-    <Table
-      className={cn(
-        'w-full overflow-hidden font-ibmr text-xs',
-        index !== 0 && !isOpenedVaults && 'border-t border-white/10'
-      )}>
-      <TableHeader className="[&_tr]:mb-0">
-        <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
-          {(index !== 0
-            ? table.filter((t) => t.key === 'pairName')
-            : table
-          ).map(({ key, title, message, titleClassName, formatTitle }) => (
-            <TableHead key={key} className={titleClassName}>
-              {title ||
-                formatTitle?.(hideHeaderChainName ? undefined : chain.id)}{' '}
-              <InfoIndicator message={message} />
-            </TableHead>
-          ))}
-          <TableHead />
+    <TableBody>
+      {isFetching ? (
+        <TableRow className="my-6">
+          <TableCell
+            width="100%"
+            align="center"
+            className="text-sm text-white/70">
+            we are fetching more on-chain data...
+          </TableCell>
         </TableRow>
-      </TableHeader>
-      <TableBody>
-        {isFetching ? (
-          <TableRow className="my-6">
-            <TableCell
-              width="100%"
-              align="center"
-              className="text-sm text-white/70">
-              we are fetching more on-chain data...
-            </TableCell>
-          </TableRow>
-        ) : isError ? (
-          <TableRow className="my-6">
-            <TableCell
-              width="100%"
-              align="center"
-              className="text-sm text-white/70">
-              {chain.name} network is currently unreachable. All data will be
-              accessible once connected.
-            </TableCell>
-          </TableRow>
-        ) : (
-          rows
-        )}
-      </TableBody>
-    </Table>
+      ) : isError ? (
+        <TableRow className="my-6">
+          <TableCell
+            width="100%"
+            align="center"
+            className="text-sm text-white/70">
+            {chain.name} network is currently unreachable. All data will be
+            accessible once connected.
+          </TableCell>
+        </TableRow>
+      ) : (
+        rows
+      )}
+    </TableBody>
   )
 }
 
@@ -149,35 +116,30 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
-  const { projectInfo } = useProjectInfo()
-  const { supportedChains } = useSupportedChains()
-
-  const filterSupportedChains = useMemo(
-    () =>
-      supportedChains.filter(
-        (s) =>
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.BitSmiley &&
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.bitSmileyQuery
-      ),
-    [projectInfo?.web3Info, supportedChains]
-  )
-
   const { supportedChainIds } = useSupportedChains()
-  const chains = useMemo(
-    () =>
-      connectChains
-        .filter((v) => supportedChainIds.includes(v.id))
-        .map((c) => ({
-          id: c.id,
-          name: chainsTitle[c.id],
-          icon: chainsIconUrl[c.id]
-        })),
+  const filterSupportedChains = useMemo(
+    () => connectChains.filter((v) => supportedChainIds.includes(v.id)),
     [supportedChainIds]
   )
 
-  const onChainChange = () => {}
+  const items = useMemo(
+    () =>
+      filterSupportedChains.map((c) => ({
+        id: c.id,
+        name: chainsTitle[c.id],
+        icon: chainsIconUrl[c.id]
+      })),
+    [filterSupportedChains]
+  )
+
+  const [currentChain, setCurrentChain] = useState(
+    filterSupportedChains.length > 0 ? filterSupportedChains[0] : null
+  )
+
+  const onChainChange = (item: DropdownItem) => {
+    const chain = filterSupportedChains.find((c) => c.id === item.id)
+    setCurrentChain(chain ?? null)
+  }
 
   return (
     <div className="w-full">
@@ -190,19 +152,45 @@ const MintingPairsTable: React.FC<{
       </div>
       <div className="w-full px-5">
         <div className="relative w-full border border-white/20 px-7 pb-6 pt-4">
-          <DropDown
-            className="w-[130px]"
-            items={chains}
-            onChange={onChainChange}></DropDown>
-          {filterSupportedChains.map((c, index) => (
-            <ChainPairsTable
-              isOpenedVaults={isOpenedVaults}
-              key={c.id}
-              index={index}
-              chain={c}
-              table={table}
-            />
-          ))}
+          {currentChain && (
+            <Table
+              className={cn(
+                'w-full overflow-hidden font-ibmr text-xs min-h-40',
+                !isOpenedVaults && 'border-t border-white/10'
+              )}>
+              <TableHeader className="[&_tr]:mb-0">
+                <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
+                  <TableHead>
+                    <DropDown
+                      className="w-[130px]"
+                      items={items}
+                      onChange={onChainChange}></DropDown>
+                  </TableHead>
+                  {table
+                    .filter((t) => t.key != 'pairName')
+                    .map(
+                      ({
+                        key,
+                        title,
+                        message,
+                        titleClassName,
+                        formatTitle
+                      }) => (
+                        <TableHead key={key} className={titleClassName}>
+                          {title || formatTitle?.(currentChain.id)}{' '}
+                          <InfoIndicator message={message} />
+                        </TableHead>
+                      )
+                    )}
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <ChainPairsTable
+                chain={currentChain}
+                table={table}
+                isOpenedVaults={isOpenedVaults}></ChainPairsTable>
+            </Table>
+          )}
           <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
           <RightAngleVaultIcon className="absolute bottom-1.5 right-1.5 -rotate-90 text-grey9" />
         </div>
