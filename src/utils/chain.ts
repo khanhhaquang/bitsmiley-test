@@ -1,3 +1,4 @@
+import { SuiChainId } from '@suiet/wallet-kit'
 import { address } from 'bitcoinjs-lib'
 
 import {
@@ -7,13 +8,15 @@ import {
   zetaTestnet
 } from '@/config/wagmi'
 
-import { isProduction } from './helpers'
-
 export const isZetaChain = (chain: number) => {
   return ([zetaTestnet.id, zetaMainnet.id] as number[]).includes(chain)
 }
 
-export const SuiNetworkType = isProduction() ? 'mainnet' : 'testnet'
+export const getSuiNetworkType = (chainId: number) => {
+  if (chainId === suiMainnet.id) return SuiChainId.MAIN_NET
+  if (chainId === suiTestnet.id) return SuiChainId.TEST_NET
+  return undefined
+}
 
 export const isSuiChain = (chain: number) => {
   return ([suiMainnet.id, suiTestnet.id] as number[]).includes(chain) // TO DO
