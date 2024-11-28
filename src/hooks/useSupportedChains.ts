@@ -26,6 +26,7 @@ export const useSupportedChains = () => {
       ),
     [supportedChains]
   )
+  console.log('🚀 ~ useSupportedChains ~ clients:', clients)
 
   return { supportedChainIds, supportedChains, isLoading, clients }
 }
