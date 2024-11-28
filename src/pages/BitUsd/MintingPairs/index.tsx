@@ -1,8 +1,9 @@
+import { useWallet } from '@suiet/wallet-kit'
 import dayjs from 'dayjs'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Chain } from 'viem'
-import { useSwitchChain } from 'wagmi'
+import { useAccount, useSwitchChain } from 'wagmi'
 
 import {
   ArrowRightDoubleIcon,
@@ -12,6 +13,7 @@ import {
 import { SelectWalletModal } from '@/components/ConnectWallet'
 import { Image } from '@/components/Image'
 import { InfoIndicator } from '@/components/InfoIndicator'
+import Selector, { SelectorItem } from '@/components/ui/selector'
 import {
   Table,
   TableRow,
@@ -24,9 +26,15 @@ import {
   chainsIconUrl,
   aaSupportedChainIds,
   connectChains,
-  chainsTitle
+  chainsTitle,
+  getSuiChainId
 } from '@/config/chain'
-import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
+import {
+  chainsNotSupportedByParticle,
+  customChains,
+  suiMainnet,
+  suiTestnet
+} from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -34,6 +42,7 @@ import { IDetailedCollateral } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import { ActionButton } from '../components/ActionButton'
+import { NetworkCheckModal } from '../components/NetworkCheckModal'
 import { VaultTitleBlue, VaultTitleWhite } from '../components/VaultTitle'
 import { displayCollateralValues, getHealthFactorTextColor } from '../display'
 import {
@@ -41,7 +50,6 @@ import {
   MyVaultsMintingPairsTable,
   TTable
 } from '../tables'
-import Selector, { SelectorItem } from '@/components/ui/selector'
 
 const MintingPairs: React.FC = () => {
   const { hasOpenedCollaterals } = useCollaterals()
@@ -64,6 +72,7 @@ const ChainPairsTable: React.FC<{
   table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
 }> = ({ chain, table, isOpenedVaults }) => {
+  const { isConnected } = useUserInfo()
   const { isFetching, availableCollaterals, openedCollaterals, isError } =
     useCollaterals(chain.id)
 
@@ -85,30 +94,41 @@ const ChainPairsTable: React.FC<{
   }, [collaterals, table])
 
   return (
-    <TableBody>
-      {isFetching ? (
-        <TableRow className="my-6">
-          <TableCell
-            width="100%"
-            align="center"
-            className="text-sm text-white/70">
-            we are fetching more on-chain data...
-          </TableCell>
-        </TableRow>
-      ) : isError ? (
-        <TableRow className="my-6">
-          <TableCell
-            width="100%"
-            align="center"
-            className="text-sm text-white/70">
-            {chain.name} network is currently unreachable. All data will be
-            accessible once connected.
-          </TableCell>
-        </TableRow>
-      ) : (
-        rows
-      )}
-    </TableBody>
+    <>
+      <TableBody>
+        {!isConnected ? (
+          <TableRow className="my-6">
+            <TableCell
+              width="100%"
+              align="center"
+              className="text-sm text-white/70">
+              Connect wallet first
+            </TableCell>
+          </TableRow>
+        ) : isFetching ? (
+          <TableRow className="my-6">
+            <TableCell
+              width="100%"
+              align="center"
+              className="text-sm text-white/70">
+              we are fetching more on-chain data...
+            </TableCell>
+          </TableRow>
+        ) : isError ? (
+          <TableRow className="my-6">
+            <TableCell
+              width="100%"
+              align="center"
+              className="text-sm text-white/70">
+              {chain.name} network is currently unreachable. All data will be
+              accessible once connected.
+            </TableCell>
+          </TableRow>
+        ) : (
+          rows
+        )}
+      </TableBody>
+    </>
   )
 }
 
@@ -116,6 +136,12 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
+  const { isConnected: isEvmConnected, chainId: evmChainId } = useAccount()
+  const { connected: isSuiConnected, chain: suiChain } = useWallet()
+
+  const [isNetworkCheckModalOpen, setIsNetworkCheckModalOpen] = useState(false)
+  const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
+    useState(false)
   const { supportedChainIds } = useSupportedChains()
   const filterSupportedChains = useMemo(
     () => connectChains.filter((v) => supportedChainIds.includes(v.id)),
@@ -136,13 +162,52 @@ const MintingPairsTable: React.FC<{
     filterSupportedChains.length > 0 ? filterSupportedChains[0] : null
   )
 
-  const onChainChange = (item: SelectorItem) => {
-    const chain = filterSupportedChains.find((c) => c.id === item.id)
+  const setCurrentChainById = (id?: number) => {
+    const chain = filterSupportedChains.find((c) => c.id === id)
     setCurrentChain(chain ?? null)
   }
 
+  const onChainChange = (item: SelectorItem) => {
+    setCurrentChainById(item.id)
+    if (!isEvmConnected && !isSuiConnected) {
+      setIsConnectWalletModalOpen(true)
+      return
+    }
+    if (
+      ((item.id === suiMainnet.id || item.id === suiTestnet.id) &&
+        !isSuiConnected) ||
+      (item.id != suiMainnet.id && item.id != suiTestnet.id && !isEvmConnected)
+    ) {
+      setIsNetworkCheckModalOpen(true)
+    }
+  }
+
+  useEffect(() => {
+    if (evmChainId && currentChain?.id != evmChainId) {
+      setCurrentChainById(evmChainId)
+      return
+    }
+    if (isSuiConnected && suiChain && currentChain?.id != getSuiChainId()) {
+      setCurrentChainById(getSuiChainId())
+      return
+    }
+  }, [isEvmConnected, isSuiConnected])
+
   return (
     <div className="w-full">
+      <NetworkCheckModal
+        isOpen={isNetworkCheckModalOpen}
+        onLogout={() => {
+          setIsConnectWalletModalOpen(true)
+          setIsNetworkCheckModalOpen(false)
+        }}
+        onClose={() => setIsNetworkCheckModalOpen(false)}
+      />
+      <SelectWalletModal
+        expectedChainId={currentChain?.id}
+        isOpen={isConnectWalletModalOpen}
+        onClose={() => setIsConnectWalletModalOpen(false)}
+      />
       <div className="mb-6">
         {isOpenedVaults ? (
           <VaultTitleBlue>My Vaults</VaultTitleBlue>
@@ -163,6 +228,7 @@ const MintingPairsTable: React.FC<{
                   <TableHead>
                     <Selector
                       className="w-[130px]"
+                      selectedId={currentChain?.id}
                       items={items}
                       onChange={onChainChange}></Selector>
                   </TableHead>

@@ -159,9 +159,11 @@ const NavigationButton: React.FC<{
 
 const MainApp = () => {
   const { isConnected, isLoading } = useUserInfo()
+  const { pathname } = useLocation()
+  const isAlphanet = pathname === '/app/alphanet'
 
   const renderContent = () => {
-    if (!isConnected) {
+    if (!isConnected && !isAlphanet) {
       return (
         <div className="flex size-full items-center justify-center text-2xl">
           Connect wallet first
@@ -169,7 +171,7 @@ const MainApp = () => {
       )
     }
 
-    return isLoading ? <OnChainLoader /> : <Outlet />
+    return isLoading && !isAlphanet ? <OnChainLoader /> : <Outlet />
   }
 
   return (

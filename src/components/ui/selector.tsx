@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { DropArrowDownIcon, DropArrowUpIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
@@ -11,17 +11,31 @@ export type SelectorItem = {
   icon?: string
 }
 type SelectorProps = {
+  selectedId?: number
   items: SelectorItem[]
   onChange: (item: SelectorItem) => void
   className?: string
 }
 
-const Selector: React.FC<SelectorProps> = ({ items, onChange, className }) => {
+const Selector: React.FC<SelectorProps> = ({
+  selectedId,
+  items,
+  onChange,
+  className
+}) => {
   const dropDownRef = useRef<HTMLDivElement>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
   const [currentItem, setCurrentItem] = useState(
     items.length > 0 ? items[0] : null
   )
+
+  useEffect(() => {
+    if (selectedId && currentItem?.id != selectedId) {
+      const item = items.find((v) => v.id === selectedId)
+      if (item) setCurrentItem(item)
+    }
+  }, [selectedId])
 
   useClickOutside(dropDownRef, () => {
     setIsDropdownOpen(false)
