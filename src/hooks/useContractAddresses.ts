@@ -2,11 +2,11 @@ import { useChainId } from 'wagmi'
 
 import { useProjectInfo } from './useProjectInfo'
 
-export const useContractAddresses = () => {
+export const useContractAddresses = (injectChainId?: number) => {
   const chainId = useChainId()
   const { projectInfo } = useProjectInfo()
   const contractAddresses = projectInfo?.web3Info.find(
-    (v) => v.chainId === chainId
+    (v) => v.chainId === (injectChainId ?? chainId)
   )?.contract
 
   return contractAddresses
