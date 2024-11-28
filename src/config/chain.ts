@@ -1,7 +1,6 @@
-import { Chain, holesky, mainnet } from 'viem/chains'
+import { holesky, mainnet } from 'viem/chains'
 
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
-import { isProduction } from '@/utils/helpers'
 
 import {
   bitLayerMainnet,
@@ -48,14 +47,14 @@ export const HIGH_GAS_FEE_CHAIN_IDS = [
   bitLayerMainnet.id
 ] as const as number[]
 
-export const connectChains = [
-  suiTestnet,
-  suiMainnet,
-  bitLayerTestnet,
-  bitLayerMainnet,
-  merlinTestnet,
-  merlinMainnet
-] as Chain[]
+export const connectChainIds = [
+  suiTestnet.id,
+  suiMainnet.id,
+  bitLayerTestnet.id,
+  bitLayerMainnet.id,
+  merlinMainnet.id,
+  merlinTestnet.id
+] as const as number[]
 
 export const chainsTitle: { [key: string]: string } = {
   [suiTestnet.id]: 'Sui',
@@ -65,6 +64,3 @@ export const chainsTitle: { [key: string]: string } = {
   [merlinMainnet.id]: 'Merlin',
   [merlinTestnet.id]: 'Merlin'
 } as const
-
-export const getSuiChainId = () =>
-  isProduction() ? suiMainnet.id : suiTestnet.id

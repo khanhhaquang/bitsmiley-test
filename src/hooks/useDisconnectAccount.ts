@@ -37,7 +37,7 @@ export const useDisconnectAccount = () => {
     disconnectWagmi()
     disConnectParticle?.()
     if (wallet.connected) wallet.disconnect()
-  }, [disConnectParticle, disconnectWagmi])
+  }, [disConnectParticle, disconnectWagmi, wallet])
 
   return disconnect
 }

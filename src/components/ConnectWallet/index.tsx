@@ -15,7 +15,7 @@ import { CopyButton } from '@/components/CopyButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import WrongNetworkModal from '@/components/WrongNetworkModal'
-import { connectChains } from '@/config/chain'
+import { connectChainIds } from '@/config/chain'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
@@ -170,12 +170,12 @@ export const SelectWalletModal: React.FC<{
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
   )
   const { supportedChainIds } = useSupportedChains()
-  const chains = useMemo(
-    () => connectChains.filter((v) => supportedChainIds.includes(v.id)) || [],
+  const chainIds = useMemo(
+    () => connectChainIds.filter((v) => supportedChainIds.includes(v)) || [],
     [supportedChainIds]
   )
   const [selectedNetwork, setSelectedNetwork] = useState(
-    chains.length > 0 ? chains[0].id : 0
+    chainIds.length > 0 ? chainIds[0] : 0
   )
 
   useEffect(() => {
@@ -203,7 +203,7 @@ export const SelectWalletModal: React.FC<{
           </h2>
           <div className="flex w-full flex-col gap-6">
             <NetworkTab
-              chains={chains}
+              chainIds={chainIds}
               selectedNetwork={selectedNetwork}
               onNetworkChange={(network) => setSelectedNetwork(network)}
             />
