@@ -24,7 +24,7 @@ export const useDisconnectAccount = () => {
         onSuccess: () => {
           setAirdropIsLoggedIn(false)
           clearStorage()
-          navigate('/')
+          // navigate('/')
         },
         onError: (e) => {
           console.log('err', e)
@@ -36,8 +36,8 @@ export const useDisconnectAccount = () => {
   const disconnect = useCallback(() => {
     disconnectWagmi()
     disConnectParticle?.()
-    wallet.disconnect()
-  }, [disConnectParticle, disconnectWagmi])
+    if (wallet.connected) wallet.disconnect()
+  }, [disConnectParticle, disconnectWagmi, wallet])
 
   return disconnect
 }

@@ -1,5 +1,3 @@
-import { Chain } from 'viem/chains'
-
 import { Image } from '@/components/Image'
 import { chainsIconUrl, chainsTitle } from '@/config/chain'
 import { cn } from '@/utils/cn'
@@ -24,19 +22,19 @@ const NetworkButton: React.FC<{
 }
 
 export const NetworkTab: React.FC<{
-  chains: Chain[]
+  chainIds: number[]
   selectedNetwork: number
   onNetworkChange: (network: number) => void
-}> = ({ chains, selectedNetwork, onNetworkChange }) => {
+}> = ({ chainIds, selectedNetwork, onNetworkChange }) => {
   return (
     <div className="flex gap-4">
-      {chains.map((c) => (
+      {chainIds.map((c) => (
         <NetworkButton
-          key={c.id}
-          text={chainsTitle[c.id]}
-          icon={chainsIconUrl[c.id]}
-          selected={selectedNetwork === c.id}
-          onClick={() => onNetworkChange(c.id)}
+          key={c}
+          text={chainsTitle[c]}
+          icon={chainsIconUrl[c]}
+          selected={selectedNetwork === c}
+          onClick={() => onNetworkChange(c)}
         />
       ))}
     </div>
