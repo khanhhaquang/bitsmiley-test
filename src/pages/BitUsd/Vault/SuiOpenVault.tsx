@@ -48,7 +48,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
 
-  const { openAndMint, transationState } = useSuiTransaction()
+  const { openAndMint, transactionState } = useSuiTransaction()
 
   const wbtcBalance = 1
   const depositDisabled = useMemo(() => {
@@ -126,7 +126,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   return (
     <div className="size-full overflow-y-auto pb-12">
       <SuiProcessing
-        {...transationState}
+        {...transactionState}
         refetchCollateral={refetchCollateral}
         refreshVaultValues={refreshVaultValues}
       />
