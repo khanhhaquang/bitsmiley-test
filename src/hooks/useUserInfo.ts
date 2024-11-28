@@ -29,7 +29,7 @@ export const useUserInfo = () => {
     [isEvmConnected, wallet.connected]
   )
   const displayAddress = useMemo(
-    () => wallet.address || evmAddress,
+    () => (wallet.address as Address) || evmAddress,
     [wallet.address, evmAddress]
   )
   const addressForDisplay = (btcAccounts[0] as Address) || displayAddress

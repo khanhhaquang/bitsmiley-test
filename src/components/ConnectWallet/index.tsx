@@ -20,7 +20,7 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useReconnectEvm } from '@/hooks/useReconnectEvm'
-import { isZetaChain } from '@/utils/chain'
+import { isSuiChain, isZetaChain } from '@/utils/chain'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -33,7 +33,6 @@ import { NetworkTab } from './NetworkTab'
 import SuiConnectors from './SuiConnectors'
 
 import { useSupportedChains } from '@/hooks/useSupportedChains'
-import { suiMainnet, suiTestnet } from '@/config/wagmi'
 
 import { useWallet } from '@suiet/wallet-kit'
 
@@ -209,8 +208,7 @@ export const SelectWalletModal: React.FC<{
               onNetworkChange={(network) => setSelectedNetwork(network)}
             />
             <div className="flex flex-1 flex-col items-center gap-y-6">
-              {selectedNetwork === suiTestnet.id ||
-              selectedNetwork === suiMainnet.id ? (
+              {isSuiChain(selectedNetwork) ? (
                 <SuiConnectors onClose={onClose} />
               ) : (
                 <EvmConnectors
