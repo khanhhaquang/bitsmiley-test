@@ -16,7 +16,7 @@ export const useSuiTransaction = () => {
   const contractAddresses = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
-  const { validateTransaction, ...transationState } = useSuiExecute()
+  const { validateTransaction, ...transactionState } = useSuiExecute()
   const { vaultAddress } = useSuiVault()
 
   const btcType = `${contractAddresses?.btcPackageId}::btc::BTC`
@@ -239,6 +239,6 @@ export const useSuiTransaction = () => {
     mint,
     repay,
     repayAll,
-    transationState
+    transactionState
   }
 }
