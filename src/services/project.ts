@@ -36,7 +36,7 @@ export interface IContractAddresses {
   bitSmileyPackageId: Address
   bitUSDPackageId: Address
   btcPackageId: Address
-
+  bitSmileyQueryObjectId: Address
   bitSmileyObjectId: Address
   vaultManagerObjectId: Address
   stabilityFeeObjectId: Address
