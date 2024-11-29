@@ -38,7 +38,7 @@ import { cn } from '@/utils/cn'
 import { ActionButton } from '../components/ActionButton'
 import { NetworkCheckModal } from '../components/NetworkCheckModal'
 import { VaultTitleBlue, VaultTitleWhite } from '../components/VaultTitle'
-import { displayCollateralValues, getHealthFactorTextColor } from '../display'
+import { getHealthFactorTextColor } from '../display'
 import {
   AvailableMintingPairsTable,
   MyVaultsMintingPairsTable,
@@ -223,13 +223,22 @@ const MintingPairsTable: React.FC<{
               )}>
               <TableHeader className="[&_tr]:mb-0">
                 <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
-                  <TableHead>
-                    <Selector
-                      className="w-[130px]"
-                      selectedId={currentChainId}
-                      items={items}
-                      onChange={onChainChange}></Selector>
-                  </TableHead>
+                  {isOpenedVaults ? (
+                    <TableHead className="flex w-[130px] items-center gap-x-0.5">
+                      <Image src={chainsIconUrl[currentChainId]} width={15} />
+                      <span className="text-xs text-white/70">
+                        {chainsTitle[currentChainId]}
+                      </span>
+                    </TableHead>
+                  ) : (
+                    <TableHead>
+                      <Selector
+                        className="w-[130px]"
+                        selectedId={currentChainId}
+                        items={items}
+                        onChange={onChainChange}></Selector>
+                    </TableHead>
+                  )}
                   {table
                     .filter((t) => t.key != 'pairName')
                     .map(
@@ -365,12 +374,6 @@ const MintingPairTableRow: React.FC<{
 
       {isOpened && (
         <TableRow className="-mt-4 justify-start gap-x-1 text-xs">
-          <TableCell className="flex items-center gap-x-0.5">
-            <Image src={chainsIconUrl[collateral.chainId]} width={15} />
-            <span className="text-xs text-white/70">
-              {displayCollateralValues(collateral).network}
-            </span>
-          </TableCell>
           {liquidationMessage && (
             <TableCell
               className={cn(

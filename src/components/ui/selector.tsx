@@ -97,7 +97,7 @@ const Selector: React.FC<SelectorProps> = ({
               setIsDropdownOpen(false)
               onChange(item)
             }}
-            className="flex h-[33px] w-full cursor-pointer items-center gap-2 border border-white/60 border-t-transparent bg-white/10 px-3 text-white/75 hover:bg-white/50 hover:text-black">
+            className="flex h-[33px] w-full cursor-pointer items-center gap-2 border border-white/60 border-t-transparent bg-white/10 px-3 text-white/75 backdrop-blur-[20px] hover:bg-white/50 hover:text-black">
             {item.icon && (
               <Image src={item.icon} className="aspect-square size-4" />
             )}
