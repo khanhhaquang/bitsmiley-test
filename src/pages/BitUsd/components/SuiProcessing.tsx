@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { ExecutorResult } from '@/hooks/useSuiUtils'
+import { ExecutorResult } from '@/hooks/useSuiExecute'
 import { useUserInfo } from '@/hooks/useUserInfo'
 
 import { ProcessingModal } from './Processing'

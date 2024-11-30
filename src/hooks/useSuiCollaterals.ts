@@ -8,9 +8,9 @@ import {
   IDetailedCollateral,
   IDetailedCollateralFromChain
 } from '@/types/vault'
+import { collateralHash } from '@/utils/sui'
 
 import { useProjectInfo } from './useProjectInfo'
-import { collateralHash } from './useSuiUtils'
 import { useSuiVault } from './useSuiVault'
 import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
