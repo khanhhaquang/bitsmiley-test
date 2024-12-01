@@ -1,5 +1,6 @@
 import { BitUsdIcon } from '@/assets/icons'
 import { customChains } from '@/config/wagmi'
+import { IDetailedSuiCollateral } from '@/types/sui'
 import { IDetailedCollateral, IVault } from '@/types/vault'
 import {
   formatNumberAsCompact,
@@ -96,7 +97,7 @@ export const displayVaultValues = (
 })
 
 export const displayCollateralValues = (
-  value?: IDetailedCollateral,
+  value?: IDetailedCollateral | IDetailedSuiCollateral,
   withUnit: boolean = true
 ) => ({
   collateralMaxLTV: formatPercentage(Number(value?.maxLTV) * 100, withUnit),
