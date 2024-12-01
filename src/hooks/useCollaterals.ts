@@ -29,6 +29,7 @@ import {
 import { useProjectInfo } from './useProjectInfo'
 import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
+
 export const queryKeys = {
   collaterals: (chainId?: number, userAddress?: Address) => [
     'collaterals',
@@ -37,7 +38,6 @@ export const queryKeys = {
   ]
 }
 
-//TODO: change the way we'r fetching
 export const useCollaterals = (chainId?: number, collateralId?: string) => {
   const { address } = useUserInfo()
   const { projectInfo } = useProjectInfo()

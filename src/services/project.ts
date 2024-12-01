@@ -33,14 +33,15 @@ export interface IContractAddresses {
   TGEAirdropContract: Address
   bitDiscAirdropContract: Address
 
+  // SUI
   bitSmileyPackageId: Address
   bitUSDPackageId: Address
   btcPackageId: Address
-
   bitSmileyObjectId: Address
   vaultManagerObjectId: Address
   stabilityFeeObjectId: Address
   oracleObjectId: Address
+  bitSmileyQueryObjectId: Address
 }
 export interface INetworkInfo {
   network: string

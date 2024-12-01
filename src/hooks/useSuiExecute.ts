@@ -1,18 +1,8 @@
 import { SuiClient, SuiTransactionBlockResponse } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { MIST_PER_SUI } from '@mysten/sui/utils'
 import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
-import { keccak256, toHex } from 'viem'
-
-export const convertToMist = (amount: number) => {
-  return (BigInt(Number(MIST_PER_SUI) * amount) * MIST_PER_SUI) / MIST_PER_SUI
-}
-
-export const collateralHash = (collateral: string) => {
-  return keccak256(toHex(collateral))
-}
 
 export const hexToBytes = (hex: string) => {
   return Buffer.from(hex.slice(2), 'hex')
@@ -29,7 +19,10 @@ type ResponseCallback = (
 ) => void | Promise<void>
 type ExecuteResponse = { digest: string; rawEffects?: number[] }
 
-type Executor = (options: Options, then?: ResponseCallback) => void
+type Executor = (
+  options: Options,
+  then?: ResponseCallback
+) => Promise<SuiTransactionBlockResponse | undefined>
 
 export type ExecutorResult = {
   validateTransaction: Executor
@@ -78,8 +71,10 @@ export const useSuiExecute = (): ExecutorResult => {
 
         then?.(waitResult)
         setTxResponse(waitResult)
+        return waitResult
+      } else {
+        return undefined
       }
-      return
     } catch (error) {
       console.error('Failed to execute transaction', tx, error)
     }

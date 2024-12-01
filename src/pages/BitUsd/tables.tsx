@@ -4,7 +4,7 @@ import { GetTokenReturnType } from 'wagmi/actions'
 import { Image } from '@/components/Image'
 import { chainsIconUrl } from '@/config/chain'
 import { customChains } from '@/config/wagmi'
-import { IDetailedCollateral, IVault } from '@/types/vault'
+import { IGeneralDetailedCollateral, IVault } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import {
@@ -45,7 +45,7 @@ export const messages = {
   collateral: 'collateral'
 }
 
-export const AvailableMintingPairsTable: TTable<IDetailedCollateral> = [
+export const AvailableMintingPairsTable: TTable<IGeneralDetailedCollateral> = [
   {
     key: 'pairName',
     formatTitle: (chainId) =>
@@ -104,7 +104,7 @@ export const AvailableMintingPairsTable: TTable<IDetailedCollateral> = [
   }
 ]
 
-export const MyVaultsMintingPairsTable: TTable<IDetailedCollateral> = [
+export const MyVaultsMintingPairsTable: TTable<IGeneralDetailedCollateral> = [
   {
     key: 'pairName',
     title: '',
@@ -143,7 +143,7 @@ export const MyVaultsMintingPairsTable: TTable<IDetailedCollateral> = [
   }
 ]
 
-export const ManageVaultHeaderInfoTable: TTable<IDetailedCollateral> = [
+export const ManageVaultHeaderInfoTable: TTable<IGeneralDetailedCollateral> = [
   {
     key: 'network',
     title: 'Network',
@@ -291,7 +291,7 @@ export const VaultOpenInfoTable: TTable<IVault> = [
   }
 ]
 
-export const VaultHeaderColumns: TTable<IDetailedCollateral> = [
+export const VaultHeaderColumns: TTable<IGeneralDetailedCollateral> = [
   {
     key: 'network',
     title: 'Network',

@@ -64,7 +64,7 @@ const EvmVault: React.FC = () => {
 
 const SuiVault: React.FC = () => {
   const { chainId, collateralId } = useParams()
-  const { isLoading } = useSuiCollaterals(Number(chainId), collateralId)
+  const { isLoading } = useSuiCollaterals(collateralId)
 
   if (!collateralId) return null
 

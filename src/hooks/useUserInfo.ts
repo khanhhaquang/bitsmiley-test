@@ -2,13 +2,13 @@ import {
   useBTCProvider,
   useETHProvider
 } from '@particle-network/btc-connectkit'
-import { useWallet } from '@suiet/wallet-kit'
+import { SuiMainnetChain, SuiTestnetChain, useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address, isAddressEqual } from 'viem'
 import { useAccount } from 'wagmi'
 
-import { customChains } from '@/config/wagmi'
+import { customChains, suiMainnet, suiTestnet } from '@/config/wagmi'
 import { IFeaturesEnabled, UserService } from '@/services/user'
 
 export const useUserInfo = () => {
@@ -22,15 +22,15 @@ export const useUserInfo = () => {
     isReconnecting
   } = useAccount()
 
-  const wallet = useWallet()
+  const suiWallet = useWallet()
 
   const isConnected = useMemo(
-    () => isEvmConnected || wallet.connected,
-    [isEvmConnected, wallet.connected]
+    () => isEvmConnected || suiWallet.connected,
+    [isEvmConnected, suiWallet.connected]
   )
   const displayAddress = useMemo(
-    () => (wallet.address as Address) || evmAddress,
-    [wallet.address, evmAddress]
+    () => (suiWallet.address as Address) || evmAddress,
+    [suiWallet.address, evmAddress]
   )
   const addressForDisplay = (btcAccounts[0] as Address) || displayAddress
 
@@ -62,8 +62,13 @@ export const useUserInfo = () => {
       isConnecting ||
       isReconnecting ||
       isLoadingEnabledFeatures ||
-      wallet.connecting,
-    [isConnecting, isLoadingEnabledFeatures, isReconnecting, wallet.connecting]
+      suiWallet.connecting,
+    [
+      isConnecting,
+      isLoadingEnabledFeatures,
+      isReconnecting,
+      suiWallet.connecting
+    ]
   )
 
   const isConnectedWithAA = useMemo(() => {
@@ -84,6 +89,12 @@ export const useUserInfo = () => {
     [enabledFeaturesData?.BitPoint]
   )
 
+  const suiChainIdAsNumber = useMemo(() => {
+    if (suiWallet.chain?.id === SuiMainnetChain.id) return suiMainnet.id
+    if (suiWallet.chain?.id === SuiTestnetChain.id) return suiTestnet.id
+    return undefined
+  }, [suiWallet.chain?.id])
+
   return {
     isConnectedWithAA,
     isConnected,
@@ -93,6 +104,8 @@ export const useUserInfo = () => {
     blockExplorerUrl,
     evmChain,
     evmChainId,
-    isLoading
+    isLoading,
+    suiChainIdAsNumber,
+    isSuiConnected: suiWallet.connected
   }
 }

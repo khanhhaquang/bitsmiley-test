@@ -59,3 +59,9 @@ export const getRandomInt = (max: number) => {
 export const getRandomBool = () => {
   return Math.random() >= 0.5
 }
+
+export const byteArrayToString = (byteArray: number[]) => {
+  return (
+    '0x' + byteArray.map((byte) => byte.toString(16).padStart(2, '0')).join('')
+  )
+}

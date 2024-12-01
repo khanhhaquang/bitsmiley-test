@@ -1,53 +1,100 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query'
+import { bcs } from '@mysten/sui/bcs'
+import { SuiClient } from '@mysten/sui/client'
+import { Transaction } from '@mysten/sui/transactions'
+import { useSuiClient } from '@suiet/wallet-kit'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo, useCallback } from 'react'
-import { Address, formatEther, parseEther } from 'viem'
 
 import {
-  ICollateral,
-  ICollateralFromChain,
-  IDetailedCollateral,
-  IDetailedCollateralFromChain
-} from '@/types/vault'
+  BcsCollateral,
+  ICollateralFromSuiChain,
+  ISuiCollateral
+} from '@/types/sui'
+import { byteArrayToString } from '@/utils/number'
+import { convertToMist, parseFromMist } from '@/utils/sui'
 
 import { useProjectInfo } from './useProjectInfo'
-import { collateralHash } from './useSuiUtils'
-import { useSuiVault } from './useSuiVault'
-import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
 
-export const queryKeys = {
-  collaterals: (chainId?: number, userAddress?: Address) => [
-    'collaterals',
-    chainId,
-    userAddress
-  ]
+export type Collateral = {
+  name: string
+  collateralId: string
+  tokenType: string
+  debtTokenType: string
+
+  maxDebt: number
+  vaultMinDebt: number
+  vaultMaxDebt: number
+
+  safeFactor: bigint
+  maxLTV: bigint
+
+  liquidationFeeRate: bigint
+  stabilityFeeRate: bigint
 }
 
-//TODO: change the way we'r fetching
-export const useSuiCollaterals = (chainId?: number, collateralId?: string) => {
-  const { address } = useUserInfo()
+export type Deployment = {
+  network: string
+  settings: {
+    totalDebtCeiling: number
+    liquidationBeneficiary: string
+    feeBeneficiary: string
+  }
+  collaterals: Collateral[]
+}
+
+export const useSuiCollaterals = (collateralId?: string) => {
+  const { address: userAddress, suiChainIdAsNumber } = useUserInfo()
   const { projectInfo } = useProjectInfo()
-  const { clients } = useSupportedChains()
-  const queryClient = useQueryClient()
 
-  const { vaultAddress: suiVaultAddress } = useSuiVault()
+  const suiClient = useSuiClient() as SuiClient
 
-  const suiClient = useMemo(
+  const PackageIds = useMemo(
     () =>
-      clients.find((s) => {
-        const chainInfo = projectInfo?.web3Info.find(
-          (w) => w.chainId === s.chain.id
-        )
-        return !!chainInfo?.contract?.bitSmileyObjectId
-      }),
-    [projectInfo?.web3Info, clients]
+      projectInfo?.web3Info.find((c) => c.chainId === suiChainIdAsNumber)
+        ?.contract,
+    [suiChainIdAsNumber, projectInfo?.web3Info]
   )
 
+  const fetchTransactionResult = async (tx: Transaction) => {
+    const res = await suiClient.devInspectTransactionBlock({
+      sender: userAddress,
+      transactionBlock: tx
+    })
+
+    if (res.error) {
+      throw new Error(res.error)
+    }
+    return res.results![0].returnValues![0][0]
+  }
+
+  // const getVaultAddressByOwner = async () => {
+  //   if (!PackageIds) return null
+  //   try {
+  //     const tx = new Transaction()
+  //     tx.moveCall({
+  //       target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault`,
+  //       arguments: [
+  //         tx.object(PackageIds.bitSmileyObjectId),
+  //         tx.pure.address(userAddress)
+  //       ]
+  //     })
+
+  //     const txResult = await fetchTransactionResult(tx)
+  //     console.log('🚀 ~ getVaultAddressByOwner ~ txResult:', txResult)
+
+  //     return txResult
+  //   } catch (error) {
+  //     console.log('🚀 ~ getVaultAddressByOwner ~ error:', error)
+  //     return null
+  //   }
+  // }
+
   const getStabilityFee = useCallback(
-    (chainId?: number, stabilityFeeRate?: bigint) => {
-      if (!chainId) return 0
+    (stabilityFeeRate?: bigint) => {
+      if (!suiChainIdAsNumber) return 0
       const blockTime = projectInfo?.web3Info?.find(
-        (w) => w.chainId === chainId
+        (w) => w.chainId === suiChainIdAsNumber
       )?.blockTime
 
       if (!stabilityFeeRate || !blockTime) return 0
@@ -55,266 +102,146 @@ export const useSuiCollaterals = (chainId?: number, collateralId?: string) => {
       const blocks = (365 * 24 * 3600) / blockTime
       return (
         Number(BigInt(blocks) * stabilityFeeRate * BigInt('1000000')) /
-        Number(parseEther('1'))
+        Number(convertToMist(1))
       )
     },
-    [projectInfo?.web3Info]
+    [projectInfo?.web3Info, suiChainIdAsNumber]
   )
 
   const query = {
     // placeholderData: keepPreviousData,
-    select: (res?: ICollateralFromChain): ICollateral | undefined => {
-      if (!res) return undefined
+    select: (res?: ICollateralFromSuiChain): ISuiCollateral | undefined => {
+      if (!res || !suiChainIdAsNumber) return undefined
       return {
-        chainId: res?.chainId,
+        chainId: suiChainIdAsNumber,
         vaultAddress: res?.vaultAddress,
         collaterals: res?.collaterals?.map((c) => ({
           name: c.name,
-          chainId: res?.chainId,
+          chainId: suiChainIdAsNumber,
           isOpenVault: c.isOpenVault,
-          collateralId: c.collateralId,
-          maxLTV: (Number(formatEther(c.maxLTV)) * 10 ** 9).toString(),
+          collateralId: byteArrayToString(c.collateralId.bytes),
+          maxLTV: (parseFromMist(c.maxLtv) * 10 ** 9).toString(),
           liquidationFeeRate: (
-            Number(formatEther(c.liquidationFeeRate)) *
+            parseFromMist(c.liquidationFeeRate) *
             10 ** 6
           ).toString(),
-          stabilityFee: getStabilityFee(res?.chainId, c.stabilityFeeRate),
+          stabilityFee: getStabilityFee(BigInt(c.stabilityFeeRate)),
           collateral: {
-            tokenAddress: c.collateral.tokenAddress,
-            maxDebt: !c.collateral.maxDebt
+            tokenAddress: c.collateral.token,
+            maxDebt: !c.collateral.max_debt
               ? ''
-              : formatEther(c.collateral.maxDebt),
-            safetyFactor: !c.collateral.safetyFactor
+              : parseFromMist(c.collateral.max_debt).toString(),
+            safetyFactor: !c.collateral.safety_factor
               ? ''
-              : formatEther(c.collateral.safetyFactor),
-            totalDebt: !c.collateral.totalDebt
+              : parseFromMist(c.collateral.safety_factor).toString(),
+            totalDebt: !c.collateral.total_debt
               ? ''
-              : formatEther(c.collateral.totalDebt),
-            totalLocked: !c.collateral.totalLocked
+              : parseFromMist(c.collateral.total_debt).toString(),
+            totalLocked: !c.collateral.total_locked
               ? ''
-              : formatEther(c.collateral.totalLocked),
-            vaultMaxDebt: !c.collateral.vaultMaxDebt
+              : parseFromMist(c.collateral.total_locked).toString(),
+            vaultMaxDebt: !c.collateral.vault_max_debt
               ? ''
-              : formatEther(c.collateral.vaultMaxDebt),
-            vaultMinDebt: !c.collateral.vaultMinDebt
+              : parseFromMist(c.collateral.vault_max_debt).toString(),
+            vaultMinDebt: !c.collateral.vault_min_debt
               ? ''
-              : formatEther(c.collateral.vaultMinDebt)
+              : parseFromMist(c.collateral.vault_min_debt).toString()
           },
 
           // opened vault
-          healthFactor: (Number(c.healthFactor) / 10).toString(),
-          availableToMint: formatEther(c.availableToMint || BigInt(0)),
-          availableToWithdraw: formatEther(c.availableToWithdraw || BigInt(0)),
-          debt: formatEther(c.debt || BigInt(0)),
-          fee: formatEther(c.fee || BigInt(0)),
-          liquidationPrice: formatEther(c.liquidationPrice || BigInt(0)),
-          lockedCollateral: formatEther(c.lockedCollateral || BigInt(0)),
-          mintedBitUSD: formatEther(c.mintedBitUSD || BigInt(0))
+          healthFactor: c.healthFactor
+            ? (Number(c.healthFactor) / 10).toString()
+            : '0',
+          availableToMint: parseFromMist(
+            c.availableToMint || BigInt(0)
+          ).toString(),
+          availableToWithdraw: parseFromMist(
+            c.availableToWithdraw || BigInt(0)
+          ).toString(),
+          debt: parseFromMist(c.debt || BigInt(0)).toString(),
+          fee: parseFromMist(c.fee || BigInt(0)).toString(),
+          liquidationPrice: parseFromMist(
+            c.liquidationPrice || BigInt(0)
+          ).toString(),
+          lockedCollateral: parseFromMist(
+            c.lockedCollateral || BigInt(0)
+          ).toString(),
+          mintedBitUSD: parseFromMist(c.mintedBitUSD || BigInt(0)).toString()
         }))
       }
     }
   }
 
-  const queryRes = useQueries({
-    queries: [
-      {
-        ...query,
-        retry: 5,
-        retryDelay: 10000,
-        queryKey: queryKeys.collaterals(suiClient?.chain?.id, address),
-        queryFn:
-          !suiClient || !address
-            ? undefined
-            : async () => {
-                // const contractAddresses = projectInfo?.web3Info.find(
-                //   (w) => w.chainId === suiClient.chain.id
-                // )?.contract
-                const collateralId = collateralHash('BTC')
-                //           // const bitSmileyAddress = contractAddresses?.BitSmiley
-                //           // const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery
-                //           // if (
-                //           //   !bitSmileyQueryAddress ||
-                //           //   !bitSmileyAddress
-                //           //   ){
-                //           //   return {
-                //           //     chainId,
-                //           //     vaultAddress: undefined,
-                //           //     // collaterals: collaterals.map((c) => ({
-                //           //     //   ...c,
-                //           //     //   isOpenVault: false
-                //           //     // }))
-                //           //   }
-                //           // }
-                //           // collaterals information
-                //           // const collateralsRes = await client.request({
-                //           //   method: 'eth_call',
-                //           //   params: [
-                //           //     {
-                //           //       data: encodeFunctionData({
-                //           //         abi: bitSmileyQueryAbi,
-                //           //         functionName: 'listCollaterals'
-                //           //       }),
-                //           //       to: bitSmileyQueryAddress
-                //           //     },
-                //           //     'latest'
-                //           //   ]
-                //           // })
-                //           // const collaterals = decodeFunctionResult({
-                //           //   abi: bitSmileyQueryAbi,
-                //           //   functionName: 'listCollaterals',
-                //           //   data: collateralsRes
-                //           // })
-                //           // vaultAddress
-                if (suiVaultAddress) {
-                  return {
-                    chainId: suiClient.chain.id,
-                    vaultAddress: suiVaultAddress,
-                    collateralId,
-                    collaterals: [
-                      {
-                        collateralId,
-                        isOpenVault: false,
-                        maxLTV: 0,
-                        liquidationFeeRate: 0,
-                        collateral: {
-                          maxDebt: BigInt(0),
-                          safetyFactor: BigInt(0),
-                          tokenAddress: '',
-                          totalDebt: BigInt(0),
-                          totalLocked: BigInt(0),
-                          vaultMaxDebt: BigInt(0),
-                          vaultMinDebt: BigInt(0)
-                        }
-                      } as unknown as IDetailedCollateralFromChain
-                    ]
-                    // collaterals: collaterals.map((c) => ({
-                    //   ...c,
-                    //   isOpenVault: false
-                    // }))
-                  } as ICollateralFromChain
-                }
-                //           // get vault liquidated info
-                //           // const liquidatedRes = await UserService.getLiquidated.call({
-                //           //   vault: [
-                //           //     {
-                //           //       network: chainIdToNetwork[client.chain.id],
-                //           //       vaultAddress
-                //           //     }
-                //           //   ]
-                //           // })
-                //           // // getVault collateralId
-                //           // const bitSmileyVaultRes = await client.request({
-                //           //   method: 'eth_call',
-                //           //   params: [
-                //           //     {
-                //           //       data: encodeFunctionData({
-                //           //         abi: bitSmileyAbi,
-                //           //         functionName: 'vaults',
-                //           //         args: [vaultAddress]
-                //           //       }),
-                //           //       to: bitSmileyAddress
-                //           //     },
-                //           //     'latest'
-                //           //   ]
-                //           // })
-                //           // const bitSmileyVault = decodeFunctionResult({
-                //           //   abi: bitSmileyAbi,
-                //           //   functionName: 'vaults',
-                //           //   data: bitSmileyVaultRes
-                //           // })
-                //           // const collateralId = bitSmileyVault?.[1]
-                //           // // vault details
-                //           // const vaultDetailRes = await client.request({
-                //           //   method: 'eth_call',
-                //           //   params: [
-                //           //     {
-                //           //       data: encodeFunctionData({
-                //           //         abi: bitSmileyQueryAbi,
-                //           //         functionName: 'getVaultDetail',
-                //           //         args: [vaultAddress, BigInt(0), BigInt(0)]
-                //           //       }),
-                //           //       to: bitSmileyQueryAddress
-                //           //     },
-                //           //     'latest'
-                //           //   ]
-                //           // })
-                //           // const vaultDetail = decodeFunctionResult({
-                //           //   abi: bitSmileyQueryAbi,
-                //           //   functionName: 'getVaultDetail',
-                //           //   data: vaultDetailRes
-                //           // })
-                //           // const filteredCollaterals = (
-                //           //   collateralId
-                //           //     ? collaterals.filter((c) => c.collateralId === collateralId)
-                //           //     : collaterals
-                //           // ).map((c) => ({
-                //           //   ...c,
-                //           //   isOpenVault:
-                //           //     !!collateralId && c.collateralId === collateralId,
-                //           //   ...(c.collateralId === collateralId ? vaultDetail : {}),
-                //           //   liquidated: liquidatedRes?.data?.liquidated
-                //           // }))
+  const { data, isLoading, isError, isSuccess, isFetching, refetch } = useQuery(
+    {
+      ...query,
+      retry: 5,
+      retryDelay: 10000,
+      queryKey: ['collaterals', userAddress, suiChainIdAsNumber],
+      queryFn:
+        !PackageIds || !userAddress
+          ? undefined
+          : async () => {
+              const listCollateralsTx = new Transaction()
+              listCollateralsTx.moveCall({
+                target: `${PackageIds.bitSmileyPackageId}::query::list_collaterals`,
+                arguments: [
+                  listCollateralsTx.object(PackageIds.bitSmileyQueryObjectId),
+                  listCollateralsTx.object(PackageIds.bitSmileyObjectId),
+                  listCollateralsTx.object(PackageIds.vaultManagerObjectId),
+                  listCollateralsTx.object(PackageIds.stabilityFeeObjectId)
+                ]
+              })
+
+              const listCollateralsTxResult =
+                await fetchTransactionResult(listCollateralsTx)
+
+              if (listCollateralsTxResult) {
+                const collaterals = bcs
+                  .vector(BcsCollateral)
+                  .parse(Uint8Array.from(listCollateralsTxResult))
+
+                console.log('🚀 ~ : ~ collaterals:', collaterals)
+                //TODO: get vault address by owner
+                // getVaultAddressByOwner()
+
+                // get vault liquidated info
+                // const liquidatedRes = await UserService.getLiquidated.call({
+                //   vault: [
+                //     {
+                //       network: chainIdToNetwork[client.chain.id],
+                //       vaultAddress
+                //     }
+                //   ]
+                // })
+
                 return {
-                  chainId: suiClient.chain.id,
-                  collateralId,
-                  collaterals: [
-                    {
-                      collateralId,
-                      chainId: suiClient.chain.id.toString(),
-                      maxLTV: 0,
-                      liquidationFeeRate: 0,
-                      isOpenVault: true,
-                      collateral: {
-                        maxDebt: BigInt(0),
-                        safetyFactor: BigInt(0),
-                        tokenAddress: '',
-                        totalDebt: BigInt(0),
-                        totalLocked: BigInt(0),
-                        vaultMaxDebt: BigInt(0),
-                        vaultMinDebt: BigInt(0)
-                      }
-                    } as unknown as IDetailedCollateralFromChain
-                  ]
-                } as ICollateralFromChain
+                  vaultAddress: undefined,
+                  collaterals: collaterals.map((c) => ({
+                    ...c,
+                    isOpenVault: false
+                  }))
+                }
               }
-      }
-    ]
-  })
 
-  const chainWithCollaterals = useMemo(() => {
-    return queryRes.map((res) => {
-      const { data: query, ...rest } = res
-      return { ...query, ...rest }
-    })
-  }, [queryRes])
-
-  const collaterals: IDetailedCollateral[] = useMemo(
-    () =>
-      chainWithCollaterals.reduce<IDetailedCollateral[]>(
-        (acc, cur) =>
-          cur.collaterals != undefined ? acc.concat(cur.collaterals) : acc,
-        []
-      ),
-    [chainWithCollaterals]
+              return undefined
+            }
+    }
   )
 
+  const collaterals = useMemo(
+    () => data?.collaterals || [],
+    [data?.collaterals]
+  )
+  console.log('🚀 ~ useSuiCollaterals ~ collaterals:', collaterals)
+
   const availableCollaterals = useMemo(() => {
-    if (!chainId) return []
-    return (
-      chainWithCollaterals
-        ?.find((c) => c.chainId === chainId)
-        ?.collaterals?.filter((item) => !item.isOpenVault) || []
-    )
-  }, [chainWithCollaterals, chainId])
+    return collaterals?.filter((item) => !item.isOpenVault) || []
+  }, [collaterals])
 
   const openedCollaterals = useMemo(() => {
-    if (!chainId) return []
-    return (
-      chainWithCollaterals
-        ?.find((c) => c.chainId === chainId)
-        ?.collaterals?.filter((item) => item.isOpenVault) || []
-    )
-  }, [chainWithCollaterals, chainId])
+    return collaterals?.filter((item) => item.isOpenVault) || []
+  }, [collaterals])
 
   const hasOpenedCollaterals = useMemo(
     () => collaterals.some((item) => item.isOpenVault),
@@ -322,48 +249,16 @@ export const useSuiCollaterals = (chainId?: number, collateralId?: string) => {
   )
 
   const isMyVault = useMemo(() => {
-    if (!chainId || !collateralId) return false
+    if (!collateralId) return false
     return !!collaterals
       ?.filter((item) => item.isOpenVault)
-      ?.find((p) => p.chainId === chainId && p.collateralId === collateralId)
-  }, [chainId, collateralId, collaterals])
+      ?.find((p) => p.collateralId === collateralId)
+  }, [collateralId, collaterals])
 
   const collateral = useMemo(
-    () =>
-      collaterals?.find(
-        (p) => p.chainId === chainId && p.collateralId === collateralId
-      ),
-    [chainId, collateralId, collaterals]
+    () => collaterals?.find((p) => p.collateralId === collateralId),
+    [collateralId, collaterals]
   )
-
-  const refetch = useCallback(() => {
-    if (!chainId) return
-    queryClient.refetchQueries({
-      queryKey: queryKeys.collaterals(chainId, address)
-    })
-  }, [chainId, queryClient, address])
-
-  const queryState = queryClient.getQueryState(
-    queryKeys.collaterals(chainId, address)
-  )
-
-  const isFetching = useMemo(() => {
-    return (
-      queryState?.fetchStatus === 'fetching' || queryState?.status === 'pending'
-    )
-  }, [queryState?.fetchStatus, queryState?.status])
-
-  const isLoading = useMemo(() => {
-    return queryState?.status === 'pending'
-  }, [queryState?.status])
-
-  const isError = useMemo(() => {
-    return queryState?.status === 'error'
-  }, [queryState?.status])
-
-  const isSuccess = useMemo(() => {
-    return queryState?.status === 'success'
-  }, [queryState?.status])
 
   return {
     collaterals,
