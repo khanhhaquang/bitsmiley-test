@@ -92,7 +92,7 @@ const MintingPairs: React.FC = () => {
       setIsConnectWalletModalOpen(true)
     } else if (
       (isSuiChain(item.id) && !isSuiConnected) ||
-      (!isSuiChain(item.id) && !isEvmConnected)
+      (!isSuiChain(item.id) && isSuiConnected)
     ) {
       setIsNetworkCheckModalOpen(true)
     }
