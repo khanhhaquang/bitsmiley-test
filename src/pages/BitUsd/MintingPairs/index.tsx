@@ -1,12 +1,5 @@
 import dayjs from 'dayjs'
-import {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAccount, useSwitchChain } from 'wagmi'
 
@@ -54,20 +47,56 @@ import {
 } from '../tables'
 
 type MintingPairsProps = {
+  supportedChainIds: number[]
   selectedChainId?: number
-  setSelectedChainId: Dispatch<SetStateAction<number | undefined>>
+  onChange?: (item: SelectorItem) => void
 }
 
 const MintingPairs: React.FC = () => {
+  const { isConnected: isEvmConnected, chainId: evmChainId } = useAccount()
+  const { isSuiConnected } = useUserInfo()
+
   const { supportedChainIds } = useSupportedChains()
+
   const filterSupportedChainIds = useMemo(
     () => connectChainIds.filter((v) => supportedChainIds.includes(v)),
     [supportedChainIds]
   )
 
+  const suiChainId = useMemo(
+    () => filterSupportedChainIds.find((c) => isSuiChain(c)),
+    [filterSupportedChainIds]
+  )
+
   const [selectedChainId, setSelectedChainId] = useState(
     filterSupportedChainIds.length > 0 ? filterSupportedChainIds[0] : undefined
   )
+
+  const [isNetworkCheckModalOpen, setIsNetworkCheckModalOpen] = useState(false)
+  const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
+    useState(false)
+
+  useEffect(() => {
+    if (isSuiConnected) {
+      setSelectedChainId(suiChainId)
+      return
+    }
+    if (isEvmConnected && evmChainId) {
+      setSelectedChainId(evmChainId)
+    }
+  }, [isSuiConnected, isEvmConnected])
+
+  const onChainChange = (item: SelectorItem) => {
+    setSelectedChainId(item.id)
+    if (!isEvmConnected && !isSuiConnected) {
+      setIsConnectWalletModalOpen(true)
+    } else if (
+      (isSuiChain(item.id) && !isSuiConnected) ||
+      (!isSuiChain(item.id) && !isEvmConnected)
+    ) {
+      setIsNetworkCheckModalOpen(true)
+    }
+  }
 
   return (
     <div
@@ -79,15 +108,30 @@ const MintingPairs: React.FC = () => {
         isSuiChain(selectedChainId) ? (
           <SuiMintingPairs
             selectedChainId={selectedChainId}
-            setSelectedChainId={setSelectedChainId}
+            onChange={onChainChange}
+            supportedChainIds={filterSupportedChainIds}
           />
         ) : (
           <EvmMintingPairs
             selectedChainId={selectedChainId}
-            setSelectedChainId={setSelectedChainId}
+            onChange={onChainChange}
+            supportedChainIds={filterSupportedChainIds}
           />
         )
       ) : null}
+      <NetworkCheckModal
+        isOpen={isNetworkCheckModalOpen}
+        onLogout={() => {
+          setIsConnectWalletModalOpen(true)
+          setIsNetworkCheckModalOpen(false)
+        }}
+        onClose={() => setIsNetworkCheckModalOpen(false)}
+      />
+      <SelectWalletModal
+        expectedChainId={selectedChainId}
+        isOpen={isConnectWalletModalOpen}
+        onClose={() => setIsConnectWalletModalOpen(false)}
+      />
     </div>
   )
 }
@@ -194,81 +238,25 @@ const MintingPairsTable: React.FC<
     isOpenedVaults?: boolean
     table: TTable<IGeneralDetailedCollateral>
   } & MintingPairsProps
-> = ({ isOpenedVaults, table, selectedChainId, setSelectedChainId }) => {
-  const { supportedChainIds } = useSupportedChains()
-  const { isConnected: isEvmConnected, chainId: evmChainId } = useAccount()
-  const { isSuiConnected, suiChainIdAsNumber } = useUserInfo()
-
-  const [isNetworkCheckModalOpen, setIsNetworkCheckModalOpen] = useState(false)
-  const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
-    useState(false)
-  const filterSupportedChainIds = useMemo(
-    () => connectChainIds.filter((v) => supportedChainIds.includes(v)),
-    [supportedChainIds]
-  )
-
+> = ({
+  isOpenedVaults,
+  table,
+  selectedChainId,
+  supportedChainIds,
+  onChange
+}) => {
   const items = useMemo(
     () =>
-      filterSupportedChainIds.map((c) => ({
+      supportedChainIds.map((c) => ({
         id: c,
         name: chainsTitle[`${c}`],
         icon: chainsIconUrl[`${c}`]
       })),
-    [filterSupportedChainIds]
+    [supportedChainIds]
   )
-
-  const onChainChange = (item: SelectorItem) => {
-    setSelectedChainId(item.id)
-    if (!isEvmConnected && !isSuiConnected) {
-      setIsConnectWalletModalOpen(true)
-      return
-    }
-    if (
-      (isSuiChain(item.id) && !isSuiConnected) ||
-      (!isSuiChain(item.id) && !isEvmConnected)
-    ) {
-      setIsNetworkCheckModalOpen(true)
-    }
-  }
-
-  useEffect(() => {
-    if (evmChainId && selectedChainId != evmChainId) {
-      setSelectedChainId(evmChainId)
-      return
-    }
-    if (
-      isSuiConnected &&
-      selectedChainId &&
-      !isSuiChain(selectedChainId) &&
-      suiChainIdAsNumber
-    ) {
-      setSelectedChainId(suiChainIdAsNumber)
-      return
-    }
-  }, [
-    selectedChainId,
-    evmChainId,
-    isEvmConnected,
-    isSuiConnected,
-    suiChainIdAsNumber,
-    setSelectedChainId
-  ])
 
   return (
     <div className="w-full">
-      <NetworkCheckModal
-        isOpen={isNetworkCheckModalOpen}
-        onLogout={() => {
-          setIsConnectWalletModalOpen(true)
-          setIsNetworkCheckModalOpen(false)
-        }}
-        onClose={() => setIsNetworkCheckModalOpen(false)}
-      />
-      <SelectWalletModal
-        expectedChainId={selectedChainId}
-        isOpen={isConnectWalletModalOpen}
-        onClose={() => setIsConnectWalletModalOpen(false)}
-      />
       <div className="mb-6">
         {isOpenedVaults ? (
           <VaultTitleBlue>My Vaults</VaultTitleBlue>
@@ -291,7 +279,7 @@ const MintingPairsTable: React.FC<
                       className="w-[140px]"
                       selectedId={selectedChainId}
                       items={items}
-                      onChange={onChainChange}
+                      onChange={onChange}
                     />
                   </TableHead>
                   {table
