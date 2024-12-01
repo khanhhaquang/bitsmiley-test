@@ -158,7 +158,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
           ).toString(),
           stabilityFee: getStabilityFee(BigInt(c.stabilityFeeRate)),
           collateral: {
-            tokenAddress: c.collateral.token as Address,
+            tokenAddress: c.collateral.token as Address, //TODO: this is in string
             maxDebt: !c.collateral.max_debt
               ? ''
               : parseFromMist(c.collateral.max_debt).toString(),
@@ -180,7 +180,9 @@ export const useSuiCollaterals = (collateralId?: string) => {
           },
 
           // opened vault
-          healthFactor: (Number(c.healthFactor) / 10).toString(),
+          healthFactor: c.healthFactor
+            ? (Number(c.healthFactor) / 10).toString()
+            : '0',
           availableToMint: parseFromMist(
             c.availableToMint || BigInt(0)
           ).toString(),
