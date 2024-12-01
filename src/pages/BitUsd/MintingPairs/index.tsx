@@ -289,10 +289,11 @@ const MintingPairsTable: React.FC<
                 <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
                   <TableHead>
                     <Selector
-                      className="w-[130px]"
+                      className="w-[140px]"
                       selectedId={selectedChainId}
                       items={items}
-                      onChange={onChainChange}></Selector>
+                      onChange={onChainChange}
+                    />
                   </TableHead>
                   {table
                     .filter((t) => t.key != 'pairName')
