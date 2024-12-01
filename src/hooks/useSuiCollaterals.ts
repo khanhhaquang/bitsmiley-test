@@ -1,14 +1,17 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { MIST_PER_SUI } from '@mysten/sui/utils'
 import { useSuiClient } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useCallback } from 'react'
-import { Address } from 'viem'
 
-import { ICollateral, ICollateralFromSuiChain } from '@/types/vault'
+import {
+  BcsCollateral,
+  ICollateralFromSuiChain,
+  ISuiCollateral
+} from '@/types/sui'
 import { byteArrayToString } from '@/utils/number'
+import { convertToMist, parseFromMist } from '@/utils/sui'
 
 import { useProjectInfo } from './useProjectInfo'
 import { useUserInfo } from './useUserInfo'
@@ -39,40 +42,6 @@ export type Deployment = {
   }
   collaterals: Collateral[]
 }
-
-export const Bytes32 = bcs.struct('Bytes32', {
-  bytes: bcs.vector(bcs.u8())
-})
-
-export const BcsCollateralType = bcs.struct('CollateralType', {
-  token: bcs.string(),
-  safety_factor: bcs.u256(),
-  max_debt: bcs.u256(),
-  vault_min_debt: bcs.u256(),
-  vault_max_debt: bcs.u256(),
-  total_debt: bcs.u256(),
-  total_locked: bcs.u256()
-})
-
-export const BcsCollateral = bcs.struct('Collateral', {
-  name: bcs.string(),
-  maxLtv: bcs.u64(),
-  liquidationFeeRate: bcs.u64(),
-  stabilityFeeRate: bcs.u64(),
-  collateralId: Bytes32,
-  collateral: BcsCollateralType
-})
-
-export const BcsI64 = bcs.struct('I64', {
-  value: bcs.u64(),
-  is_negative: bcs.bool()
-})
-
-export const convertToMist = (amount: number) =>
-  (BigInt(Number(MIST_PER_SUI) * amount) * MIST_PER_SUI) / MIST_PER_SUI
-
-export const parseFromMist = (amount: bigint | string) =>
-  Number(BigInt(amount) / MIST_PER_SUI)
 
 export const useSuiCollaterals = (collateralId?: string) => {
   const { address: userAddress, suiChainIdAsNumber } = useUserInfo()
@@ -141,7 +110,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
 
   const query = {
     // placeholderData: keepPreviousData,
-    select: (res?: ICollateralFromSuiChain): ICollateral | undefined => {
+    select: (res?: ICollateralFromSuiChain): ISuiCollateral | undefined => {
       if (!res || !suiChainIdAsNumber) return undefined
       return {
         chainId: suiChainIdAsNumber,
@@ -150,7 +119,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
           name: c.name,
           chainId: suiChainIdAsNumber,
           isOpenVault: c.isOpenVault,
-          collateralId: byteArrayToString(c.collateralId.bytes) as Address,
+          collateralId: byteArrayToString(c.collateralId.bytes),
           maxLTV: (parseFromMist(c.maxLtv) * 10 ** 9).toString(),
           liquidationFeeRate: (
             parseFromMist(c.liquidationFeeRate) *
@@ -158,7 +127,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
           ).toString(),
           stabilityFee: getStabilityFee(BigInt(c.stabilityFeeRate)),
           collateral: {
-            tokenAddress: c.collateral.token as Address, //TODO: this is in string
+            tokenAddress: c.collateral.token,
             maxDebt: !c.collateral.max_debt
               ? ''
               : parseFromMist(c.collateral.max_debt).toString(),
