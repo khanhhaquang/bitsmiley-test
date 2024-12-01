@@ -57,10 +57,10 @@ export const connectChainIds = [
 ] as const as number[]
 
 export const chainsTitle: { [key: string]: string } = {
-  [suiTestnet.id]: 'Sui',
+  [suiTestnet.id]: 'Sui Testnet',
   [suiMainnet.id]: 'Sui',
-  [bitLayerTestnet.id]: 'BitLayer',
+  [bitLayerTestnet.id]: 'BitLayer Testnet',
   [bitLayerMainnet.id]: 'BitLayer',
   [merlinMainnet.id]: 'Merlin',
-  [merlinTestnet.id]: 'Merlin'
+  [merlinTestnet.id]: 'Merlin Testnet'
 } as const

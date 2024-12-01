@@ -29,6 +29,7 @@ import {
 } from '@/config/chain'
 import { chainsNotSupportedByParticle, customChains } from '@/config/wagmi'
 import { useCollaterals } from '@/hooks/useCollaterals'
+import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
 import { IDetailedCollateral } from '@/types/vault'
@@ -47,6 +48,8 @@ import {
 
 const MintingPairs: React.FC = () => {
   const { hasOpenedCollaterals } = useCollaterals()
+  useSuiCollaterals()
+
   return (
     <div
       className={cn(
@@ -114,8 +117,8 @@ const ChainPairsTable: React.FC<{
               width="100%"
               align="center"
               className="text-sm text-white/70">
-              {chainsTitle[chainId]} network is currently unreachable. All data
-              will be accessible once connected.
+              {chainsTitle[`${chainId}`]} network is currently unreachable. All
+              data will be accessible once connected.
             </TableCell>
           </TableRow>
         ) : (
@@ -189,7 +192,7 @@ const MintingPairsTable: React.FC<{
       setCurrentChainId(suiChainId)
       return
     }
-  }, [isEvmConnected, isSuiConnected])
+  }, [currentChainId, evmChainId, isEvmConnected, isSuiConnected, suiChainId])
 
   return (
     <div className="w-full">

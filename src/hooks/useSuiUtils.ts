@@ -29,7 +29,10 @@ type ResponseCallback = (
 ) => void | Promise<void>
 type ExecuteResponse = { digest: string; rawEffects?: number[] }
 
-type Executor = (options: Options, then?: ResponseCallback) => void
+type Executor = (
+  options: Options,
+  then?: ResponseCallback
+) => Promise<SuiTransactionBlockResponse | undefined>
 
 export type ExecutorResult = {
   validateTransaction: Executor
@@ -78,8 +81,10 @@ export const useSuiExecute = (): ExecutorResult => {
 
         then?.(waitResult)
         setTxResponse(waitResult)
+        return waitResult
+      } else {
+        return undefined
       }
-      return
     } catch (error) {
       console.error('Failed to execute transaction', tx, error)
     }

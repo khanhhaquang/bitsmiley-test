@@ -98,3 +98,37 @@ export interface ICollateral {
   vaultAddress?: Address
   collaterals?: IDetailedCollateral[]
 }
+
+export interface IDetailedCollateralFromSuiChain {
+  name: string
+  isOpenVault: boolean
+  maxLtv: string
+  collateralId: { bytes: number[] }
+  liquidationFeeRate: string
+  stabilityFeeRate: string
+
+  collateral: {
+    max_debt: string
+    safety_factor: string
+    token: string
+    total_debt: string
+    total_locked: string
+    vault_max_debt: string
+    vault_min_debt: string
+  }
+
+  // opened vault
+  availableToMint?: bigint
+  availableToWithdraw?: bigint
+  debt?: bigint
+  fee?: bigint
+  healthFactor?: bigint
+  liquidationPrice?: bigint
+  lockedCollateral?: bigint
+  mintedBitUSD?: bigint
+}
+
+export interface ICollateralFromSuiChain {
+  vaultAddress?: Address
+  collaterals?: IDetailedCollateralFromSuiChain[]
+}
