@@ -105,6 +105,7 @@ export const useUserInfo = () => {
     evmChain,
     evmChainId,
     isLoading,
-    suiChainIdAsNumber
+    suiChainIdAsNumber,
+    isSuiConnected: suiWallet.connected
   }
 }

@@ -1,4 +1,3 @@
-import { useWallet } from '@suiet/wallet-kit'
 import dayjs from 'dayjs'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -133,13 +132,13 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
+  const { supportedChainIds } = useSupportedChains()
   const { isConnected: isEvmConnected, chainId: evmChainId } = useAccount()
-  const { connected: isSuiConnected } = useWallet()
+  const { isSuiConnected, suiChainIdAsNumber } = useUserInfo()
 
   const [isNetworkCheckModalOpen, setIsNetworkCheckModalOpen] = useState(false)
   const [isConnectWalletModalOpen, setIsConnectWalletModalOpen] =
     useState(false)
-  const { supportedChainIds } = useSupportedChains()
   const filterSupportedChainIds = useMemo(
     () => connectChainIds.filter((v) => supportedChainIds.includes(v)),
     [supportedChainIds]
@@ -149,14 +148,9 @@ const MintingPairsTable: React.FC<{
     () =>
       filterSupportedChainIds.map((c) => ({
         id: c,
-        name: chainsTitle[c],
-        icon: chainsIconUrl[c]
+        name: chainsTitle[`${c}`],
+        icon: chainsIconUrl[`${c}`]
       })),
-    [filterSupportedChainIds]
-  )
-
-  const suiChainId = useMemo(
-    () => filterSupportedChainIds.find((c) => isSuiChain(c)),
     [filterSupportedChainIds]
   )
 
@@ -187,12 +181,18 @@ const MintingPairsTable: React.FC<{
       isSuiConnected &&
       currentChainId &&
       !isSuiChain(currentChainId) &&
-      suiChainId
+      suiChainIdAsNumber
     ) {
-      setCurrentChainId(suiChainId)
+      setCurrentChainId(suiChainIdAsNumber)
       return
     }
-  }, [currentChainId, evmChainId, isEvmConnected, isSuiConnected, suiChainId])
+  }, [
+    currentChainId,
+    evmChainId,
+    isEvmConnected,
+    isSuiConnected,
+    suiChainIdAsNumber
+  ])
 
   return (
     <div className="w-full">
@@ -255,7 +255,8 @@ const MintingPairsTable: React.FC<{
               <ChainPairsTable
                 chainId={currentChainId}
                 table={table}
-                isOpenedVaults={isOpenedVaults}></ChainPairsTable>
+                isOpenedVaults={isOpenedVaults}
+              />
             </Table>
           )}
           <RightAngleVaultIcon className="absolute bottom-1.5 left-1.5 text-grey9" />
