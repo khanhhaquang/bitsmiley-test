@@ -1,3 +1,4 @@
+import { ILiquidatedDetail } from '@/services/user'
 import { bcs } from '@mysten/sui/bcs'
 
 export const Bytes32 = bcs.struct('Bytes32', {
@@ -50,3 +51,76 @@ export const BcsOpenVault = bcs.struct('OpenVault', {
   available_to_withdraw: BcsI256,
   available_to_mint: BcsI256
 })
+
+export interface IDetailedCollateralFromSuiChain {
+  name: string
+  isOpenVault: boolean
+  maxLtv: string
+  collateralId: { bytes: number[] }
+  liquidationFeeRate: string
+  stabilityFeeRate: string
+
+  collateral: {
+    max_debt: string
+    safety_factor: string
+    token: string
+    total_debt: string
+    total_locked: string
+    vault_max_debt: string
+    vault_min_debt: string
+  }
+
+  // opened vault
+  availableToMint?: bigint
+  availableToWithdraw?: bigint
+  debt?: bigint
+  fee?: bigint
+  healthFactor?: bigint
+  liquidationPrice?: bigint
+  lockedCollateral?: bigint
+  mintedBitUSD?: bigint
+}
+
+export interface ICollateralFromSuiChain {
+  vaultAddress?: string
+  collaterals?: IDetailedCollateralFromSuiChain[]
+}
+
+export interface ISuiCollateral {
+  chainId: number
+  vaultAddress?: string
+  collaterals?: IDetailedSuiCollateral[]
+}
+
+export interface IDetailedSuiCollateral {
+  chainId: number
+  name?: string
+  maxLTV?: string
+  isOpenVault: boolean
+  collateralId?: string
+  liquidationFeeRate?: string
+  collateral?: {
+    tokenAddress: string
+    maxDebt: string
+    safetyFactor: string
+    totalDebt: string
+    totalLocked: string
+    vaultMaxDebt: string
+    vaultMinDebt: string
+  }
+  // computed
+  stabilityFee?: number
+
+  // from UserService.getLiquidated
+  liquidated?: ILiquidatedDetail[]
+
+  // opened vault
+  availableToMint?: string
+  availableToWithdraw?: string
+  debt?: string
+  fee?: string
+  healthFactor?: string
+  liquidationPrice?: string
+  lockedCollateral?: string
+  mintedBitUSD?: string
+}

@@ -1,6 +1,7 @@
 import { Address } from 'viem'
 
 import { ILiquidatedDetail } from '@/services/user'
+import { IDetailedSuiCollateral } from './sui'
 
 export interface IVault {
   liquidationPrice?: string
@@ -98,3 +99,7 @@ export interface ICollateral {
   vaultAddress?: Address
   collaterals?: IDetailedCollateral[]
 }
+
+export type IGeneralDetailedCollateral =
+  | IDetailedCollateral
+  | IDetailedSuiCollateral

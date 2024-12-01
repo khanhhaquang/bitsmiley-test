@@ -35,7 +35,7 @@ const Selector: React.FC<SelectorProps> = ({
       const item = items.find((v) => v.id === selectedId)
       if (item) setCurrentItem(item)
     }
-  }, [selectedId])
+  }, [currentItem?.id, items, selectedId])
 
   useClickOutside(dropDownRef, () => {
     setIsDropdownOpen(false)
