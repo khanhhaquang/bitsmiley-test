@@ -223,22 +223,13 @@ const MintingPairsTable: React.FC<{
               )}>
               <TableHeader className="[&_tr]:mb-0">
                 <TableRow className="border-none [&_th]:w-[120px] [&_th]:pb-3 [&_th]:font-normal">
-                  {isOpenedVaults ? (
-                    <TableHead className="flex w-[130px] items-center gap-x-0.5">
-                      <Image src={chainsIconUrl[currentChainId]} width={15} />
-                      <span className="text-xs text-white/70">
-                        {chainsTitle[currentChainId]}
-                      </span>
-                    </TableHead>
-                  ) : (
-                    <TableHead>
-                      <Selector
-                        className="w-[130px]"
-                        selectedId={currentChainId}
-                        items={items}
-                        onChange={onChainChange}></Selector>
-                    </TableHead>
-                  )}
+                  <TableHead>
+                    <Selector
+                      className="w-[130px]"
+                      selectedId={currentChainId}
+                      items={items}
+                      onChange={onChainChange}></Selector>
+                  </TableHead>
                   {table
                     .filter((t) => t.key != 'pairName')
                     .map(
