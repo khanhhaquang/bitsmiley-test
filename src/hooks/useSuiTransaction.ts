@@ -5,9 +5,10 @@ import { useCallback } from 'react'
 import { Address, hexToBytes } from 'viem'
 
 import { getSuiChainConfig } from '@/utils/chain'
+import { convertToMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
-import { convertToMist, useSuiExecute } from './useSuiUtils'
+import { useSuiExecute } from './useSuiExecute'
 import { useSuiVault } from './useSuiVault'
 
 export const useSuiTransaction = () => {
