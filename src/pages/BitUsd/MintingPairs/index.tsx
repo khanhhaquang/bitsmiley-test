@@ -10,7 +10,6 @@ import {
   RightAngleVaultIcon
 } from '@/assets/icons'
 import { SelectWalletModal } from '@/components/ConnectWallet'
-import { Image } from '@/components/Image'
 import { InfoIndicator } from '@/components/InfoIndicator'
 import Selector, { SelectorItem } from '@/components/ui/selector'
 import {
