@@ -28,6 +28,8 @@ export const useProjectInfo = () => {
   }, [])
 
   return {
+    evmChains: projectInfo?.web3Info.evm,
+    suiChains: projectInfo?.web3Info.sui,
     projectInfo,
     isLoading: isLoadingProjectInfo,
     isError

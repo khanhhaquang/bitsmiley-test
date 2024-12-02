@@ -19,7 +19,7 @@ import { ProcessingType } from './Processing.types'
 const PersonalSignModal = () => {
   const { address, blockExplorerUrl } = useUserInfo()
 
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const transferFromRegister = useWriteRegisterTransferBeneficiary()
 
   const [to, setTo] = useState('')
@@ -29,7 +29,7 @@ const PersonalSignModal = () => {
   const { refetchAirdropState } = useRegister()
   const [isOpen, setIsOpen] = useState(true)
 
-  const registerAddress = contractAddresses?.register
+  const registerAddress = evmContractAddresses?.register
 
   const addressInputError = useMemo(() => {
     if (to && !isAddress(to)) {

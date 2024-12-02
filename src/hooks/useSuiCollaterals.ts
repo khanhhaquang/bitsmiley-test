@@ -47,15 +47,13 @@ export type Deployment = {
 export const useSuiCollaterals = (collateralId?: string) => {
   const { address: userAddress, suiChainIdAsNumber } = useUserInfo()
 
-  const { projectInfo } = useProjectInfo()
+  const { suiChains } = useProjectInfo()
 
   const suiClient = useSuiClient() as SuiClient
 
   const PackageIds = useMemo(
-    () =>
-      projectInfo?.web3Info.find((c) => c.chainId === suiChainIdAsNumber)
-        ?.contract,
-    [suiChainIdAsNumber, projectInfo?.web3Info]
+    () => suiChains?.find((c) => c.chainId === suiChainIdAsNumber)?.contract,
+    [suiChainIdAsNumber, suiChains]
   )
 
   const fetchTransactionResult = async (tx: Transaction) => {
@@ -70,34 +68,33 @@ export const useSuiCollaterals = (collateralId?: string) => {
     return res.results![0].returnValues![0][0]
   }
 
-  // const getVaultAddressByOwner = async () => {
-  //   if (!PackageIds) return null
-  //   try {
-  //     const tx = new Transaction()
-  //     tx.moveCall({
-  //       target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault`,
-  //       arguments: [
-  //         tx.object(PackageIds.bitSmileyObjectId),
-  //         tx.pure.address(userAddress)
-  //       ]
-  //     })
+  const getVaultAddressByOwner = async () => {
+    if (!PackageIds) return null
+    try {
+      const tx = new Transaction()
+      tx.moveCall({
+        target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault`,
+        arguments: [
+          tx.object(PackageIds.bitSmileyObjectId),
+          tx.pure.address(userAddress)
+        ]
+      })
 
-  //     const txResult = await fetchTransactionResult(tx)
-  //     console.log('🚀 ~ getVaultAddressByOwner ~ txResult:', txResult)
+      const txResult = await fetchTransactionResult(tx)
+      console.log('🚀 ~ getVaultAddressByOwner ~ txResult:', txResult)
 
-  //     return txResult
-  //   } catch (error) {
-  //     console.log('🚀 ~ getVaultAddressByOwner ~ error:', error)
-  //     return null
-  //   }
-  // }
+      return bcs.option(bcs.Address).parse(new Uint8Array(txResult))
+    } catch (error) {
+      console.log('🚀 ~ getVaultAddressByOwner ~ error:', error)
+      return null
+    }
+  }
 
   const getStabilityFee = useCallback(
     (stabilityFeeRate?: bigint) => {
       if (!suiChainIdAsNumber) return 0
-      const blockTime = projectInfo?.web3Info?.find(
-        (w) => w.chainId === suiChainIdAsNumber
-      )?.blockTime
+      const blockTime = suiChains?.find((w) => w.chainId === suiChainIdAsNumber)
+        ?.blockTime
 
       if (!stabilityFeeRate || !blockTime) return 0
 
@@ -107,7 +104,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
         Number(parseEther('1'))
       )
     },
-    [projectInfo?.web3Info, suiChainIdAsNumber]
+    [suiChains, suiChainIdAsNumber]
   )
 
   const query = {
@@ -201,27 +198,29 @@ export const useSuiCollaterals = (collateralId?: string) => {
                   .vector(BcsCollateral)
                   .parse(Uint8Array.from(listCollateralsTxResult))
 
-                // console.log('🚀 ~ : ~ collaterals:', collaterals)
                 //TODO: get vault address by owner
-                // getVaultAddressByOwner()
+                const openedVaultAddress = await getVaultAddressByOwner()
+                console.log('🚀 ~ : ~ openedVaultAddress:', openedVaultAddress)
+
+                if (!getVaultAddressByOwner) {
+                  return {
+                    vaultAddress: undefined,
+                    collaterals: collaterals.map((c) => ({
+                      ...c,
+                      isOpenVault: false
+                    }))
+                  }
+                }
 
                 // get vault liquidated info
                 // const liquidatedRes = await UserService.getLiquidated.call({
                 //   vault: [
                 //     {
-                //       network: chainIdToNetwork[client.chain.id],
-                //       vaultAddress
+                //       network: 'Sui',
+                //       vaultAddress: openedVaultAddress
                 //     }
                 //   ]
                 // })
-
-                return {
-                  vaultAddress: undefined,
-                  collaterals: collaterals.map((c) => ({
-                    ...c,
-                    isOpenVault: false
-                  }))
-                }
               }
 
               return undefined
@@ -233,7 +232,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
     () => data?.collaterals || [],
     [data?.collaterals]
   )
-  console.log('🚀 ~ useSuiCollaterals ~ collaterals:', collaterals)
+  // console.log('🚀 ~ useSuiCollaterals ~ collaterals:', collaterals)
 
   const availableCollaterals = useMemo(() => {
     return collaterals?.filter((item) => !item.isOpenVault) || []

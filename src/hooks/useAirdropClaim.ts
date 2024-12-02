@@ -17,12 +17,11 @@ export enum AirdropClaimType {
 export const useAirdropClaim = (type: AirdropClaimType) => {
   const { toast } = useToast()
   const { evmChainId } = useUserInfo()
-  const { projectInfo } = useProjectInfo()
+  const { evmChains } = useProjectInfo()
 
   const airdropContracts = useMemo(() => {
-    return projectInfo?.web3Info?.find((item) => item.chainId === evmChainId)
-      ?.contract
-  }, [evmChainId, projectInfo?.web3Info])
+    return evmChains?.find((item) => item.chainId === evmChainId)?.contract
+  }, [evmChainId, evmChains])
 
   const airdrop = useMemo(() => {
     if (!airdropContracts) return undefined

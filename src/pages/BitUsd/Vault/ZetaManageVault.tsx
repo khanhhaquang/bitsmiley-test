@@ -87,7 +87,7 @@ export const ZetaManageVault: React.FC<{
     setTxnErrorMsg
   } = useManageVault(collateral)
 
-  const contractAddress = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
 
   const [depositBtc, setDepositBtc] = useState('')
@@ -102,7 +102,9 @@ export const ZetaManageVault: React.FC<{
   const { balance: wbtcBalance } = useTokenBalance(
     collateral?.collateral?.tokenAddress
   )
-  const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
+  const { balance: bitUsdBalance } = useTokenBalance(
+    evmContractAddresses?.BitUSDL2
+  )
   const { sign, btcAddress, mint } = useZetaClient(chainId, collateralId)
   const {
     showProcessing,

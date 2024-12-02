@@ -19,13 +19,13 @@ import { getTxnErrorMsg } from '@/utils/error'
 
 export const useManageVault = (collateral?: IDetailedCollateral) => {
   const config = useConfig()
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
 
   const { address } = useUserInfo()
   const { writeContractAsync } = useWriteContract()
 
-  const bitUsdAddress = contractAddresses?.BitUSDL2
-  const bitSmileyAddress = contractAddresses?.BitSmiley
+  const bitUsdAddress = evmContractAddresses?.BitUSDL2
+  const bitSmileyAddress = evmContractAddresses?.BitSmiley
 
   const wBtcAddress = collateral?.collateral?.tokenAddress
 

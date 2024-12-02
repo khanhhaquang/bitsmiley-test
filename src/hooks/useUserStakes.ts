@@ -17,7 +17,7 @@ import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
 
 export const useUserStakes = () => {
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const { address } = useUserInfo()
   const transactions = useSelector(getTransactions)
   const { addTransaction } = useStoreActions()
@@ -25,8 +25,8 @@ export const useUserStakes = () => {
 
   const [isClaiming, setIsClaiming] = useState(false)
 
-  const stakingAddress = contractAddresses?.staking
-    ? contractAddresses?.staking
+  const stakingAddress = evmContractAddresses?.staking
+    ? evmContractAddresses?.staking
     : undefined
 
   const {
@@ -87,13 +87,13 @@ export const useUserStakes = () => {
   )
 
   const handleWithdraw = async (callback?: (error?: unknown) => void) => {
-    if (contractAddresses?.staking) {
+    if (evmContractAddresses?.staking) {
       try {
         setIsClaiming(true)
         const txid = await writeContractAsync({
           abi: stakingAbi,
           functionName: 'withdraw',
-          address: contractAddresses.staking
+          address: evmContractAddresses.staking
         })
         addTransaction(txid)
         callback?.()

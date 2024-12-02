@@ -66,7 +66,7 @@ export const SuiManageVault: React.FC<{
     setMaxVaultCollateral
   } = useSuiVaultDetail(collateral)
 
-  const contractAddress = useContractAddresses(chainId)
+  const { suiContractAddresses } = useContractAddresses(chainId)
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
 
   const [depositBtc, setDepositBtc] = useState('')
@@ -82,7 +82,7 @@ export const SuiManageVault: React.FC<{
     `0x${collateral?.collateral?.tokenAddress}`
   )
   const { balance: bitUsdBalance } = useSuiTokenBalance(
-    `${contractAddress?.bitUSDPackageId}::bitusd::BITUSD`
+    `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
   )
 
   const depositInUsd = useMemo(() => {
@@ -100,6 +100,23 @@ export const SuiManageVault: React.FC<{
     if (remain >= floor) return 0
     return debt - floor
   }, [collateral, repayBitUsd, vault])
+
+  const isRepayAll = useMemo(() => {
+    const isRepayAllBTC =
+      withdrawBtc && Number(withdrawBtc) === Number(vault?.availableToWithdraw)
+
+    const ceiledRepayBitUsd = !repayBitUsd
+      ? convertToMist(0)
+      : // pass one more in case fee changes
+        convertToMist(Number(repayBitUsd)) + convertToMist(0.01)
+
+    const isRepayAllBUSD =
+      !!vault?.debtBitUSD &&
+      (convertToMist(Number(repayBitUsd)) >=
+        convertToMist(Number(vault?.debtBitUSD)) ||
+        ceiledRepayBitUsd >= convertToMist(Number(vault?.debtBitUSD)))
+    return isRepayAllBTC || isRepayAllBUSD
+  }, [repayBitUsd, vault?.availableToWithdraw, vault?.debtBitUSD, withdrawBtc])
 
   const nextButtonDisabled = useMemo(() => {
     if (!maxVault || !vault || isMintFromBtc === undefined) return true
@@ -213,7 +230,7 @@ export const SuiManageVault: React.FC<{
       setChangedCollateral('-' + withdrawBtc)
 
       setMaxVaultCollateral('')
-      setMaxVaultBitUsd('-' + value)
+      setMaxVaultBitUsd(value ? '-' + value : '')
     }
   }
 
@@ -221,17 +238,6 @@ export const SuiManageVault: React.FC<{
     if (isMintFromBtc) {
       mint(depositBtc, mintBitUsd)
     } else {
-      const ceiledRepayBitUsd = !repayBitUsd
-        ? convertToMist(0)
-        : // pass one more in case fee changes
-          convertToMist(Number(repayBitUsd)) + convertToMist(0.01)
-
-      const isRepayAll =
-        !!vault?.debtBitUSD &&
-        (convertToMist(Number(repayBitUsd)) >=
-          convertToMist(Number(vault?.debtBitUSD)) ||
-          ceiledRepayBitUsd >= convertToMist(Number(vault?.debtBitUSD)))
-
       if (isRepayAll) {
         repayAll(vault?.availableToWithdraw as string)
       } else {
@@ -343,12 +349,18 @@ export const SuiManageVault: React.FC<{
 
     if (!!repayBitUsd && commonBitUsdChangedErrorMsg)
       return commonBitUsdChangedErrorMsg
-
+    if (
+      isRepayAll &&
+      Number(repayBitUsd) < Number(vault?.debtBitUSD) + Number(vault?.fee)
+    ) {
+      return 'Repay all must cover debts and stability fee'
+    }
     return ''
   }, [
     bitUsdBalance,
     commonBitUsdChangedErrorMsg,
     repayBitUsd,
+    isRepayAll,
     vault?.debtBitUSD,
     vault?.fee
   ])
@@ -357,7 +369,7 @@ export const SuiManageVault: React.FC<{
     if (withdrawBtc && !repayBitUsd && !!vault?.fee) {
       setRepayBitUsd(vault?.fee || '')
     }
-  }, [repayBitUsd, vault?.fee, withdrawBtc])
+  }, [repayBitUsd, vault, withdrawBtc])
 
   useEffect(() => {
     if (isMintFromBtc === true) {
