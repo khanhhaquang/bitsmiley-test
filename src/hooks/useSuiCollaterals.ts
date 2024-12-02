@@ -47,15 +47,13 @@ export type Deployment = {
 export const useSuiCollaterals = (collateralId?: string) => {
   const { address: userAddress, suiChainIdAsNumber } = useUserInfo()
 
-  const { projectInfo } = useProjectInfo()
+  const { suiChains } = useProjectInfo()
 
   const suiClient = useSuiClient() as SuiClient
 
   const PackageIds = useMemo(
-    () =>
-      projectInfo?.web3Info.find((c) => c.chainId === suiChainIdAsNumber)
-        ?.contract,
-    [suiChainIdAsNumber, projectInfo?.web3Info]
+    () => suiChains?.find((c) => c.chainId === suiChainIdAsNumber)?.contract,
+    [suiChainIdAsNumber, suiChains]
   )
 
   const fetchTransactionResult = async (tx: Transaction) => {
@@ -95,9 +93,8 @@ export const useSuiCollaterals = (collateralId?: string) => {
   const getStabilityFee = useCallback(
     (stabilityFeeRate?: bigint) => {
       if (!suiChainIdAsNumber) return 0
-      const blockTime = projectInfo?.web3Info?.find(
-        (w) => w.chainId === suiChainIdAsNumber
-      )?.blockTime
+      const blockTime = suiChains?.find((w) => w.chainId === suiChainIdAsNumber)
+        ?.blockTime
 
       if (!stabilityFeeRate || !blockTime) return 0
 
@@ -107,7 +104,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
         Number(parseEther('1'))
       )
     },
-    [projectInfo?.web3Info, suiChainIdAsNumber]
+    [suiChains, suiChainIdAsNumber]
   )
 
   const query = {
