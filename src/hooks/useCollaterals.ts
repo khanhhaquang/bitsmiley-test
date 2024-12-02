@@ -336,8 +336,11 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   }, [chainWithCollaterals, chainId])
 
   const hasOpenedCollaterals = useMemo(
-    () => collaterals.some((item) => item.isOpenVault),
-    [collaterals]
+    () =>
+      collaterals
+        .filter((c) => c.chainId === chainId)
+        .some((item) => item.isOpenVault),
+    [chainId, collaterals]
   )
 
   const isMyVault = useMemo(() => {

@@ -137,7 +137,7 @@ const MintingPairs: React.FC = () => {
 }
 
 const EvmMintingPairs: FC<MintingPairsProps> = (props) => {
-  const { hasOpenedCollaterals } = useCollaterals()
+  const { hasOpenedCollaterals } = useCollaterals(props.selectedChainId)
   return (
     <>
       {hasOpenedCollaterals && (
