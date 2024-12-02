@@ -13,7 +13,7 @@ export type SelectorItem = {
 type SelectorProps = {
   selectedId?: number
   items: SelectorItem[]
-  onChange: (item: SelectorItem) => void
+  onChange?: (item: SelectorItem) => void
   className?: string
 }
 
@@ -25,7 +25,6 @@ const Selector: React.FC<SelectorProps> = ({
 }) => {
   const dropDownRef = useRef<HTMLDivElement>(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-
   const [currentItem, setCurrentItem] = useState(
     items.length > 0 ? items[0] : null
   )
@@ -95,9 +94,9 @@ const Selector: React.FC<SelectorProps> = ({
             onClick={() => {
               setCurrentItem(item)
               setIsDropdownOpen(false)
-              onChange(item)
+              if (onChange) onChange(item)
             }}
-            className="flex h-[33px] w-full cursor-pointer items-center gap-2 border border-white/60 border-t-transparent bg-white/10 px-3 text-white/75 hover:bg-white/50 hover:text-black">
+            className="flex h-[33px] w-full cursor-pointer items-center gap-2 border border-white/60 border-t-transparent bg-white/10 px-3 text-white/75 backdrop-blur-[20px] hover:bg-white/50 hover:text-black">
             {item.icon && (
               <Image src={item.icon} className="aspect-square size-4" />
             )}
