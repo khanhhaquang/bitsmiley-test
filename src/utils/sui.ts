@@ -7,8 +7,9 @@ export const convertToMist = (amount: number) =>
   (BigInt(Math.round(Number(MIST_PER_SUI) * amount)) * MIST_PER_SUI) /
   MIST_PER_SUI
 
-export const parseFromMist = (amount: bigint | string) =>
-  Number(amount) / Number(MIST_PER_SUI)
+export const parseFromMist = (amount: bigint | string) => {
+  return Number(amount) / Number(MIST_PER_SUI)
+}
 
 export const collateralHash = (collateral: string) =>
   keccak256(toHex(collateral))

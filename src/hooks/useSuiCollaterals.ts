@@ -4,6 +4,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { useSuiClient } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useCallback } from 'react'
+import { parseEther } from 'viem'
 
 import {
   BcsCollateral,
@@ -11,7 +12,7 @@ import {
   ISuiCollateral
 } from '@/types/sui'
 import { byteArrayToString } from '@/utils/number'
-import { convertToMist, parseFromMist } from '@/utils/sui'
+import { parseFromMist } from '@/utils/sui'
 
 import { useProjectInfo } from './useProjectInfo'
 import { useUserInfo } from './useUserInfo'
@@ -103,7 +104,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
       const blocks = (365 * 24 * 3600) / blockTime
       return (
         Number(BigInt(blocks) * stabilityFeeRate * BigInt('1000000')) /
-        Number(convertToMist(1))
+        Number(parseEther('1'))
       )
     },
     [projectInfo?.web3Info, suiChainIdAsNumber]
@@ -112,6 +113,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
   const query = {
     // placeholderData: keepPreviousData,
     select: (res?: ICollateralFromSuiChain): ISuiCollateral | undefined => {
+      console.log('🚀 ~ useSuiCollaterals ~ res:', res)
       if (!res || !suiChainIdAsNumber) return undefined
       return {
         chainId: suiChainIdAsNumber,
@@ -121,11 +123,8 @@ export const useSuiCollaterals = (collateralId?: string) => {
           chainId: suiChainIdAsNumber,
           isOpenVault: c.isOpenVault, // TO DO: Not return true when have vault
           collateralId: byteArrayToString(c.collateralId.bytes),
-          maxLTV: (parseFromMist(c.maxLtv) * 10 ** 9).toString(),
-          liquidationFeeRate: (
-            parseFromMist(c.liquidationFeeRate) *
-            10 ** 6
-          ).toString(),
+          maxLTV: parseFromMist(c.maxLtv).toString(),
+          liquidationFeeRate: parseFromMist(c.liquidationFeeRate).toString(),
           stabilityFee: getStabilityFee(BigInt(c.stabilityFeeRate)),
           collateral: {
             tokenAddress: c.collateral.token,
