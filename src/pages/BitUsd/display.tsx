@@ -143,7 +143,7 @@ export const displayCollateralValues = (
 })
 
 export const getHealthFactorTextColor = (v?: number | string) => {
-  if (isNaN(Number(v)) || !v) return ''
+  if (isNaN(Number(v)) || !v || !Number(v)) return ''
 
   const healthFactor = Number(v)
 

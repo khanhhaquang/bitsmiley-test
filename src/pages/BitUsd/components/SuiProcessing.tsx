@@ -24,7 +24,6 @@ const SuiProcessing: FC<SuiProcessingProps> = ({
   refetchCollateral
 }) => {
   const navigate = useNavigate()
-
   const { suiBlockExplorerUrl } = useUserInfo() // TO DO
   const openVaultTxId = executeData?.digest
   if (isPending) {

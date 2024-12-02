@@ -233,7 +233,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
     () => data?.collaterals || [],
     [data?.collaterals]
   )
-  console.log('🚀 ~ useSuiCollaterals ~ collaterals:', collaterals)
+  // console.log('🚀 ~ useSuiCollaterals ~ collaterals:', collaterals)
 
   const availableCollaterals = useMemo(() => {
     return collaterals?.filter((item) => !item.isOpenVault) || []
