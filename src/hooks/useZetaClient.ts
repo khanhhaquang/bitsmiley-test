@@ -25,7 +25,7 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const { recommendedFee } = useBtcFee()
   const { address: evmAddress } = useAccount()
   const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
-  const { projectInfo } = useProjectInfo()
+  const { evmChains } = useProjectInfo()
   const { btcNetwork } = useBtcNetwork()
 
   const btcAddress = useMemo(() => btcAccounts[0], [btcAccounts])
@@ -38,8 +38,8 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   } = useSignTypedData()
 
   const contractAddresses = useMemo(
-    () => projectInfo?.web3Info.find((w) => w.chainId === chain)?.contract,
-    [chain, projectInfo?.web3Info]
+    () => evmChains?.find((w) => w.chainId === chain)?.contract,
+    [chain, evmChains]
   )
   const zetaConnectorAddress = useMemo(() => {
     return contractAddresses?.bitsmileyZetaConnector

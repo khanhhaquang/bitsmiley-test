@@ -143,19 +143,17 @@ const MintingPairsTable: React.FC<{
   isOpenedVaults?: boolean
   table: TTable<IDetailedCollateral>
 }> = ({ isOpenedVaults, table }) => {
-  const { projectInfo } = useProjectInfo()
+  const { evmChains } = useProjectInfo()
   const { supportedChains } = useSupportedChains()
 
   const filterSupportedChains = useMemo(
     () =>
       supportedChains.filter(
         (s) =>
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.BitSmiley &&
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.id)?.contract
-            ?.bitSmileyQuery
+          !!evmChains?.find((w) => w.chainId === s.id)?.contract?.BitSmiley &&
+          !!evmChains?.find((w) => w.chainId === s.id)?.contract?.bitSmileyQuery
       ),
-    [projectInfo?.web3Info, supportedChains]
+    [evmChains, supportedChains]
   )
 
   return (
