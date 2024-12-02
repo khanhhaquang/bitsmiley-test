@@ -1,5 +1,7 @@
-import { ILiquidatedDetail } from '@/services/user'
+import { type InferBcsType } from '@mysten/bcs'
 import { bcs } from '@mysten/sui/bcs'
+
+import { ILiquidatedDetail } from '@/services/user'
 
 export const Bytes32 = bcs.struct('Bytes32', {
   bytes: bcs.vector(bcs.u8())
@@ -44,6 +46,8 @@ export const BcsVaultDetail = bcs.struct('VaultDetail', {
   available_to_withdraw: BcsI256,
   available_to_mint: BcsI256
 })
+
+export type IBcsVaultDetail = InferBcsType<typeof BcsVaultDetail>
 
 export const BcsOpenVault = bcs.struct('OpenVault', {
   health_factor: bcs.u256(),

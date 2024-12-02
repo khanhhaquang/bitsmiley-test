@@ -4,10 +4,6 @@ import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 
-export const hexToBytes = (hex: string) => {
-  return Buffer.from(hex.slice(2), 'hex')
-}
-
 type Options = Omit<
   Parameters<SuiClient['getTransactionBlock']>[0],
   'digest'
@@ -61,23 +57,19 @@ export const useSuiExecute = (): ExecutorResult => {
   })
 
   const mutate: Executor = async ({ tx, ...options }, then) => {
-    try {
-      const result = await signAndExecute(tx)
-      if (result?.digest) {
-        const waitResult = await client.waitForTransaction({
-          digest: result.digest,
-          ...options
-        })
+    setTxResponse(undefined)
+    const result = await signAndExecute(tx)
+    if (result?.digest) {
+      const waitResult = await client.waitForTransaction({
+        digest: result.digest,
+        ...options
+      })
 
-        then?.(waitResult)
-        setTxResponse(waitResult)
-        return waitResult
-      } else {
-        return undefined
-      }
-    } catch (error) {
-      console.error('Failed to execute transaction', tx, error)
+      then?.(waitResult)
+      setTxResponse(waitResult)
+      return waitResult
     }
+    throw new Error('Failed to execute transaction')
   }
 
   return {

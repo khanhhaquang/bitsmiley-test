@@ -433,7 +433,6 @@ export const ManageVault: React.FC<{
     }
   }, [isMintFromBtc])
 
-  console.log(vault)
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}

@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Address } from 'viem'
 
 import {
   ArrowLeftDoubleIcon,
@@ -8,23 +9,20 @@ import {
   OrIcon,
   VaultChangesBorderIcon
 } from '@/assets/icons'
-import { NativeBtcWalletModal } from '@/components/ConnectWallet/NativeBtcWalletModal'
-import { InfoIndicator } from '@/components/InfoIndicator'
-import { useReadErc20Symbol } from '@/contracts/ERC20'
-import { useCollaterals } from '@/hooks/useCollaterals'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
-import { useManageVault } from '@/hooks/useManageVault'
-import { useTokenBalance } from '@/hooks/useTokenBalance'
-import { useTokenPrice } from '@/hooks/useTokenPrice'
+import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
+import { useSuiCollateralTokenPrice } from '@/hooks/useSuiCollateralTokenPrice'
+import { useSuiTokenBalance } from '@/hooks/useSuiTokenBalance'
+import { useSuiTransaction } from '@/hooks/useSuiTransaction'
+import { useSuiVaultDetail } from '@/hooks/useSuiVaultDetail'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { useVaultDetail } from '@/hooks/useVaultDetail'
-import { useZetaClient } from '@/hooks/useZetaClient'
-import { TransactionStatus } from '@/types/common'
+import { IDetailedCollateral } from '@/types/vault'
 import {
   formatNumberAsCeil,
   formatNumberAsCompact,
   formatNumberWithSeparator
 } from '@/utils/number'
+import { convertToMist } from '@/utils/sui'
 
 import { LiquidatedWarning } from './component/LiquidatedWarning'
 import { ManageVaultHeaderInformation } from './component/ManageVaultHeaderInformation'
@@ -32,7 +30,6 @@ import {
   ManageVaultInfoSection,
   ManageVaultSectionTitle
 } from './component/ManageVaultInfoSection'
-import { useZetaProcessing } from './useZetaProcessing'
 
 import {
   ActionButton,
@@ -44,20 +41,18 @@ import { ProcessingModal } from '../components/Processing'
 import { ProcessingType } from '../components/Processing.types'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { ZetaProcessing } from '../components/ZetaProcessing'
-import { ProcessingStatus } from '../components/ZetaProcessing.types'
 import { displayVaultValues } from '../display'
 
-export const ZetaManageVault: React.FC<{
+export const SuiManageVault: React.FC<{
   chainId: number
   collateralId: string
 }> = ({ chainId, collateralId }) => {
   const navigate = useNavigate()
-  const { blockExplorerUrl } = useUserInfo()
-  const { collateral, refetch: refetchCollaterals } = useCollaterals(
-    chainId,
-    collateralId
-  )
+  const { suiBlockExplorerUrl } = useUserInfo()
+  const { collateral, refetch: refetchCollaterals } =
+    useSuiCollaterals(collateralId)
+
+  const { mint, repay, repayAll, transactionState } = useSuiTransaction()
 
   const {
     vault,
@@ -69,25 +64,9 @@ export const ZetaManageVault: React.FC<{
     maxVault,
     setMaxVaultBitUsd,
     setMaxVaultCollateral
-  } = useVaultDetail(collateral)
+  } = useSuiVaultDetail(collateral)
 
-  const {
-    bitUsdAllowance,
-    approvalTxnStatus,
-    approvalVault,
-    repayToBtc,
-    mintFromBtcTxnStatus,
-    repayToBtcTxnStatus,
-    mintFromBtcTxId,
-    repayToBtcTxId,
-    setApprovalTxnStatus,
-    setMintFromBtcTxnStatus,
-    setRepayToBtcTxnStatus,
-    txnErrorMsg,
-    setTxnErrorMsg
-  } = useManageVault(collateral)
-
-  const contractAddress = useContractAddresses()
+  const contractAddress = useContractAddresses(chainId)
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
 
   const [depositBtc, setDepositBtc] = useState('')
@@ -95,28 +74,16 @@ export const ZetaManageVault: React.FC<{
   const [withdrawBtc, setWithdrawBtc] = useState('')
   const [repayBitUsd, setRepayBitUsd] = useState('')
 
-  const wbtcPrice = useTokenPrice()
-  const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
-    address: collateral?.collateral?.tokenAddress
-  })
-  const { balance: wbtcBalance } = useTokenBalance(
-    collateral?.collateral?.tokenAddress
+  const { price: wbtcPrice } = useSuiCollateralTokenPrice(
+    collateral?.collateralId as Address
   )
-  const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
-  const { sign, btcAddress, mint } = useZetaClient(chainId, collateralId)
-  const {
-    showProcessing,
-    processingStep,
-    processingStatus,
-    processingTxn,
-    setShowProcessing,
-    setProcessingStatus,
-    initProcess,
-    cacheRawTxn,
-    handleBroadcasting
-  } = useZetaProcessing(chainId, collateralId)
-
-  const [btcWalletOpen, setBtcWalletOpen] = useState(!btcAddress)
+  const deptTokenSymbol = 'BTC' // TO DO
+  const { balance: wbtcBalance } = useSuiTokenBalance(
+    `0x${collateral?.collateral?.tokenAddress}`
+  )
+  const { balance: bitUsdBalance } = useSuiTokenBalance(
+    `${contractAddress?.bitUSDPackageId}::bitusd::BITUSD`
+  )
 
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
@@ -143,7 +110,7 @@ export const ZetaManageVault: React.FC<{
     // mintAndDeposit
     if (isMintFromBtc === true) {
       // no input values
-      if (!depositBtc && !mintBitUsd) return true
+      if (!depositBtc || !mintBitUsd) return true // TO DO: Confirm with BE
       // deposit > balance
       if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
 
@@ -250,27 +217,26 @@ export const ZetaManageVault: React.FC<{
     }
   }
 
-  const handleNext = async () => {
-    if (isNotApproved) {
-      approvalVault(
-        isMintFromBtc ? 'wBTC' : 'bitUSD',
-        isMintFromBtc ? depositBtc : repayBitUsd
-      )
-      return
-    }
-
+  const handleNext = () => {
     if (isMintFromBtc) {
-      //reset status
-      initProcess()
-      const rawTx = await mint(Number(depositBtc), mintBitUsd)
-      if (rawTx) {
-        cacheRawTxn(rawTx)
-        handleBroadcasting(rawTx)
-      } else {
-        setProcessingStatus(ProcessingStatus.Error)
-      }
+      mint(depositBtc, mintBitUsd)
     } else {
-      repayToBtc(withdrawBtc, repayBitUsd, vault?.debtBitUSD)
+      const ceiledRepayBitUsd = !repayBitUsd
+        ? convertToMist(0)
+        : // pass one more in case fee changes
+          convertToMist(Number(repayBitUsd)) + convertToMist(0.01)
+
+      const isRepayAll =
+        !!vault?.debtBitUSD &&
+        (convertToMist(Number(repayBitUsd)) >=
+          convertToMist(Number(vault?.debtBitUSD)) ||
+          ceiledRepayBitUsd >= convertToMist(Number(vault?.debtBitUSD)))
+
+      if (isRepayAll) {
+        repayAll(vault?.availableToWithdraw as string)
+      } else {
+        repay(withdrawBtc, repayBitUsd)
+      }
     }
   }
 
@@ -281,86 +247,37 @@ export const ZetaManageVault: React.FC<{
   const noInputValues =
     !depositBtc && !mintBitUsd && !withdrawBtc && !repayBitUsd
 
-  const isNotApproved = useMemo(
-    () =>
-      isMintFromBtc
-        ? false
-        : !!repayBitUsd && bitUsdAllowance < Number(repayBitUsd),
-    [bitUsdAllowance, isMintFromBtc, repayBitUsd]
-  )
-
-  const isApproving = useMemo(
-    () =>
-      approvalTxnStatus === TransactionStatus.Signing ||
-      approvalTxnStatus === TransactionStatus.Processing,
-    [approvalTxnStatus]
-  )
-
-  const isTransactionStatusIdle = useMemo(() => {
-    if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Idle
-    return repayToBtcTxnStatus === TransactionStatus.Idle
-  }, [isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
-
-  const isTransactionStatusSigning = useMemo(() => {
-    if (isMintFromBtc) return mintFromBtcTxnStatus === TransactionStatus.Signing
-    return repayToBtcTxnStatus === TransactionStatus.Signing
-  }, [isMintFromBtc, mintFromBtcTxnStatus, repayToBtcTxnStatus])
-
-  const getProcessingTypeFromTxnStatus = useCallback(
-    (status: TransactionStatus) => {
-      switch (status) {
-        case TransactionStatus.Success:
-          return ProcessingType.Success
-        case TransactionStatus.Failed:
-          return ProcessingType.Error
-        default:
-          return ProcessingType.Info
-      }
-    },
-    []
-  )
-
-  const processingType = useMemo(
-    () =>
-      getProcessingTypeFromTxnStatus(
-        isMintFromBtc ? mintFromBtcTxnStatus : repayToBtcTxnStatus
-      ),
-    [
-      getProcessingTypeFromTxnStatus,
-      isMintFromBtc,
-      mintFromBtcTxnStatus,
-      repayToBtcTxnStatus
-    ]
-  )
+  const processingType = useMemo(() => {
+    if (transactionState?.isSuccess) return ProcessingType.Success
+    if (transactionState?.isError) return ProcessingType.Error
+    if (transactionState?.isPending) return ProcessingType.Processing
+    return ProcessingType.Info
+  }, [transactionState])
 
   const txnLink = useMemo(() => {
-    if (!!blockExplorerUrl && isMintFromBtc && mintFromBtcTxId)
-      return `${blockExplorerUrl}/tx/${mintFromBtcTxId}`
-    if (!!blockExplorerUrl && !isMintFromBtc && repayToBtcTxId)
-      return `${blockExplorerUrl}/tx/${repayToBtcTxId}`
+    if (
+      !!suiBlockExplorerUrl &&
+      isMintFromBtc &&
+      transactionState?.transactionResponse
+    )
+      return `${suiBlockExplorerUrl}/tx/${transactionState?.transactionResponse}`
     return ''
-  }, [blockExplorerUrl, isMintFromBtc, mintFromBtcTxId, repayToBtcTxId])
+  }, [suiBlockExplorerUrl, isMintFromBtc, transactionState])
 
   const processingMessage = useMemo(() => {
     switch (processingType) {
       case 'success':
         return 'Your vault change is completed.'
       case 'error':
-        if (txnErrorMsg) return txnErrorMsg
+        if (transactionState?.error) return transactionState?.error?.message
         return 'The transaction has failed.'
       default:
         return 'Your transaction is getting processed on-chain.'
     }
-  }, [processingType, txnErrorMsg])
+  }, [processingType, transactionState])
 
   const processingModal = useMemo(() => {
-    if (isApproving)
-      return <ProcessingModal message="Waiting for approval from wallet..." />
-
-    if (isTransactionStatusSigning)
-      return <ProcessingModal message="Waiting for wallet signature..." />
-
-    if (!isTransactionStatusIdle)
+    if (transactionState && !transactionState?.isIdle)
       return (
         <ProcessingModal
           actionButtonClassName="w-[300px]"
@@ -369,10 +286,7 @@ export const ZetaManageVault: React.FC<{
             refetchCollaterals()
             refreshVaultValues()
             if (processingType === 'error') {
-              setApprovalTxnStatus(TransactionStatus.Idle)
-              setMintFromBtcTxnStatus(TransactionStatus.Idle)
-              setRepayToBtcTxnStatus(TransactionStatus.Idle)
-              setTxnErrorMsg('')
+              transactionState?.reset()
             }
 
             if (processingType === 'success') {
@@ -386,18 +300,12 @@ export const ZetaManageVault: React.FC<{
       )
     return null
   }, [
-    isApproving,
-    isTransactionStatusIdle,
-    isTransactionStatusSigning,
+    transactionState,
     navigate,
     processingMessage,
     processingType,
     refetchCollaterals,
     refreshVaultValues,
-    setApprovalTxnStatus,
-    setMintFromBtcTxnStatus,
-    setRepayToBtcTxnStatus,
-    setTxnErrorMsg,
     txnLink
   ])
 
@@ -463,36 +371,17 @@ export const ZetaManageVault: React.FC<{
     }
   }, [isMintFromBtc])
 
-  useEffect(() => {
-    if (btcAddress) {
-      sign()
-    }
-  }, [btcAddress, sign])
-
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
-
-      <ZetaProcessing
-        status={processingStatus}
-        step={processingStep}
-        txn={processingTxn}
-        open={showProcessing}
-        onOpen={() => setShowProcessing(true)}
-        onClose={() => setShowProcessing(false)}
-      />
-
-      <NativeBtcWalletModal
-        onClose={() => setBtcWalletOpen(false)}
-        isOpen={btcWalletOpen}
-      />
-
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
-      <ManageVaultHeaderInformation collateral={collateral} />
+      <ManageVaultHeaderInformation
+        collateral={collateral as IDetailedCollateral}
+      />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
         <LiquidatedWarning
-          collateral={collateral}
+          collateral={collateral as IDetailedCollateral}
           open={isLiquidatedWarningOpen}
           onClose={() => setIsLiquidatedWarningOpen(false)}
         />
@@ -516,7 +405,7 @@ export const ZetaManageVault: React.FC<{
               onInputChange={(v) => handleInput('depositBtc', v)}
               onFocus={() => setIsMintFromBtc(true)}
               greyOut={isMintFromBtc === false}
-              disabled={depositWBtcDisabled}
+              disabled={depositWBtcDisabled && false}
               title={`deposit ${deptTokenSymbol}`}
               inputSuffix={`~${depositInUsd}$`}
               titleSuffix={'Available: ' + formatNumberAsCompact(wbtcBalance)}
@@ -566,7 +455,7 @@ export const ZetaManageVault: React.FC<{
             <NumberInput
               scale={4}
               value={mintBitUsd}
-              disabled={mintBitUsdDisabled}
+              disabled={mintBitUsdDisabled && false}
               onFocus={() => setIsMintFromBtc(true)}
               onInputChange={(v) => handleInput('mintBitUsd', v)}
               greyOut={isMintFromBtc === false}
@@ -640,7 +529,7 @@ export const ZetaManageVault: React.FC<{
           />
         )}
 
-        {isTransactionStatusIdle && (
+        {transactionState?.isIdle && (
           <div className="mx-auto mt-6 flex w-[451px] items-center gap-x-4">
             <ActionButton
               className="h-9 shrink-0 bg-white/5"
@@ -650,20 +539,12 @@ export const ZetaManageVault: React.FC<{
                 Back
               </span>
             </ActionButton>
-
-            {isNotApproved || noInputValues ? (
+            {noInputValues ? (
               <ActionButton
                 onClick={handleNext}
                 disabled={nextButtonDisabled}
                 className="h-9 w-full flex-1">
-                {isNotApproved ? (
-                  <span className="flex items-center justify-center gap-x-2">
-                    Give permission to use {isMintFromBtc ? 'wBTC' : 'bitUSD'}{' '}
-                    <InfoIndicator message="give permission" />
-                  </span>
-                ) : (
-                  'Next'
-                )}
+                Next
               </ActionButton>
             ) : (
               <SubmitButton

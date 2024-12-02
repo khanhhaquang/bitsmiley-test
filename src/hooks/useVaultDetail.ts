@@ -142,7 +142,6 @@ export const useVaultDetail = (collateral?: IDetailedCollateral) => {
       : undefined,
     query
   })
-
   useEffect(() => {
     if (!debouncedTryOpenVaultBitUsd || !Number(debouncedTryOpenVaultBitUsd)) {
       if (tryOpenVaultInfo?.availableToMint) {

@@ -1,12 +1,14 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Address } from 'viem'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
-import { useReadErc20Symbol } from '@/contracts/ERC20'
-import { useCollaterals } from '@/hooks/useCollaterals'
+import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
+import { useSuiCollateralTokenPrice } from '@/hooks/useSuiCollateralTokenPrice'
+import { useSuiTokenBalance } from '@/hooks/useSuiTokenBalance'
 import { useSuiTransaction } from '@/hooks/useSuiTransaction'
-import { useTokenPrice } from '@/hooks/useTokenPrice'
-import { useVaultDetail } from '@/hooks/useVaultDetail'
+import { useSuiVaultDetail } from '@/hooks/useSuiVaultDetail'
+import { IDetailedCollateral } from '@/types/vault'
 
 import VaultHeader from './component/VaultHeader'
 
@@ -19,17 +21,14 @@ import { NumberInput } from '../components/NumberInput'
 import SuiProcessing from '../components/SuiProcessing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { formatBitUsd } from '../display'
+import { formatBitUsd, formatWBtc } from '../display'
 
 const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
-  chainId,
   collateralId
 }) => {
   const navigate = useNavigate()
-  const { collateral, refetch: refetchCollateral } = useCollaterals(
-    chainId,
-    collateralId
-  )
+  const { collateral, refetch: refetchCollateral } =
+    useSuiCollaterals(collateralId) // to be update
 
   const {
     refreshVaultValues,
@@ -37,20 +36,22 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     setTryOpenVaultBitUsd,
     setTryOpenVaultCollateral,
     capturedMaxMint
-  } = useVaultDetail(collateral)
+  } = useSuiVaultDetail(collateral)
 
-  const { data: deptTokenSymbol = '-' } = useReadErc20Symbol({
-    address: collateral?.collateral?.tokenAddress
-  })
-
-  const wbtcPrice = useTokenPrice()
+  const deptTokenSymbol = 'BTC'
 
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
 
   const { openAndMint, transactionState } = useSuiTransaction()
 
-  const wbtcBalance = 1
+  const { price: wbtcPrice } = useSuiCollateralTokenPrice(
+    collateral?.collateralId as Address
+  )
+  const { balance: wbtcBalance } = useSuiTokenBalance(
+    `0x${collateral?.collateral?.tokenAddress}`
+  )
+
   const depositDisabled = useMemo(() => {
     if (wbtcBalance <= 0) return true
   }, [wbtcBalance])
@@ -131,7 +132,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
         refreshVaultValues={refreshVaultValues}
       />
       <VaultTitleBlue>OPEN A VAULT</VaultTitleBlue>
-      <VaultHeader collateral={collateral} />
+      <VaultHeader collateral={collateral as IDetailedCollateral} />
 
       <div className="mx-auto mt-6 flex w-[400px] flex-col gap-y-4">
         <NumberInput
@@ -142,11 +143,11 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           disabled={depositDisabled}
           errorMessage={depositInputErrorMsg}
           title={`DEPOSIT ${deptTokenSymbol}`}
-          // titleSuffix={`Available: ${formatWBtc( // TO DO
-          //   wbtcBalance ,
-          //   false,
-          //   true
-          // )} ${deptTokenSymbol}`}
+          titleSuffix={`Available: ${formatWBtc(
+            wbtcBalance,
+            false,
+            true
+          )} ${deptTokenSymbol}`}
           inputSuffix={
             <div className="flex h-full items-center gap-x-1.5 py-1">
               {'~' + depositInUsd + '$'}
@@ -184,7 +185,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
             debtBitUSD: mint,
             lockedCollateral: deposit
           }}
-          collateral={collateral}
+          collateral={collateral as IDetailedCollateral}
           borderSvg={
             <VaultInfoBorderIcon className="absolute inset-0 z-0 text-white" />
           }

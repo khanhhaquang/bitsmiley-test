@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { useChainId } from 'wagmi'
 
 import { OnChainLoader } from '@/components/OnchainLoader'
@@ -9,6 +9,7 @@ import { isSuiChain, isZetaChain } from '@/utils/chain'
 
 import { ManageVault } from './ManageVault'
 import { MemoizedOpenVault as OpenVault } from './OpenVault'
+import { SuiManageVault } from './SuiManageVault'
 import { SuiOpenVault } from './SuiOpenVault'
 import { ZetaManageVault } from './ZetaManageVault'
 import { ZetaOpenVault } from './ZetaOpenVault'
@@ -51,9 +52,8 @@ const EvmVault: React.FC = () => {
 
   if (isLoading) return <OnChainLoader />
 
-  console.log('collateral', { collateral, currentChainId, chainId })
-  // if (!collateral || currentChainId !== Number(chainId))
-  //   return <Navigate to="/app/alphanet" replace />
+  if (!collateral || currentChainId !== Number(chainId))
+    return <Navigate to="/app/alphanet" replace />
 
   return (
     <div className="relative size-full overflow-hidden pt-9">
@@ -64,7 +64,7 @@ const EvmVault: React.FC = () => {
 
 const SuiVault: React.FC = () => {
   const { chainId, collateralId } = useParams()
-  const { isLoading } = useSuiCollaterals(collateralId)
+  const { isLoading, isMyVault } = useSuiCollaterals(collateralId)
 
   if (!collateralId) return null
 
@@ -72,7 +72,11 @@ const SuiVault: React.FC = () => {
 
   return (
     <div className="relative size-full overflow-hidden pt-9">
-      <SuiOpenVault chainId={Number(chainId)} collateralId={collateralId} />
+      {isMyVault ? (
+        <SuiManageVault chainId={Number(chainId)} collateralId={collateralId} />
+      ) : (
+        <SuiOpenVault chainId={Number(chainId)} collateralId={collateralId} />
+      )}
     </div>
   )
 }

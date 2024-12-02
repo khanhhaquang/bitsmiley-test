@@ -25,15 +25,15 @@ const SuiProcessing: FC<SuiProcessingProps> = ({
 }) => {
   const navigate = useNavigate()
 
-  const { blockExplorerUrl } = useUserInfo() // TO DO
+  const { suiBlockExplorerUrl } = useUserInfo() // TO DO
   const openVaultTxId = executeData?.digest
   if (isPending) {
     return (
       <ProcessingModal
         message="Your transaction is getting processed on-chain."
         link={
-          !!blockExplorerUrl && !!openVaultTxId
-            ? `${blockExplorerUrl}/tx/${openVaultTxId}`
+          !!suiBlockExplorerUrl && !!openVaultTxId
+            ? `${suiBlockExplorerUrl}/tx/${openVaultTxId}`
             : ''
         }
       />
@@ -65,14 +65,14 @@ const SuiProcessing: FC<SuiProcessingProps> = ({
           // setTxnErrorMsg('')
         }}
         message={
-          !blockExplorerUrl || !openVaultTxId ? (
+          !suiBlockExplorerUrl || !openVaultTxId ? (
             <span>{error?.message}</span>
           ) : (
             <span>
               The transaction has failed. You can check it on-chain{' '}
               <a
                 className="cursor-pointer text-green hover:underline"
-                href={`${blockExplorerUrl}/tx/${openVaultTxId}`}>
+                href={`${suiBlockExplorerUrl}/tx/${openVaultTxId}`}>
                 here
               </a>
             </span>

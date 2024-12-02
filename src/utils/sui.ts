@@ -4,10 +4,11 @@ import { keccak256, toHex } from 'viem'
 import { BcsI64 } from '@/types/sui'
 
 export const convertToMist = (amount: number) =>
-  (BigInt(Number(MIST_PER_SUI) * amount) * MIST_PER_SUI) / MIST_PER_SUI
+  (BigInt(Math.round(Number(MIST_PER_SUI) * amount)) * MIST_PER_SUI) /
+  MIST_PER_SUI
 
 export const parseFromMist = (amount: bigint | string) =>
-  Number(BigInt(amount) / MIST_PER_SUI)
+  Number(amount) / Number(MIST_PER_SUI)
 
 export const collateralHash = (collateral: string) =>
   keccak256(toHex(collateral))

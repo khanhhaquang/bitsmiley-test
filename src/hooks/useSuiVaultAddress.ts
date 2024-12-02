@@ -9,7 +9,7 @@ import { getSuiChainConfig } from '@/utils/chain'
 
 import { useContractAddresses } from './useContractAddresses'
 
-export const useSuiVault = () => {
+export const useSuiVaultAddress = () => {
   const suiClient = useSuiClient() as SuiClient
   const { account, chain } = useWallet()
   const contractAddresses = useContractAddresses(
@@ -22,28 +22,29 @@ export const useSuiVault = () => {
     bitSmileyObjectId?: Address
   ) => {
     if (!packageId || !bitSmileyObjectId || !owner) return
-    try {
-      const tx = new Transaction()
-      tx.moveCall({
-        target: `${packageId}::bitsmiley::get_vault`,
-        arguments: [tx.object(bitSmileyObjectId), tx.pure.address(owner)]
-      })
+    const tx = new Transaction()
+    tx.moveCall({
+      target: `${packageId}::bitsmiley::get_vault`,
+      arguments: [tx.object(bitSmileyObjectId), tx.pure.address(owner)]
+    })
 
-      const res = await suiClient.devInspectTransactionBlock({
-        sender: owner,
-        transactionBlock: tx
-      })
+    const res = await suiClient.devInspectTransactionBlock({
+      sender: owner,
+      transactionBlock: tx
+    })
 
-      const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
-      return bcs.Address.parse(new Uint8Array(bytes))
-    } catch {
-      return ''
-    }
+    const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
+    if (bytes.length === 0) return ''
+    return bcs.Address.parse(new Uint8Array(bytes))
   }
 
-  const { data: vaultAddress } = useQuery({
+  const {
+    data: vaultAddress,
+    refetch,
+    isFetching
+  } = useQuery({
     queryKey: [
-      'btc-balance',
+      'sui-vault-address',
       contractAddresses?.bitSmileyPackageId,
       contractAddresses?.bitSmileyObjectId,
       account?.address
@@ -63,6 +64,8 @@ export const useSuiVault = () => {
   })
 
   return {
-    vaultAddress
+    vaultAddress: vaultAddress as Address,
+    refetch,
+    isFetching
   }
 }

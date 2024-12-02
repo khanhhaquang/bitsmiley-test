@@ -89,11 +89,20 @@ export const useUserInfo = () => {
     [enabledFeaturesData?.BitPoint]
   )
 
-  const suiChainIdAsNumber = useMemo(() => {
-    if (suiWallet.chain?.id === SuiMainnetChain.id) return suiMainnet.id
-    if (suiWallet.chain?.id === SuiTestnetChain.id) return suiTestnet.id
-    return undefined
-  }, [suiWallet.chain?.id])
+  const { chainId: suiChainIdAsNumber, blockExplorerUrl: suiBlockExplorerUrl } =
+    useMemo(() => {
+      if (suiWallet.chain?.id === SuiMainnetChain.id)
+        return {
+          chainId: suiMainnet.id,
+          blockExplorerUrl: suiMainnet.blockExplorers.default
+        }
+      if (suiWallet.chain?.id === SuiTestnetChain.id)
+        return {
+          chainId: suiTestnet.id,
+          blockExplorerUrl: suiTestnet.blockExplorers.default
+        }
+      return {}
+    }, [suiWallet.chain?.id])
 
   return {
     isConnectedWithAA,
@@ -106,6 +115,7 @@ export const useUserInfo = () => {
     evmChainId,
     isLoading,
     suiChainIdAsNumber,
+    suiBlockExplorerUrl,
     isSuiConnected: suiWallet.connected
   }
 }

@@ -45,6 +45,7 @@ export type Deployment = {
 
 export const useSuiCollaterals = (collateralId?: string) => {
   const { address: userAddress, suiChainIdAsNumber } = useUserInfo()
+
   const { projectInfo } = useProjectInfo()
 
   const suiClient = useSuiClient() as SuiClient
@@ -118,7 +119,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
         collaterals: res?.collaterals?.map((c) => ({
           name: c.name,
           chainId: suiChainIdAsNumber,
-          isOpenVault: c.isOpenVault,
+          isOpenVault: c.isOpenVault, // TO DO: Not return true when have vault
           collateralId: byteArrayToString(c.collateralId.bytes),
           maxLTV: (parseFromMist(c.maxLtv) * 10 ** 9).toString(),
           liquidationFeeRate: (
@@ -201,7 +202,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
                   .vector(BcsCollateral)
                   .parse(Uint8Array.from(listCollateralsTxResult))
 
-                console.log('🚀 ~ : ~ collaterals:', collaterals)
+                // console.log('🚀 ~ : ~ collaterals:', collaterals)
                 //TODO: get vault address by owner
                 // getVaultAddressByOwner()
 
