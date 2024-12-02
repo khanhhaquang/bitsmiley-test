@@ -234,7 +234,7 @@ export const SelectWalletModal: React.FC<{
               ) : chainsNotSupportedByParticle.includes(selectedNetwork) ? (
                 <EvmConnectors
                   onClose={onClose}
-                  expectedChainId={expectedChainId ?? selectedNetwork}
+                  expectedChainId={selectedNetwork}
                 />
               ) : (
                 <div className="flex w-full gap-x-6">
@@ -242,14 +242,14 @@ export const SelectWalletModal: React.FC<{
                     <WalletTitle title="BTC Wallet" />
                     <BtcConnectors
                       onClose={onClose}
-                      expectedChainId={expectedChainId}
+                      expectedChainId={selectedNetwork}
                     />
                   </div>
                   <div className="flex flex-1 flex-col items-center gap-y-6">
                     <WalletTitle title="EVM Wallet" />
                     <EvmConnectors
                       onClose={onClose}
-                      expectedChainId={expectedChainId}
+                      expectedChainId={selectedNetwork}
                     />
                   </div>
                 </div>
