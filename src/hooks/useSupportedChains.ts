@@ -5,10 +5,12 @@ import { customChains } from '@/config/wagmi'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 export const useSupportedChains = () => {
-  const { evmChains, isLoading } = useProjectInfo()
+  const { evmChains, suiChains, isLoading } = useProjectInfo()
+
   const supportedChainIds = useMemo(
-    () => evmChains?.map((v) => v.chainId) || [],
-    [evmChains]
+    () =>
+      [...(evmChains || []), ...(suiChains || [])]?.map((v) => v.chainId) || [],
+    [evmChains, suiChains]
   )
 
   const supportedChains = useMemo(

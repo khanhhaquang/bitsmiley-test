@@ -68,27 +68,27 @@ export const useSuiCollaterals = (collateralId?: string) => {
     return res.results![0].returnValues![0][0]
   }
 
-  // const getVaultAddressByOwner = async () => {
-  //   if (!PackageIds) return null
-  //   try {
-  //     const tx = new Transaction()
-  //     tx.moveCall({
-  //       target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault`,
-  //       arguments: [
-  //         tx.object(PackageIds.bitSmileyObjectId),
-  //         tx.pure.address(userAddress)
-  //       ]
-  //     })
+  const getVaultAddressByOwner = async () => {
+    if (!PackageIds) return null
+    try {
+      const tx = new Transaction()
+      tx.moveCall({
+        target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault`,
+        arguments: [
+          tx.object(PackageIds.bitSmileyObjectId),
+          tx.pure.address(userAddress)
+        ]
+      })
 
-  //     const txResult = await fetchTransactionResult(tx)
-  //     console.log('🚀 ~ getVaultAddressByOwner ~ txResult:', txResult)
+      const txResult = await fetchTransactionResult(tx)
+      console.log('🚀 ~ getVaultAddressByOwner ~ txResult:', txResult)
 
-  //     return txResult
-  //   } catch (error) {
-  //     console.log('🚀 ~ getVaultAddressByOwner ~ error:', error)
-  //     return null
-  //   }
-  // }
+      return bcs.option(bcs.Address).parse(new Uint8Array(txResult))
+    } catch (error) {
+      console.log('🚀 ~ getVaultAddressByOwner ~ error:', error)
+      return null
+    }
+  }
 
   const getStabilityFee = useCallback(
     (stabilityFeeRate?: bigint) => {
@@ -198,27 +198,29 @@ export const useSuiCollaterals = (collateralId?: string) => {
                   .vector(BcsCollateral)
                   .parse(Uint8Array.from(listCollateralsTxResult))
 
-                // console.log('🚀 ~ : ~ collaterals:', collaterals)
                 //TODO: get vault address by owner
-                // getVaultAddressByOwner()
+                const openedVaultAddress = await getVaultAddressByOwner()
+                console.log('🚀 ~ : ~ openedVaultAddress:', openedVaultAddress)
+
+                if (!getVaultAddressByOwner) {
+                  return {
+                    vaultAddress: undefined,
+                    collaterals: collaterals.map((c) => ({
+                      ...c,
+                      isOpenVault: false
+                    }))
+                  }
+                }
 
                 // get vault liquidated info
                 // const liquidatedRes = await UserService.getLiquidated.call({
                 //   vault: [
                 //     {
-                //       network: chainIdToNetwork[client.chain.id],
-                //       vaultAddress
+                //       network: 'Sui',
+                //       vaultAddress: openedVaultAddress
                 //     }
                 //   ]
                 // })
-
-                return {
-                  vaultAddress: undefined,
-                  collaterals: collaterals.map((c) => ({
-                    ...c,
-                    isOpenVault: false
-                  }))
-                }
               }
 
               return undefined
