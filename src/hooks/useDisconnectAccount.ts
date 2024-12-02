@@ -16,21 +16,23 @@ export const useDisconnectAccount = () => {
   const wallet = useWallet()
 
   const disconnectWagmi = useCallback(() => {
-    disconnectEvm(
-      {
-        connector: connectors[0]
-      },
-      {
-        onSuccess: () => {
-          setAirdropIsLoggedIn(false)
-          clearStorage()
-          // navigate('/')
+    connectors.forEach((connector) => {
+      disconnectEvm(
+        {
+          connector: connector
         },
-        onError: (e) => {
-          console.log('err', e)
+        {
+          onSuccess: () => {
+            setAirdropIsLoggedIn(false)
+            clearStorage()
+            // navigate('/')
+          },
+          onError: (e) => {
+            console.log('err', e)
+          }
         }
-      }
-    )
+      )
+    })
   }, [connectors, disconnectEvm, navigate, setAirdropIsLoggedIn])
 
   const disconnect = useCallback(() => {
