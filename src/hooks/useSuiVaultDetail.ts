@@ -22,6 +22,8 @@ import { convertToMist, parseFromMist, toI64 } from '@/utils/sui'
 import { useSuiTokenBalance } from './useSuiTokenBalance'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
 
+const SAFE_BITUSD_DEDUCT_AMOUNT = 0.01
+
 export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
   const suiClient = useSuiClient() as SuiClient
   const { account, chain } = useWallet()
@@ -88,9 +90,12 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
         mintedBitUSD: parseFromMist(
           BigInt(data?.minted_bitusd || 0)
         ).toString(),
-        availableToMint: parseFromMist(
-          BigInt(data?.available_to_mint?.value || 0)
-          // data?.available_to_mint?.is_negative
+        availableToMint: Math.max(
+          parseFromMist(
+            BigInt(data?.available_to_mint?.value || 0)
+            // data?.available_to_mint?.is_negative
+          ) - SAFE_BITUSD_DEDUCT_AMOUNT,
+          0
         ).toString(),
         availableToWithdraw: parseFromMist(
           BigInt(data?.available_to_withdraw?.value || 0)
