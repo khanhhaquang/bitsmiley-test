@@ -84,7 +84,7 @@ const MintingPairs: React.FC = () => {
     if (isEvmConnected && evmChainId) {
       setSelectedChainId(evmChainId)
     }
-  }, [isSuiConnected, isEvmConnected])
+  }, [isSuiConnected, isEvmConnected, suiChainId, evmChainId])
 
   const onChainChange = (item: SelectorItem) => {
     setSelectedChainId(item.id)
