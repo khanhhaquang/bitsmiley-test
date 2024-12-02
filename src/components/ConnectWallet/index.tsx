@@ -20,7 +20,7 @@ import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useReconnectEvm } from '@/hooks/useReconnectEvm'
-import { isMerlinChain, isSuiChain, isZetaChain } from '@/utils/chain'
+import { isSuiChain, isZetaChain } from '@/utils/chain'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
@@ -37,6 +37,7 @@ import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useWallet } from '@suiet/wallet-kit'
 
 import BtcConnectors from './BtcConnectors'
+import { chainsNotSupportedByParticle } from '@/config/wagmi'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -212,7 +213,7 @@ export const SelectWalletModal: React.FC<{
             <div className="flex flex-1 flex-col items-center gap-y-6">
               {isSuiChain(selectedNetwork) ? (
                 <SuiConnectors onClose={onClose} />
-              ) : isMerlinChain(selectedNetwork) ? (
+              ) : !chainsNotSupportedByParticle.includes(selectedNetwork) ? (
                 <BtcConnectors
                   onClose={onClose}
                   expectedChainId={expectedChainId}

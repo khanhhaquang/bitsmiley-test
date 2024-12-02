@@ -2,8 +2,6 @@ import { SuiChainId } from '@suiet/wallet-kit'
 import { address } from 'bitcoinjs-lib'
 
 import {
-  merlinMainnet,
-  merlinTestnet,
   suiMainnet,
   suiTestnet,
   zetaMainnet,
@@ -22,10 +20,6 @@ export const getSuiNetworkType = (chainId: number) => {
 
 export const isSuiChain = (chain: number) => {
   return ([suiMainnet.id, suiTestnet.id] as number[]).includes(chain) // TO DO
-}
-
-export const isMerlinChain = (chain: number) => {
-  return ([merlinTestnet.id, merlinMainnet.id] as number[]).includes(chain)
 }
 
 export const getSuiChainConfig = (name?: string) => {
