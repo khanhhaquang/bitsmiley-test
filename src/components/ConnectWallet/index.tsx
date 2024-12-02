@@ -2,6 +2,7 @@ import { useBTCProvider } from '@particle-network/btc-connectkit'
 import {
   CSSProperties,
   Fragment,
+  memo,
   useEffect,
   useMemo,
   useRef,
@@ -37,6 +38,7 @@ import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useWallet } from '@suiet/wallet-kit'
 
 import BtcConnectors from './BtcConnectors'
+
 import { chainsNotSupportedByParticle } from '@/config/wagmi'
 
 const DISCLAIMER_TEXTS = [
@@ -181,6 +183,22 @@ export const SelectWalletModal: React.FC<{
     chainIds.length > 0 ? chainIds[0] : 0
   )
 
+  const WalletTitle = memo(({ title }: { title: string }) => {
+    return (
+      <div className="flex items-center justify-center gap-x-1">
+        <div className="flex w-[62px] flex-col gap-y-1">
+          <p className="h-[1px] w-full bg-white/50" />
+          <p className="h-[1px] w-full bg-white/50" />
+        </div>
+        <span className="font-psm text-lg ">{title}</span>
+        <div className="flex w-[62px] flex-col gap-y-1">
+          <p className="h-[1px] w-full bg-white/50" />
+          <p className="h-[1px] w-full bg-white/50" />
+        </div>
+      </div>
+    )
+  })
+
   useEffect(() => {
     if (isConfirmed) {
       setLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER, 'true')
@@ -213,16 +231,28 @@ export const SelectWalletModal: React.FC<{
             <div className="flex flex-1 flex-col items-center gap-y-6">
               {isSuiChain(selectedNetwork) ? (
                 <SuiConnectors onClose={onClose} />
-              ) : !chainsNotSupportedByParticle.includes(selectedNetwork) ? (
-                <BtcConnectors
-                  onClose={onClose}
-                  expectedChainId={expectedChainId}
-                />
-              ) : (
+              ) : chainsNotSupportedByParticle.includes(selectedNetwork) ? (
                 <EvmConnectors
                   onClose={onClose}
                   expectedChainId={expectedChainId ?? selectedNetwork}
                 />
+              ) : (
+                <div className="flex w-full gap-x-6">
+                  <div className="flex flex-1 flex-col items-center gap-y-6">
+                    <WalletTitle title="BTC Wallet" />
+                    <BtcConnectors
+                      onClose={onClose}
+                      expectedChainId={expectedChainId}
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col items-center gap-y-6">
+                    <WalletTitle title="EVM Wallet" />
+                    <EvmConnectors
+                      onClose={onClose}
+                      expectedChainId={expectedChainId}
+                    />
+                  </div>
+                </div>
               )}
             </div>
           </div>
