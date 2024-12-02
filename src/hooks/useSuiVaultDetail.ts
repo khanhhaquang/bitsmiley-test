@@ -27,7 +27,7 @@ const SAFE_BITUSD_DEDUCT_AMOUNT = 0.01
 export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
   const suiClient = useSuiClient() as SuiClient
   const { account, chain } = useWallet()
-  const contractAddresses = useContractAddresses(
+  const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
 
@@ -44,21 +44,23 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
   ) => {
     const tx = new Transaction()
     tx.moveCall({
-      target: `${contractAddresses?.bitSmileyPackageId}::query::get_vault_detail`,
+      target: `${suiContractAddresses?.bitSmileyPackageId}::query::get_vault_detail`,
       arguments: [
         tx.object(
-          contractAddresses?.bitSmileyQueryObjectId as TransactionObjectInput
+          suiContractAddresses?.bitSmileyQueryObjectId as TransactionObjectInput
         ),
         tx.object(
-          contractAddresses?.bitSmileyObjectId as TransactionObjectInput
+          suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
         ),
         tx.object(
-          contractAddresses?.vaultManagerObjectId as TransactionObjectInput
+          suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
         ),
         tx.object(
-          contractAddresses?.stabilityFeeObjectId as TransactionObjectInput
+          suiContractAddresses?.stabilityFeeObjectId as TransactionObjectInput
         ),
-        tx.object(contractAddresses?.oracleObjectId as TransactionObjectInput),
+        tx.object(
+          suiContractAddresses?.oracleObjectId as TransactionObjectInput
+        ),
         tx.pure.address(vault as Address),
         tx.pure(toI64(convertToMist(Number(collateral)))),
         tx.pure(toI64(convertToMist(Number(bitusd)))),
@@ -117,8 +119,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     queryKey: ['sui-vault-details', vaultAddress, '0', '0'],
     queryFn: () => getVaultDetail('0', '0', vaultAddress),
     enabled: Boolean(
-      contractAddresses?.bitSmileyPackageId &&
-        contractAddresses?.bitSmileyObjectId &&
+      suiContractAddresses?.bitSmileyPackageId &&
+        suiContractAddresses?.bitSmileyObjectId &&
         account?.address &&
         suiClient &&
         vaultAddress
@@ -153,8 +155,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
         vaultAddress
       ),
     enabled: Boolean(
-      contractAddresses?.bitSmileyPackageId &&
-        contractAddresses?.bitSmileyObjectId &&
+      suiContractAddresses?.bitSmileyPackageId &&
+        suiContractAddresses?.bitSmileyObjectId &&
         account?.address &&
         suiClient &&
         vaultAddress &&
@@ -188,8 +190,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
         vaultAddress
       ),
     enabled: Boolean(
-      contractAddresses?.bitSmileyPackageId &&
-        contractAddresses?.bitSmileyObjectId &&
+      suiContractAddresses?.bitSmileyPackageId &&
+        suiContractAddresses?.bitSmileyObjectId &&
         account?.address &&
         suiClient &&
         vaultAddress
@@ -223,15 +225,17 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     const collateralMist = convertToMist(Number(collateral))
     const bitusdMist = convertToMist(Number(bitusd))
     tx.moveCall({
-      target: `${contractAddresses?.bitSmileyPackageId}::query::try_open_vault`,
+      target: `${suiContractAddresses?.bitSmileyPackageId}::query::try_open_vault`,
       arguments: [
         tx.object(
-          contractAddresses?.bitSmileyQueryObjectId as TransactionObjectInput
+          suiContractAddresses?.bitSmileyQueryObjectId as TransactionObjectInput
         ),
         tx.object(
-          contractAddresses?.vaultManagerObjectId as TransactionObjectInput
+          suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
         ),
-        tx.object(contractAddresses?.oracleObjectId as TransactionObjectInput),
+        tx.object(
+          suiContractAddresses?.oracleObjectId as TransactionObjectInput
+        ),
         tx.pure.vector('u8', hexToBytes(collateralId as Address)),
         tx.pure(toI64(collateralMist)),
         tx.pure(toI64(bitusdMist))
@@ -261,7 +265,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
         Number(debouncedTryOpenVaultBitUsd)
       ),
     enabled: Boolean(
-      contractAddresses?.bitSmileyPackageId &&
+      suiContractAddresses?.bitSmileyPackageId &&
         account?.address &&
         suiClient &&
         collateralId
@@ -286,7 +290,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     refetchBalance: refetchBitUsdBalance,
     isFetching: isFetchingBitUsdBalance
   } = useSuiTokenBalance(
-    `${contractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
+    `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
   )
 
   const isRefreshingVaultValues =

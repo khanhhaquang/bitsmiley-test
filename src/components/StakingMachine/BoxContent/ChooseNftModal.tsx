@@ -50,15 +50,15 @@ export const ChooseNftModal: React.FC<{
 }> = ({ isOpen, onClose }) => {
   const { addTransaction } = useStoreActions()
   const { address } = useUserInfo()
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const { nfts, removeLocalNft } = useUserNfts()
   const [selectedTokenId, setSelectedTokenId] = useState<number | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const { writeContractAsync } = useWriteContract()
 
   const handleProceed = async () => {
-    const stakingAddress = contractAddresses?.staking
-    const erc721Address = contractAddresses?.l2nft
+    const stakingAddress = evmContractAddresses?.staking
+    const erc721Address = evmContractAddresses?.l2nft
 
     if (erc721Address && selectedTokenId && stakingAddress && address) {
       try {

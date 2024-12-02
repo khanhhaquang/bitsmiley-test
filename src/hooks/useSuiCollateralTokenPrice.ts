@@ -13,7 +13,7 @@ import { useContractAddresses } from './useContractAddresses'
 export const useSuiCollateralTokenPrice = (collateralId?: Address) => {
   const suiClient = useSuiClient() as SuiClient
   const { account, chain } = useWallet()
-  const contractAddresses = useContractAddresses(
+  const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
 
@@ -49,21 +49,21 @@ export const useSuiCollateralTokenPrice = (collateralId?: Address) => {
   } = useQuery({
     queryKey: [
       'sui-vault-address',
-      contractAddresses?.bitSmileyPackageId,
-      contractAddresses?.oracleObjectId,
+      suiContractAddresses?.bitSmileyPackageId,
+      suiContractAddresses?.oracleObjectId,
       account?.address,
       collateralId
     ],
     queryFn: () =>
       getTokenPrice(
         account?.address as Address,
-        contractAddresses?.bitSmileyPackageId as Address,
-        contractAddresses?.oracleObjectId as Address,
+        suiContractAddresses?.bitSmileyPackageId as Address,
+        suiContractAddresses?.oracleObjectId as Address,
         collateralId as Address
       ),
     enabled: Boolean(
-      contractAddresses?.bitSmileyPackageId &&
-        contractAddresses?.oracleObjectId &&
+      suiContractAddresses?.bitSmileyPackageId &&
+        suiContractAddresses?.oracleObjectId &&
         account?.address &&
         suiClient &&
         collateralId

@@ -66,7 +66,7 @@ export const SuiManageVault: React.FC<{
     setMaxVaultCollateral
   } = useSuiVaultDetail(collateral)
 
-  const contractAddress = useContractAddresses(chainId)
+  const { suiContractAddresses } = useContractAddresses(chainId)
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
 
   const [depositBtc, setDepositBtc] = useState('')
@@ -82,7 +82,7 @@ export const SuiManageVault: React.FC<{
     `0x${collateral?.collateral?.tokenAddress}`
   )
   const { balance: bitUsdBalance } = useSuiTokenBalance(
-    `${contractAddress?.bitUSDPackageId}::bitusd::BITUSD`
+    `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
   )
 
   const depositInUsd = useMemo(() => {

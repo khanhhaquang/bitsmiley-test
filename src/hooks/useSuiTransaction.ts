@@ -15,14 +15,14 @@ import { useSuiVaultAddress } from './useSuiVaultAddress'
 export const useSuiTransaction = () => {
   const suiClient = useSuiClient() as SuiClient
   const { account, chain } = useWallet()
-  const contractAddresses = useContractAddresses(
+  const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
   const { validateTransaction, ...transactionState } = useSuiExecute()
   const { vaultAddress } = useSuiVaultAddress()
 
-  const btcType = `${contractAddresses?.btcPackageId}::btc::BTC`
-  const bitUSDType = `${contractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
+  const btcType = `${suiContractAddresses?.btcPackageId}::btc::BTC`
+  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
   const { coins: btcCoins } = useSuiTokenBalance(btcType)
   const { addCoinObject: addBitUSDCoinObject } = useSuiTokenBalance(bitUSDType)
@@ -38,20 +38,20 @@ export const useSuiTransaction = () => {
         const bitUSD = convertToMist(Number(mint))
 
         tx.moveCall({
-          target: `${contractAddresses?.bitSmileyPackageId}::bitsmiley::open_vault`,
+          target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::open_vault`,
           typeArguments: [btcType],
           arguments: [
             tx.object(
-              contractAddresses?.bitSmileyObjectId as TransactionObjectInput
+              suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.vaultManagerObjectId as TransactionObjectInput
+              suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.stabilityFeeObjectId as TransactionObjectInput
+              suiContractAddresses?.stabilityFeeObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.oracleObjectId as TransactionObjectInput
+              suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
             tx.object(btcCoinId),
             tx.pure.vector('u8', hexToBytes(collateralId as Address)),
@@ -64,7 +64,7 @@ export const useSuiTransaction = () => {
         await validateTransaction({ tx })
       }
     },
-    [contractAddresses, btcCoinId, btcType, suiClient, account?.address]
+    [suiContractAddresses, btcCoinId, btcType, suiClient, account?.address]
   )
 
   const mint = useCallback(
@@ -74,20 +74,20 @@ export const useSuiTransaction = () => {
         const collateral = convertToMist(Number(deposit))
         const bitUSD = convertToMist(Number(mint))
         tx.moveCall({
-          target: `${contractAddresses?.bitSmileyPackageId}::bitsmiley::mint`,
+          target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::mint`,
           typeArguments: [btcType],
           arguments: [
             tx.object(
-              contractAddresses?.bitSmileyObjectId as TransactionObjectInput
+              suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.vaultManagerObjectId as TransactionObjectInput
+              suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.stabilityFeeObjectId as TransactionObjectInput
+              suiContractAddresses?.stabilityFeeObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.oracleObjectId as TransactionObjectInput
+              suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
             tx.object(btcCoinId),
             tx.pure.address(vaultAddress as Address),
@@ -100,7 +100,7 @@ export const useSuiTransaction = () => {
       }
     },
     [
-      contractAddresses,
+      suiContractAddresses,
       btcType,
       btcCoinId,
       suiClient,
@@ -120,20 +120,20 @@ export const useSuiTransaction = () => {
       const bitUSDId = bitUSDCoins?.coinObjectId
       if (btcCoinId && bitUSDId) {
         tx.moveCall({
-          target: `${contractAddresses?.bitSmileyPackageId}::bitsmiley::repay`,
+          target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::repay`,
           typeArguments: [btcType],
           arguments: [
             tx.object(
-              contractAddresses?.bitSmileyObjectId as TransactionObjectInput
+              suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.vaultManagerObjectId as TransactionObjectInput
+              suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.stabilityFeeObjectId as TransactionObjectInput
+              suiContractAddresses?.stabilityFeeObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.oracleObjectId as TransactionObjectInput
+              suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
             tx.object(btcCoinId),
             tx.object(bitUSDId),
@@ -147,7 +147,7 @@ export const useSuiTransaction = () => {
       }
     },
     [
-      contractAddresses,
+      suiContractAddresses,
       btcType,
       suiClient,
       bitUSDType,
@@ -167,20 +167,20 @@ export const useSuiTransaction = () => {
       const bitUSDId = bitUSDCoins?.coinObjectId
       if (btcCoinId && bitUSDId) {
         tx.moveCall({
-          target: `${contractAddresses?.bitSmileyPackageId}::bitsmiley::repay_all`,
+          target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::repay_all`,
           typeArguments: [btcType],
           arguments: [
             tx.object(
-              contractAddresses?.bitSmileyObjectId as TransactionObjectInput
+              suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.vaultManagerObjectId as TransactionObjectInput
+              suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.stabilityFeeObjectId as TransactionObjectInput
+              suiContractAddresses?.stabilityFeeObjectId as TransactionObjectInput
             ),
             tx.object(
-              contractAddresses?.oracleObjectId as TransactionObjectInput
+              suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
             tx.object(btcCoinId),
             tx.object(bitUSDId),
@@ -193,7 +193,7 @@ export const useSuiTransaction = () => {
       }
     },
     [
-      contractAddresses,
+      suiContractAddresses,
       btcType,
       suiClient,
       bitUSDType,
