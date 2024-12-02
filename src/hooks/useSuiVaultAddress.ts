@@ -12,7 +12,7 @@ import { useContractAddresses } from './useContractAddresses'
 export const useSuiVaultAddress = () => {
   const suiClient = useSuiClient() as SuiClient
   const { account, chain } = useWallet()
-  const contractAddresses = useContractAddresses(
+  const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
 
@@ -45,19 +45,19 @@ export const useSuiVaultAddress = () => {
   } = useQuery({
     queryKey: [
       'sui-vault-address',
-      contractAddresses?.bitSmileyPackageId,
-      contractAddresses?.bitSmileyObjectId,
+      suiContractAddresses?.bitSmileyPackageId,
+      suiContractAddresses?.bitSmileyObjectId,
       account?.address
     ],
     queryFn: () =>
       getVaultAddress(
         account?.address as Address,
-        contractAddresses?.bitSmileyPackageId,
-        contractAddresses?.bitSmileyObjectId
+        suiContractAddresses?.bitSmileyPackageId,
+        suiContractAddresses?.bitSmileyObjectId
       ),
     enabled: Boolean(
-      contractAddresses?.bitSmileyPackageId &&
-        contractAddresses?.bitSmileyObjectId &&
+      suiContractAddresses?.bitSmileyPackageId &&
+        suiContractAddresses?.bitSmileyObjectId &&
         account?.address &&
         suiClient
     )

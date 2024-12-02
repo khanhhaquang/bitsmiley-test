@@ -39,7 +39,7 @@ export interface ILiquidated {
 }
 
 interface ILiquidatedParams {
-  vault: { network: string; vaultAddress: Address }[]
+  vault: { network: string; vaultAddress: Address | string }[]
 }
 
 export interface IFeaturesEnabled {

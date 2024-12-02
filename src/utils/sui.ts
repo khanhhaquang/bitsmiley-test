@@ -19,3 +19,10 @@ export const toI64 = (value: bigint) =>
     value: Math.abs(Number(value)),
     is_negative: Number(value) < 0
   })
+
+export const fromMistToSignValue = (
+  v: number | string | bigint,
+  isNegative?: boolean
+) => {
+  return (isNegative ? -1 : 1) * parseFromMist(BigInt(v))
+}

@@ -56,9 +56,15 @@ export const BcsOpenVault = bcs.struct('OpenVault', {
   available_to_mint: BcsI256
 })
 
+export const BcsVaultInfo = bcs.struct('VaultInfo', {
+  owner: bcs.Address,
+  collateral_id: Bytes32
+})
+
 export interface IDetailedCollateralFromSuiChain {
+  isOpenVault?: boolean
+
   name: string
-  isOpenVault: boolean
   maxLtv: string
   collateralId: { bytes: number[] }
   liquidationFeeRate: string
@@ -75,14 +81,29 @@ export interface IDetailedCollateralFromSuiChain {
   }
 
   // opened vault
-  availableToMint?: bigint
-  availableToWithdraw?: bigint
-  debt?: bigint
-  fee?: bigint
-  healthFactor?: bigint
-  liquidationPrice?: bigint
-  lockedCollateral?: bigint
-  mintedBitUSD?: bigint
+  liquidation_price?: string
+  health_factor?: string
+  debt?: {
+    value: string
+    is_negative: boolean
+  }
+  fee?: string
+  minted_bitusd?: string
+  locked_collateral?: {
+    value: string
+    is_negative: boolean
+  }
+  available_to_withdraw?: {
+    value: string | number | bigint
+    is_negative: boolean
+  }
+  available_to_mint?: {
+    value: string | number | bigint
+    is_negative: boolean
+  }
+
+  // from UserService.getLiquidated
+  liquidated?: ILiquidatedDetail[]
 }
 
 export interface ICollateralFromSuiChain {
@@ -98,9 +119,9 @@ export interface ISuiCollateral {
 
 export interface IDetailedSuiCollateral {
   chainId: number
-  name?: string
-  maxLTV?: string
-  isOpenVault: boolean
+  name: string
+  maxLTV: string
+  isOpenVault?: boolean
   collateralId?: string
   liquidationFeeRate?: string
   collateral?: {

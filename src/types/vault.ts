@@ -53,6 +53,9 @@ export interface IDetailedCollateralFromChain {
   liquidationPrice?: bigint
   lockedCollateral?: bigint
   mintedBitUSD?: bigint
+
+  // from UserService.getLiquidated
+  liquidated?: ILiquidatedDetail[]
 }
 
 export interface IDetailedCollateral {

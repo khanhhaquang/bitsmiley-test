@@ -128,7 +128,9 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
           fee: formatEther(c.fee || BigInt(0)),
           liquidationPrice: formatEther(c.liquidationPrice || BigInt(0)),
           lockedCollateral: formatEther(c.lockedCollateral || BigInt(0)),
-          mintedBitUSD: formatEther(c.mintedBitUSD || BigInt(0))
+          mintedBitUSD: formatEther(c.mintedBitUSD || BigInt(0)),
+
+          liquidated: c.liquidated
         }))
       }
     }
@@ -215,7 +217,6 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
               ) {
                 return {
                   chainId: client.chain.id,
-                  vaultAddress: undefined,
                   collaterals: collaterals.map((c) => ({
                     ...c,
                     isOpenVault: false
@@ -305,6 +306,11 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     })
   }, [queryRes])
 
+  console.log(
+    '🚀 ~ chainWithCollaterals ~ chainWithCollaterals:',
+    chainWithCollaterals
+  )
+
   const collaterals: IDetailedCollateral[] = useMemo(
     () =>
       chainWithCollaterals.reduce<IDetailedCollateral[]>(
@@ -314,6 +320,7 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
       ),
     [chainWithCollaterals]
   )
+  console.log('🚀 ~ useCollaterals ~ collaterals:', collaterals)
 
   const availableCollaterals = useMemo(() => {
     if (!chainId) return []
