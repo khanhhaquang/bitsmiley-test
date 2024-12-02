@@ -184,6 +184,7 @@ export const suiMainnet = {
   },
   testnet: true
 } as const satisfies Chain
+
 //TODO: PARTICLE DOES NOT SUPPORT THESE CHAINS YET
 export const chainsNotSupportedByParticle: number[] = [
   botanixTestnet.id,
