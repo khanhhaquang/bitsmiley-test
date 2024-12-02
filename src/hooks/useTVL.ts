@@ -13,7 +13,7 @@ import { formatNumberAsCompact } from '@/utils/number'
 
 // wBtc * price + bitusd
 export const useTVL = () => {
-  const { projectInfo } = useProjectInfo()
+  const { evmChains } = useProjectInfo()
   const { clients } = useSupportedChains()
 
   const queryRes = useQueries({
@@ -22,7 +22,7 @@ export const useTVL = () => {
       retryDelay: 10000,
       queryKey: ['tvl', client.chain.id],
       queryFn: async () => {
-        const contractAddresses = projectInfo?.web3Info.find(
+        const contractAddresses = evmChains?.find(
           (w) => w.chainId === client.chain.id
         )?.contract
         const vaultManagerContractAddress = contractAddresses?.VaultManager
