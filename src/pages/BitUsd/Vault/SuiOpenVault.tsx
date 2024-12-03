@@ -4,8 +4,8 @@ import { Address } from 'viem'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
-import { useSuiCollateralTokenPrice } from '@/hooks/useSuiCollateralTokenPrice'
-import { useSuiTokenBalance } from '@/hooks/useSuiTokenBalance'
+import { useSuiToken } from '@/hooks/useSuiToken'
+import { useSuiTokenPrice } from '@/hooks/useSuiTokenPrice'
 import { useSuiTransaction } from '@/hooks/useSuiTransaction'
 import { useSuiVaultDetail } from '@/hooks/useSuiVaultDetail'
 import { IDetailedCollateral } from '@/types/vault'
@@ -38,19 +38,19 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
     capturedMaxMint
   } = useSuiVaultDetail(collateral)
 
-  const deptTokenSymbol = 'BTC'
-
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
 
   const { openAndMint, transactionState } = useSuiTransaction()
 
-  const { price: wbtcPrice } = useSuiCollateralTokenPrice(
+  const { price: wbtcPrice } = useSuiTokenPrice(
     collateral?.collateralId as Address
   )
-  const { balance: wbtcBalance } = useSuiTokenBalance(
+  const { balance: wbtcBalance, metadata: wbtcMetadata } = useSuiToken(
     `0x${collateral?.collateral?.tokenAddress}`
   )
+
+  const deptTokenSymbol = wbtcMetadata?.name || ''
 
   const depositDisabled = useMemo(() => {
     if (wbtcBalance <= 0) return true

@@ -41,6 +41,7 @@ export interface IContractAddresses {
   vaultManagerObjectId: Address
   stabilityFeeObjectId: Address
   oracleObjectId: Address
+  oraclePackageId: Address
   bitSmileyQueryObjectId: Address
 }
 export interface INetworkInfo {

@@ -6,13 +6,20 @@ import { useCallback, useMemo } from 'react'
 
 import { parseFromMist } from '@/utils/sui'
 
-export const useSuiTokenBalance = (coinType: string) => {
+export const useSuiToken = (coinType: string) => {
   const suiClient = useSuiClient() as SuiClient
   const { account } = useWallet()
 
   const getSuiTokenBalance = async (owner: string, coinType: string) => {
     const coins = await suiClient.getCoins({
       owner,
+      coinType
+    })
+    return coins
+  }
+
+  const getSuiTokenMeta = async (coinType: string) => {
+    const coins = await suiClient.getCoinMetadata({
       coinType
     })
     return coins
@@ -25,7 +32,13 @@ export const useSuiTokenBalance = (coinType: string) => {
   } = useQuery({
     queryKey: ['sui-token-balance', account?.address, coinType],
     queryFn: () => getSuiTokenBalance(account?.address as string, coinType),
-    enabled: Boolean(account?.address && coinType)
+    enabled: Boolean(coinType)
+  })
+
+  const { data: coinMetadata } = useQuery({
+    queryKey: ['sui-token-metadata', coinType],
+    queryFn: () => getSuiTokenMeta(coinType),
+    enabled: Boolean(coinType)
   })
 
   const balance = useMemo(() => {
@@ -59,6 +72,7 @@ export const useSuiTokenBalance = (coinType: string) => {
 
   return {
     coins,
+    metadata: coinMetadata,
     balance: balance || 0,
     refetchBalance: refetch,
     isFetching,

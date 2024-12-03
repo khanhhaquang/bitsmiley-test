@@ -19,7 +19,7 @@ import { getSuiChainConfig } from '@/utils/chain'
 import { formatNumberAsTrunc } from '@/utils/number'
 import { convertToMist, parseFromMist, toI64 } from '@/utils/sui'
 
-import { useSuiTokenBalance } from './useSuiTokenBalance'
+import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
 
 const SAFE_BITUSD_DEDUCT_AMOUNT = 0.01
@@ -285,13 +285,11 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
   const {
     refetchBalance: refetchWbtcBalance,
     isFetching: isFetchingWbtcBalance
-  } = useSuiTokenBalance(`0x${collateral?.collateral?.tokenAddress}` as Address)
+  } = useSuiToken(`0x${collateral?.collateral?.tokenAddress}` as Address)
   const {
     refetchBalance: refetchBitUsdBalance,
     isFetching: isFetchingBitUsdBalance
-  } = useSuiTokenBalance(
-    `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
-  )
+  } = useSuiToken(`${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`)
 
   const isRefreshingVaultValues =
     isFetchingVaultAddress ||

@@ -11,8 +11,8 @@ import {
 } from '@/assets/icons'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
-import { useSuiCollateralTokenPrice } from '@/hooks/useSuiCollateralTokenPrice'
-import { useSuiTokenBalance } from '@/hooks/useSuiTokenBalance'
+import { useSuiTokenPrice } from '@/hooks/useSuiTokenPrice'
+import { useSuiToken } from '@/hooks/useSuiToken'
 import { useSuiTransaction } from '@/hooks/useSuiTransaction'
 import { useSuiVaultDetail } from '@/hooks/useSuiVaultDetail'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -74,14 +74,16 @@ export const SuiManageVault: React.FC<{
   const [withdrawBtc, setWithdrawBtc] = useState('')
   const [repayBitUsd, setRepayBitUsd] = useState('')
 
-  const { price: wbtcPrice } = useSuiCollateralTokenPrice(
+  const { price: wbtcPrice } = useSuiTokenPrice(
     collateral?.collateralId as Address
   )
-  const deptTokenSymbol = 'BTC' // TO DO
-  const { balance: wbtcBalance } = useSuiTokenBalance(
+  const { balance: wbtcBalance, metadata: wbtcMetadata } = useSuiToken(
     `0x${collateral?.collateral?.tokenAddress}`
   )
-  const { balance: bitUsdBalance } = useSuiTokenBalance(
+
+  const deptTokenSymbol = wbtcMetadata?.name || ''
+
+  const { balance: bitUsdBalance } = useSuiToken(
     `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
   )
 

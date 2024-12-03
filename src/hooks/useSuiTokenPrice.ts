@@ -10,7 +10,7 @@ import { parseFromMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
 
-export const useSuiCollateralTokenPrice = (collateralId?: Address) => {
+export const useSuiTokenPrice = (collateralId?: Address) => {
   const suiClient = useSuiClient() as SuiClient
   const { account, chain } = useWallet()
   const { suiContractAddresses } = useContractAddresses(
@@ -25,7 +25,7 @@ export const useSuiCollateralTokenPrice = (collateralId?: Address) => {
   ) => {
     const tx = new Transaction()
     tx.moveCall({
-      target: `${packageId}::oracle::get_price`,
+      target: `${packageId}::simple_oracle::get_price`,
       arguments: [
         tx.object(oracleObjectId),
         tx.pure.vector('u8', hexToBytes(collateralId))
@@ -48,8 +48,8 @@ export const useSuiCollateralTokenPrice = (collateralId?: Address) => {
     isFetching
   } = useQuery({
     queryKey: [
-      'sui-vault-address',
-      suiContractAddresses?.bitSmileyPackageId,
+      'sui-token-price',
+      suiContractAddresses?.oraclePackageId,
       suiContractAddresses?.oracleObjectId,
       account?.address,
       collateralId
@@ -57,14 +57,13 @@ export const useSuiCollateralTokenPrice = (collateralId?: Address) => {
     queryFn: () =>
       getTokenPrice(
         account?.address as Address,
-        suiContractAddresses?.bitSmileyPackageId as Address,
+        suiContractAddresses?.oraclePackageId as Address,
         suiContractAddresses?.oracleObjectId as Address,
         collateralId as Address
       ),
     enabled: Boolean(
-      suiContractAddresses?.bitSmileyPackageId &&
+      suiContractAddresses?.oraclePackageId &&
         suiContractAddresses?.oracleObjectId &&
-        account?.address &&
         suiClient &&
         collateralId
     ),

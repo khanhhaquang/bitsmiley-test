@@ -9,7 +9,7 @@ import { convertToMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
 import { useSuiExecute } from './useSuiExecute'
-import { useSuiTokenBalance } from './useSuiTokenBalance'
+import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
 
 export const useSuiTransaction = () => {
@@ -24,8 +24,8 @@ export const useSuiTransaction = () => {
   const btcType = `${suiContractAddresses?.btcPackageId}::btc::BTC`
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
-  const { coins: btcCoins } = useSuiTokenBalance(btcType)
-  const { addCoinObject: addBitUSDCoinObject } = useSuiTokenBalance(bitUSDType)
+  const { coins: btcCoins } = useSuiToken(btcType)
+  const { addCoinObject: addBitUSDCoinObject } = useSuiToken(bitUSDType)
 
   const btcCoinId = useMemo(() => btcCoins?.data?.[0]?.coinObjectId, [btcCoins])
 
