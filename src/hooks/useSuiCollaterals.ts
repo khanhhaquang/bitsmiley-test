@@ -51,7 +51,10 @@ export type Deployment = {
 
 export const useSuiCollaterals = (collateralId?: string) => {
   const { address: userAddress, suiChainIdAsNumber } = useUserInfo()
-  const { vaultAddress: openedVaultAddress } = useSuiVaultAddress()
+  const {
+    vaultAddress: openedVaultAddress,
+    isFetched: isFetchedOpenedVaultAddress
+  } = useSuiVaultAddress()
   const { suiChains } = useProjectInfo()
 
   const suiClient = useSuiClient() as SuiClient
@@ -74,23 +77,32 @@ export const useSuiCollaterals = (collateralId?: string) => {
   }
 
   const getVaultCollateralId = async () => {
-    if (!PackageIds) return null
-    const tx = new Transaction()
-    tx.moveCall({
-      target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault_info`,
-      arguments: [
-        tx.object(PackageIds.bitSmileyObjectId),
-        tx.pure.address(openedVaultAddress)
-      ]
-    })
-    const result = await fetchTransactionResult(tx)
-    const { collateral_id } = BcsVaultInfo.parse(new Uint8Array(result))
+    try {
+      console.log(
+        '🚀 ~ getVaultCollateralId ~ openedVaultAddress:',
+        openedVaultAddress
+      )
 
-    if (collateral_id) {
-      return byteArrayToString(collateral_id.bytes)
+      if (!PackageIds || !openedVaultAddress) return null
+      const tx = new Transaction()
+      tx.moveCall({
+        target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault_info`,
+        arguments: [
+          tx.object(PackageIds.bitSmileyObjectId),
+          tx.pure.address(openedVaultAddress)
+        ]
+      })
+      const result = await fetchTransactionResult(tx)
+      const { collateral_id } = BcsVaultInfo.parse(new Uint8Array(result))
+
+      if (collateral_id) {
+        return byteArrayToString(collateral_id.bytes)
+      }
+
+      return null
+    } catch (error) {
+      console.log('🚀 ~ getVaultCollateralId ~ error:', error)
     }
-
-    return null
   }
 
   const getVaultDetail = async () => {
@@ -205,10 +217,11 @@ export const useSuiCollaterals = (collateralId?: string) => {
       ...query,
       retry: 5,
       retryDelay: 10000,
+      enabled: isFetchedOpenedVaultAddress && !!PackageIds && !!userAddress,
       queryKey: ['collaterals', userAddress, suiChainIdAsNumber],
       queryFn:
         !PackageIds || !userAddress
-          ? undefined
+          ? () => undefined
           : async () => {
               const listCollateralsTx = new Transaction()
               listCollateralsTx.moveCall({
@@ -229,6 +242,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
                 .parse(Uint8Array.from(listCollateralsTxResult))
 
               console.log('🚀 ~ : ~ collaterals:', collaterals)
+              console.log('🚀 ~ : ~ openedVaultAddress:', openedVaultAddress)
 
               if (!openedVaultAddress) {
                 return {
@@ -245,10 +259,12 @@ export const useSuiCollaterals = (collateralId?: string) => {
                   }
                 ]
               })
+              console.log('🚀 ~ : ~ liquidatedRes:', liquidatedRes)
 
               // get collateral id by vault address
               const collateralId = await getVaultCollateralId()
               const vaultDetail = await getVaultDetail()
+              console.log('🚀 ~ : ~ collateralId:', collateralId, vaultDetail)
 
               return {
                 vaultAddress: openedVaultAddress,

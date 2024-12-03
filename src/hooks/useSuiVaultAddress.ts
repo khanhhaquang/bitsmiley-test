@@ -1,71 +1,68 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { useSuiClient, useWallet } from '@suiet/wallet-kit'
+import { useSuiClient } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { Address } from 'viem'
 
-import { getSuiChainConfig } from '@/utils/chain'
-
 import { useContractAddresses } from './useContractAddresses'
+import { useUserInfo } from './useUserInfo'
 
 export const useSuiVaultAddress = () => {
   const suiClient = useSuiClient() as SuiClient
-  const { account, chain } = useWallet()
-  const { suiContractAddresses } = useContractAddresses(
-    getSuiChainConfig(chain?.id)?.id
-  )
+  const { suiChainIdAsNumber, suiWalletAddress } = useUserInfo()
+  const { suiContractAddresses } = useContractAddresses(suiChainIdAsNumber)
 
   const getVaultAddress = async (
-    owner?: Address,
-    packageId?: Address,
+    bitSmileyPackageId?: Address,
     bitSmileyObjectId?: Address
   ) => {
-    if (!packageId || !bitSmileyObjectId || !owner) return
+    if (!bitSmileyPackageId || !bitSmileyObjectId || !suiWalletAddress) return
     const tx = new Transaction()
     tx.moveCall({
-      target: `${packageId}::bitsmiley::get_vault`,
-      arguments: [tx.object(bitSmileyObjectId), tx.pure.address(owner)]
+      target: `${bitSmileyPackageId}::bitsmiley::get_vault`,
+      arguments: [
+        tx.object(bitSmileyObjectId),
+        tx.pure.address(suiWalletAddress)
+      ]
     })
 
     const res = await suiClient.devInspectTransactionBlock({
-      sender: owner,
+      sender: suiWalletAddress,
       transactionBlock: tx
     })
 
+    if (res.error) {
+      throw new Error(res.error)
+    }
+
     const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
     if (bytes.length === 0) return ''
-    return bcs.Address.parse(new Uint8Array(bytes))
+    return bcs.option(bcs.Address).parse(new Uint8Array(bytes))
   }
 
-  const {
-    data: vaultAddress,
-    refetch,
-    isFetching
-  } = useQuery({
+  const { data: vaultAddress, ...rest } = useQuery({
     queryKey: [
       'sui-vault-address',
       suiContractAddresses?.bitSmileyPackageId,
       suiContractAddresses?.bitSmileyObjectId,
-      account?.address
+      suiWalletAddress
     ],
     queryFn: () =>
       getVaultAddress(
-        account?.address as Address,
         suiContractAddresses?.bitSmileyPackageId,
         suiContractAddresses?.bitSmileyObjectId
       ),
     enabled: Boolean(
       suiContractAddresses?.bitSmileyPackageId &&
         suiContractAddresses?.bitSmileyObjectId &&
-        account?.address &&
+        suiWalletAddress &&
         suiClient
     )
   })
 
   return {
     vaultAddress: vaultAddress as Address,
-    refetch,
-    isFetching
+    ...rest
   }
 }

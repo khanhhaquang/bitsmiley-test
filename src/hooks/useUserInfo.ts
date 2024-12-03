@@ -28,9 +28,14 @@ export const useUserInfo = () => {
     () => isEvmConnected || suiWallet.connected,
     [isEvmConnected, suiWallet.connected]
   )
+
+  const suiWalletAddress = useMemo(() => {
+    return suiWallet.address
+  }, [suiWallet.address])
+
   const displayAddress = useMemo(
-    () => (suiWallet.address as Address) || evmAddress,
-    [suiWallet.address, evmAddress]
+    () => (suiWalletAddress as Address) || evmAddress,
+    [suiWalletAddress, evmAddress]
   )
   const addressForDisplay = (btcAccounts[0] as Address) || displayAddress
 
@@ -116,6 +121,7 @@ export const useUserInfo = () => {
     isLoading,
     suiChainIdAsNumber,
     suiBlockExplorerUrl,
+    suiWalletAddress,
     isSuiConnected: suiWallet.connected
   }
 }
