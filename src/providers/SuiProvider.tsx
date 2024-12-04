@@ -9,12 +9,8 @@ import {
 } from '@suiet/wallet-kit'
 import { ReactNode } from 'react'
 
-import { isProduction } from '@/utils/helpers'
-
-// Config options for the networks you want to connect to
-const SupportedChains: Chain[] = [
-  isProduction() ? SuiMainnetChain : SuiTestnetChain
-]
+import { suiMainnet } from '@/config/wagmi'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
 
 const stashedWalletConfig = defineStashedWallet({
   appName: 'bitSmiley'
@@ -30,6 +26,12 @@ const stashedWalletConfig = defineStashedWallet({
 // })
 
 const SuiProvider = ({ children }: { children: ReactNode }) => {
+  const { suiChains } = useProjectInfo()
+  // Config options for the networks you want to connect to
+  const SupportedChains: Chain[] = [
+    suiChains?.[0].chainId === suiMainnet.id ? SuiMainnetChain : SuiTestnetChain
+  ]
+
   return (
     <WalletProvider
       defaultWallets={[SuietWallet, SuiWallet, stashedWalletConfig]}

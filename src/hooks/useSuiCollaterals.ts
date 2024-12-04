@@ -55,6 +55,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
     vaultAddress: openedVaultAddress,
     isFetched: isFetchedOpenedVaultAddress
   } = useSuiVaultAddress()
+
   const { suiChains } = useProjectInfo()
 
   const suiClient = useSuiClient() as SuiClient
@@ -78,11 +79,6 @@ export const useSuiCollaterals = (collateralId?: string) => {
 
   const getVaultCollateralId = async () => {
     try {
-      console.log(
-        '🚀 ~ getVaultCollateralId ~ openedVaultAddress:',
-        openedVaultAddress
-      )
-
       if (!PackageIds || !openedVaultAddress) return null
       const tx = new Transaction()
       tx.moveCall({
@@ -106,24 +102,28 @@ export const useSuiCollaterals = (collateralId?: string) => {
   }
 
   const getVaultDetail = async () => {
-    if (!PackageIds) return null
-    const tx = new Transaction()
-    tx.moveCall({
-      target: `${PackageIds.bitSmileyPackageId}::query::get_vault_detail`,
-      arguments: [
-        tx.object(PackageIds?.bitSmileyQueryObjectId),
-        tx.object(PackageIds?.bitSmileyObjectId),
-        tx.object(PackageIds?.vaultManagerObjectId),
-        tx.object(PackageIds?.stabilityFeeObjectId),
-        tx.object(PackageIds?.oracleObjectId),
-        tx.pure.address(openedVaultAddress),
-        tx.pure(toI64(BigInt(0))),
-        tx.pure(toI64(BigInt(0))),
-        tx.object.clock()
-      ]
-    })
-    const result = await fetchTransactionResult(tx)
-    return BcsVaultDetail.parse(new Uint8Array(result))
+    try {
+      if (!PackageIds) return null
+      const tx = new Transaction()
+      tx.moveCall({
+        target: `${PackageIds.bitSmileyPackageId}::query::get_vault_detail`,
+        arguments: [
+          tx.object(PackageIds?.bitSmileyQueryObjectId),
+          tx.object(PackageIds?.bitSmileyObjectId),
+          tx.object(PackageIds?.vaultManagerObjectId),
+          tx.object(PackageIds?.stabilityFeeObjectId),
+          tx.object(PackageIds?.oracleObjectId),
+          tx.pure.address(openedVaultAddress),
+          tx.pure(toI64(BigInt(0))),
+          tx.pure(toI64(BigInt(0))),
+          tx.object.clock()
+        ]
+      })
+      const result = await fetchTransactionResult(tx)
+      return BcsVaultDetail.parse(new Uint8Array(result))
+    } catch (error) {
+      console.log('🚀 ~ getVaultDetail ~ error:', error)
+    }
   }
 
   const getStabilityFee = useCallback(
@@ -241,9 +241,6 @@ export const useSuiCollaterals = (collateralId?: string) => {
                 .vector(BcsCollateral)
                 .parse(Uint8Array.from(listCollateralsTxResult))
 
-              console.log('🚀 ~ : ~ collaterals:', collaterals)
-              console.log('🚀 ~ : ~ openedVaultAddress:', openedVaultAddress)
-
               if (!openedVaultAddress) {
                 return {
                   collaterals
@@ -259,17 +256,25 @@ export const useSuiCollaterals = (collateralId?: string) => {
                   }
                 ]
               })
-              console.log('🚀 ~ : ~ liquidatedRes:', liquidatedRes)
 
               // get collateral id by vault address
               const collateralId = await getVaultCollateralId()
               const vaultDetail = await getVaultDetail()
-              console.log('🚀 ~ : ~ collateralId:', collateralId, vaultDetail)
+              console.log(
+                '🚀 ~ : ~ opened collateralId:',
+                collateralId,
+                vaultDetail
+              )
 
               return {
                 vaultAddress: openedVaultAddress,
-                collaterals: collaterals.map(
-                  (c): IDetailedCollateralFromSuiChain => {
+                collaterals: collaterals
+                  .filter((c) =>
+                    collateralId
+                      ? byteArrayToString(c.collateralId.bytes) === collateralId
+                      : true
+                  )
+                  .map((c): IDetailedCollateralFromSuiChain => {
                     if (
                       byteArrayToString(c.collateralId.bytes) === collateralId
                     ) {
@@ -282,8 +287,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
                     }
 
                     return c
-                  }
-                )
+                  })
               }
             }
     }
@@ -293,7 +297,6 @@ export const useSuiCollaterals = (collateralId?: string) => {
     () => data?.collaterals || [],
     [data?.collaterals]
   )
-  // console.log('🚀 ~ useSuiCollaterals ~ collaterals:', collaterals)
 
   const availableCollaterals = useMemo(() => {
     return collaterals?.filter((item) => !item.isOpenVault) || []

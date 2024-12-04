@@ -14,7 +14,8 @@ export const BcsCollateralType = bcs.struct('CollateralType', {
   vault_min_debt: bcs.u256(),
   vault_max_debt: bcs.u256(),
   total_debt: bcs.u256(),
-  total_locked: bcs.u256()
+  total_locked: bcs.u256(),
+  risk_factor: bcs.u256()
 })
 
 export const BcsCollateral = bcs.struct('Collateral', {
@@ -78,9 +79,11 @@ export interface IDetailedCollateralFromSuiChain {
     total_locked: string
     vault_max_debt: string
     vault_min_debt: string
+    risk_factor: string
   }
 
   // opened vault
+  risk_factor?: string
   liquidation_price?: string
   health_factor?: string
   debt?: {
