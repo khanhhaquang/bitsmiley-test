@@ -3,8 +3,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useMemo } from 'react'
-
-import { parseFromMist } from '@/utils/sui'
+import { formatUnits, parseUnits } from 'viem'
 
 export const useSuiToken = (coinType: string) => {
   const suiClient = useSuiClient() as SuiClient
@@ -41,17 +40,6 @@ export const useSuiToken = (coinType: string) => {
     enabled: Boolean(coinType)
   })
 
-  const balance = useMemo(() => {
-    const coinBalance = coins?.data?.reduce((prev, current) => {
-      if (current?.balance) {
-        return prev + BigInt(current?.balance)
-      }
-      return prev
-    }, BigInt(0))
-    if (coinBalance) return Number(parseFromMist(BigInt(coinBalance)))
-    return 0
-  }, [coins])
-
   const addCoinObject = useCallback(
     (tx: Transaction) => {
       if (!coins?.data?.length) return
@@ -70,12 +58,41 @@ export const useSuiToken = (coinType: string) => {
     [coins]
   )
 
+  const convertToMist = useCallback(
+    (value: number | string) => {
+      if (!coinMetadata?.decimals) return BigInt(value)
+      return parseUnits(value?.toString(), coinMetadata?.decimals)
+    },
+    [coinMetadata?.decimals]
+  )
+
+  const parseFromMist = useCallback(
+    (value: bigint) => {
+      if (!coinMetadata?.decimals) return value
+      return formatUnits(value, coinMetadata?.decimals)
+    },
+    [coinMetadata?.decimals]
+  )
+
+  const balance = useMemo(() => {
+    const coinBalance = coins?.data?.reduce((prev, current) => {
+      if (current?.balance) {
+        return prev + BigInt(current?.balance)
+      }
+      return prev
+    }, BigInt(0))
+    if (coinBalance) return Number(parseFromMist(BigInt(coinBalance)))
+    return 0
+  }, [coins, parseFromMist])
+
   return {
     coins,
     metadata: coinMetadata,
     balance: balance || 0,
     refetchBalance: refetch,
     isFetching,
-    addCoinObject
+    addCoinObject,
+    convertToMist,
+    parseFromMist
   }
 }

@@ -22,7 +22,6 @@ import {
   formatNumberAsCompact,
   formatNumberWithSeparator
 } from '@/utils/number'
-import { convertToMist } from '@/utils/sui'
 
 import { LiquidatedWarning } from './component/LiquidatedWarning'
 import { ManageVaultHeaderInformation } from './component/ManageVaultHeaderInformation'
@@ -83,9 +82,8 @@ export const SuiManageVault: React.FC<{
 
   const deptTokenSymbol = wbtcMetadata?.name || ''
 
-  const { balance: bitUsdBalance } = useSuiToken(
-    `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
-  )
+  const { balance: bitUsdBalance, convertToMist: convertBitUSDToMist } =
+    useSuiToken(`${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`)
 
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
@@ -108,17 +106,23 @@ export const SuiManageVault: React.FC<{
       withdrawBtc && Number(withdrawBtc) === Number(vault?.availableToWithdraw)
 
     const ceiledRepayBitUsd = !repayBitUsd
-      ? convertToMist(0)
+      ? convertBitUSDToMist(0)
       : // pass one more in case fee changes
-        convertToMist(Number(repayBitUsd)) + convertToMist(0.01)
+        convertBitUSDToMist(repayBitUsd) + convertBitUSDToMist(0.01)
 
     const isRepayAllBUSD =
       !!vault?.debtBitUSD &&
-      (convertToMist(Number(repayBitUsd)) >=
-        convertToMist(Number(vault?.debtBitUSD)) ||
-        ceiledRepayBitUsd >= convertToMist(Number(vault?.debtBitUSD)))
+      (convertBitUSDToMist(repayBitUsd) >=
+        convertBitUSDToMist(vault?.debtBitUSD) ||
+        ceiledRepayBitUsd >= convertBitUSDToMist(vault?.debtBitUSD))
     return isRepayAllBTC || isRepayAllBUSD
-  }, [repayBitUsd, vault?.availableToWithdraw, vault?.debtBitUSD, withdrawBtc])
+  }, [
+    repayBitUsd,
+    vault?.availableToWithdraw,
+    vault?.debtBitUSD,
+    withdrawBtc,
+    convertBitUSDToMist
+  ])
 
   const nextButtonDisabled = useMemo(() => {
     if (!maxVault || !vault || isMintFromBtc === undefined) return true

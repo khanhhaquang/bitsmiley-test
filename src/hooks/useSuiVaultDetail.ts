@@ -17,7 +17,7 @@ import {
 import { IVault } from '@/types/vault'
 import { getSuiChainConfig } from '@/utils/chain'
 import { formatNumberAsTrunc } from '@/utils/number'
-import { convertToMist, parseFromMist, toI64 } from '@/utils/sui'
+import { parseFromMist, toI64 } from '@/utils/sui'
 
 import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
@@ -31,6 +31,22 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     getSuiChainConfig(chain?.id)?.id
   )
 
+  const btcType = `0x${collateral?.collateral?.tokenAddress}` as Address
+  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
+
+  const {
+    metadata: btcMetadata,
+    convertToMist: convertBTCToMist,
+    refetchBalance: refetchWbtcBalance,
+    isFetching: isFetchingWbtcBalance
+  } = useSuiToken(btcType)
+  const {
+    metadata: bitUSDMetadata,
+    convertToMist: convertBitUSDToMist,
+    refetchBalance: refetchBitUsdBalance,
+    isFetching: isFetchingBitUsdBalance
+  } = useSuiToken(bitUSDType)
+
   const {
     vaultAddress,
     refetch: refetchVaultAddress,
@@ -38,7 +54,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
   } = useSuiVaultAddress()
 
   const getVaultDetail = async (
-    collateral: string,
+    collateralAmount: string,
     bitusd: string,
     vault?: string
   ) => {
@@ -62,8 +78,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
           suiContractAddresses?.oracleObjectId as TransactionObjectInput
         ),
         tx.pure.address(vault as Address),
-        tx.pure(toI64(convertToMist(Number(collateral)))),
-        tx.pure(toI64(convertToMist(Number(bitusd)))),
+        tx.pure(toI64(convertBTCToMist(collateralAmount))),
+        tx.pure(toI64(convertBitUSDToMist(Number(bitusd)))),
         tx.object.clock()
       ]
     })
@@ -116,7 +132,14 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     isFetching: isFetchingVault,
     ...rest
   } = useQuery({
-    queryKey: ['sui-vault-details', vaultAddress, '0', '0'],
+    queryKey: [
+      'sui-vault-details',
+      vaultAddress,
+      '0',
+      '0',
+      bitUSDMetadata?.decimals,
+      btcMetadata?.decimals
+    ],
     queryFn: () => getVaultDetail('0', '0', vaultAddress),
     enabled: Boolean(
       suiContractAddresses?.bitSmileyPackageId &&
@@ -146,7 +169,9 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       'sui-debounced-vault-details',
       vaultAddress,
       debouncedChangedCollateral,
-      debouncedChangedBitUsd
+      debouncedChangedBitUsd,
+      bitUSDMetadata?.decimals,
+      btcMetadata?.decimals
     ],
     queryFn: () =>
       getVaultDetail(
@@ -181,7 +206,9 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       'sui-max-vault-details',
       vaultAddress,
       debouncedMaxVaultCollateral,
-      debouncedMaxVaultBitUsd
+      debouncedMaxVaultBitUsd,
+      bitUSDMetadata?.decimals,
+      btcMetadata?.decimals
     ],
     queryFn: () =>
       getVaultDetail(
@@ -222,8 +249,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     bitusd: number
   ) => {
     const tx = new Transaction()
-    const collateralMist = convertToMist(Number(collateral))
-    const bitusdMist = convertToMist(Number(bitusd))
+    const collateralMist = convertBTCToMist(Number(collateral))
+    const bitusdMist = convertBitUSDToMist(Number(bitusd))
     tx.moveCall({
       target: `${suiContractAddresses?.bitSmileyPackageId}::query::try_open_vault`,
       arguments: [
@@ -256,7 +283,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       'sui-try-open-vault',
       collateralId,
       debouncedTryOpenVaultCollateral,
-      debouncedTryOpenVaultBitUsd
+      debouncedTryOpenVaultBitUsd,
+      bitUSDMetadata?.decimals
     ],
     queryFn: () =>
       tryOpenVault(
@@ -281,15 +309,6 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       }
     }
   }, [debouncedTryOpenVaultBitUsd, tryOpenVaultInfo?.availableToMint])
-
-  const {
-    refetchBalance: refetchWbtcBalance,
-    isFetching: isFetchingWbtcBalance
-  } = useSuiToken(`0x${collateral?.collateral?.tokenAddress}` as Address)
-  const {
-    refetchBalance: refetchBitUsdBalance,
-    isFetching: isFetchingBitUsdBalance
-  } = useSuiToken(`${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`)
 
   const isRefreshingVaultValues =
     isFetchingVaultAddress ||

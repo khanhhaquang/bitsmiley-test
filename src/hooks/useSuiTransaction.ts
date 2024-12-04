@@ -5,12 +5,12 @@ import { useCallback, useMemo } from 'react'
 import { Address, hexToBytes } from 'viem'
 
 import { getSuiChainConfig } from '@/utils/chain'
-import { convertToMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
 import { useSuiExecute } from './useSuiExecute'
 import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
+import { useSuiCollaterals } from './useSuiCollaterals'
 
 export const useSuiTransaction = () => {
   const suiClient = useSuiClient() as SuiClient
@@ -20,12 +20,17 @@ export const useSuiTransaction = () => {
   )
   const { validateTransaction, ...transactionState } = useSuiExecute()
   const { vaultAddress } = useSuiVaultAddress()
-
-  const btcType = `${suiContractAddresses?.btcPackageId}::btc::BTC`
+  const { collaterals } = useSuiCollaterals()
+  const collateral = collaterals?.[0]
+  const btcType = `0x${collateral?.collateral?.tokenAddress}`
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
-  const { coins: btcCoins } = useSuiToken(btcType)
-  const { addCoinObject: addBitUSDCoinObject } = useSuiToken(bitUSDType)
+  const { coins: btcCoins, convertToMist: convertBTCToMist } =
+    useSuiToken(btcType)
+  const {
+    addCoinObject: addBitUSDCoinObject,
+    convertToMist: convertBitUSDToMist
+  } = useSuiToken(bitUSDType)
 
   const btcCoinId = useMemo(() => btcCoins?.data?.[0]?.coinObjectId, [btcCoins])
 
@@ -34,8 +39,8 @@ export const useSuiTransaction = () => {
       const tx = new Transaction()
 
       if (btcCoinId) {
-        const collateral = convertToMist(Number(deposit))
-        const bitUSD = convertToMist(Number(mint))
+        const collateral = convertBTCToMist(Number(deposit))
+        const bitUSD = convertBitUSDToMist(Number(mint))
 
         tx.moveCall({
           target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::open_vault`,
@@ -64,15 +69,23 @@ export const useSuiTransaction = () => {
         await validateTransaction({ tx })
       }
     },
-    [suiContractAddresses, btcCoinId, btcType, suiClient, account?.address]
+    [
+      suiContractAddresses,
+      btcCoinId,
+      btcType,
+      suiClient,
+      account?.address,
+      convertBTCToMist,
+      convertBitUSDToMist
+    ]
   )
 
   const mint = useCallback(
     async (deposit: string, mint: string) => {
       const tx = new Transaction()
       if (btcCoinId) {
-        const collateral = convertToMist(Number(deposit))
-        const bitUSD = convertToMist(Number(mint))
+        const collateral = convertBTCToMist(Number(deposit))
+        const bitUSD = convertBitUSDToMist(Number(mint))
         tx.moveCall({
           target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::mint`,
           typeArguments: [btcType],
@@ -105,7 +118,9 @@ export const useSuiTransaction = () => {
       btcCoinId,
       suiClient,
       account?.address,
-      vaultAddress
+      vaultAddress,
+      convertBTCToMist,
+      convertBitUSDToMist
     ]
   )
 
@@ -113,8 +128,8 @@ export const useSuiTransaction = () => {
     async (deposit: string, mint: string) => {
       const tx = new Transaction()
 
-      const collateral = convertToMist(Number(deposit))
-      const bitUSD = convertToMist(Number(mint))
+      const collateral = convertBTCToMist(Number(deposit))
+      const bitUSD = convertBitUSDToMist(Number(mint))
 
       const bitUSDCoins = addBitUSDCoinObject(tx)
       const bitUSDId = bitUSDCoins?.coinObjectId
@@ -154,14 +169,16 @@ export const useSuiTransaction = () => {
       account?.address,
       vaultAddress,
       btcCoinId,
-      addBitUSDCoinObject
+      addBitUSDCoinObject,
+      convertBTCToMist,
+      convertBitUSDToMist
     ]
   )
 
   const repayAll = useCallback(
     async (deposit: string) => {
       const tx = new Transaction()
-      const collateral = convertToMist(Number(deposit))
+      const collateral = convertBTCToMist(Number(deposit))
 
       const bitUSDCoins = addBitUSDCoinObject(tx)
       const bitUSDId = bitUSDCoins?.coinObjectId
@@ -200,7 +217,8 @@ export const useSuiTransaction = () => {
       account?.address,
       vaultAddress,
       btcCoinId,
-      addBitUSDCoinObject
+      addBitUSDCoinObject,
+      convertBTCToMist
     ]
   )
 

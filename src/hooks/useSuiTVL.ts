@@ -8,10 +8,10 @@ import { Address } from 'viem'
 
 import { getSuiChainConfig } from '@/utils/chain'
 import { formatNumberAsCompact } from '@/utils/number'
-import { parseFromMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
 import { useSuiCollaterals } from './useSuiCollaterals'
+import { useSuiToken } from './useSuiToken'
 import { useSuiTokenPrice } from './useSuiTokenPrice'
 
 // wBtc * price + bitusd
@@ -20,11 +20,17 @@ export const useSuiTVL = () => {
   const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
+  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
+
   const { collaterals } = useSuiCollaterals()
   const collateral = collaterals?.[0]
   const { price: btcPrice } = useSuiTokenPrice(
     collateral?.collateralId as Address
   )
+  const { parseFromMist: parseBTCFromMist } = useSuiToken(
+    `0x${collateral?.collateral?.tokenAddress}`
+  )
+  const { parseFromMist: parseBitUSDFromMist } = useSuiToken(bitUSDType)
   const suiClient = useSuiClient() as SuiClient
 
   const getTotalBusd = async (
@@ -112,9 +118,10 @@ export const useSuiTVL = () => {
   const suiTVL = useMemo(() => {
     if (!btcPrice || !wBtcBalance || !bitusd) return 0n
     return BigInt(
-      btcPrice * parseFromMist(BigInt(wBtcBalance)) + parseFromMist(bitusd)
+      btcPrice * Number(parseBTCFromMist(BigInt(wBtcBalance))) +
+        Number(parseBitUSDFromMist(BigInt(bitusd)))
     )
-  }, [btcPrice, wBtcBalance, bitusd])
+  }, [btcPrice, wBtcBalance, bitusd, parseBTCFromMist, parseBitUSDFromMist])
 
   const isFetching = isLoadingBitUSD || isLoadingWBTC
 
