@@ -137,9 +137,9 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           console.log('🚀 ~ openVault callData:', callData)
           const network =
             btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
-          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(network)
-          const memo = Buffer.from(callData, 'hex')
           const feeRate = recommendedFee?.fastestFee || 2
+          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(feeRate)
+          const memo = Buffer.from(callData, 'hex')
 
           const fee = ZetaBtcClient.estimateRevealTxnFee(
             network,
@@ -206,9 +206,9 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           console.log('🚀 ~ mint callData:', callData)
           const network =
             btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
-          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(network)
-          const memo = Buffer.from(callData, 'hex')
           const feeRate = recommendedFee?.fastestFee || 2
+          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(feeRate)
+          const memo = Buffer.from(callData, 'hex')
 
           const fee = ZetaBtcClient.estimateRevealTxnFee(
             network,
