@@ -1,14 +1,20 @@
-import { MIST_PER_SUI } from '@mysten/sui/utils'
-import { keccak256, toHex } from 'viem'
+import { SUI_DECIMALS } from '@mysten/sui/utils'
+import { formatUnits, keccak256, parseUnits, toHex } from 'viem'
 
 import { BcsI64 } from '@/types/sui'
 
-export const convertToMist = (amount: number) =>
-  (BigInt(Math.round(Number(MIST_PER_SUI) * amount)) * MIST_PER_SUI) /
-  MIST_PER_SUI
+export const convertToMist = (
+  amount: number | string | bigint,
+  decimals: number = SUI_DECIMALS
+) => {
+  return parseUnits(amount.toString(), decimals)
+}
 
-export const parseFromMist = (amount: bigint | string) => {
-  return Number(amount) / Number(MIST_PER_SUI)
+export const parseFromMist = (
+  amount: bigint | string | number,
+  decimals: number = SUI_DECIMALS
+) => {
+  return formatUnits(BigInt(amount), decimals)
 }
 
 export const collateralHash = (collateral: string) =>
@@ -22,7 +28,8 @@ export const toI64 = (value: bigint) =>
 
 export const fromMistToSignValue = (
   v: number | string | bigint,
-  isNegative?: boolean
+  isNegative: boolean = false,
+  decimals: number = SUI_DECIMALS
 ) => {
-  return (isNegative ? -1 : 1) * parseFromMist(BigInt(v))
+  return (isNegative ? -1 : 1) * Number(parseFromMist(v, decimals))
 }

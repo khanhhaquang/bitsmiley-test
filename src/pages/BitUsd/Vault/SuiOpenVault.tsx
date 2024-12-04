@@ -29,6 +29,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   const navigate = useNavigate()
   const { collateral, refetch: refetchCollateral } =
     useSuiCollaterals(collateralId) // to be update
+  console.log('🚀 ~ collateral:', collateral)
 
   const {
     refreshVaultValues,
