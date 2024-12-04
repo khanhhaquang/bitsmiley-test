@@ -3,6 +3,7 @@ import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
 import {
   BitSmileyCalldataGenerator,
+  getMinDepositFee,
   NETWORK,
   ZetaBtcClient
 } from 'zeta-btc-client'
@@ -134,11 +135,11 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           )
 
           console.log('🚀 ~ openVault callData:', callData)
-          const satsAmount = btcToSats(btcAmount)
-          const memo = Buffer.from(callData, 'hex')
-          const feeRate = recommendedFee?.fastestFee || 2
           const network =
             btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
+          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(network)
+          const memo = Buffer.from(callData, 'hex')
+          const feeRate = recommendedFee?.fastestFee || 2
 
           const fee = ZetaBtcClient.estimateRevealTxnFee(
             network,
@@ -203,11 +204,11 @@ export const useZetaClient = (chain: number, collateralId: string) => {
             }
           )
           console.log('🚀 ~ mint callData:', callData)
-          const satsAmount = btcToSats(btcAmount)
-          const memo = Buffer.from(callData, 'hex')
-          const feeRate = recommendedFee?.fastestFee || 2
           const network =
             btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
+          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(network)
+          const memo = Buffer.from(callData, 'hex')
+          const feeRate = recommendedFee?.fastestFee || 2
 
           const fee = ZetaBtcClient.estimateRevealTxnFee(
             network,
@@ -217,12 +218,12 @@ export const useZetaClient = (chain: number, collateralId: string) => {
           )
           console.log('🚀 ~ estimated fee:', fee)
 
-          const total = satsAmount + fee
-
           const zetaClient =
             btcNetwork === 'livenet'
               ? ZetaBtcClient.mainnet()
               : ZetaBtcClient.testnet()
+
+          const total = satsAmount + fee
 
           const commitTxn = await sendBitcoin(
             zetaClient.call(memo).toString(),
