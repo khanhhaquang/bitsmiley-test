@@ -17,7 +17,7 @@ import {
 import { IVault } from '@/types/vault'
 import { getSuiChainConfig } from '@/utils/chain'
 import { formatNumberAsTrunc } from '@/utils/number'
-import { parseFromMist, toI64 } from '@/utils/sui'
+import { convertToMist, parseFromMist, toI64 } from '@/utils/sui'
 
 import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
@@ -35,14 +35,12 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
   const {
-    metadata: btcMetadata,
-    convertToMist: convertBTCToMist,
+    coinMetadata: collateralMetaData,
     refetchBalance: refetchWbtcBalance,
     isFetching: isFetchingWbtcBalance
   } = useSuiToken(btcType)
   const {
-    metadata: bitUSDMetadata,
-    convertToMist: convertBitUSDToMist,
+    coinMetadata: bitUSDMetadata,
     refetchBalance: refetchBitUsdBalance,
     isFetching: isFetchingBitUsdBalance
   } = useSuiToken(bitUSDType)
@@ -78,8 +76,14 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
           suiContractAddresses?.oracleObjectId as TransactionObjectInput
         ),
         tx.pure.address(vault as Address),
-        tx.pure(toI64(convertBTCToMist(collateralAmount))),
-        tx.pure(toI64(convertBitUSDToMist(Number(bitusd)))),
+        tx.pure(
+          toI64(
+            convertToMist(collateralAmount, collateralMetaData?.decimals ?? 0)
+          )
+        ),
+        tx.pure(
+          toI64(convertToMist(Number(bitusd), bitUSDMetadata?.decimals ?? 0))
+        ),
         tx.object.clock()
       ]
     })
@@ -109,9 +113,11 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
           BigInt(data?.minted_bitusd || 0)
         ).toString(),
         availableToMint: Math.max(
-          parseFromMist(
-            BigInt(data?.available_to_mint?.value || 0)
-            // data?.available_to_mint?.is_negative
+          Number(
+            parseFromMist(
+              BigInt(data?.available_to_mint?.value || 0),
+              bitUSDMetadata?.decimals ?? 0
+            )
           ) - SAFE_BITUSD_DEDUCT_AMOUNT,
           0
         ).toString(),
@@ -138,7 +144,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       '0',
       '0',
       bitUSDMetadata?.decimals,
-      btcMetadata?.decimals
+      collateralMetaData?.decimals
     ],
     queryFn: () => getVaultDetail('0', '0', vaultAddress),
     enabled: Boolean(
@@ -171,7 +177,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       debouncedChangedCollateral,
       debouncedChangedBitUsd,
       bitUSDMetadata?.decimals,
-      btcMetadata?.decimals
+      collateralMetaData?.decimals
     ],
     queryFn: () =>
       getVaultDetail(
@@ -208,7 +214,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       debouncedMaxVaultCollateral,
       debouncedMaxVaultBitUsd,
       bitUSDMetadata?.decimals,
-      btcMetadata?.decimals
+      collateralMetaData?.decimals
     ],
     queryFn: () =>
       getVaultDetail(
@@ -249,8 +255,14 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     bitusd: number
   ) => {
     const tx = new Transaction()
-    const collateralMist = convertBTCToMist(Number(collateral))
-    const bitusdMist = convertBitUSDToMist(Number(bitusd))
+    const collateralMist = convertToMist(
+      Number(collateral),
+      collateralMetaData?.decimals ?? 0
+    )
+    const bitusdMist = convertToMist(
+      Number(bitusd),
+      bitUSDMetadata?.decimals ?? 0
+    )
     tx.moveCall({
       target: `${suiContractAddresses?.bitSmileyPackageId}::query::try_open_vault`,
       arguments: [

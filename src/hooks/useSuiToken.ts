@@ -3,26 +3,12 @@ import { Transaction } from '@mysten/sui/transactions'
 import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useMemo } from 'react'
-import { formatUnits, parseUnits } from 'viem'
+
+import { parseFromMist } from '@/utils/sui'
 
 export const useSuiToken = (coinType: string) => {
   const suiClient = useSuiClient() as SuiClient
   const { account } = useWallet()
-
-  const getSuiTokenBalance = async (owner: string, coinType: string) => {
-    const coins = await suiClient.getCoins({
-      owner,
-      coinType
-    })
-    return coins
-  }
-
-  const getSuiTokenMeta = async (coinType: string) => {
-    const coins = await suiClient.getCoinMetadata({
-      coinType
-    })
-    return coins
-  }
 
   const {
     data: coins,
@@ -30,14 +16,23 @@ export const useSuiToken = (coinType: string) => {
     isFetching
   } = useQuery({
     queryKey: ['sui-token-balance', account?.address, coinType],
-    queryFn: () => getSuiTokenBalance(account?.address as string, coinType),
-    enabled: Boolean(coinType)
+    queryFn: () =>
+      !account?.address
+        ? undefined
+        : suiClient.getCoins({
+            owner: account?.address,
+            coinType
+          }),
+    enabled: !!coinType && !!account?.address
   })
 
   const { data: coinMetadata } = useQuery({
     queryKey: ['sui-token-metadata', coinType],
-    queryFn: () => getSuiTokenMeta(coinType),
-    enabled: Boolean(coinType)
+    queryFn: () =>
+      suiClient.getCoinMetadata({
+        coinType
+      }),
+    enabled: !!coinType
   })
 
   const addCoinObject = useCallback(
@@ -58,41 +53,30 @@ export const useSuiToken = (coinType: string) => {
     [coins]
   )
 
-  const convertToMist = useCallback(
-    (value: number | string) => {
-      if (!coinMetadata?.decimals) return BigInt(value)
-      return parseUnits(value?.toString(), coinMetadata?.decimals)
-    },
-    [coinMetadata?.decimals]
-  )
-
-  const parseFromMist = useCallback(
-    (value: bigint) => {
-      if (!coinMetadata?.decimals) return value
-      return formatUnits(value, coinMetadata?.decimals)
-    },
-    [coinMetadata?.decimals]
-  )
+  const balanceAsMist = useMemo(() => {
+    return (
+      coins?.data?.reduce((prev, current) => {
+        if (current?.balance) {
+          return prev + BigInt(current?.balance)
+        }
+        return prev
+      }, BigInt(0)) || 0
+    )
+  }, [coins?.data])
 
   const balance = useMemo(() => {
-    const coinBalance = coins?.data?.reduce((prev, current) => {
-      if (current?.balance) {
-        return prev + BigInt(current?.balance)
-      }
-      return prev
-    }, BigInt(0))
-    if (coinBalance) return Number(parseFromMist(BigInt(coinBalance)))
-    return 0
-  }, [coins, parseFromMist])
+    return Number(parseFromMist(balanceAsMist, coinMetadata?.decimals ?? 0))
+  }, [balanceAsMist, coinMetadata?.decimals])
+
+  const coinId = useMemo(() => coins?.data?.[0]?.coinObjectId, [coins])
 
   return {
+    coinId,
     coins,
-    metadata: coinMetadata,
-    balance: balance || 0,
-    refetchBalance: refetch,
+    coinMetadata,
+    balance,
     isFetching,
     addCoinObject,
-    convertToMist,
-    parseFromMist
+    refetchBalance: refetch
   }
 }

@@ -28,8 +28,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 }) => {
   const navigate = useNavigate()
   const { collateral, refetch: refetchCollateral } =
-    useSuiCollaterals(collateralId) // to be update
-  console.log('🚀 ~ collateral:', collateral)
+    useSuiCollaterals(collateralId)
 
   const {
     refreshVaultValues,
@@ -42,32 +41,31 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   const [mint, setMint] = useState('')
   const [deposit, setDeposit] = useState('')
 
-  const { openAndMint, transactionState } = useSuiTransaction()
+  const { openAndMint, transactionState } = useSuiTransaction(collateralId)
 
   const { price: wbtcPrice } = useSuiTokenPrice(
     collateral?.collateralId as Address
   )
-  const { balance: wbtcBalance, metadata: wbtcMetadata } = useSuiToken(
-    `0x${collateral?.collateral?.tokenAddress}`
-  )
+  const { balance: collateralBalance, coinMetadata: collateralMetaData } =
+    useSuiToken(`0x${collateral?.collateral?.tokenAddress}`)
 
-  const deptTokenSymbol = wbtcMetadata?.name || ''
+  const deptTokenSymbol = collateralMetaData?.name || ''
 
   const depositDisabled = useMemo(() => {
-    if (wbtcBalance <= 0) return true
-  }, [wbtcBalance])
+    if (collateralBalance <= 0) return true
+  }, [collateralBalance])
 
   const depositInputErrorMsg = useMemo(() => {
     if (deposit) {
       if (Number(deposit) <= 0) {
         return 'Deposit value must larger than zero.'
       }
-      if (Number(deposit) > wbtcBalance)
+      if (Number(deposit) > collateralBalance)
         return 'Deposit value is exceeding balance.'
     }
 
     return ''
-  }, [deposit, wbtcBalance])
+  }, [deposit, collateralBalance])
 
   const mintInputErrorMsg = useMemo(() => {
     if (mint) {
@@ -145,7 +143,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           errorMessage={depositInputErrorMsg}
           title={`DEPOSIT ${deptTokenSymbol}`}
           titleSuffix={`Available: ${formatWBtc(
-            wbtcBalance,
+            collateralBalance,
             false,
             true
           )} ${deptTokenSymbol}`}

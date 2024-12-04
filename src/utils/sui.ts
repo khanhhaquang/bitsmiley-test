@@ -7,6 +7,8 @@ export const convertToMist = (
   amount: number | string | bigint,
   decimals: number = SUI_DECIMALS
 ) => {
+  if (decimals === 0) return BigInt(0)
+
   return parseUnits(amount.toString(), decimals)
 }
 
@@ -14,6 +16,8 @@ export const parseFromMist = (
   amount: bigint | string | number,
   decimals: number = SUI_DECIMALS
 ) => {
+  if (decimals === 0) return '0'
+
   return formatUnits(BigInt(amount), decimals)
 }
 

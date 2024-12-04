@@ -1,50 +1,52 @@
-import { SuiClient } from '@mysten/sui/client'
 import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
-import { useSuiClient, useWallet } from '@suiet/wallet-kit'
-import { useCallback, useMemo } from 'react'
+import { useWallet } from '@suiet/wallet-kit'
+import { useCallback } from 'react'
 import { Address, hexToBytes } from 'viem'
 
 import { getSuiChainConfig } from '@/utils/chain'
+import { convertToMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
+import { useSuiCollaterals } from './useSuiCollaterals'
 import { useSuiExecute } from './useSuiExecute'
 import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
-import { useSuiCollaterals } from './useSuiCollaterals'
 
-export const useSuiTransaction = () => {
-  const suiClient = useSuiClient() as SuiClient
-  const { account, chain } = useWallet()
+export const useSuiTransaction = (collateralId: string) => {
+  const { chain } = useWallet()
   const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
   const { validateTransaction, ...transactionState } = useSuiExecute()
   const { vaultAddress } = useSuiVaultAddress()
-  const { collaterals } = useSuiCollaterals()
-  const collateral = collaterals?.[0]
-  const btcType = `0x${collateral?.collateral?.tokenAddress}`
+  const { collateral } = useSuiCollaterals(collateralId)
+
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
+  const collateralTokenType = `0x${collateral?.collateral?.tokenAddress}`
 
-  const { coins: btcCoins, convertToMist: convertBTCToMist } =
-    useSuiToken(btcType)
-  const {
-    addCoinObject: addBitUSDCoinObject,
-    convertToMist: convertBitUSDToMist
-  } = useSuiToken(bitUSDType)
+  const { coinId: collateralCoinId, coinMetadata: collateralMetaData } =
+    useSuiToken(collateralTokenType)
 
-  const btcCoinId = useMemo(() => btcCoins?.data?.[0]?.coinObjectId, [btcCoins])
+  const { addCoinObject: addBitUSDCoinObject, coinMetadata: bitUSDMetaData } =
+    useSuiToken(bitUSDType)
 
   const openAndMint = useCallback(
     async (deposit: string, mint: string, collateralId: string) => {
       const tx = new Transaction()
 
-      if (btcCoinId) {
-        const collateral = convertBTCToMist(Number(deposit))
-        const bitUSD = convertBitUSDToMist(Number(mint))
+      if (collateralCoinId) {
+        const collateral = convertToMist(
+          Number(deposit),
+          collateralMetaData?.decimals ?? 0
+        )
+        const bitUSD = convertToMist(
+          Number(mint),
+          bitUSDMetaData?.decimals ?? 0
+        )
 
         tx.moveCall({
           target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::open_vault`,
-          typeArguments: [btcType],
+          typeArguments: [collateralTokenType],
           arguments: [
             tx.object(
               suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
@@ -58,7 +60,7 @@ export const useSuiTransaction = () => {
             tx.object(
               suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
-            tx.object(btcCoinId),
+            tx.object(collateralCoinId),
             tx.pure.vector('u8', hexToBytes(collateralId as Address)),
             tx.pure.u64(collateral),
             tx.pure.u64(bitUSD),
@@ -70,25 +72,34 @@ export const useSuiTransaction = () => {
       }
     },
     [
-      suiContractAddresses,
-      btcCoinId,
-      btcType,
-      suiClient,
-      account?.address,
-      convertBTCToMist,
-      convertBitUSDToMist
+      collateralCoinId,
+      collateralMetaData?.decimals,
+      bitUSDMetaData?.decimals,
+      suiContractAddresses?.bitSmileyPackageId,
+      suiContractAddresses?.bitSmileyObjectId,
+      suiContractAddresses?.vaultManagerObjectId,
+      suiContractAddresses?.stabilityFeeObjectId,
+      suiContractAddresses?.oracleObjectId,
+      collateralTokenType,
+      validateTransaction
     ]
   )
 
   const mint = useCallback(
     async (deposit: string, mint: string) => {
       const tx = new Transaction()
-      if (btcCoinId) {
-        const collateral = convertBTCToMist(Number(deposit))
-        const bitUSD = convertBitUSDToMist(Number(mint))
+      if (collateralCoinId) {
+        const collateral = convertToMist(
+          Number(deposit),
+          collateralMetaData?.decimals ?? 0
+        )
+        const bitUSD = convertToMist(
+          Number(mint),
+          bitUSDMetaData?.decimals ?? 0
+        )
         tx.moveCall({
           target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::mint`,
-          typeArguments: [btcType],
+          typeArguments: [collateralTokenType],
           arguments: [
             tx.object(
               suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
@@ -102,7 +113,7 @@ export const useSuiTransaction = () => {
             tx.object(
               suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
-            tx.object(btcCoinId),
+            tx.object(collateralCoinId),
             tx.pure.address(vaultAddress as Address),
             tx.pure.u64(collateral),
             tx.pure.u64(bitUSD),
@@ -113,14 +124,17 @@ export const useSuiTransaction = () => {
       }
     },
     [
-      suiContractAddresses,
-      btcType,
-      btcCoinId,
-      suiClient,
-      account?.address,
+      collateralCoinId,
+      collateralMetaData?.decimals,
+      bitUSDMetaData?.decimals,
+      suiContractAddresses?.bitSmileyPackageId,
+      suiContractAddresses?.bitSmileyObjectId,
+      suiContractAddresses?.vaultManagerObjectId,
+      suiContractAddresses?.stabilityFeeObjectId,
+      suiContractAddresses?.oracleObjectId,
+      collateralTokenType,
       vaultAddress,
-      convertBTCToMist,
-      convertBitUSDToMist
+      validateTransaction
     ]
   )
 
@@ -128,15 +142,18 @@ export const useSuiTransaction = () => {
     async (deposit: string, mint: string) => {
       const tx = new Transaction()
 
-      const collateral = convertBTCToMist(Number(deposit))
-      const bitUSD = convertBitUSDToMist(Number(mint))
+      const collateral = convertToMist(
+        Number(deposit),
+        collateralMetaData?.decimals ?? 0
+      )
+      const bitUSD = convertToMist(Number(mint), bitUSDMetaData?.decimals ?? 0)
 
       const bitUSDCoins = addBitUSDCoinObject(tx)
       const bitUSDId = bitUSDCoins?.coinObjectId
-      if (btcCoinId && bitUSDId) {
+      if (collateralCoinId && bitUSDId) {
         tx.moveCall({
           target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::repay`,
-          typeArguments: [btcType],
+          typeArguments: [collateralTokenType],
           arguments: [
             tx.object(
               suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
@@ -150,7 +167,7 @@ export const useSuiTransaction = () => {
             tx.object(
               suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
-            tx.object(btcCoinId),
+            tx.object(collateralCoinId),
             tx.object(bitUSDId),
             tx.pure.address(vaultAddress as Address),
             tx.pure.u64(collateral),
@@ -162,30 +179,32 @@ export const useSuiTransaction = () => {
       }
     },
     [
-      suiContractAddresses,
-      btcType,
-      suiClient,
-      bitUSDType,
-      account?.address,
-      vaultAddress,
-      btcCoinId,
+      collateralMetaData?.decimals,
+      bitUSDMetaData?.decimals,
       addBitUSDCoinObject,
-      convertBTCToMist,
-      convertBitUSDToMist
+      collateralCoinId,
+      suiContractAddresses?.bitSmileyPackageId,
+      suiContractAddresses?.bitSmileyObjectId,
+      suiContractAddresses?.vaultManagerObjectId,
+      suiContractAddresses?.stabilityFeeObjectId,
+      suiContractAddresses?.oracleObjectId,
+      collateralTokenType,
+      vaultAddress,
+      validateTransaction
     ]
   )
 
   const repayAll = useCallback(
     async (deposit: string) => {
       const tx = new Transaction()
-      const collateral = convertBTCToMist(Number(deposit))
+      const collateral = convertToMist(Number(deposit))
 
       const bitUSDCoins = addBitUSDCoinObject(tx)
       const bitUSDId = bitUSDCoins?.coinObjectId
-      if (btcCoinId && bitUSDId) {
+      if (collateralCoinId && bitUSDId) {
         tx.moveCall({
           target: `${suiContractAddresses?.bitSmileyPackageId}::bitsmiley::repay_all`,
-          typeArguments: [btcType],
+          typeArguments: [collateralTokenType],
           arguments: [
             tx.object(
               suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
@@ -199,7 +218,7 @@ export const useSuiTransaction = () => {
             tx.object(
               suiContractAddresses?.oracleObjectId as TransactionObjectInput
             ),
-            tx.object(btcCoinId),
+            tx.object(collateralCoinId),
             tx.object(bitUSDId),
             tx.pure.address(vaultAddress as Address),
             tx.pure.u64(collateral),
@@ -210,15 +229,16 @@ export const useSuiTransaction = () => {
       }
     },
     [
-      suiContractAddresses,
-      btcType,
-      suiClient,
-      bitUSDType,
-      account?.address,
-      vaultAddress,
-      btcCoinId,
       addBitUSDCoinObject,
-      convertBTCToMist
+      collateralCoinId,
+      suiContractAddresses?.bitSmileyPackageId,
+      suiContractAddresses?.bitSmileyObjectId,
+      suiContractAddresses?.vaultManagerObjectId,
+      suiContractAddresses?.stabilityFeeObjectId,
+      suiContractAddresses?.oracleObjectId,
+      collateralTokenType,
+      vaultAddress,
+      validateTransaction
     ]
   )
 

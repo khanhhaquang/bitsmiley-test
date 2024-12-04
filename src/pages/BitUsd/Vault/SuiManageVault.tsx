@@ -11,8 +11,8 @@ import {
 } from '@/assets/icons'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
-import { useSuiTokenPrice } from '@/hooks/useSuiTokenPrice'
 import { useSuiToken } from '@/hooks/useSuiToken'
+import { useSuiTokenPrice } from '@/hooks/useSuiTokenPrice'
 import { useSuiTransaction } from '@/hooks/useSuiTransaction'
 import { useSuiVaultDetail } from '@/hooks/useSuiVaultDetail'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -22,6 +22,7 @@ import {
   formatNumberAsCompact,
   formatNumberWithSeparator
 } from '@/utils/number'
+import { convertToMist } from '@/utils/sui'
 
 import { LiquidatedWarning } from './component/LiquidatedWarning'
 import { ManageVaultHeaderInformation } from './component/ManageVaultHeaderInformation'
@@ -51,7 +52,8 @@ export const SuiManageVault: React.FC<{
   const { collateral, refetch: refetchCollaterals } =
     useSuiCollaterals(collateralId)
 
-  const { mint, repay, repayAll, transactionState } = useSuiTransaction()
+  const { mint, repay, repayAll, transactionState } =
+    useSuiTransaction(collateralId)
 
   const {
     vault,
@@ -76,14 +78,19 @@ export const SuiManageVault: React.FC<{
   const { price: wbtcPrice } = useSuiTokenPrice(
     collateral?.collateralId as Address
   )
-  const { balance: wbtcBalance, metadata: wbtcMetadata } = useSuiToken(
-    `0x${collateral?.collateral?.tokenAddress}`
+  const { balance: collateralBalance, coinMetadata: collateralMetaData } =
+    useSuiToken(`0x${collateral?.collateral?.tokenAddress}`)
+
+  const deptTokenSymbol = collateralMetaData?.name || ''
+
+  const { balance: bitUsdBalance, coinMetadata: bitUSDMetaData } = useSuiToken(
+    `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
   )
 
-  const deptTokenSymbol = wbtcMetadata?.name || ''
-
-  const { balance: bitUsdBalance, convertToMist: convertBitUSDToMist } =
-    useSuiToken(`${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`)
+  const bitUSDDecimals = useMemo(
+    () => bitUSDMetaData?.decimals ?? 0,
+    [bitUSDMetaData?.decimals]
+  )
 
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
@@ -106,22 +113,22 @@ export const SuiManageVault: React.FC<{
       withdrawBtc && Number(withdrawBtc) === Number(vault?.availableToWithdraw)
 
     const ceiledRepayBitUsd = !repayBitUsd
-      ? convertBitUSDToMist(0)
+      ? convertToMist(0, bitUSDDecimals)
       : // pass one more in case fee changes
-        convertBitUSDToMist(repayBitUsd) + convertBitUSDToMist(0.01)
+        convertToMist(Number(repayBitUsd) + 0.01, bitUSDDecimals)
 
     const isRepayAllBUSD =
       !!vault?.debtBitUSD &&
-      (convertBitUSDToMist(repayBitUsd) >=
-        convertBitUSDToMist(vault?.debtBitUSD) ||
-        ceiledRepayBitUsd >= convertBitUSDToMist(vault?.debtBitUSD))
+      (convertToMist(repayBitUsd, bitUSDDecimals) >=
+        convertToMist(vault?.debtBitUSD, bitUSDDecimals) ||
+        ceiledRepayBitUsd >= convertToMist(vault?.debtBitUSD, bitUSDDecimals))
     return isRepayAllBTC || isRepayAllBUSD
   }, [
-    repayBitUsd,
+    withdrawBtc,
     vault?.availableToWithdraw,
     vault?.debtBitUSD,
-    withdrawBtc,
-    convertBitUSDToMist
+    repayBitUsd,
+    bitUSDDecimals
   ])
 
   const nextButtonDisabled = useMemo(() => {
@@ -135,7 +142,7 @@ export const SuiManageVault: React.FC<{
       // no input values
       if (!depositBtc || !mintBitUsd) return true // TO DO: Confirm with BE
       // deposit > balance
-      if (!!depositBtc && Number(depositBtc) > wbtcBalance) return true
+      if (!!depositBtc && Number(depositBtc) > collateralBalance) return true
 
       const minToMint = Number(collateral?.collateral?.vaultMinDebt)
 
@@ -186,11 +193,14 @@ export const SuiManageVault: React.FC<{
     collateral?.collateral?.vaultMinDebt,
     repayBitUsd,
     vault,
-    wbtcBalance,
+    collateralBalance,
     withdrawBtc
   ])
 
-  const depositWBtcDisabled = useMemo(() => wbtcBalance <= 0, [wbtcBalance])
+  const depositWBtcDisabled = useMemo(
+    () => collateralBalance <= 0,
+    [collateralBalance]
+  )
   const withdrawWbtcDisabled = useMemo(
     () => Number(maxVault?.availableToWithdraw) <= 0,
     [maxVault?.availableToWithdraw]
@@ -426,7 +436,9 @@ export const SuiManageVault: React.FC<{
               disabled={depositWBtcDisabled && false}
               title={`deposit ${deptTokenSymbol}`}
               inputSuffix={`~${depositInUsd}$`}
-              titleSuffix={'Available: ' + formatNumberAsCompact(wbtcBalance)}
+              titleSuffix={
+                'Available: ' + formatNumberAsCompact(collateralBalance)
+              }
             />
             <div className="my-3 flex items-center justify-center gap-x-2">
               <div className="h-[1px] flex-1 bg-white/20" />
