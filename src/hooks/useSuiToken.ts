@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'react'
 
 import { parseFromMist } from '@/utils/sui'
 
-export const useSuiToken = (coinType: string) => {
+export const useSuiToken = (coinType: string = '') => {
   const suiClient = useSuiClient() as SuiClient
   const { account } = useWallet()
 

@@ -31,7 +31,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     getSuiChainConfig(chain?.id)?.id
   )
 
-  const btcType = `0x${collateral?.collateral?.tokenAddress}` as Address
+  const btcType = collateral?.collateral?.tokenAddress
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
   const {

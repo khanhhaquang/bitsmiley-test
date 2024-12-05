@@ -1,8 +1,7 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
 import { fromHex } from '@mysten/sui/utils'
-import { useSuiClient, useWallet } from '@suiet/wallet-kit'
+import { useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 
 import { getSuiChainConfig } from '@/utils/chain'
@@ -10,11 +9,8 @@ import { parseFromMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
 import { useSuiExecute } from './useSuiExecute'
-import { useSuiToken } from './useSuiToken'
 
-export const useSuiTokenPrice = (tokenType: string = '') => {
-  const suiClient = useSuiClient() as SuiClient
-  const { coinMetadata } = useSuiToken(tokenType)
+export const useSuiTokenPrice = (collateralId: string = '') => {
   const { fetchTransactionResult } = useSuiExecute()
   const { chain, address } = useWallet()
   const { suiContractAddresses } = useContractAddresses(
@@ -30,7 +26,7 @@ export const useSuiTokenPrice = (tokenType: string = '') => {
       target: `${packageId}::simple_oracle::get_price`,
       arguments: [
         tx.object(oracleObjectId),
-        tx.pure.vector('u8', fromHex(tokenType))
+        tx.pure.vector('u8', fromHex(collateralId))
       ]
     })
 
@@ -59,13 +55,12 @@ export const useSuiTokenPrice = (tokenType: string = '') => {
       address &&
       suiContractAddresses?.oraclePackageId &&
       suiContractAddresses?.oracleObjectId &&
-      suiClient &&
-      tokenType
+      collateralId
     )
   })
 
   return {
-    price: Number(parseFromMist(priceAsMist ?? 0, coinMetadata?.decimals ?? 0)),
+    price: Number(parseFromMist(priceAsMist ?? 0)),
     priceAsMist,
     refetch,
     isFetching

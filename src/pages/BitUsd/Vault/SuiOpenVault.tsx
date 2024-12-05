@@ -42,11 +42,9 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 
   const { openAndMint, transactionState } = useSuiTransaction(collateralId)
 
-  const { price: collateralPrice } = useSuiTokenPrice(
-    collateral?.collateral?.tokenAddress
-  )
+  const { price: collateralPrice } = useSuiTokenPrice(collateral?.collateralId)
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
-    useSuiToken(`0x${collateral?.collateral?.tokenAddress}`)
+    useSuiToken(collateral?.collateral?.tokenAddress)
 
   const deptTokenSymbol = collateralMetaData?.name || ''
 

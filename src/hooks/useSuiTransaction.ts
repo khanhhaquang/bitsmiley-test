@@ -22,7 +22,7 @@ export const useSuiTransaction = (collateralId: string) => {
   const { collateral } = useSuiCollaterals(collateralId)
 
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
-  const collateralTokenType = `0x${collateral?.collateral?.tokenAddress}`
+  const collateralTokenType = collateral?.collateral?.tokenAddress ?? ''
 
   const { coinId: collateralCoinId, coinMetadata: collateralMetaData } =
     useSuiToken(collateralTokenType)

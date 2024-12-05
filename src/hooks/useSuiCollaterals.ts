@@ -127,7 +127,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
           stabilityFee: getStabilityFee(BigInt(c.stabilityFeeRate)),
           collateral: {
             decimals: c.collateral.decimals,
-            tokenAddress: c.collateral.token,
+            tokenAddress: `0x${c.collateral.token}`,
             maxDebt: !c.collateral.max_debt
               ? ''
               : parseFromMist(

@@ -26,12 +26,10 @@ export const useSuiTVL = () => {
   const collateral = collaterals?.[0]
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
-  const { price: btcPrice } = useSuiTokenPrice(
-    collateral?.collateral?.tokenAddress
-  )
+  const { price: btcPrice } = useSuiTokenPrice(collateral?.collateralId)
 
   const { coinMetadata: collateralMetaData } = useSuiToken(
-    `0x${collateral?.collateral?.tokenAddress}`
+    collateral?.collateral?.tokenAddress
   )
   const { coinMetadata: bitUSDMetaData } = useSuiToken(bitUSDType)
   const { fetchTransactionResult } = useSuiExecute()

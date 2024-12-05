@@ -8,8 +8,8 @@ export const Bytes32 = bcs.struct('Bytes32', {
 })
 
 export const BcsCollateralType = bcs.struct('CollateralType', {
-  decimals: bcs.u8(),
   token: bcs.string(),
+  decimals: bcs.u8(),
   safety_factor: bcs.u256(),
   max_debt: bcs.u256(),
   vault_min_debt: bcs.u256(),

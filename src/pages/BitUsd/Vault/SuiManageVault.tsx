@@ -74,11 +74,9 @@ export const SuiManageVault: React.FC<{
   const [withdrawBtc, setWithdrawBtc] = useState('')
   const [repayBitUsd, setRepayBitUsd] = useState('')
 
-  const { price: wbtcPrice } = useSuiTokenPrice(
-    collateral?.collateral?.tokenAddress
-  )
+  const { price: collateralPrice } = useSuiTokenPrice(collateral?.collateralId)
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
-    useSuiToken(`0x${collateral?.collateral?.tokenAddress}`)
+    useSuiToken(collateral?.collateral?.tokenAddress)
 
   const deptTokenSymbol = collateralMetaData?.name || ''
 
@@ -92,8 +90,8 @@ export const SuiManageVault: React.FC<{
   )
 
   const depositInUsd = useMemo(() => {
-    return (wbtcPrice * Number(depositBtc)).toFixed(2)
-  }, [depositBtc, wbtcPrice])
+    return (collateralPrice * Number(depositBtc)).toFixed(2)
+  }, [depositBtc, collateralPrice])
 
   const minRepay = useMemo(() => {
     if (!repayBitUsd || !vault || !collateral) return 0
