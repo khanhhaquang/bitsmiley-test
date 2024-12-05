@@ -1,6 +1,7 @@
 import { Address } from 'viem'
 
 import { ILiquidatedDetail } from '@/services/user'
+
 import { IDetailedSuiCollateral } from './sui'
 
 export interface IVault {

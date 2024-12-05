@@ -130,22 +130,13 @@ export const useSuiCollaterals = (collateralId?: string) => {
             tokenAddress: `0x${c.collateral.token}`,
             maxDebt: !c.collateral.max_debt
               ? ''
-              : parseFromMist(
-                  c.collateral.max_debt,
-                  c.collateral.decimals
-                ).toString(),
+              : parseFromMist(c.collateral.max_debt).toString(),
             safetyFactor: !c.collateral.safety_factor
               ? ''
-              : parseFromMist(
-                  c.collateral.safety_factor,
-                  c.collateral.decimals
-                ).toString(),
+              : parseFromMist(c.collateral.safety_factor).toString(),
             totalDebt: !c.collateral.total_debt
               ? ''
-              : parseFromMist(
-                  c.collateral.total_debt,
-                  c.collateral.decimals
-                ).toString(),
+              : parseFromMist(c.collateral.total_debt).toString(),
             totalLocked: !c.collateral.total_locked
               ? ''
               : parseFromMist(
@@ -154,16 +145,10 @@ export const useSuiCollaterals = (collateralId?: string) => {
                 ).toString(),
             vaultMaxDebt: !c.collateral.vault_max_debt
               ? ''
-              : parseFromMist(
-                  c.collateral.vault_max_debt,
-                  c.collateral.decimals
-                ).toString(),
+              : parseFromMist(c.collateral.vault_max_debt).toString(),
             vaultMinDebt: !c.collateral.vault_min_debt
               ? ''
-              : parseFromMist(
-                  c.collateral.vault_min_debt,
-                  c.collateral.decimals
-                ).toString()
+              : parseFromMist(c.collateral.vault_min_debt).toString()
           },
 
           // opened vault
@@ -176,7 +161,8 @@ export const useSuiCollaterals = (collateralId?: string) => {
           ).toString(),
           availableToWithdraw: fromMistToSignValue(
             BigInt(c.available_to_withdraw?.value || 0),
-            c.available_to_withdraw?.is_negative
+            c.available_to_withdraw?.is_negative,
+            c.collateral.decimals
           ).toString(),
           lockedCollateral: fromMistToSignValue(
             BigInt(c.locked_collateral?.value || 0),

@@ -110,17 +110,17 @@ export const useSuiTVL = () => {
 
   const suiTVL = useMemo(() => {
     if (!btcPrice || !wBtcBalance || !bitusd) return 0n
-    return BigInt(
+    return (
       btcPrice *
         Number(parseFromMist(BigInt(wBtcBalance), collateralDecimals)) +
-        Number(parseFromMist(BigInt(bitusd), bitUSDDecimals))
+      Number(parseFromMist(BigInt(bitusd), bitUSDDecimals))
     )
   }, [btcPrice, wBtcBalance, bitusd, collateralDecimals, bitUSDDecimals])
 
   const isFetching = isLoadingBitUSD || isLoadingWBTC
 
   const suiFormatedTvl = useMemo(
-    () => (isFetching ? '--' : formatNumberAsCompact(BigInt(suiTVL))),
+    () => (isFetching ? '--' : formatNumberAsCompact(suiTVL)),
     [isFetching, suiTVL]
   )
 
