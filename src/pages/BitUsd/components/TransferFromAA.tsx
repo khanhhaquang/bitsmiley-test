@@ -25,7 +25,7 @@ import { NumberInput } from './NumberInput'
 import { ProcessingModal } from './Processing'
 import { ProcessingType } from './Processing.types'
 
-import { formatBitUsd, formatWBtc } from '../display'
+import { formatBitUsd, formatCollateral } from '../display'
 
 //TODO: will remove in the future, keeping for now for reference
 
@@ -275,7 +275,11 @@ const TransferFromAA = () => {
                   setWbtc(v || '')
                 }}
                 title="WBTC"
-                titleSuffix={`Balance: ${formatWBtc(wbtcBalance, false, true)}`}
+                titleSuffix={`Balance: ${formatCollateral(
+                  wbtcBalance,
+                  false,
+                  true
+                )}`}
                 inputSuffix={
                   <InputSuffixActionButton
                     onClick={() => setWbtc(wbtcBalance.toString())}>
@@ -318,7 +322,7 @@ const TransferFromAA = () => {
                   setBtc(v || '')
                 }}
                 title="BTC"
-                titleSuffix={`Balance: ${formatWBtc(
+                titleSuffix={`Balance: ${formatCollateral(
                   nativeBalance?.value ? formatEther(nativeBalance?.value) : '',
                   false,
                   true

@@ -17,7 +17,12 @@ import {
 import { IVault } from '@/types/vault'
 import { getSuiChainConfig } from '@/utils/chain'
 import { formatNumberAsTrunc } from '@/utils/number'
-import { convertToMist, parseFromMist, toI64 } from '@/utils/sui'
+import {
+  convertToMist,
+  fromMistToSignValue,
+  parseFromMist,
+  toI64
+} from '@/utils/sui'
 
 import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
@@ -100,34 +105,30 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     placeholderData: keepPreviousData,
     select: (data: Partial<IBcsVaultDetail>) =>
       ({
-        liquidationPrice: parseFromMist(
-          BigInt(data?.liquidation_price || 0)
-        ).toString(),
         healthFactor: data?.health_factor,
-        debtBitUSD: parseFromMist(
-          BigInt(data?.debt?.value || 0)
-          // data?.debt?.is_negative
+        liquidationPrice: parseFromMist(
+          data?.liquidation_price || 0
         ).toString(),
-        fee: parseFromMist(BigInt(data?.fee || 0)).toString(),
-        mintedBitUSD: parseFromMist(
-          BigInt(data?.minted_bitusd || 0)
+        debtBitUSD: fromMistToSignValue(
+          data?.debt?.value || 0,
+          data?.debt?.is_negative
         ).toString(),
+        fee: parseFromMist(data?.fee || 0).toString(),
+        mintedBitUSD: parseFromMist(data?.minted_bitusd || 0),
         availableToMint: Math.max(
-          Number(
-            parseFromMist(
-              BigInt(data?.available_to_mint?.value || 0),
-              bitUSDMetadata?.decimals ?? 0
-            )
-          ) - SAFE_BITUSD_DEDUCT_AMOUNT,
+          Number(fromMistToSignValue(data?.available_to_mint?.value || 0)) -
+            SAFE_BITUSD_DEDUCT_AMOUNT,
           0
         ).toString(),
-        availableToWithdraw: parseFromMist(
-          BigInt(data?.available_to_withdraw?.value || 0)
-          // data?.available_to_withdraw?.is_negative
+        availableToWithdraw: fromMistToSignValue(
+          data?.available_to_withdraw?.value || 0,
+          data?.available_to_withdraw?.is_negative,
+          collateral?.collateral?.decimals ?? 0
         ).toString(),
-        lockedCollateral: parseFromMist(
-          BigInt(data?.locked_collateral?.value || 0)
-          // data?.locked_collateral?.is_negative
+        lockedCollateral: fromMistToSignValue(
+          data?.locked_collateral?.value || 0,
+          data?.locked_collateral?.is_negative,
+          collateral?.collateral?.decimals ?? 0
         ).toString()
       }) as IVault
   }

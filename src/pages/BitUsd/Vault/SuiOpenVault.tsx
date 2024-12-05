@@ -20,7 +20,7 @@ import { NumberInput } from '../components/NumberInput'
 import SuiProcessing from '../components/SuiProcessing'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { formatBitUsd, formatWBtc } from '../display'
+import { formatBitUsd, formatCollateral } from '../display'
 
 const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   collateralId
@@ -139,7 +139,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           disabled={depositDisabled}
           errorMessage={depositInputErrorMsg}
           title={`DEPOSIT ${deptTokenSymbol}`}
-          titleSuffix={`Available: ${formatWBtc(
+          titleSuffix={`Available: ${formatCollateral(
             collateralBalance,
             false,
             true

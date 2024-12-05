@@ -130,6 +130,7 @@ export interface IDetailedSuiCollateral {
   collateralId?: string
   liquidationFeeRate?: string
   collateral?: {
+    decimals: number
     tokenAddress: string
     maxDebt: string
     safetyFactor: string

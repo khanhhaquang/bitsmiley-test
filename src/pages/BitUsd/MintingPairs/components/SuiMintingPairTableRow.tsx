@@ -42,7 +42,7 @@ const SuiMintingPairTableRow: React.FC<{
   const liquidationMessage = useMemo(() => {
     if (liquidated) return `This vault was liquidated on ${liquidatedDate}`
     if (isInLiquidationRisk)
-      return 'This vault is at the risk of liquidation. Repay bitUSD or deposit wBTC to avoid liquidation'
+      return 'This vault is at the risk of liquidation. Repay bitUSD or deposit collateral to avoid liquidation'
     return ''
   }, [isInLiquidationRisk, liquidated, liquidatedDate])
 
