@@ -21,7 +21,6 @@ type Executor = (
 ) => Promise<SuiTransactionBlockResponse | undefined>
 
 export type ExecutorResult = {
-  validateTransaction: Executor
   status: string
   isIdle: boolean
   isPending: boolean
@@ -34,10 +33,16 @@ export type ExecutorResult = {
   transactionResponse?: SuiTransactionBlockResponse
 }
 
-export const useSuiExecute = (): ExecutorResult => {
+type ExecutorHandler = {
+  fetchTransactionResult: (tx: Transaction) => Promise<number[] | undefined>
+  validateTransaction: Executor
+}
+
+export const useSuiExecute = (): ExecutorResult & ExecutorHandler => {
   const client = useSuiClient() as SuiClient
   const wallet = useWallet()
   const [txResponse, setTxResponse] = useState<SuiTransactionBlockResponse>()
+
   const {
     mutateAsync: signAndExecute,
     status,
@@ -72,7 +77,22 @@ export const useSuiExecute = (): ExecutorResult => {
     throw new Error('Failed to execute transaction')
   }
 
+  const fetchTransactionResult = async (tx: Transaction) => {
+    if (!wallet?.address) return undefined
+
+    const res = await client.devInspectTransactionBlock({
+      sender: wallet.address,
+      transactionBlock: tx
+    })
+
+    if (res.error) {
+      throw new Error(res.error)
+    }
+    return res.results![0].returnValues![0][0]
+  }
+
   return {
+    fetchTransactionResult,
     validateTransaction: mutate,
     status,
     isIdle,

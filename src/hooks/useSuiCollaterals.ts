@@ -1,7 +1,5 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { useSuiClient } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useCallback } from 'react'
 import { parseEther } from 'viem'
@@ -19,35 +17,9 @@ import { byteArrayToString } from '@/utils/number'
 import { fromMistToSignValue, parseFromMist, toI64 } from '@/utils/sui'
 
 import { useProjectInfo } from './useProjectInfo'
+import { useSuiExecute } from './useSuiExecute'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
 import { useUserInfo } from './useUserInfo'
-
-export type Collateral = {
-  name: string
-  collateralId: string
-  tokenType: string
-  debtTokenType: string
-
-  maxDebt: number
-  vaultMinDebt: number
-  vaultMaxDebt: number
-
-  safeFactor: bigint
-  maxLTV: bigint
-
-  liquidationFeeRate: bigint
-  stabilityFeeRate: bigint
-}
-
-export type Deployment = {
-  network: string
-  settings: {
-    totalDebtCeiling: number
-    liquidationBeneficiary: string
-    feeBeneficiary: string
-  }
-  collaterals: Collateral[]
-}
 
 export const useSuiCollaterals = (collateralId?: string) => {
   const { address: userAddress, suiChainIdAsNumber } = useUserInfo()
@@ -58,28 +30,15 @@ export const useSuiCollaterals = (collateralId?: string) => {
 
   const { suiChains } = useProjectInfo()
 
-  const suiClient = useSuiClient() as SuiClient
+  const { fetchTransactionResult } = useSuiExecute()
 
   const PackageIds = useMemo(
     () => suiChains?.find((c) => c.chainId === suiChainIdAsNumber)?.contract,
     [suiChainIdAsNumber, suiChains]
   )
-
-  const fetchTransactionResult = async (tx: Transaction) => {
-    const res = await suiClient.devInspectTransactionBlock({
-      sender: userAddress,
-      transactionBlock: tx
-    })
-
-    if (res.error) {
-      throw new Error(res.error)
-    }
-    return res.results![0].returnValues![0][0]
-  }
-
   const getVaultCollateralId = async () => {
     try {
-      if (!PackageIds || !openedVaultAddress) return null
+      if (!PackageIds || !openedVaultAddress) return undefined
       const tx = new Transaction()
       tx.moveCall({
         target: `${PackageIds.bitSmileyPackageId}::bitsmiley::get_vault_info`,
@@ -89,13 +48,17 @@ export const useSuiCollaterals = (collateralId?: string) => {
         ]
       })
       const result = await fetchTransactionResult(tx)
-      const { collateral_id } = BcsVaultInfo.parse(new Uint8Array(result))
 
-      if (collateral_id) {
-        return byteArrayToString(collateral_id.bytes)
+      if (result && result.length > 0) {
+        const { collateral_id } = BcsVaultInfo.parse(new Uint8Array(result))
+        if (collateral_id) {
+          return byteArrayToString(collateral_id.bytes)
+        } else {
+          return undefined
+        }
       }
 
-      return null
+      return undefined
     } catch (error) {
       console.log('🚀 ~ getVaultCollateralId ~ error:', error)
     }
@@ -120,7 +83,10 @@ export const useSuiCollaterals = (collateralId?: string) => {
         ]
       })
       const result = await fetchTransactionResult(tx)
-      return BcsVaultDetail.parse(new Uint8Array(result))
+      if (result && result?.length > 0)
+        return BcsVaultDetail.parse(new Uint8Array(result))
+
+      return undefined
     } catch (error) {
       console.log('🚀 ~ getVaultDetail ~ error:', error)
     }
@@ -160,25 +126,44 @@ export const useSuiCollaterals = (collateralId?: string) => {
           liquidationFeeRate: parseFromMist(c.liquidationFeeRate).toString(),
           stabilityFee: getStabilityFee(BigInt(c.stabilityFeeRate)),
           collateral: {
+            decimals: c.collateral.decimals,
             tokenAddress: c.collateral.token,
             maxDebt: !c.collateral.max_debt
               ? ''
-              : parseFromMist(c.collateral.max_debt).toString(),
+              : parseFromMist(
+                  c.collateral.max_debt,
+                  c.collateral.decimals
+                ).toString(),
             safetyFactor: !c.collateral.safety_factor
               ? ''
-              : parseFromMist(c.collateral.safety_factor).toString(),
+              : parseFromMist(
+                  c.collateral.safety_factor,
+                  c.collateral.decimals
+                ).toString(),
             totalDebt: !c.collateral.total_debt
               ? ''
-              : parseFromMist(c.collateral.total_debt).toString(),
+              : parseFromMist(
+                  c.collateral.total_debt,
+                  c.collateral.decimals
+                ).toString(),
             totalLocked: !c.collateral.total_locked
               ? ''
-              : parseFromMist(c.collateral.total_locked).toString(),
+              : parseFromMist(
+                  c.collateral.total_locked,
+                  c.collateral.decimals
+                ).toString(),
             vaultMaxDebt: !c.collateral.vault_max_debt
               ? ''
-              : parseFromMist(c.collateral.vault_max_debt).toString(),
+              : parseFromMist(
+                  c.collateral.vault_max_debt,
+                  c.collateral.decimals
+                ).toString(),
             vaultMinDebt: !c.collateral.vault_min_debt
               ? ''
-              : parseFromMist(c.collateral.vault_min_debt).toString()
+              : parseFromMist(
+                  c.collateral.vault_min_debt,
+                  c.collateral.decimals
+                ).toString()
           },
 
           // opened vault
@@ -195,7 +180,8 @@ export const useSuiCollaterals = (collateralId?: string) => {
           ).toString(),
           lockedCollateral: fromMistToSignValue(
             BigInt(c.locked_collateral?.value || 0),
-            c.locked_collateral?.is_negative
+            c.locked_collateral?.is_negative,
+            c.collateral.decimals
           ).toString(),
           debt: fromMistToSignValue(
             BigInt(c.debt?.value || 0),
@@ -237,9 +223,17 @@ export const useSuiCollaterals = (collateralId?: string) => {
               const listCollateralsTxResult =
                 await fetchTransactionResult(listCollateralsTx)
 
+              if (
+                !listCollateralsTxResult ||
+                listCollateralsTxResult.length === 0
+              )
+                return undefined
+
               const collaterals = bcs
                 .vector(BcsCollateral)
                 .parse(Uint8Array.from(listCollateralsTxResult))
+
+              console.log('🚀 ~ : ~ collaterals:', collaterals)
 
               if (!openedVaultAddress) {
                 return {

@@ -1,7 +1,6 @@
 import { bcs } from '@mysten/sui/bcs'
-import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
-import { useSuiClient, useWallet } from '@suiet/wallet-kit'
+import { useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address } from 'viem'
@@ -12,6 +11,7 @@ import { parseFromMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
 import { useSuiCollaterals } from './useSuiCollaterals'
+import { useSuiExecute } from './useSuiExecute'
 import { useSuiToken } from './useSuiToken'
 import { useSuiTokenPrice } from './useSuiTokenPrice'
 
@@ -21,10 +21,10 @@ export const useSuiTVL = () => {
   const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
-  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
   const { collaterals } = useSuiCollaterals()
   const collateral = collaterals?.[0]
+  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
   const { price: btcPrice } = useSuiTokenPrice(
     collateral?.collateralId as Address
@@ -33,13 +33,12 @@ export const useSuiTVL = () => {
     `0x${collateral?.collateral?.tokenAddress}`
   )
   const { coinMetadata: bitUSDMetaData } = useSuiToken(bitUSDType)
-  const suiClient = useSuiClient() as SuiClient
+  const { fetchTransactionResult } = useSuiExecute()
 
   const collateralDecimals = collateralMetaData?.decimals ?? 0
   const bitUSDDecimals = bitUSDMetaData?.decimals ?? 0
 
   const getTotalBusd = async (
-    owner: Address,
     packageId: Address,
     bitSmileyObjectId: Address
   ) => {
@@ -49,13 +48,8 @@ export const useSuiTVL = () => {
       arguments: [tx.object(bitSmileyObjectId)]
     })
 
-    const res = await suiClient.devInspectTransactionBlock({
-      sender: owner,
-      transactionBlock: tx
-    })
-
-    const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
-    if (bytes.length === 0) return ''
+    const bytes = await fetchTransactionResult(tx)
+    if (!bytes || bytes.length === 0) return '0'
     return bcs.U64.parse(new Uint8Array(bytes))
   }
 
@@ -67,18 +61,17 @@ export const useSuiTVL = () => {
     ],
     queryFn: () =>
       getTotalBusd(
-        account?.address as Address,
         suiContractAddresses?.bitSmileyPackageId as Address,
         suiContractAddresses?.bitSmileyObjectId as Address
       ),
     enabled: !!(
+      account?.address &&
       suiContractAddresses?.bitSmileyPackageId &&
       suiContractAddresses?.bitSmileyObjectId
     )
   })
 
   const getTotalWBTC = async (
-    owner: Address,
     packageId: Address,
     bitSmileyObjectId: Address,
     tokenAddress: Address
@@ -90,13 +83,9 @@ export const useSuiTVL = () => {
       typeArguments: [tokenAddress]
     })
 
-    const res = await suiClient.devInspectTransactionBlock({
-      sender: owner,
-      transactionBlock: tx
-    })
+    const bytes = await fetchTransactionResult(tx)
 
-    const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
-    if (bytes.length === 0) return ''
+    if (!bytes || bytes.length === 0) return '0'
     return bcs.U64.parse(new Uint8Array(bytes))
   }
   const { data: wBtcBalance, isLoading: isLoadingWBTC } = useQuery({
@@ -108,12 +97,12 @@ export const useSuiTVL = () => {
     ],
     queryFn: () =>
       getTotalWBTC(
-        account?.address as Address,
         suiContractAddresses?.bitSmileyPackageId as Address,
         suiContractAddresses?.bitSmileyObjectId as Address,
         collateral?.collateral?.tokenAddress as Address
       ),
     enabled: !!(
+      account?.address &&
       suiContractAddresses?.bitSmileyPackageId &&
       suiContractAddresses?.bitSmileyObjectId &&
       collateral?.collateral?.tokenAddress

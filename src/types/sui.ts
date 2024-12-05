@@ -8,6 +8,7 @@ export const Bytes32 = bcs.struct('Bytes32', {
 })
 
 export const BcsCollateralType = bcs.struct('CollateralType', {
+  decimals: bcs.u8(),
   token: bcs.string(),
   safety_factor: bcs.u256(),
   max_debt: bcs.u256(),
@@ -72,6 +73,7 @@ export interface IDetailedCollateralFromSuiChain {
   stabilityFeeRate: string
 
   collateral: {
+    decimals: number
     max_debt: string
     safety_factor: string
     token: string

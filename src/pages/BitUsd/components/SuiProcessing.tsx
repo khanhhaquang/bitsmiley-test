@@ -7,8 +7,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { ProcessingModal } from './Processing'
 import { ProcessingType } from './Processing.types'
 
-interface SuiProcessingProps
-  extends Omit<ExecutorResult, 'validateTransaction'> {
+interface SuiProcessingProps extends ExecutorResult {
   refreshVaultValues: () => void
   refetchCollateral: () => void
 }
