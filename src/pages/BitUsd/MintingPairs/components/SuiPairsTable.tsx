@@ -22,7 +22,16 @@ const SuiPairsTable: React.FC<{
 
   const rows = useMemo(() => {
     if (!collaterals.length) {
-      return null
+      return (
+        <TableRow className="my-6">
+          <TableCell
+            width="100%"
+            align="center"
+            className="text-sm text-white/70">
+            no available minting pairs
+          </TableCell>
+        </TableRow>
+      )
     }
 
     return collaterals.map((collateral) => (

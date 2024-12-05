@@ -25,6 +25,7 @@ const SuiProcessing: FC<SuiProcessingProps> = ({
   const navigate = useNavigate()
   const { suiBlockExplorerUrl } = useUserInfo() // TO DO
   const openVaultTxId = executeData?.digest
+
   if (isPending) {
     return (
       <ProcessingModal
@@ -37,6 +38,7 @@ const SuiProcessing: FC<SuiProcessingProps> = ({
       />
     )
   }
+
   if (isSuccess) {
     return (
       <ProcessingModal
@@ -45,7 +47,7 @@ const SuiProcessing: FC<SuiProcessingProps> = ({
         onClickActionButton={() => {
           refetchCollateral()
           refreshVaultValues()
-          navigate(-1)
+          navigate('/app/alphanet')
         }}
         message="You have successfully created a vault. Now you can see it in the
     AlphaNet main page"

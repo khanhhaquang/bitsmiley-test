@@ -11,12 +11,12 @@ export const BcsCollateralType = bcs.struct('CollateralType', {
   token: bcs.string(),
   decimals: bcs.u8(),
   safety_factor: bcs.u256(),
+  risk_factor: bcs.u256(),
   max_debt: bcs.u256(),
   vault_min_debt: bcs.u256(),
   vault_max_debt: bcs.u256(),
   total_debt: bcs.u256(),
-  total_locked: bcs.u256(),
-  risk_factor: bcs.u256()
+  total_locked: bcs.u256()
 })
 
 export const BcsCollateral = bcs.struct('Collateral', {

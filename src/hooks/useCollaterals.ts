@@ -306,11 +306,6 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     })
   }, [queryRes])
 
-  console.log(
-    '🚀 ~ chainWithCollaterals ~ chainWithCollaterals:',
-    chainWithCollaterals
-  )
-
   const collaterals: IDetailedCollateral[] = useMemo(
     () =>
       chainWithCollaterals.reduce<IDetailedCollateral[]>(
