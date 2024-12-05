@@ -1,6 +1,5 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Address } from 'viem'
 
 import { ChevronLeftIcon, VaultInfoBorderIcon } from '@/assets/icons'
 import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
@@ -43,8 +42,8 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
 
   const { openAndMint, transactionState } = useSuiTransaction(collateralId)
 
-  const { price: wbtcPrice } = useSuiTokenPrice(
-    collateral?.collateralId as Address
+  const { price: collateralPrice } = useSuiTokenPrice(
+    collateral?.collateral?.tokenAddress
   )
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
     useSuiToken(`0x${collateral?.collateral?.tokenAddress}`)
@@ -109,8 +108,8 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   }
 
   const depositInUsd = useMemo(() => {
-    return (wbtcPrice * Number(deposit)).toFixed(2)
-  }, [deposit, wbtcPrice])
+    return (collateralPrice * Number(deposit)).toFixed(2)
+  }, [deposit, collateralPrice])
 
   useEffect(() => {
     setTryOpenVaultBitUsd(mint)

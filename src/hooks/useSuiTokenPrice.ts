@@ -1,49 +1,46 @@
 import { bcs } from '@mysten/sui/bcs'
 import { SuiClient } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
+import { fromHex } from '@mysten/sui/utils'
 import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
-import { Address, hexToBytes } from 'viem'
 
 import { getSuiChainConfig } from '@/utils/chain'
 import { parseFromMist } from '@/utils/sui'
 
 import { useContractAddresses } from './useContractAddresses'
+import { useSuiExecute } from './useSuiExecute'
+import { useSuiToken } from './useSuiToken'
 
-export const useSuiTokenPrice = (collateralId?: Address) => {
+export const useSuiTokenPrice = (tokenType: string = '') => {
   const suiClient = useSuiClient() as SuiClient
-  const { account, chain } = useWallet()
+  const { coinMetadata } = useSuiToken(tokenType)
+  const { fetchTransactionResult } = useSuiExecute()
+  const { chain, address } = useWallet()
   const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
 
   const getTokenPrice = async (
-    owner: Address,
-    packageId: Address,
-    oracleObjectId: Address,
-    collateralId: Address
+    packageId: string = '',
+    oracleObjectId: string = ''
   ) => {
     const tx = new Transaction()
     tx.moveCall({
       target: `${packageId}::simple_oracle::get_price`,
       arguments: [
         tx.object(oracleObjectId),
-        tx.pure.vector('u8', hexToBytes(collateralId))
+        tx.pure.vector('u8', fromHex(tokenType))
       ]
     })
 
-    const res = await suiClient.devInspectTransactionBlock({
-      sender: owner,
-      transactionBlock: tx
-    })
-
-    const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
-    if (bytes.length === 0) return ''
-    return bcs.U256.parse(new Uint8Array(bytes))
+    const res = await fetchTransactionResult(tx)
+    if (!res || res?.length === 0) return '0'
+    return bcs.U256.parse(new Uint8Array(res))
   }
 
   const {
-    data: price,
+    data: priceAsMist,
     refetch,
     isFetching
   } = useQuery({
@@ -51,27 +48,25 @@ export const useSuiTokenPrice = (collateralId?: Address) => {
       'sui-token-price',
       suiContractAddresses?.oraclePackageId,
       suiContractAddresses?.oracleObjectId,
-      account?.address,
-      collateralId
+      address
     ],
     queryFn: () =>
       getTokenPrice(
-        account?.address as Address,
-        suiContractAddresses?.oraclePackageId as Address,
-        suiContractAddresses?.oracleObjectId as Address,
-        collateralId as Address
+        suiContractAddresses?.oraclePackageId,
+        suiContractAddresses?.oracleObjectId
       ),
-    enabled: Boolean(
+    enabled: !!(
+      address &&
       suiContractAddresses?.oraclePackageId &&
-        suiContractAddresses?.oracleObjectId &&
-        suiClient &&
-        collateralId
-    ),
-    select: (data) => parseFromMist(data || '')
+      suiContractAddresses?.oracleObjectId &&
+      suiClient &&
+      tokenType
+    )
   })
 
   return {
-    price: Number(price) || 0,
+    price: Number(parseFromMist(priceAsMist ?? 0, coinMetadata?.decimals ?? 0)),
+    priceAsMist,
     refetch,
     isFetching
   }

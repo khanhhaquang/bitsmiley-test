@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Address } from 'viem'
 
 import {
   ArrowLeftDoubleIcon,
@@ -76,7 +75,7 @@ export const SuiManageVault: React.FC<{
   const [repayBitUsd, setRepayBitUsd] = useState('')
 
   const { price: wbtcPrice } = useSuiTokenPrice(
-    collateral?.collateralId as Address
+    collateral?.collateral?.tokenAddress
   )
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
     useSuiToken(`0x${collateral?.collateral?.tokenAddress}`)
