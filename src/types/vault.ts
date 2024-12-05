@@ -90,6 +90,9 @@ export interface IDetailedCollateral {
   liquidationPrice?: string
   lockedCollateral?: string
   mintedBitUSD?: string
+
+  // injected from chain
+  collateralSymbol?: string
 }
 
 export interface ICollateralFromChain {

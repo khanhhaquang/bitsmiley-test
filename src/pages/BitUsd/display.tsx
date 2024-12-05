@@ -122,7 +122,8 @@ export const displayCollateralValues = (
   collateralCollateralLocked: formatCollateral(
     value?.collateral?.totalLocked,
     withUnit,
-    true
+    true,
+    value?.collateralSymbol
   ),
   collateralTotalDebt: formatBitUsd(
     value?.collateral?.totalDebt,
@@ -131,14 +132,20 @@ export const displayCollateralValues = (
   ),
 
   fee: formatBitUsd(value?.fee, withUnit),
-  lockedCollateral: formatCollateral(value?.lockedCollateral, withUnit, true),
+  lockedCollateral: formatCollateral(
+    value?.lockedCollateral,
+    withUnit,
+    true,
+    value?.collateralSymbol
+  ),
   liquidationPrice: formatMoney(value?.liquidationPrice, withUnit),
   healthFactor: formatPercentage(value?.healthFactor, withUnit),
   totalDebt: formatBitUsd(value?.debt, withUnit, true),
   availableToWithdraw: formatCollateral(
     value?.availableToWithdraw,
     withUnit,
-    true
+    true,
+    value?.collateralSymbol
   ),
   availableToMint: formatBitUsd(value?.availableToMint, withUnit),
 

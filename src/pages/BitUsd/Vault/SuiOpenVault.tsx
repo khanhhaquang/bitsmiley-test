@@ -46,7 +46,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
     useSuiToken(collateral?.collateral?.tokenAddress)
 
-  const deptTokenSymbol = collateralMetaData?.name || ''
+  const deptTokenSymbol = collateralMetaData?.symbol || ''
 
   const depositDisabled = useMemo(() => {
     if (collateralBalance <= 0) return true

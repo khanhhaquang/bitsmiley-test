@@ -154,4 +154,7 @@ export interface IDetailedSuiCollateral {
   liquidationPrice?: string
   lockedCollateral?: string
   mintedBitUSD?: string
+
+  // injected from chain
+  collateralSymbol?: string
 }

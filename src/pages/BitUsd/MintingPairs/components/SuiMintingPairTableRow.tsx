@@ -7,6 +7,7 @@ import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { chainsIconUrl } from '@/config/chain'
+import { useSuiToken } from '@/hooks/useSuiToken'
 import { IDetailedSuiCollateral } from '@/types/sui'
 import { cn } from '@/utils/cn'
 
@@ -22,6 +23,7 @@ const SuiMintingPairTableRow: React.FC<{
   table: TTable<IDetailedSuiCollateral>
 }> = ({ collateral, table, isOpened }) => {
   const navigate = useNavigate()
+  const { coinMetadata } = useSuiToken(collateral.collateral?.tokenAddress)
 
   const handleEnterVault = () => {
     navigate(`./vault/${collateral.chainId}/${collateral.collateralId}`)
@@ -51,7 +53,7 @@ const SuiMintingPairTableRow: React.FC<{
       <TableRow className="py-3 [&_td]:w-[120px] [&_td]:p-0">
         {table.map(({ key, format, className }) => (
           <TableCell key={key} className={cn('text-nowrap', className)}>
-            {format(collateral)}
+            {format({ ...collateral, collateralSymbol: coinMetadata?.symbol })}
           </TableCell>
         ))}
         <TableCell className="flex w-[150px] items-center justify-end gap-x-2">

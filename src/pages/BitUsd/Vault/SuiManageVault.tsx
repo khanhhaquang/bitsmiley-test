@@ -78,7 +78,7 @@ export const SuiManageVault: React.FC<{
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
     useSuiToken(collateral?.collateral?.tokenAddress)
 
-  const deptTokenSymbol = collateralMetaData?.name || ''
+  const deptTokenSymbol = collateralMetaData?.symbol || ''
 
   const { balance: bitUsdBalance, coinMetadata: bitUSDMetaData } = useSuiToken(
     `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
@@ -453,7 +453,13 @@ export const SuiManageVault: React.FC<{
               title={`withdraw ${deptTokenSymbol}`}
               titleSuffix={
                 <span className="flex items-center gap-x-2">
-                  Max: {displayVaultValues(maxVault, false).availableToWithdraw}
+                  Max:{' '}
+                  {
+                    displayVaultValues(
+                      { ...maxVault, collateralSymbol: deptTokenSymbol },
+                      false
+                    ).availableToWithdraw
+                  }
                 </span>
               }
               inputSuffix={
@@ -490,7 +496,7 @@ export const SuiManageVault: React.FC<{
               errorMessage={mintInputErrorMsg}
               titleSuffix={
                 <span className="flex items-center gap-x-2">
-                  Max Mint:
+                  Max mint:
                   {displayVaultValues(maxVault, false).availableToMint}
                 </span>
               }
