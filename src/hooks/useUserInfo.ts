@@ -2,12 +2,13 @@ import {
   useBTCProvider,
   useETHProvider
 } from '@particle-network/btc-connectkit'
+import { SuiMainnetChain, SuiTestnetChain, useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address, isAddressEqual } from 'viem'
 import { useAccount } from 'wagmi'
 
-import { customChains } from '@/config/wagmi'
+import { customChains, suiMainnet, suiTestnet } from '@/config/wagmi'
 import { IFeaturesEnabled, UserService } from '@/services/user'
 
 export const useUserInfo = () => {
@@ -21,7 +22,22 @@ export const useUserInfo = () => {
     isReconnecting
   } = useAccount()
 
-  const addressForDisplay = (btcAccounts[0] as Address) || evmAddress
+  const suiWallet = useWallet()
+
+  const isConnected = useMemo(
+    () => isEvmConnected || suiWallet.connected,
+    [isEvmConnected, suiWallet.connected]
+  )
+
+  const suiWalletAddress = useMemo(() => {
+    return suiWallet.address
+  }, [suiWallet.address])
+
+  const displayAddress = useMemo(
+    () => (suiWalletAddress as Address) || evmAddress,
+    [suiWalletAddress, evmAddress]
+  )
+  const addressForDisplay = (btcAccounts[0] as Address) || displayAddress
 
   const { data: enabledFeaturesData, isLoading: isLoadingEnabledFeatures } =
     useQuery({
@@ -31,7 +47,9 @@ export const useUserInfo = () => {
           ? null
           : UserService.getEnabledFeatures.call(addressForDisplay),
       enabled: !!addressForDisplay,
-      select: (res) => res?.data
+      select: (res) => res?.data,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false
     })
 
   const evmChain = useMemo(
@@ -45,8 +63,17 @@ export const useUserInfo = () => {
   )
 
   const isLoading = useMemo(
-    () => isConnecting || isReconnecting || isLoadingEnabledFeatures,
-    [isConnecting, isLoadingEnabledFeatures, isReconnecting]
+    () =>
+      isConnecting ||
+      isReconnecting ||
+      isLoadingEnabledFeatures ||
+      suiWallet.connecting,
+    [
+      isConnecting,
+      isLoadingEnabledFeatures,
+      isReconnecting,
+      suiWallet.connecting
+    ]
   )
 
   const isConnectedWithAA = useMemo(() => {
@@ -67,15 +94,34 @@ export const useUserInfo = () => {
     [enabledFeaturesData?.BitPoint]
   )
 
+  const { chainId: suiChainIdAsNumber, blockExplorerUrl: suiBlockExplorerUrl } =
+    useMemo(() => {
+      if (suiWallet.chain?.id === SuiMainnetChain.id)
+        return {
+          chainId: suiMainnet.id,
+          blockExplorerUrl: suiMainnet.blockExplorers.default
+        }
+      if (suiWallet.chain?.id === SuiTestnetChain.id)
+        return {
+          chainId: suiTestnet.id,
+          blockExplorerUrl: suiTestnet.blockExplorers.default
+        }
+      return {}
+    }, [suiWallet.chain?.id])
+
   return {
     isConnectedWithAA,
-    isConnected: isEvmConnected,
-    address: evmAddress,
+    isConnected,
+    address: displayAddress,
     addressForDisplay,
     enabledFeatures,
     blockExplorerUrl,
     evmChain,
     evmChainId,
-    isLoading
+    isLoading,
+    suiChainIdAsNumber,
+    suiBlockExplorerUrl,
+    suiWalletAddress,
+    isSuiConnected: suiWallet.connected
   }
 }

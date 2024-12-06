@@ -8,7 +8,11 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
-import { useGetMyPreStake, useStake } from '@/queries/airdrop'
+import {
+  useGetMyPreStake,
+  useGetPreStakeInfo,
+  useStake
+} from '@/queries/airdrop'
 import { formatNumberAsTrunc } from '@/utils/number'
 
 import Slider from '../../components/Slider'
@@ -17,6 +21,7 @@ const MAX_PERCENTAGE = 100
 
 const AvailableToStake = () => {
   const { data: myPreStake, refetch: refetchMyPreStake } = useGetMyPreStake()
+  const { data: preStakeInfo } = useGetPreStakeInfo()
   const [stakeAmount, setStakeAmount] = useState('0')
   const [stakePercentage, setStakePercentage] = useState(0)
   const { mutateAsync: stakeMutate, isPending: isStaking } = useStake({})
@@ -25,6 +30,21 @@ const AvailableToStake = () => {
     () => myPreStake?.data.availableAirdrop ?? 0,
     [myPreStake]
   )
+
+  const canStake = useMemo(() => {
+    if (
+      !preStakeInfo?.data.preStakeStartTime ||
+      !preStakeInfo?.data.preStakeEndTime ||
+      !preStakeInfo?.data.nowTime
+    ) {
+      return false
+    }
+    return (
+      preStakeInfo?.data.nowTime >= preStakeInfo?.data.preStakeStartTime &&
+      preStakeInfo?.data.nowTime < preStakeInfo?.data.preStakeEndTime &&
+      max > 0
+    )
+  }, [preStakeInfo])
 
   const onChangeStakeAmount: React.ChangeEventHandler<HTMLInputElement> = (
     event
@@ -49,6 +69,8 @@ const AvailableToStake = () => {
     stakeMutate({ amount: Number(stakeAmount) }).then((res) => {
       if (res.code === 0) {
         refetchMyPreStake()
+        setStakeAmount('0')
+        setStakePercentage(0)
       }
     })
   }
@@ -77,7 +99,7 @@ const AvailableToStake = () => {
           min={0}
           max={MAX_PERCENTAGE}
           step={1}
-          disabled={!max}
+          disabled={!canStake}
           value={stakePercentage}
           onInputChange={onChangePercentage}
           stepsClassName="text-sm text-white/60"
@@ -94,12 +116,12 @@ const AvailableToStake = () => {
           value={stakeAmount}
           onChange={onChangeStakeAmount}
           type="number"
-          disabled={!max}
+          disabled={!canStake}
           inputClassName="w-full"
         />
         <ActionButton
           className="w-[129px] bg-white/70 text-2xl text-black/75 hover:bg-white hover:text-black/75 active:bg-white/60 active:text-black/75"
-          disabled={stakePercentage === 0 || isStaking}
+          disabled={stakePercentage === 0 || isStaking || !canStake}
           onClick={stake}>
           Stake
         </ActionButton>

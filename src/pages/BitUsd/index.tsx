@@ -3,7 +3,6 @@ import { Outlet } from 'react-router-dom'
 import { isAddressEqual } from 'viem'
 import { useChainId } from 'wagmi'
 
-import { OnChainLoader } from '@/components/OnchainLoader'
 import { aaSupportedChainIds } from '@/config/chain'
 import { useRegister } from '@/hooks/useRegister'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -13,7 +12,7 @@ import PersonalSignModal from './components/PersonalSignModal'
 const BitUsd: React.FC = () => {
   const currentChainId = useChainId()
   const { enabledFeatures, isConnectedWithAA } = useUserInfo()
-  const { airdropState, isLoadingAirdropState } = useRegister()
+  const { airdropState } = useRegister()
 
   const airdropStateEqual = useMemo(() => {
     if (airdropState)
@@ -31,8 +30,6 @@ const BitUsd: React.FC = () => {
         Not available
       </div>
     )
-
-  if (isLoadingAirdropState) return <OnChainLoader />
 
   return (
     <Suspense fallback="...">

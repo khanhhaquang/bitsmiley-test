@@ -72,7 +72,8 @@ module.exports = {
           { pattern: '@/store/**', group: 'internal' },
           { pattern: '@/types/**', group: 'internal' },
           { pattern: '@/utils/**', group: 'internal' },
-          { pattern: '@/abi/**', group: 'internal' }
+          { pattern: '@/abi/**', group: 'internal' },
+          { pattern: '@/connectors/**', group: 'internal' }
         ],
         pathGroupsExcludedImportTypes: ['internal'],
         alphabetize: {

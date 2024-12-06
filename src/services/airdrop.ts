@@ -43,6 +43,7 @@ export interface ArcadeLuckyAccount {
   availableAirdrop: number
   haveWon: number
   locked: number
+  display: boolean
 }
 
 export interface BuyArcadeLuckyPayload {
@@ -55,6 +56,7 @@ export interface BuyArcadeLuckyResponse {
   locked: number
   lockedFor: number
   isWin: boolean
+  luckCar: boolean
 }
 
 export interface MyPreStakeResponse {
@@ -63,6 +65,9 @@ export interface MyPreStakeResponse {
   availableAirdrop: number
   staked: number
   preStakeAPY: number
+  unStakedTime: number
+  unStaked: number
+  now: number
 }
 
 export interface PreStakeInfo {

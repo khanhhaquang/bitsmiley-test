@@ -31,6 +31,18 @@ export interface IContractAddresses {
   PreStakeRewardAirdropContract: Address
   stakeContract: Address
   TGEAirdropContract: Address
+  bitDiscAirdropContract: Address
+
+  // SUI
+  bitSmileyPackageId: Address
+  bitUSDPackageId: Address
+  btcPackageId: Address
+  bitSmileyObjectId: Address
+  vaultManagerObjectId: Address
+  stabilityFeeObjectId: Address
+  oracleObjectId: Address
+  oraclePackageId: Address
+  bitSmileyQueryObjectId: Address
 }
 export interface INetworkInfo {
   network: string
@@ -44,7 +56,10 @@ export interface IProject {
   startTime: string
   tgeTime: string
   arcadeStartTime: string
-  web3Info: INetworkInfo[]
+  web3Info: {
+    evm?: INetworkInfo[]
+    sui?: INetworkInfo[]
+  }
 }
 
 export const ProjectService = {

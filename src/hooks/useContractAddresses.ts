@@ -1,13 +1,21 @@
+import { useMemo } from 'react'
 import { useChainId } from 'wagmi'
 
 import { useProjectInfo } from './useProjectInfo'
 
-export const useContractAddresses = () => {
+export const useContractAddresses = (injectChainId?: number) => {
   const chainId = useChainId()
-  const { projectInfo } = useProjectInfo()
-  const contractAddresses = projectInfo?.web3Info.find(
-    (v) => v.chainId === chainId
-  )?.contract
+  const { evmChains, suiChains } = useProjectInfo()
 
-  return contractAddresses
+  const evmContractAddresses = useMemo(
+    () => evmChains?.find((v) => v.chainId === chainId)?.contract,
+    [chainId, evmChains]
+  )
+
+  const suiContractAddresses = useMemo(
+    () => suiChains?.find((v) => v.chainId === injectChainId)?.contract,
+    [injectChainId, suiChains]
+  )
+
+  return { evmContractAddresses, suiContractAddresses }
 }

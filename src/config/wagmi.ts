@@ -149,6 +149,42 @@ export const zetaMainnet = {
   testnet: false
 } as const satisfies Chain
 
+export const suiTestnet = {
+  id: 103,
+  name: 'Sui Testnet',
+  nativeCurrency: { name: 'SUI', symbol: 'SUI', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://sui-testnet-endpoint.blockvision.org']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Sui Testnet Scan',
+      url: 'https://suiscan.xyz/testnet'
+    }
+  },
+  testnet: true
+} as const satisfies Chain
+
+export const suiMainnet = {
+  id: 101,
+  name: 'Sui Mainnet',
+  nativeCurrency: { name: 'SUI', symbol: 'SUI', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: ['https://sui-mainnet-endpoint.blockvision.org']
+    }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Sui Mainnet Scan',
+      url: 'https://suiscan.xyz/mainnet'
+    }
+  },
+  testnet: true
+} as const satisfies Chain
+
 //TODO: PARTICLE DOES NOT SUPPORT THESE CHAINS YET
 export const chainsNotSupportedByParticle: number[] = [
   botanixTestnet.id,
@@ -156,7 +192,9 @@ export const chainsNotSupportedByParticle: number[] = [
   bitLayerTestnet.id,
   bitLayerMainnet.id,
   zetaTestnet.id,
-  zetaMainnet.id
+  zetaMainnet.id,
+  suiTestnet.id,
+  suiMainnet.id
 ]
 
 export const customChains = [
@@ -169,5 +207,7 @@ export const customChains = [
   zetaTestnet,
   zetaMainnet,
   holesky,
-  mainnet
+  mainnet,
+  suiMainnet,
+  suiTestnet
 ] as Chain[]

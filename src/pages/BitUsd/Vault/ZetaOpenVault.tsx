@@ -23,7 +23,7 @@ import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
 import { ZetaProcessing } from '../components/ZetaProcessing'
 import { ProcessingStatus } from '../components/ZetaProcessing.types'
-import { formatBitUsd, formatWBtc } from '../display'
+import { formatBitUsd, formatCollateral } from '../display'
 
 export const OpenVault: React.FC<{
   chainId: number
@@ -182,7 +182,7 @@ export const OpenVault: React.FC<{
           disabled={depositDisabled}
           errorMessage={depositInputErrorMsg}
           title={`DEPOSIT ${deptTokenSymbol}`}
-          titleSuffix={`Available: ${formatWBtc(
+          titleSuffix={`Available: ${formatCollateral(
             btcBalance,
             false,
             true

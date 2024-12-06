@@ -18,10 +18,11 @@ import { formatNumberAsTrunc } from '@/utils/number'
 
 export const useVaultDetail = (collateral?: IDetailedCollateral) => {
   const { address } = useUserInfo()
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
 
-  const bitSmileyAddress = contractAddresses?.BitSmiley
-  const bitSmileyQueryAddress = contractAddresses?.bitSmileyQuery || undefined
+  const bitSmileyAddress = evmContractAddresses?.BitSmiley
+  const bitSmileyQueryAddress =
+    evmContractAddresses?.bitSmileyQuery || undefined
   const collateralTokenAddress = collateral?.collateral?.tokenAddress
 
   const {
@@ -142,7 +143,6 @@ export const useVaultDetail = (collateral?: IDetailedCollateral) => {
       : undefined,
     query
   })
-
   useEffect(() => {
     if (!debouncedTryOpenVaultBitUsd || !Number(debouncedTryOpenVaultBitUsd)) {
       if (tryOpenVaultInfo?.availableToMint) {
@@ -154,13 +154,13 @@ export const useVaultDetail = (collateral?: IDetailedCollateral) => {
   const {
     refetchAllowance: refetchWbtcAllowance,
     isFetching: isFetchingWbtcAllowance
-  } = useTokenAllowance(collateralTokenAddress, contractAddresses?.BitSmiley)
+  } = useTokenAllowance(collateralTokenAddress, evmContractAddresses?.BitSmiley)
   const {
     refetchAllowance: refetchBitUsdAllowance,
     isFetching: isFetchingBitUsdAllowance
   } = useTokenAllowance(
-    contractAddresses?.BitUSDL2,
-    contractAddresses?.BitSmiley
+    evmContractAddresses?.BitUSDL2,
+    evmContractAddresses?.BitSmiley
   )
   const {
     refetchBalance: refetchWbtcBalance,
@@ -169,7 +169,7 @@ export const useVaultDetail = (collateral?: IDetailedCollateral) => {
   const {
     refetchBalance: refetchBitUsdBalance,
     isFetching: isFetchingBitUsdBalance
-  } = useTokenBalance(contractAddresses?.BitUSDL2)
+  } = useTokenBalance(evmContractAddresses?.BitUSDL2)
 
   const isRefreshingVaultValues =
     isFetchingVaultAddress ||

@@ -1,7 +1,12 @@
 import { useCallback, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { BitSmileyCalldataGenerator, ZetaBtcClient } from 'zeta-btc-client'
+import {
+  BitSmileyCalldataGenerator,
+  getMinDepositFee,
+  NETWORK,
+  ZetaBtcClient
+} from 'zeta-btc-client'
 
 import { isZetaChain } from '@/utils/chain'
 import { btcToSats } from '@/utils/formatter'
@@ -21,9 +26,10 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   const { recommendedFee } = useBtcFee()
   const { address: evmAddress } = useAccount()
   const { accounts: btcAccounts, sendBitcoin, pushTx } = useNativeBtcProvider()
-  const { projectInfo } = useProjectInfo()
+  const { evmChains } = useProjectInfo()
   const { btcNetwork } = useBtcNetwork()
 
+  const btcAddress = useMemo(() => btcAccounts[0], [btcAccounts])
   const isZeta = useMemo(() => isZetaChain(chain), [chain])
 
   const {
@@ -33,8 +39,8 @@ export const useZetaClient = (chain: number, collateralId: string) => {
   } = useSignTypedData()
 
   const contractAddresses = useMemo(
-    () => projectInfo?.web3Info.find((w) => w.chainId === chain)?.contract,
-    [chain, projectInfo?.web3Info]
+    () => evmChains?.find((w) => w.chainId === chain)?.contract,
+    [chain, evmChains]
   )
   const zetaConnectorAddress = useMemo(() => {
     return contractAddresses?.bitsmileyZetaConnector
@@ -116,31 +122,54 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (btcAmount: number, mint: string) => {
       try {
         if (evmAddress && callDataInstance && signature) {
+          const callData = callDataInstance.openVault(
+            {
+              revertAddress: btcAddress
+            },
+            {
+              bitusd: mint || '0',
+              ownerAddress: evmAddress,
+              collateralId,
+              signature
+            }
+          )
+
+          console.log('🚀 ~ openVault callData:', callData)
+          const network =
+            btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
+          const feeRate = recommendedFee?.fastestFee || 2
+          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(feeRate)
+          const memo = Buffer.from(callData, 'hex')
+
+          const fee = ZetaBtcClient.estimateRevealTxnFee(
+            network,
+            memo,
+            satsAmount,
+            feeRate
+          )
+
+          console.log('🚀 ~ estimated fee:', fee)
+
+          const total = satsAmount + fee
+
           const zetaClient =
             btcNetwork === 'livenet'
               ? ZetaBtcClient.mainnet()
               : ZetaBtcClient.testnet()
-          const callData = callDataInstance.openVault(
-            collateralId,
-            mint || '0',
-            evmAddress,
-            signature
-          )
 
-          console.log('🚀 ~ openVault callData:', callData)
-          const satsAmount = btcToSats(btcAmount)
           const commitTxn = await sendBitcoin(
-            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
-            satsAmount
+            zetaClient.call(memo).toString(),
+            total
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
+
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
-            satsAmount,
-            recommendedFee?.halfHourFee || 2
+            total,
+            feeRate
           )
           const rawTx = buffer.toString('hex')
-          console.log('rawTx:', rawTx)
+          console.log('🚀 ~ rawTx:', rawTx)
           return rawTx
         }
       } catch (error) {
@@ -152,10 +181,11 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       evmAddress,
       callDataInstance,
       signature,
-      btcNetwork,
+      btcAddress,
       collateralId,
-      sendBitcoin,
-      recommendedFee?.halfHourFee
+      recommendedFee?.fastestFee,
+      btcNetwork,
+      sendBitcoin
     ]
   )
 
@@ -163,26 +193,47 @@ export const useZetaClient = (chain: number, collateralId: string) => {
     async (btcAmount: number, mint: string) => {
       try {
         if (evmAddress && callDataInstance && signature) {
+          const callData = callDataInstance.mint(
+            {
+              revertAddress: btcAddress
+            },
+            {
+              ownerAddress: evmAddress,
+              bitusd: mint || '0',
+              signature
+            }
+          )
+          console.log('🚀 ~ mint callData:', callData)
+          const network =
+            btcNetwork === 'livenet' ? NETWORK.mainnet : NETWORK.testnet
+          const feeRate = recommendedFee?.fastestFee || 2
+          const satsAmount = btcToSats(btcAmount) + getMinDepositFee(feeRate)
+          const memo = Buffer.from(callData, 'hex')
+
+          const fee = ZetaBtcClient.estimateRevealTxnFee(
+            network,
+            memo,
+            satsAmount,
+            feeRate
+          )
+          console.log('🚀 ~ estimated fee:', fee)
+
           const zetaClient =
             btcNetwork === 'livenet'
               ? ZetaBtcClient.mainnet()
               : ZetaBtcClient.testnet()
-          const callData = callDataInstance.mint(
-            evmAddress,
-            mint || '0',
-            signature
-          )
-          console.log('🚀 ~ mint callData:', callData)
-          const satsAmount = btcToSats(btcAmount)
+
+          const total = satsAmount + fee
+
           const commitTxn = await sendBitcoin(
-            zetaClient.call(Buffer.from(callData, 'hex')).toString(),
-            satsAmount
+            zetaClient.call(memo).toString(),
+            total
           )
           console.log('🚀 ~ btc commit txn:', commitTxn)
           const buffer = zetaClient.buildRevealTxn(
             { txn: commitTxn, idx: 0 },
-            satsAmount,
-            recommendedFee?.halfHourFee || 2
+            total,
+            feeRate
           )
           const rawTx = buffer.toString('hex')
           console.log('rawTx:', rawTx)
@@ -197,16 +248,17 @@ export const useZetaClient = (chain: number, collateralId: string) => {
       evmAddress,
       callDataInstance,
       signature,
+      btcAddress,
+      recommendedFee?.fastestFee,
       btcNetwork,
-      sendBitcoin,
-      recommendedFee?.halfHourFee
+      sendBitcoin
     ]
   )
 
   return {
     sign,
     isZeta,
-    btcAddress: btcAccounts[0],
+    btcAddress,
     openVault,
     mint,
     broadcastTxn

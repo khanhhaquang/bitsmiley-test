@@ -1,0 +1,108 @@
+import { SuiClient, SuiTransactionBlockResponse } from '@mysten/sui/client'
+import { Transaction } from '@mysten/sui/transactions'
+import { useSuiClient, useWallet } from '@suiet/wallet-kit'
+import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
+
+type Options = Omit<
+  Parameters<SuiClient['getTransactionBlock']>[0],
+  'digest'
+> & {
+  tx: Transaction
+}
+type ResponseCallback = (
+  tx: SuiTransactionBlockResponse
+) => void | Promise<void>
+type ExecuteResponse = { digest: string; rawEffects?: number[] }
+
+type Executor = (
+  options: Options,
+  then?: ResponseCallback
+) => Promise<SuiTransactionBlockResponse | undefined>
+
+export type ExecutorResult = {
+  status: string
+  isIdle: boolean
+  isPending: boolean
+  isSuccess: boolean
+  isError: boolean
+  isPaused: boolean
+  executeData?: ExecuteResponse
+  error?: Error | null
+  reset: () => void
+  transactionResponse?: SuiTransactionBlockResponse
+}
+
+type ExecutorHandler = {
+  fetchTransactionResult: (tx: Transaction) => Promise<number[] | undefined>
+  validateTransaction: Executor
+}
+
+export const useSuiExecute = (): ExecutorResult & ExecutorHandler => {
+  const client = useSuiClient() as SuiClient
+  const wallet = useWallet()
+  const [txResponse, setTxResponse] = useState<SuiTransactionBlockResponse>()
+
+  const {
+    mutateAsync: signAndExecute,
+    status,
+    isIdle,
+    isPending,
+    isSuccess,
+    isError,
+    isPaused,
+    reset,
+    data,
+    error
+  } = useMutation({
+    mutationFn: async (tx: Transaction) =>
+      wallet.signAndExecuteTransaction({
+        transaction: tx
+      })
+  })
+
+  const mutate: Executor = async ({ tx, ...options }, then) => {
+    setTxResponse(undefined)
+    const result = await signAndExecute(tx)
+    if (result?.digest) {
+      const waitResult = await client.waitForTransaction({
+        digest: result.digest,
+        ...options
+      })
+
+      then?.(waitResult)
+      setTxResponse(waitResult)
+      return waitResult
+    }
+    throw new Error('Failed to execute transaction')
+  }
+
+  const fetchTransactionResult = async (tx: Transaction) => {
+    if (!wallet?.address) return undefined
+
+    const res = await client.devInspectTransactionBlock({
+      sender: wallet.address,
+      transactionBlock: tx
+    })
+
+    if (res.error) {
+      throw new Error(res.error)
+    }
+    return res.results![0].returnValues![0][0]
+  }
+
+  return {
+    fetchTransactionResult,
+    validateTransaction: mutate,
+    status,
+    isIdle,
+    isPending,
+    isSuccess,
+    isError,
+    isPaused,
+    error,
+    executeData: data,
+    reset,
+    transactionResponse: txResponse
+  }
+}

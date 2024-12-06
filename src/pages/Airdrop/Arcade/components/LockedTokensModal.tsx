@@ -64,7 +64,7 @@ const LockedTokensModal: React.FC<{
                 </span>
                 <span className="relative flex items-center gap-x-2 text-4xl text-[#FFD000]">
                   <SmileyIcon width={29} height={31} className="text-white" />{' '}
-                  {locked ?? 4500}
+                  {locked}
                 </span>
               </div>
               <div className="relative flex h-[106px] w-[238px] flex-col items-center justify-center font-ibmb">
@@ -79,7 +79,7 @@ const LockedTokensModal: React.FC<{
                   Locked for
                 </span>
                 <span className="relative flex items-center gap-x-2 text-4xl text-white/75">
-                  {lockedFor ?? 100} Days
+                  {lockedFor || 0} Days
                 </span>
               </div>
             </div>

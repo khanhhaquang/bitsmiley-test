@@ -2,7 +2,8 @@ import { FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { ArrowLeftDoubleIcon, ArrowRightDoubleIcon } from '@/assets/icons'
-import { useGetPreStakeInfo } from '@/queries/airdrop'
+import { useProjectInfo } from '@/hooks/useProjectInfo'
+import { useGetMyPreStake, useGetPreStakeInfo } from '@/queries/airdrop'
 
 import AirdropStatistic from './AirdropStatistic'
 import AvailableToStake from './AvailableToStake'
@@ -15,20 +16,35 @@ const PreSeasonStake: FC = () => {
 
   const [isUnstakeModalOpen, setIsUnstakeModalOpen] = useState(false)
   const { data } = useGetPreStakeInfo()
+  const { projectInfo } = useProjectInfo()
+  const { data: myPreStakeInfo } = useGetMyPreStake()
+
+  const preStakeStartTime = useMemo(
+    () => data?.data.preStakeStartTime,
+    [data?.data.preStakeStartTime]
+  )
+  const nowTime = useMemo(() => data?.data.nowTime, [data?.data.nowTime])
 
   const isNotStarted = useMemo(() => {
-    if (!data?.data.preStakeStartTime || !data?.data.nowTime) {
+    if (!preStakeStartTime || !nowTime) {
       return false
     }
-    return data?.data.nowTime < data?.data.preStakeStartTime
-  }, [data])
+    return nowTime < preStakeStartTime
+  }, [nowTime, preStakeStartTime])
 
-  const isEnded = useMemo(() => {
-    if (!data?.data.preStakeEndTime || !data?.data.nowTime) {
+  const showUnStakeButton = useMemo(() => {
+    if (
+      myPreStakeInfo?.data.unStakedTime &&
+      myPreStakeInfo?.data.unStakedTime > 0
+    ) {
       return false
     }
-    return data?.data.nowTime >= data?.data.preStakeEndTime
-  }, [data])
+    return (
+      !!projectInfo?.tgeTime &&
+      projectInfo?.nowTime >= projectInfo?.tgeTime &&
+      import.meta.env.VITE_AIRDROP_UNSTAKE_ENABLE === 'true'
+    )
+  }, [projectInfo, myPreStakeInfo])
 
   if (isNotStarted) return null
 
@@ -52,7 +68,7 @@ const PreSeasonStake: FC = () => {
         <StakeAPY />
         <AvailableToStake />
       </div>
-      {isEnded && (
+      {showUnStakeButton && (
         <button
           onClick={() => setIsUnstakeModalOpen(true)}
           className="mx-auto flex items-center gap-x-2 text-[#B2B2B2] hover:text-[#fff] active:text-white/50">

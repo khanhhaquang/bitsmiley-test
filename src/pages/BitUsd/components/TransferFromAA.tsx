@@ -25,7 +25,7 @@ import { NumberInput } from './NumberInput'
 import { ProcessingModal } from './Processing'
 import { ProcessingType } from './Processing.types'
 
-import { formatBitUsd, formatWBtc } from '../display'
+import { formatBitUsd, formatCollateral } from '../display'
 
 //TODO: will remove in the future, keeping for now for reference
 
@@ -33,11 +33,11 @@ const TransferFromAA = () => {
   const { address, blockExplorerUrl } = useUserInfo()
   const { sendTransaction } = useSendTransaction()
 
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const transferWbtc = useWriteBitUsdTransfer()
-  const { balance: wbtcBalance } = useTokenBalance(contractAddresses?.WBTC)
+  const { balance: wbtcBalance } = useTokenBalance(evmContractAddresses?.WBTC)
   const { balance: bitUsdBalance } = useTokenBalance(
-    contractAddresses?.BitUSDL2
+    evmContractAddresses?.BitUSDL2
   )
   const { data: nativeBalance } = useBalance({ address: address })
 
@@ -114,11 +114,11 @@ const TransferFromAA = () => {
           }
         )
       } else {
-        if (wbtc && contractAddresses?.WBTC) {
+        if (wbtc && evmContractAddresses?.WBTC) {
           try {
             setTxnStatus(TransactionStatus.Signing)
             const txnHash = await transferWbtc.writeContractAsync({
-              address: contractAddresses?.WBTC,
+              address: evmContractAddresses?.WBTC,
               args: [to, parseEther(wbtc)]
             })
 
@@ -130,11 +130,11 @@ const TransferFromAA = () => {
           }
         }
 
-        if (bitUsd && contractAddresses?.BitUSDL2) {
+        if (bitUsd && evmContractAddresses?.BitUSDL2) {
           try {
             setTxnStatus(TransactionStatus.Signing)
             const txnHash = await transferWbtc.writeContractAsync({
-              address: contractAddresses?.BitUSDL2,
+              address: evmContractAddresses?.BitUSDL2,
               args: [to, parseEther(bitUsd)]
             })
 
@@ -275,7 +275,11 @@ const TransferFromAA = () => {
                   setWbtc(v || '')
                 }}
                 title="WBTC"
-                titleSuffix={`Balance: ${formatWBtc(wbtcBalance, false, true)}`}
+                titleSuffix={`Balance: ${formatCollateral(
+                  wbtcBalance,
+                  false,
+                  true
+                )}`}
                 inputSuffix={
                   <InputSuffixActionButton
                     onClick={() => setWbtc(wbtcBalance.toString())}>
@@ -318,7 +322,7 @@ const TransferFromAA = () => {
                   setBtc(v || '')
                 }}
                 title="BTC"
-                titleSuffix={`Balance: ${formatWBtc(
+                titleSuffix={`Balance: ${formatCollateral(
                   nativeBalance?.value ? formatEther(nativeBalance?.value) : '',
                   false,
                   true

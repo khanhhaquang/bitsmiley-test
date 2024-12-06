@@ -4,6 +4,7 @@ import {
   Fragment,
   memo,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
@@ -15,20 +16,30 @@ import { CopyButton } from '@/components/CopyButton'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import WrongNetworkModal from '@/components/WrongNetworkModal'
+import { connectChainIds } from '@/config/chain'
 import { LOCAL_STORAGE_KEYS } from '@/config/settings'
 import { useClickOutside } from '@/hooks/useClickOutside'
 import { useDisconnectAccount } from '@/hooks/useDisconnectAccount'
 import { useReconnectEvm } from '@/hooks/useReconnectEvm'
-import { isZetaChain } from '@/utils/chain'
+import { isSuiChain, isZetaChain } from '@/utils/chain'
 import { cn } from '@/utils/cn'
 import { displayAddress } from '@/utils/formatter'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { getLocalStorage, setLocalStorage } from '@/utils/storage'
 
-import BtcConnectors from './BtcConnectors'
 import EvmConnectors from './EvmConnectors'
 
 import './index.scss'
+import { NetworkTab } from './NetworkTab'
+import SuiConnectors from './SuiConnectors'
+
+import { useSupportedChains } from '@/hooks/useSupportedChains'
+
+import { useWallet } from '@suiet/wallet-kit'
+
+import BtcConnectors from './BtcConnectors'
+
+import { chainsNotSupportedByParticle } from '@/config/wagmi'
 
 const DISCLAIMER_TEXTS = [
   'Ownership and Rights: NFTs represent digital collectibles, not ownership of any assets or copyrights.',
@@ -63,12 +74,18 @@ export const ConnectWallet: React.FC<{
     isConnected: isEvmConnected,
     chain: evmChain
   } = useAccount()
+  const wallet = useWallet()
+
+  const isConnected = useMemo(
+    () => isEvmConnected || wallet.connected,
+    [isEvmConnected, wallet.connected]
+  )
 
   const handlePress = () => {
-    if (!isEvmConnected) {
+    if (!isConnected) {
       setIsConnectWalletModalOpen(true)
     }
-    if (isEvmConnected && !isDropdownOpen) {
+    if (isConnected && !isDropdownOpen) {
       setIsDropdownOpen(true)
     }
   }
@@ -93,11 +110,11 @@ export const ConnectWallet: React.FC<{
         className={cn(
           'relative bg-white cursor-pointer text-center text-black px-5 py-2 font-bold whitespace-nowrap text-sm h-[34px] w-[158px]',
           !isDropdownOpen && 'hover:bg-blue3',
-          !isEvmConnected && 'active:bg-blue',
+          !isConnected && 'active:bg-blue',
           className
         )}>
-        {isEvmConnected
-          ? displayAddress(btcAccounts[0] || evmAddress, 4, 4)
+        {isConnected
+          ? displayAddress(btcAccounts[0] || wallet.address || evmAddress, 4, 4)
           : 'Connect wallet'}
 
         <div
@@ -153,16 +170,17 @@ export const SelectWalletModal: React.FC<{
   isBtcOnly?: boolean
   isOpen: boolean
   onClose: () => void
-}> = ({
-  isBtcOnly,
-  isOpen,
-  hideParticle,
-  onClose,
-  whitelistBtcWallets,
-  expectedChainId
-}) => {
+}> = ({ isOpen, onClose, expectedChainId }) => {
   const [isConfirmed, setIsConfirmed] = useState(
     getLocalStorage(LOCAL_STORAGE_KEYS.CONFIRMED_DISCLAIMER) === 'true'
+  )
+  const { supportedChainIds } = useSupportedChains()
+  const chainIds = useMemo(
+    () => connectChainIds.filter((v) => supportedChainIds.includes(v)) || [],
+    [supportedChainIds]
+  )
+  const [selectedNetwork, setSelectedNetwork] = useState(
+    chainIds.length > 0 ? chainIds[0] : 0
   )
 
   const WalletTitle = memo(({ title }: { title: string }) => {
@@ -187,6 +205,12 @@ export const SelectWalletModal: React.FC<{
     }
   }, [isConfirmed])
 
+  useEffect(() => {
+    if (expectedChainId) {
+      setSelectedNetwork(expectedChainId)
+    }
+  }, [expectedChainId])
+
   const renderWallets = () => {
     return (
       <>
@@ -198,30 +222,39 @@ export const SelectWalletModal: React.FC<{
           <h2 className="mb-9 text-center font-smb text-2xl text-white">
             CONNECT WALLET
           </h2>
-          <div
-            className={cn(
-              'flex w-full',
-              hideParticle || isBtcOnly ? 'gap-x-0' : 'gap-x-6'
-            )}>
-            {!hideParticle && (
-              <div className="flex flex-1 flex-col items-center gap-y-6">
-                <WalletTitle title="BTC Wallet" />
-                <BtcConnectors
-                  whitelistWallets={whitelistBtcWallets}
-                  onClose={onClose}
-                  expectedChainId={expectedChainId}
-                />
-              </div>
-            )}
-            {!isBtcOnly && (
-              <div className="flex flex-1 flex-col items-center gap-y-6">
-                <WalletTitle title="EVM Wallet" />
+          <div className="flex w-full flex-col gap-6">
+            <NetworkTab
+              chainIds={chainIds}
+              selectedNetwork={selectedNetwork}
+              onNetworkChange={(network) => setSelectedNetwork(network)}
+            />
+            <div className="flex flex-1 flex-col items-center gap-y-6">
+              {isSuiChain(selectedNetwork) ? (
+                <SuiConnectors onClose={onClose} />
+              ) : chainsNotSupportedByParticle.includes(selectedNetwork) ? (
                 <EvmConnectors
                   onClose={onClose}
-                  expectedChainId={expectedChainId}
+                  expectedChainId={selectedNetwork}
                 />
-              </div>
-            )}
+              ) : (
+                <div className="flex w-full gap-x-6">
+                  <div className="flex flex-1 flex-col items-center gap-y-6">
+                    <WalletTitle title="BTC Wallet" />
+                    <BtcConnectors
+                      onClose={onClose}
+                      expectedChainId={selectedNetwork}
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col items-center gap-y-6">
+                    <WalletTitle title="EVM Wallet" />
+                    <EvmConnectors
+                      onClose={onClose}
+                      expectedChainId={selectedNetwork}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </>

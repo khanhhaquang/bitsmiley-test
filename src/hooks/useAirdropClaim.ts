@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { formatEther } from 'viem'
 
 import { useToast } from '@/components/ui/use-toast'
 
@@ -9,28 +10,21 @@ import { useUserInfo } from './useUserInfo'
 export enum AirdropClaimType {
   TGE,
   Award,
-  UnStake
+  UnStake,
+  BitDisc
 }
 
-export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
+export const useAirdropClaim = (type: AirdropClaimType) => {
   const { toast } = useToast()
   const { evmChainId } = useUserInfo()
-  const { projectInfo } = useProjectInfo()
+  const { evmChains } = useProjectInfo()
 
   const airdropContracts = useMemo(() => {
-    return projectInfo?.web3Info?.find((item) => item.chainId === evmChainId)
-      ?.contract
-  }, [evmChainId, projectInfo?.web3Info])
+    return evmChains?.find((item) => item.chainId === evmChainId)?.contract
+  }, [evmChainId, evmChains])
 
   const airdrop = useMemo(() => {
     if (!airdropContracts) return undefined
-
-    if (
-      !airdropContracts.TGEAirdropContract ||
-      !airdropContracts.PreStakeRewardAirdropContract ||
-      !airdropContracts.PreStakeUnStakeAirdropContract
-    )
-      return undefined
 
     if (type === AirdropClaimType.TGE)
       return airdropContracts.TGEAirdropContract
@@ -55,14 +49,32 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
             chainId: evmChainId
           }
         : undefined
+    if (type === AirdropClaimType.BitDisc)
+      return airdropContracts.bitDiscAirdropContract
+        ? {
+            airdropContractAddress: airdropContracts.bitDiscAirdropContract,
+            chainId: evmChainId
+          }
+        : undefined
 
     return undefined
   }, [airdropContracts, evmChainId, type])
 
-  const { canClaim, claim, isLoading, isClaiming, isClaimed } = useAirdrop(
-    airdrop,
-    disabled
-  )
+  const {
+    canClaim,
+    airdropProofAndAmount,
+    refetchProofAndAmount,
+    claim,
+    isLoading,
+    isClaiming,
+    isClaimed,
+    refetchClaimStatus
+  } = useAirdrop(airdrop)
+
+  const amount = useMemo(() => {
+    if (!airdropProofAndAmount) return 0
+    return Number(formatEther(BigInt(airdropProofAndAmount.amount)))
+  }, [airdropProofAndAmount, type])
 
   const isActive = useMemo(
     () => !isLoading && !!airdrop && !isClaiming,
@@ -78,6 +90,16 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
         variant: 'destructive',
         title: title || 'Claim Airdrop',
         description: 'Unavailable contract',
+        duration: 2000
+      })
+      return
+    }
+
+    if (isClaiming) {
+      toast({
+        variant: 'destructive',
+        title: title || 'Claim Airdrop',
+        description: 'Claiming...',
         duration: 2000
       })
       return
@@ -106,6 +128,11 @@ export const useAirdropClaim = (type: AirdropClaimType, disabled?: boolean) => {
   }
 
   return {
+    isClaimed,
+    canClaim,
+    amount,
+    refetchProofAndAmount,
+    refetchClaimStatus,
     isActive,
     handleClaim
   }

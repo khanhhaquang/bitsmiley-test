@@ -38,9 +38,11 @@ const BtcConnectors: React.FC<BtcConnectorsProps> = ({
     useETHProvider()
 
   const filteredConnectors = useMemo(() => {
-    if (whitelistWallets.length === 0) return connectors
+    const newConnectors = connectors.filter((c) => c.metadata.id !== 'orange')
 
-    return connectors.filter((c) => whitelistWallets.includes(c.metadata.id))
+    if (whitelistWallets.length === 0) return newConnectors
+
+    return newConnectors.filter((c) => whitelistWallets.includes(c.metadata.id))
   }, [connectors, whitelistWallets])
 
   const connector = useMemo(() => {

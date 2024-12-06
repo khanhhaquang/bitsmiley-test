@@ -4,14 +4,14 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 
 export const useRegister = () => {
   const { address } = useUserInfo()
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const {
     data: airdropState,
     refetch: refetchAirdropState,
     isLoading: isLoadingAirdropState,
     isFetching: isFetchingAirdropState
   } = useReadRegisterBeneficiaries({
-    address: contractAddresses?.register,
+    address: evmContractAddresses?.register,
     args: address && [address]
   })
   return {

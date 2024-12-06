@@ -1,4 +1,5 @@
 import { useConnectModal as useParticleConnect } from '@particle-network/btc-connectkit'
+import { useWallet } from '@suiet/wallet-kit'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDisconnect } from 'wagmi'
@@ -12,29 +13,33 @@ export const useDisconnectAccount = () => {
   const { setAirdropIsLoggedIn } = useStoreActions()
   const { disconnect: disConnectParticle } = useParticleConnect()
   const { disconnect: disconnectEvm, connectors } = useDisconnect()
+  const wallet = useWallet()
 
   const disconnectWagmi = useCallback(() => {
-    disconnectEvm(
-      {
-        connector: connectors[0]
-      },
-      {
-        onSuccess: () => {
-          setAirdropIsLoggedIn(false)
-          clearStorage()
-          navigate('/')
+    connectors.forEach((connector) => {
+      disconnectEvm(
+        {
+          connector: connector
         },
-        onError: (e) => {
-          console.log('err', e)
+        {
+          onSuccess: () => {
+            setAirdropIsLoggedIn(false)
+            clearStorage()
+            // navigate('/')
+          },
+          onError: (e) => {
+            console.log('err', e)
+          }
         }
-      }
-    )
+      )
+    })
   }, [connectors, disconnectEvm, navigate, setAirdropIsLoggedIn])
 
   const disconnect = useCallback(() => {
     disconnectWagmi()
     disConnectParticle?.()
-  }, [disConnectParticle, disconnectWagmi])
+    if (wallet.connected) wallet.disconnect()
+  }, [disConnectParticle, disconnectWagmi, wallet])
 
   return disconnect
 }

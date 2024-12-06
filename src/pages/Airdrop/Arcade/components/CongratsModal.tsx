@@ -1,17 +1,18 @@
 import { useRive } from '@rive-app/react-canvas'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { Modal } from '@/components/Modal'
 import StrokeText from '@/components/StrokeText'
+import { MEDIA } from '@/config/links'
 import { cn } from '@/utils/cn'
-import { getIllustrationUrl } from '@/utils/getAssetsUrl'
+import { getIllustrationUrl, openUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
 import { ArcadeButton } from './ArcadeButton'
 
-const CongratsModal: React.FC<{
+export const TokenCongratsModal: React.FC<{
   isOpen: boolean
   amount: number
   onClose: () => void
@@ -100,4 +101,82 @@ const CongratsModal: React.FC<{
   )
 }
 
-export default CongratsModal
+export const CarCongratsModal: React.FC<{
+  isOpen: boolean
+  onClose: () => void
+}> = ({ isOpen, onClose }) => {
+  const [animStage, setAnimStage] = useState(1)
+
+  const handleClose = () => {
+    openUrl(MEDIA.discord)
+    setAnimStage(1)
+    onClose()
+  }
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout
+    if (isOpen) {
+      timeout = setTimeout(() => setAnimStage(2), 2000)
+    }
+
+    return () => clearTimeout(timeout)
+  }, [isOpen])
+
+  return (
+    <Modal isOpen={isOpen} backdrop={false} onClose={handleClose}>
+      <div className="relative flex flex-col items-center pt-[200px]">
+        <div className="absolute top-[-200px] z-20 w-[915px]">
+          <Image
+            width={915}
+            height={383}
+            src={getIllustrationUrl(`tesla-car-congrats-1`, 'gif')}
+            className={cn(animStage === 1 ? 'opacity-100' : 'opacity-0')}
+          />
+        </div>
+        <div className="absolute top-[-200px] z-10 w-[915px]">
+          <Image
+            width={915}
+            height={383}
+            src={getIllustrationUrl(`tesla-car-congrats-2`, 'gif')}
+            className={cn(animStage === 2 ? 'opacity-100' : 'opacity-0')}
+          />
+        </div>
+        <div
+          className={cn(
+            'relative z-30 flex w-[540px] flex-col border border-[#ffd000]'
+          )}>
+          <div
+            className="relative flex h-[43px] w-full items-center justify-center bg-[#FFD000] font-smb2 text-2xl uppercase text-black"
+            style={{
+              textShadow: '1.839px 0px 0px rgba(0, 0, 0, 0.25)'
+            }}>
+            WOOOHOOOOOO!
+          </div>
+
+          <div className="relative flex w-full flex-col items-center gap-y-6 bg-black py-6">
+            <p className="w-[390px] text-center font-ibmr">
+              No joking. You just won a TESLA! for real! Please PM our staff in
+              Discord to claim the reward!
+            </p>
+            <ArcadeButton
+              className="h-[45px] w-[265px]"
+              onClick={() => handleClose()}>
+              GO TO DISCORD
+            </ArcadeButton>
+
+            <Image
+              width={120}
+              className="pointer-events-none absolute bottom-0 left-0 aspect-[230/278]"
+              src={getIllustrationUrl('tesla-car-congrats-decorator', 'webp')}
+            />
+            <Image
+              width={120}
+              className="pointer-events-none absolute bottom-0 right-0 aspect-[230/278] scale-x-[-1]"
+              src={getIllustrationUrl('tesla-car-congrats-decorator', 'webp')}
+            />
+          </div>
+        </div>
+      </div>
+    </Modal>
+  )
+}

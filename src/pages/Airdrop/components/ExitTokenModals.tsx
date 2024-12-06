@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo } from 'react'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
 
 import { SmileyIcon } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
@@ -16,6 +16,7 @@ type ExitTokenModalProps = {
   onCancel: () => void
   onProceed: () => void
   isPending?: boolean
+  proceedButtonText?: string
 }
 
 const ExitTokenModal: FC<ExitTokenModalProps> = ({
@@ -24,7 +25,8 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
   children,
   onCancel,
   onProceed,
-  isPending
+  isPending,
+  proceedButtonText
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onCancel} backdrop={false}>
@@ -57,7 +59,7 @@ const ExitTokenModal: FC<ExitTokenModalProps> = ({
             className="h-[47px] w-[166px] border-blue bg-blue/80 font-ibmb text-2xl text-white hover:bg-blue active:bg-blue/70"
             disabled={isPending}
             onClick={onProceed}>
-            Proceed
+            {proceedButtonText ?? 'Proceed'}
           </ActionButton>
         </div>
       </div>
@@ -87,7 +89,7 @@ export const UnstakeModal: FC<{
     <ExitTokenModal
       isOpen={isOpen}
       title="Confirm Unstake $Smile"
-      isPending={isUnStaking}
+      isPending={stakedAmount === 0 || isUnStaking}
       onCancel={onClose}
       onProceed={handleProceed}>
       <div className="my-6 flex flex-col items-center gap-y-3 font-ibmb">
@@ -98,11 +100,6 @@ export const UnstakeModal: FC<{
           <SmileyIcon width={17} height={19} className="text-white" />
           {formatNumberWithSeparator(stakedAmount)}
         </p>
-
-        <p className="w-[418px] text-center text-base text-white">
-          We'll stop calculating your yield now. You will be able to collect
-          your $SMILE in 72 hours{' '}
-        </p>
       </div>
     </ExitTokenModal>
   )
@@ -112,29 +109,40 @@ export const ClaimUnlockedModal: FC<{
   onClose: () => void
   isOpen: boolean
 }> = ({ onClose, isOpen }) => {
-  // const [value, setValue] = useState('')
-  const { data, refetch: refetchMyPreStake } = useGetMyPreStake()
+  const { data } = useGetMyPreStake()
+  const {
+    isClaimed,
+    canClaim,
+    isActive,
+    amount,
+    handleClaim,
+    refetchClaimStatus
+  } = useAirdropClaim(AirdropClaimType.TGE)
 
-  const { isActive, handleClaim } = useAirdropClaim(
-    AirdropClaimType.TGE,
-    !isOpen
-  )
+  useEffect(() => {
+    if (isOpen) refetchClaimStatus()
+  }, [isOpen])
 
   return (
     <ExitTokenModal
       isOpen={isOpen}
       title="Claim unlocked $Smile"
       onCancel={onClose}
-      isPending={!isActive}
+      isPending={amount === 0 || !canClaim || !isActive || isClaimed}
+      proceedButtonText={isClaimed ? 'Claimed' : 'Proceed'}
       onProceed={() =>
-        handleClaim('Claim unlocked airdrop', () => refetchMyPreStake())
+        handleClaim('Claim unlocked airdrop', (error) => {
+          if (!error) {
+            onClose()
+          }
+        })
       }>
       <div className="my-6 flex flex-col items-center font-ibmb">
         <p className="flex items-center gap-x-1.5 text-base uppercase text-white">
           Unlocked $SMILE <SmileyIcon />
         </p>
         <p className="mt-1.5 font-ibmb text-2xl text-[#FFD000]">
-          {formatNumberWithSeparator(data?.data.availableAirdrop || 0)}
+          {formatNumberWithSeparator(data?.data.availableAirdrop ?? 0)}
         </p>
 
         {/* <div className="mt-6 flex flex-col items-center gap-y-3">

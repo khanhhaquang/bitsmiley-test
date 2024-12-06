@@ -84,7 +84,7 @@ export const ManageVault: React.FC<{
     setTxnErrorMsg
   } = useManageVault(collateral)
 
-  const contractAddress = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const [isMintFromBtc, setIsMintFromBtc] = useState<boolean | undefined>()
 
   const [depositBtc, setDepositBtc] = useState('')
@@ -99,7 +99,9 @@ export const ManageVault: React.FC<{
   const { balance: wbtcBalance } = useTokenBalance(
     collateral?.collateral?.tokenAddress
   )
-  const { balance: bitUsdBalance } = useTokenBalance(contractAddress?.BitUSDL2)
+  const { balance: bitUsdBalance } = useTokenBalance(
+    evmContractAddresses?.BitUSDL2
+  )
 
   const depositInUsd = useMemo(() => {
     return (wbtcPrice * Number(depositBtc)).toFixed(2)
@@ -433,7 +435,6 @@ export const ManageVault: React.FC<{
     }
   }, [isMintFromBtc])
 
-  console.log(vault)
   return (
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}

@@ -165,7 +165,7 @@ export const Processing: React.FC<ProcessingProps> = ({
           borderColorClassName
         )}>
         {type === 'info' && <ProcessingLoader />}
-        <div className="w-fit">
+        <div className="w-full break-words">
           {message}
           {!!link && (
             <p>

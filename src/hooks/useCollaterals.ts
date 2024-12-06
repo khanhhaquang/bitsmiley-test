@@ -29,6 +29,7 @@ import {
 import { useProjectInfo } from './useProjectInfo'
 import { useSupportedChains } from './useSupportedChains'
 import { useUserInfo } from './useUserInfo'
+
 export const queryKeys = {
   collaterals: (chainId?: number, userAddress?: Address) => [
     'collaterals',
@@ -37,10 +38,9 @@ export const queryKeys = {
   ]
 }
 
-//TODO: change the way we'r fetching
 export const useCollaterals = (chainId?: number, collateralId?: string) => {
   const { address } = useUserInfo()
-  const { projectInfo } = useProjectInfo()
+  const { evmChains } = useProjectInfo()
   const { clients } = useSupportedChains()
   const queryClient = useQueryClient()
 
@@ -48,20 +48,18 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
     () =>
       clients.filter(
         (s) =>
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.chain.id)
-            ?.contract?.BitSmiley &&
-          !!projectInfo?.web3Info.find((w) => w.chainId === s.chain.id)
-            ?.contract?.bitSmileyQuery
+          !!evmChains?.find((w) => w.chainId === s.chain.id)?.contract
+            ?.BitSmiley &&
+          !!evmChains?.find((w) => w.chainId === s.chain.id)?.contract
+            ?.bitSmileyQuery
       ),
-    [projectInfo?.web3Info, clients]
+    [evmChains, clients]
   )
 
   const getStabilityFee = useCallback(
     (chainId?: number, stabilityFeeRate?: bigint) => {
       if (!chainId) return 0
-      const blockTime = projectInfo?.web3Info?.find(
-        (w) => w.chainId === chainId
-      )?.blockTime
+      const blockTime = evmChains?.find((w) => w.chainId === chainId)?.blockTime
 
       if (!stabilityFeeRate || !blockTime) return 0
 
@@ -71,7 +69,7 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
         Number(parseEther('1'))
       )
     },
-    [projectInfo?.web3Info]
+    [evmChains]
   )
   const chainIdToNetwork: { [key: number]: string } = {
     [merlinMainnet.id]: 'Merlin',
@@ -130,7 +128,9 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
           fee: formatEther(c.fee || BigInt(0)),
           liquidationPrice: formatEther(c.liquidationPrice || BigInt(0)),
           lockedCollateral: formatEther(c.lockedCollateral || BigInt(0)),
-          mintedBitUSD: formatEther(c.mintedBitUSD || BigInt(0))
+          mintedBitUSD: formatEther(c.mintedBitUSD || BigInt(0)),
+
+          liquidated: c.liquidated
         }))
       }
     }
@@ -146,7 +146,7 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
         !client || !address
           ? undefined
           : async () => {
-              const contractAddresses = projectInfo?.web3Info.find(
+              const contractAddresses = evmChains?.find(
                 (w) => w.chainId === client.chain.id
               )?.contract
               const bitSmileyAddress = contractAddresses?.BitSmiley
@@ -217,7 +217,6 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
               ) {
                 return {
                   chainId: client.chain.id,
-                  vaultAddress: undefined,
                   collaterals: collaterals.map((c) => ({
                     ...c,
                     isOpenVault: false
@@ -316,6 +315,7 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
       ),
     [chainWithCollaterals]
   )
+  console.log('🚀 ~ useCollaterals ~ collaterals:', collaterals)
 
   const availableCollaterals = useMemo(() => {
     if (!chainId) return []
@@ -336,8 +336,11 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
   }, [chainWithCollaterals, chainId])
 
   const hasOpenedCollaterals = useMemo(
-    () => collaterals.some((item) => item.isOpenVault),
-    [collaterals]
+    () =>
+      collaterals
+        .filter((c) => c.chainId === chainId)
+        .some((item) => item.isOpenVault),
+    [chainId, collaterals]
   )
 
   const isMyVault = useMemo(() => {

@@ -1,5 +1,6 @@
 import { BitUsdIcon } from '@/assets/icons'
 import { customChains } from '@/config/wagmi'
+import { IDetailedSuiCollateral } from '@/types/sui'
 import { IDetailedCollateral, IVault } from '@/types/vault'
 import {
   formatNumberAsCompact,
@@ -30,7 +31,7 @@ export const formatBitUsd = (
   )
 }
 
-export const formatWBtc = (
+export const formatCollateral = (
   v?: string | number,
   withUnit = true,
   compact: boolean = false,
@@ -41,7 +42,7 @@ export const formatWBtc = (
     `${
       compact ? formatNumberAsCompact(v, 6) : formatNumberWithSeparator(v, 6)
     }` +
-    `${withUnit ? WBTC_UNIT : ''}` +
+    `${withUnit && !symbol ? WBTC_UNIT : ''}` +
     ` ${symbol}`
   )
 }
@@ -80,13 +81,13 @@ export const displayVaultValues = (
   liquidationPrice: formatMoney(vault?.liquidationPrice, withUnit),
   healthFactor: formatPercentage(vault?.healthFactor, withUnit),
   debtBitUSD: formatBitUsd(vault?.debtBitUSD, withUnit),
-  lockedCollateral: formatWBtc(
+  lockedCollateral: formatCollateral(
     vault?.lockedCollateral,
     vault?.collateralSymbol ? false : true,
     undefined,
     vault?.collateralSymbol
   ),
-  availableToWithdraw: formatWBtc(
+  availableToWithdraw: formatCollateral(
     vault?.lockedCollateral,
     vault?.collateralSymbol ? false : true,
     undefined,
@@ -96,7 +97,7 @@ export const displayVaultValues = (
 })
 
 export const displayCollateralValues = (
-  value?: IDetailedCollateral,
+  value?: IDetailedCollateral | IDetailedSuiCollateral,
   withUnit: boolean = true
 ) => ({
   collateralMaxLTV: formatPercentage(Number(value?.maxLTV) * 100, withUnit),
@@ -118,10 +119,11 @@ export const displayCollateralValues = (
     withUnit,
     true
   ),
-  collateralCollateralLocked: formatWBtc(
+  collateralCollateralLocked: formatCollateral(
     value?.collateral?.totalLocked,
     withUnit,
-    true
+    true,
+    value?.collateralSymbol
   ),
   collateralTotalDebt: formatBitUsd(
     value?.collateral?.totalDebt,
@@ -130,11 +132,21 @@ export const displayCollateralValues = (
   ),
 
   fee: formatBitUsd(value?.fee, withUnit),
-  lockedCollateral: formatWBtc(value?.lockedCollateral, withUnit, true),
+  lockedCollateral: formatCollateral(
+    value?.lockedCollateral,
+    withUnit,
+    true,
+    value?.collateralSymbol
+  ),
   liquidationPrice: formatMoney(value?.liquidationPrice, withUnit),
   healthFactor: formatPercentage(value?.healthFactor, withUnit),
   totalDebt: formatBitUsd(value?.debt, withUnit, true),
-  availableToWithdraw: formatWBtc(value?.availableToWithdraw, withUnit),
+  availableToWithdraw: formatCollateral(
+    value?.availableToWithdraw,
+    withUnit,
+    true,
+    value?.collateralSymbol
+  ),
   availableToMint: formatBitUsd(value?.availableToMint, withUnit),
 
   network: customChains.find((c) => c.id === value?.chainId)?.name,
@@ -142,7 +154,7 @@ export const displayCollateralValues = (
 })
 
 export const getHealthFactorTextColor = (v?: number | string) => {
-  if (isNaN(Number(v)) || !v) return ''
+  if (isNaN(Number(v)) || !v || !Number(v)) return ''
 
   const healthFactor = Number(v)
 

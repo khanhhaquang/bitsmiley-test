@@ -1,24 +1,32 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { useWriteContract } from 'wagmi'
 
+import stakingAbi from '@/abi/Staking.json'
 import {
   useReadStakingContractGetStakeRewards,
   useReadStakingContractGetUserStakes,
   useReadStakingContractPerAddressLimit,
-  useReadStakingContractStakingEnded
+  useReadStakingContractStakingEnded,
+  useReadStakingContractWithdrawn
 } from '@/contracts/Staking'
 import { getTransactions } from '@/store/common/reducer'
 
 import { useContractAddresses } from './useContractAddresses'
+import { useStoreActions } from './useStoreActions'
 import { useUserInfo } from './useUserInfo'
 
 export const useUserStakes = () => {
-  const contractAddresses = useContractAddresses()
+  const { evmContractAddresses } = useContractAddresses()
   const { address } = useUserInfo()
   const transactions = useSelector(getTransactions)
+  const { addTransaction } = useStoreActions()
+  const { writeContractAsync } = useWriteContract()
 
-  const stakingAddress = contractAddresses?.staking
-    ? contractAddresses?.staking
+  const [isClaiming, setIsClaiming] = useState(false)
+
+  const stakingAddress = evmContractAddresses?.staking
+    ? evmContractAddresses?.staking
     : undefined
 
   const {
@@ -26,6 +34,15 @@ export const useUserStakes = () => {
     isLoading: isFetchingUserStakes,
     refetch: refetchUserStakes
   } = useReadStakingContractGetUserStakes({
+    address: stakingAddress,
+    args: address && [address]
+  })
+
+  const {
+    data: isWithdrawn,
+    isLoading: isFetchingWithdrawnData,
+    refetch: refetchWithdrawnData
+  } = useReadStakingContractWithdrawn({
     address: stakingAddress,
     args: address && [address]
   })
@@ -59,19 +76,47 @@ export const useUserStakes = () => {
     () =>
       isFetchingUserStakes ||
       isFetchingIsStakingEnded ||
+      isFetchingPerAddressLimit ||
+      isFetchingWithdrawnData,
+    [
+      isFetchingIsStakingEnded,
+      isFetchingUserStakes,
       isFetchingPerAddressLimit,
-    [isFetchingIsStakingEnded, isFetchingUserStakes, isFetchingPerAddressLimit]
+      isFetchingWithdrawnData
+    ]
   )
+
+  const handleWithdraw = async (callback?: (error?: unknown) => void) => {
+    if (evmContractAddresses?.staking) {
+      try {
+        setIsClaiming(true)
+        const txid = await writeContractAsync({
+          abi: stakingAbi,
+          functionName: 'withdraw',
+          address: evmContractAddresses.staking
+        })
+        addTransaction(txid)
+        callback?.()
+      } catch (error) {
+        console.error(error)
+        callback?.(error)
+      } finally {
+        setIsClaiming(false)
+      }
+    }
+  }
 
   useEffect(() => {
     refetchStakingState()
     refetchUserStakes()
     refetchStakesReward()
+    refetchWithdrawnData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactions])
 
   return {
     userStakes,
+    isWithdrawn,
     isFetchingAll,
     isFetchingUserStakes,
     isFetchingIsStakingEnded,
@@ -80,6 +125,9 @@ export const useUserStakes = () => {
     refetchUserStakes,
     perAddressLimit,
     jadeBalance,
-    stakeRewards
+    stakeRewards,
+    stakingAddress,
+    isClaiming,
+    handleWithdraw
   }
 }

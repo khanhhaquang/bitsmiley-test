@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -8,6 +8,7 @@ import {
 } from '@/assets/icons'
 import { ActionButton } from '@/components/ActionButton'
 import { Image } from '@/components/Image'
+import { AirdropClaimType, useAirdropClaim } from '@/hooks/useAirdropClaim'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useGetMyPreStake, useGetPreStakeInfo } from '@/queries/airdrop'
 import { cn } from '@/utils/cn'
@@ -15,6 +16,7 @@ import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
 
 import ArcadeModal from '../components/ArcadeModal'
+import { BitDiscAirdropModal } from '../components/BitDiscAirdropModal'
 import { ClaimUnlockedModal } from '../components/ExitTokenModals'
 import MyJourneyModal from '../components/MyJourneyModal'
 import PreSeasonStakeModal, {
@@ -23,14 +25,17 @@ import PreSeasonStakeModal, {
 
 const SelectStage: React.FC = () => {
   const navigate = useNavigate()
-  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(true)
+  const [isPrecheckModalOpen, setIsPrecheckModalOpen] = useState(false)
   const [isArcadeModalOpen, setIsArcadeModalOpen] = useState(false)
   const [isMyJourneyModalOpen, setIsMyJourneyModalOpen] = useState(false)
   const [isClaimUnlockedModalOpen, setIsClaimUnlockedModalOpen] =
     useState(false)
+  const [isBitDiscAirdropModalOpen, setIsBitDiscAirdropModalOpen] =
+    useState(false)
   const { data } = useGetMyPreStake()
   const { data: preStakeInfo } = useGetPreStakeInfo()
   const { projectInfo } = useProjectInfo()
+  const { canClaim, isClaimed } = useAirdropClaim(AirdropClaimType.BitDisc)
 
   const isArcadeReady = useMemo(() => {
     return (
@@ -51,6 +56,10 @@ const SelectStage: React.FC = () => {
       preStakeInfo?.data.nowTime < preStakeInfo?.data.preStakeStartTime
     )
   }, [preStakeInfo?.data.nowTime, preStakeInfo?.data.preStakeStartTime])
+
+  useEffect(() => {
+    if (canClaim && !isClaimed) setIsBitDiscAirdropModalOpen(true)
+  }, [canClaim, isClaimed])
 
   return (
     <div className="relative">
@@ -77,6 +86,11 @@ const SelectStage: React.FC = () => {
           setIsPrecheckModalOpen(false)
         }}
       />
+      <BitDiscAirdropModal
+        isOpen={isBitDiscAirdropModalOpen}
+        onClose={() =>
+          setIsBitDiscAirdropModalOpen(false)
+        }></BitDiscAirdropModal>
       <MyJourneyModal
         onClose={() => setIsMyJourneyModalOpen(false)}
         isOpen={isMyJourneyModalOpen}

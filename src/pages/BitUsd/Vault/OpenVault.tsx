@@ -23,7 +23,7 @@ import { ProcessingModal } from '../components/Processing'
 import { ProcessingType } from '../components/Processing.types'
 import { VaultInfo } from '../components/VaultInfo'
 import { VaultTitleBlue } from '../components/VaultTitle'
-import { formatBitUsd, formatWBtc } from '../display'
+import { formatBitUsd, formatCollateral } from '../display'
 
 const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
   chainId,
@@ -247,7 +247,7 @@ const OpenVault: React.FC<{ chainId: number; collateralId: string }> = ({
           disabled={depositDisabled}
           errorMessage={depositInputErrorMsg}
           title={`DEPOSIT ${deptTokenSymbol}`}
-          titleSuffix={`Available: ${formatWBtc(
+          titleSuffix={`Available: ${formatCollateral(
             wbtcBalance,
             false,
             true

@@ -4,6 +4,7 @@ import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { TVLIndicatorIcon } from '@/assets/icons'
 import { Image } from '@/components/Image'
 import { OnChainLoader } from '@/components/OnchainLoader'
+import { useSuiTVL } from '@/hooks/useSuiTVL'
 import { useTokenPrice } from '@/hooks/useTokenPrice'
 import { useTVL } from '@/hooks/useTVL'
 import { useUserInfo } from '@/hooks/useUserInfo'
@@ -69,7 +70,9 @@ const ContentContainer: React.FC<{ children: React.ReactNode }> = ({
 }
 
 const TVLIndicator: React.FC = () => {
+  const { isSuiConnected } = useUserInfo()
   const { formatedTvl } = useTVL()
+  const { suiFormatedTvl } = useSuiTVL()
   return (
     <div className="absolute left-[33%] top-[8.4%] z-50 h-[4.3%] w-[33.4%] overflow-hidden">
       <div className="flex size-full items-center justify-between">
@@ -80,7 +83,7 @@ const TVLIndicator: React.FC = () => {
         <div className="flex items-center justify-center gap-x-1 xl:gap-x-3">
           <TVLIndicatorIcon className="h-4 xl:h-6" />
           <span className="text-nowrap stroke-green6 stroke-[0.2] font-sdm text-2xl text-green6 xl:text-[28px]">
-            TVL: {formatedTvl}
+            TVL: {isSuiConnected ? suiFormatedTvl : formatedTvl}
           </span>
           <TVLIndicatorIcon className="h-4 rotate-180 xl:h-6" />
         </div>
@@ -159,9 +162,11 @@ const NavigationButton: React.FC<{
 
 const MainApp = () => {
   const { isConnected, isLoading } = useUserInfo()
+  const { pathname } = useLocation()
+  const isAlphanet = pathname === '/app/alphanet'
 
   const renderContent = () => {
-    if (!isConnected) {
+    if (!isConnected && !isAlphanet) {
       return (
         <div className="flex size-full items-center justify-center text-2xl">
           Connect wallet first
@@ -169,7 +174,7 @@ const MainApp = () => {
       )
     }
 
-    return isLoading ? <OnChainLoader /> : <Outlet />
+    return isLoading && !isAlphanet ? <OnChainLoader /> : <Outlet />
   }
 
   return (

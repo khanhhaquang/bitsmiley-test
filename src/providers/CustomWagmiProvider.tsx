@@ -7,10 +7,13 @@ import {
   XverseConnector
 } from '@particle-network/btc-connectkit'
 import { ReactNode, useMemo, useState } from 'react'
-import { Transport } from 'viem'
-import { WagmiProvider, createConfig, http } from 'wagmi'
+import { fallback, Transport } from 'viem'
+import { mainnet } from 'viem/chains'
+import { WagmiProvider, createConfig, http, unstable_connector } from 'wagmi'
+import { injected } from 'wagmi/connectors'
 
 import { chainsNotSupportedByParticle } from '@/config/wagmi'
+import { OrangeConnector } from '@/connectors/orange'
 import { usePreloadResources } from '@/hooks/usePreloadResources'
 import { useProjectInfo } from '@/hooks/useProjectInfo'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
@@ -30,7 +33,14 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
     const transports = supportedChains.reduce<Record<number, Transport>>(
       (acc, c) => ({
         ...acc,
-        [c.id]: http()
+        [c.id]:
+          c.id === mainnet.id
+            ? fallback([
+                unstable_connector(injected),
+                http('https://ethereum.blockpi.network/v1/rpc/public'),
+                http()
+              ])
+            : fallback([unstable_connector(injected), http()])
       }),
       {}
     )
@@ -79,7 +89,8 @@ const CustomWagmiProvider = ({ children }: { children: ReactNode }) => {
         new UnisatConnector(),
         new BybitConnector(),
         new BitgetConnector(),
-        new XverseConnector()
+        new XverseConnector(),
+        new OrangeConnector()
       ]}>
       <WagmiProvider reconnectOnMount={false} config={config}>
         {children}

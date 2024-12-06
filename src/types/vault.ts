@@ -2,6 +2,8 @@ import { Address } from 'viem'
 
 import { ILiquidatedDetail } from '@/services/user'
 
+import { IDetailedSuiCollateral } from './sui'
+
 export interface IVault {
   liquidationPrice?: string
   healthFactor?: string
@@ -52,6 +54,9 @@ export interface IDetailedCollateralFromChain {
   liquidationPrice?: bigint
   lockedCollateral?: bigint
   mintedBitUSD?: bigint
+
+  // from UserService.getLiquidated
+  liquidated?: ILiquidatedDetail[]
 }
 
 export interface IDetailedCollateral {
@@ -85,6 +90,9 @@ export interface IDetailedCollateral {
   liquidationPrice?: string
   lockedCollateral?: string
   mintedBitUSD?: string
+
+  // injected from chain
+  collateralSymbol?: string
 }
 
 export interface ICollateralFromChain {
@@ -98,3 +106,7 @@ export interface ICollateral {
   vaultAddress?: Address
   collaterals?: IDetailedCollateral[]
 }
+
+export type IGeneralDetailedCollateral =
+  | IDetailedCollateral
+  | IDetailedSuiCollateral

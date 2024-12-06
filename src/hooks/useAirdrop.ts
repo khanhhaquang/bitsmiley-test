@@ -18,12 +18,13 @@ interface IAirdropInput {
   airdropContractAddress: Address
 }
 
-export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
+export const useAirdrop = (airdrop?: IAirdropInput) => {
   const currentChainId = useChainId()
   const { address: userAddress } = useUserInfo()
 
   const {
     data: airdropProofAndAmount,
+    refetch: refetchProofAndAmount,
     isLoading: isLoadingAirdropProofAndAmount
   } = useQuery({
     queryKey: [
@@ -40,8 +41,7 @@ export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
     enabled:
       !!airdrop?.airdropContractAddress &&
       !!userAddress &&
-      currentChainId === airdrop.chainId &&
-      !disable,
+      currentChainId === airdrop.chainId,
     select: (res) => (!res ? undefined : res.data)
   })
 
@@ -54,7 +54,7 @@ export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
     address: airdrop?.airdropContractAddress,
     args: userAddress && [userAddress],
     query: {
-      enabled: currentChainId === airdrop?.chainId && !disable
+      enabled: currentChainId === airdrop?.chainId
     }
   })
   const {
@@ -75,7 +75,7 @@ export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
           ]
         : undefined,
     query: {
-      enabled: currentChainId === airdrop?.chainId && !disable
+      enabled: currentChainId === airdrop?.chainId
     }
   })
 
@@ -124,15 +124,22 @@ export const useAirdrop = (airdrop?: IAirdropInput, disable?: boolean) => {
     [isRefetchingCanClaim, isRefetchingIsClaimed]
   )
 
+  const refetchClaimStatus = () => {
+    refetchIsClaimed()
+    refetchCanClaim()
+  }
+
   return {
     // airdrops,
     airdropProofAndAmount,
+    refetchProofAndAmount,
     isClaimed,
     canClaim,
     isLoading,
     isRefetching,
     isLoadingAirdropProofAndAmount,
     claim,
-    isClaiming
+    isClaiming,
+    refetchClaimStatus
   }
 }
