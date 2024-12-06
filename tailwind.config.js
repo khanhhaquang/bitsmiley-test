@@ -1,4 +1,5 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
+import defaultTheme from 'tailwindcss/defaultTheme'
+import animatePlugin from 'tailwindcss-animate'
 
 const colors = {
   yellow: '#FFF500',
@@ -129,10 +130,9 @@ export default {
         arcadeMachineBg:
           'url("/src/assets/illustrations/arcade-machine-bg.gif")',
         prizeBg: 'url("/src/assets/illustrations/prize-bg.webp")',
-        prizeBgActive:
-          'url("/src/assets/illustrations/prize-bg-active.webp")'
+        prizeBgActive: 'url("/src/assets/illustrations/prize-bg-active.webp")'
       }
     }
   },
-  plugins: [require('tailwindcss-animate')]
+  plugins: [animatePlugin]
 }
