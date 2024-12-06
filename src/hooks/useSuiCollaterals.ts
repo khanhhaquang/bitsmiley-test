@@ -154,7 +154,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
           // opened vault
           healthFactor: c.health_factor
             ? (Number(c.health_factor) / 10).toString()
-            : '0',
+            : '',
           availableToMint: fromMistToSignValue(
             BigInt(c.available_to_mint?.value || 0),
             c.available_to_mint?.is_negative

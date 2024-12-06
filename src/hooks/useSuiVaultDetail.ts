@@ -105,7 +105,9 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     placeholderData: keepPreviousData,
     select: (data: Partial<IBcsVaultDetail>) =>
       ({
-        healthFactor: data?.health_factor,
+        healthFactor: data.health_factor
+          ? (Number(data.health_factor) / 10).toString()
+          : '',
         liquidationPrice: parseFromMist(
           data?.liquidation_price || 0
         ).toString(),
