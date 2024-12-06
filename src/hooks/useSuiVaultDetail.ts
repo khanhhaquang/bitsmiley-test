@@ -1,10 +1,9 @@
-import { SuiClient } from '@mysten/sui/client'
-import { Transaction, TransactionObjectInput } from '@mysten/sui/transactions'
-import { useSuiClient, useWallet } from '@suiet/wallet-kit'
+import { Transaction } from '@mysten/sui/transactions'
+import { fromHex } from '@mysten/sui/utils'
+import { useWallet } from '@suiet/wallet-kit'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Address, hexToBytes } from 'viem'
 
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -24,17 +23,20 @@ import {
   toI64
 } from '@/utils/sui'
 
+import { useSuiExecute } from './useSuiExecute'
 import { useSuiToken } from './useSuiToken'
 import { useSuiVaultAddress } from './useSuiVaultAddress'
 
 const SAFE_BITUSD_DEDUCT_AMOUNT = 0.01
 
 export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
-  const suiClient = useSuiClient() as SuiClient
-  const { account, chain } = useWallet()
+  const { address, chain } = useWallet()
+  const { fetchTransactionResult } = useSuiExecute()
   const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
+
+  const PackageIds = useMemo(() => suiContractAddresses, [suiContractAddresses])
 
   const collateralType = collateral?.collateral?.tokenAddress
   const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
@@ -59,54 +61,48 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
   const getVaultDetail = async (
     collateralAmount: string,
     bitusd: string,
-    vault?: string
+    vault: string = ''
   ) => {
+    console.log(
+      '🚀 ~ useSuiVaultDetail ~ bitusd:',
+      convertToMist(bitusd, collateralMetaData?.decimals ?? 0)
+    )
+
+    if (!PackageIds || !address) return undefined
+
     const tx = new Transaction()
     tx.moveCall({
-      target: `${suiContractAddresses?.bitSmileyPackageId}::query::get_vault_detail`,
+      target: `${PackageIds.bitSmileyPackageId}::query::get_vault_detail`,
       arguments: [
-        tx.object(
-          suiContractAddresses?.bitSmileyQueryObjectId as TransactionObjectInput
-        ),
-        tx.object(
-          suiContractAddresses?.bitSmileyObjectId as TransactionObjectInput
-        ),
-        tx.object(
-          suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
-        ),
-        tx.object(
-          suiContractAddresses?.stabilityFeeObjectId as TransactionObjectInput
-        ),
-        tx.object(
-          suiContractAddresses?.oracleObjectId as TransactionObjectInput
-        ),
-        tx.pure.address(vault as Address),
+        tx.object(PackageIds.bitSmileyQueryObjectId),
+        tx.object(PackageIds.bitSmileyObjectId),
+        tx.object(PackageIds.vaultManagerObjectId),
+        tx.object(PackageIds.stabilityFeeObjectId),
+        tx.object(PackageIds.oracleObjectId),
+        tx.pure.address(vault),
         tx.pure(
           toI64(
             convertToMist(collateralAmount, collateralMetaData?.decimals ?? 0)
           )
         ),
-        tx.pure(
-          toI64(convertToMist(Number(bitusd), bitUSDMetadata?.decimals ?? 0))
-        ),
+        tx.pure(toI64(convertToMist(bitusd, bitUSDMetadata?.decimals ?? 0))),
         tx.object.clock()
       ]
     })
 
-    const res = await suiClient.devInspectTransactionBlock({
-      sender: account?.address as Address,
-      transactionBlock: tx
-    })
-    const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
-    return BcsVaultDetail.parse(new Uint8Array(bytes))
+    const res = await fetchTransactionResult(tx)
+
+    if (!res || res.length === 0) return undefined
+
+    return BcsVaultDetail.parse(new Uint8Array(res))
   }
 
   const query = {
     placeholderData: keepPreviousData,
-    select: (data: Partial<IBcsVaultDetail>) =>
-      ({
-        healthFactor: data.health_factor
-          ? (Number(data.health_factor) / 10).toString()
+    select: (data: Partial<IBcsVaultDetail> | undefined): IVault => {
+      return {
+        healthFactor: data?.health_factor
+          ? (Number(data?.health_factor) / 10).toString()
           : '',
         liquidationPrice: parseFromMist(
           data?.liquidation_price || 0
@@ -132,7 +128,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
           data?.locked_collateral?.is_negative,
           collateral?.collateral?.decimals ?? 0
         ).toString()
-      }) as IVault
+      }
+    }
   }
 
   const {
@@ -151,10 +148,9 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     ],
     queryFn: () => getVaultDetail('0', '0', vaultAddress),
     enabled: Boolean(
-      suiContractAddresses?.bitSmileyPackageId &&
-        suiContractAddresses?.bitSmileyObjectId &&
-        account?.address &&
-        suiClient &&
+      PackageIds?.bitSmileyPackageId &&
+        PackageIds?.bitSmileyObjectId &&
+        address &&
         vaultAddress
     ),
     placeholderData: query.placeholderData,
@@ -189,10 +185,9 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
         vaultAddress
       ),
     enabled: Boolean(
-      suiContractAddresses?.bitSmileyPackageId &&
-        suiContractAddresses?.bitSmileyObjectId &&
-        account?.address &&
-        suiClient &&
+      PackageIds?.bitSmileyPackageId &&
+        PackageIds?.bitSmileyObjectId &&
+        address &&
         vaultAddress &&
         hasChangedVault
     ),
@@ -226,10 +221,9 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
         vaultAddress
       ),
     enabled: Boolean(
-      suiContractAddresses?.bitSmileyPackageId &&
-        suiContractAddresses?.bitSmileyObjectId &&
-        account?.address &&
-        suiClient &&
+      PackageIds?.bitSmileyPackageId &&
+        PackageIds?.bitSmileyObjectId &&
+        address &&
         vaultAddress
     ),
     placeholderData: query.placeholderData,
@@ -244,7 +238,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     [maxVaultData]
   )
 
-  const { collateralId } = useParams()
+  const { collateralId = '' } = useParams()
   const [capturedMaxMint, setCapturedMaxMint] = useState('')
   const [tryOpenVaultBitUsd, setTryOpenVaultBitUsd] = useState('')
   const [tryOpenVaultCollateral, setTryOpenVaultCollateral] = useState('')
@@ -257,6 +251,8 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     collateral: number,
     bitusd: number
   ) => {
+    if (!PackageIds || !address) return undefined
+
     const tx = new Transaction()
     const collateralMist = convertToMist(
       Number(collateral),
@@ -267,30 +263,21 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
       bitUSDMetadata?.decimals ?? 0
     )
     tx.moveCall({
-      target: `${suiContractAddresses?.bitSmileyPackageId}::query::try_open_vault`,
+      target: `${PackageIds.bitSmileyPackageId}::query::try_open_vault`,
       arguments: [
-        tx.object(
-          suiContractAddresses?.bitSmileyQueryObjectId as TransactionObjectInput
-        ),
-        tx.object(
-          suiContractAddresses?.vaultManagerObjectId as TransactionObjectInput
-        ),
-        tx.object(
-          suiContractAddresses?.oracleObjectId as TransactionObjectInput
-        ),
-        tx.pure.vector('u8', hexToBytes(collateralId as Address)),
+        tx.object(PackageIds?.bitSmileyQueryObjectId),
+        tx.object(PackageIds?.vaultManagerObjectId),
+        tx.object(PackageIds?.oracleObjectId),
+        tx.pure.vector('u8', fromHex(collateralId)),
         tx.pure(toI64(collateralMist)),
         tx.pure(toI64(bitusdMist))
       ]
     })
 
-    const res = await suiClient.devInspectTransactionBlock({
-      sender: account?.address as Address,
-      transactionBlock: tx
-    })
+    const res = await fetchTransactionResult(tx)
+    if (!res || res.length === 0) return undefined
 
-    const bytes = res.results?.[0].returnValues?.[0]?.[0] || []
-    return BcsOpenVault.parse(new Uint8Array(bytes))
+    return BcsOpenVault.parse(new Uint8Array(res))
   }
 
   const { data: tryOpenVaultInfo } = useQuery({
@@ -303,15 +290,12 @@ export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
     ],
     queryFn: () =>
       tryOpenVault(
-        collateralId as Address,
+        collateralId,
         Number(debouncedTryOpenVaultCollateral),
         Number(debouncedTryOpenVaultBitUsd)
       ),
     enabled: Boolean(
-      suiContractAddresses?.bitSmileyPackageId &&
-        account?.address &&
-        suiClient &&
-        collateralId
+      suiContractAddresses?.bitSmileyPackageId && address && collateralId
     ),
     placeholderData: query.placeholderData,
     select: query.select

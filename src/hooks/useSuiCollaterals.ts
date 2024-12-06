@@ -248,13 +248,8 @@ export const useSuiCollaterals = (collateralId?: string) => {
 
               return {
                 vaultAddress: openedVaultAddress,
-                collaterals: collaterals
-                  .filter((c) =>
-                    collateralId
-                      ? byteArrayToString(c.collateralId.bytes) === collateralId
-                      : true
-                  )
-                  .map((c): IDetailedCollateralFromSuiChain => {
+                collaterals: collaterals.map(
+                  (c): IDetailedCollateralFromSuiChain => {
                     if (
                       byteArrayToString(c.collateralId.bytes) === collateralId
                     ) {
@@ -267,7 +262,8 @@ export const useSuiCollaterals = (collateralId?: string) => {
                     }
 
                     return c
-                  })
+                  }
+                )
               }
             }
     }

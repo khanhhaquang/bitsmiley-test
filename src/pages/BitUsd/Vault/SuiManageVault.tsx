@@ -78,7 +78,7 @@ export const SuiManageVault: React.FC<{
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
     useSuiToken(collateral?.collateral?.tokenAddress)
 
-  const deptTokenSymbol = collateralMetaData?.symbol || ''
+  const collateralSymbol = collateralMetaData?.symbol || ''
 
   const { balance: bitUsdBalance, coinMetadata: bitUSDMetaData } = useSuiToken(
     `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
@@ -137,7 +137,7 @@ export const SuiManageVault: React.FC<{
     // mintAndDeposit
     if (isMintFromBtc === true) {
       // no input values
-      if (!depositBtc || !mintBitUsd) return true // TO DO: Confirm with BE
+      if (!depositBtc && !mintBitUsd) return true
       // deposit > balance
       if (!!depositBtc && Number(depositBtc) > collateralBalance) return true
 
@@ -413,7 +413,7 @@ export const SuiManageVault: React.FC<{
 
         <ManageVaultInfoSection
           className="mb-12"
-          vault={{ ...vault, collateralSymbol: deptTokenSymbol }}
+          vault={{ ...vault, collateralSymbol: collateralSymbol }}
         />
 
         <div className="mb-6 grid grid-cols-2 gap-x-[46px]">
@@ -421,7 +421,7 @@ export const SuiManageVault: React.FC<{
             <ManageVaultSectionTitle
               title="manage"
               className="mb-6 gap-x-0"
-              subTitle="btc"
+              subTitle={collateralSymbol}
               icon={<BitCoinIcon className="shrink-0" width={27} height={29} />}
             />
             <NumberInput
@@ -431,7 +431,7 @@ export const SuiManageVault: React.FC<{
               onFocus={() => setIsMintFromBtc(true)}
               greyOut={isMintFromBtc === false}
               disabled={depositWBtcDisabled && false}
-              title={`deposit ${deptTokenSymbol}`}
+              title={`deposit ${collateralSymbol}`}
               inputSuffix={`~${depositInUsd}$`}
               titleSuffix={
                 'Available: ' + formatNumberAsCompact(collateralBalance)
@@ -450,13 +450,13 @@ export const SuiManageVault: React.FC<{
               disabled={withdrawWbtcDisabled}
               onFocus={() => setIsMintFromBtc(false)}
               greyOut={isMintFromBtc === true}
-              title={`withdraw ${deptTokenSymbol}`}
+              title={`withdraw ${collateralSymbol}`}
               titleSuffix={
                 <span className="flex items-center gap-x-2">
                   Max:{' '}
                   {
                     displayVaultValues(
-                      { ...maxVault, collateralSymbol: deptTokenSymbol },
+                      { ...maxVault, collateralSymbol: collateralSymbol },
                       false
                     ).availableToWithdraw
                   }

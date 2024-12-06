@@ -3,6 +3,7 @@ import { Transaction } from '@mysten/sui/transactions'
 import { fromHex } from '@mysten/sui/utils'
 import { useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
 import { getSuiChainConfig } from '@/utils/chain'
 import { parseFromMist } from '@/utils/sui'
@@ -17,16 +18,17 @@ export const useSuiTokenPrice = (collateralId: string = '') => {
     getSuiChainConfig(chain?.id)?.id
   )
 
-  const getTokenPrice = async (
-    packageId: string = '',
-    oracleObjectId: string = ''
-  ) => {
+  const PackageIds = useMemo(() => suiContractAddresses, [suiContractAddresses])
+
+  const getTokenPrice = async (injectedCollateralId: string = '') => {
+    if (!PackageIds) return undefined
+
     const tx = new Transaction()
     tx.moveCall({
-      target: `${packageId}::simple_oracle::get_price`,
+      target: `${PackageIds.oraclePackageId}::simple_oracle::get_price`,
       arguments: [
-        tx.object(oracleObjectId),
-        tx.pure.vector('u8', fromHex(collateralId))
+        tx.object(PackageIds.oracleObjectId),
+        tx.pure.vector('u8', fromHex(injectedCollateralId || collateralId))
       ]
     })
 
@@ -46,11 +48,7 @@ export const useSuiTokenPrice = (collateralId: string = '') => {
       suiContractAddresses?.oracleObjectId,
       address
     ],
-    queryFn: () =>
-      getTokenPrice(
-        suiContractAddresses?.oraclePackageId,
-        suiContractAddresses?.oracleObjectId
-      ),
+    queryFn: () => getTokenPrice(),
     enabled: !!(
       address &&
       suiContractAddresses?.oraclePackageId &&
@@ -63,6 +61,7 @@ export const useSuiTokenPrice = (collateralId: string = '') => {
     price: Number(parseFromMist(priceAsMist ?? 0)),
     priceAsMist,
     refetch,
-    isFetching
+    isFetching,
+    getTokenPrice
   }
 }

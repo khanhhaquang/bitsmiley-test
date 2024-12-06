@@ -15,13 +15,25 @@ const SuiPairsTable: React.FC<{
   isOpenedVaults?: boolean
 }> = ({ table, isOpenedVaults }) => {
   const { isSuiConnected, suiChainIdAsNumber } = useUserInfo()
-  const { isFetching, availableCollaterals, openedCollaterals, isError } =
-    useSuiCollaterals()
+  const {
+    isFetching,
+    availableCollaterals,
+    openedCollaterals,
+    isError,
+    hasOpenedCollaterals
+  } = useSuiCollaterals()
 
-  const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
+  const collaterals = useMemo(
+    () => (isOpenedVaults ? openedCollaterals : availableCollaterals),
+    [availableCollaterals, isOpenedVaults, openedCollaterals]
+  )
+
+  const showEmpty = useMemo(() => {
+    return (!isOpenedVaults && hasOpenedCollaterals) || !collaterals.length
+  }, [collaterals.length, hasOpenedCollaterals, isOpenedVaults])
 
   const rows = useMemo(() => {
-    if (!collaterals.length) {
+    if (showEmpty) {
       return (
         <TableRow className="my-6">
           <TableCell
@@ -42,7 +54,7 @@ const SuiPairsTable: React.FC<{
         collateral={collateral}
       />
     ))
-  }, [collaterals, table])
+  }, [collaterals, hasOpenedCollaterals, table])
 
   return (
     <>

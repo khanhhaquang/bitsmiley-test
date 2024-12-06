@@ -3,7 +3,6 @@ import { Transaction } from '@mysten/sui/transactions'
 import { useWallet } from '@suiet/wallet-kit'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { Address } from 'viem'
 
 import { getSuiChainConfig } from '@/utils/chain'
 import { formatNumberAsCompact } from '@/utils/number'
@@ -12,39 +11,29 @@ import { parseFromMist } from '@/utils/sui'
 import { useContractAddresses } from './useContractAddresses'
 import { useSuiCollaterals } from './useSuiCollaterals'
 import { useSuiExecute } from './useSuiExecute'
-import { useSuiToken } from './useSuiToken'
 import { useSuiTokenPrice } from './useSuiTokenPrice'
 
-// wBtc * price + bitusd
 export const useSuiTVL = () => {
-  const { account, chain } = useWallet()
+  const { chain, address } = useWallet()
   const { suiContractAddresses } = useContractAddresses(
     getSuiChainConfig(chain?.id)?.id
   )
 
   const { collaterals } = useSuiCollaterals()
-  const collateral = collaterals?.[0]
-  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
 
-  const { price: btcPrice } = useSuiTokenPrice(collateral?.collateralId)
+  const { getTokenPrice } = useSuiTokenPrice()
 
-  const { coinMetadata: collateralMetaData } = useSuiToken(
-    collateral?.collateral?.tokenAddress
-  )
-  const { coinMetadata: bitUSDMetaData } = useSuiToken(bitUSDType)
   const { fetchTransactionResult } = useSuiExecute()
 
-  const collateralDecimals = collateralMetaData?.decimals ?? 0
-  const bitUSDDecimals = bitUSDMetaData?.decimals ?? 0
+  const PackageIds = useMemo(() => suiContractAddresses, [suiContractAddresses])
 
-  const getTotalBusd = async (
-    packageId: Address,
-    bitSmileyObjectId: Address
-  ) => {
+  const getTotalBusd = async () => {
+    if (!PackageIds) return undefined
+
     const tx = new Transaction()
     tx.moveCall({
-      target: `${packageId}::bitsmiley::balance_of_bitusd`,
-      arguments: [tx.object(bitSmileyObjectId)]
+      target: `${PackageIds.bitSmileyPackageId}::bitsmiley::balance_of_bitusd`,
+      arguments: [tx.object(PackageIds.bitSmileyObjectId)]
     })
 
     const bytes = await fetchTransactionResult(tx)
@@ -58,27 +47,21 @@ export const useSuiTVL = () => {
       suiContractAddresses?.bitSmileyPackageId,
       suiContractAddresses?.bitSmileyObjectId
     ],
-    queryFn: () =>
-      getTotalBusd(
-        suiContractAddresses?.bitSmileyPackageId as Address,
-        suiContractAddresses?.bitSmileyObjectId as Address
-      ),
+    queryFn: () => getTotalBusd(),
     enabled: !!(
-      account?.address &&
+      address &&
       suiContractAddresses?.bitSmileyPackageId &&
       suiContractAddresses?.bitSmileyObjectId
     )
   })
 
-  const getTotalWBTC = async (
-    packageId: Address,
-    bitSmileyObjectId: Address,
-    tokenAddress: Address
-  ) => {
+  const getCollateralBalance = async (tokenAddress: string = '') => {
+    if (!PackageIds || !tokenAddress) return undefined
+
     const tx = new Transaction()
     tx.moveCall({
-      target: `${packageId}::bitsmiley::total_collateral`,
-      arguments: [tx.object(bitSmileyObjectId)],
+      target: `${PackageIds.bitSmileyPackageId}::bitsmiley::total_collateral`,
+      arguments: [tx.object(PackageIds.bitSmileyObjectId)],
       typeArguments: [tokenAddress]
     })
 
@@ -87,42 +70,61 @@ export const useSuiTVL = () => {
     if (!bytes || bytes.length === 0) return '0'
     return bcs.U64.parse(new Uint8Array(bytes))
   }
-  const { data: wBtcBalance, isLoading: isLoadingWBTC } = useQuery({
+
+  const { data: collateralsTVL, isLoading: isLoadingWBTC } = useQuery({
     queryKey: [
-      'total_wbtc',
-      suiContractAddresses?.bitSmileyPackageId,
-      suiContractAddresses?.bitSmileyObjectId,
-      collateral?.collateral?.tokenAddress
+      'sui',
+      'tvl',
+      PackageIds?.bitSmileyPackageId,
+      PackageIds?.bitSmileyObjectId
     ],
-    queryFn: () =>
-      getTotalWBTC(
-        suiContractAddresses?.bitSmileyPackageId as Address,
-        suiContractAddresses?.bitSmileyObjectId as Address,
-        collateral?.collateral?.tokenAddress as Address
-      ),
+    queryFn: async () => {
+      const pricesAsMist = await Promise.allSettled(
+        collaterals.map((c) => getTokenPrice(c.collateralId))
+      )
+
+      const balancesAsMist = await Promise.allSettled(
+        collaterals.map((c) => getCollateralBalance(c.collateral?.tokenAddress))
+      )
+
+      const decimals = collaterals.map((c) => c.collateral?.decimals)
+      const prices = pricesAsMist.map((p) => {
+        if (p.status === 'fulfilled') return parseFromMist(p.value || 0)
+        return '0'
+      })
+
+      const balances = balancesAsMist.map((b, idx) => {
+        if (b.status === 'fulfilled')
+          return parseFromMist(b.value || 0, decimals[`${idx}`] ?? 0)
+        return '0'
+      })
+
+      const result = prices.map(
+        (p, idx) => Number(p) * Number(balances[`${idx}`])
+      )
+      console.log('🚀 ~ queryFn: ~ result:', result)
+
+      return result.reduce((a, b) => a + b, 0)
+    },
     enabled: !!(
-      account?.address &&
-      suiContractAddresses?.bitSmileyPackageId &&
-      suiContractAddresses?.bitSmileyObjectId &&
-      collateral?.collateral?.tokenAddress
+      address &&
+      collaterals.length &&
+      PackageIds?.bitSmileyPackageId &&
+      PackageIds?.bitSmileyObjectId
     )
   })
 
   const suiTVL = useMemo(() => {
-    if (!btcPrice || !wBtcBalance || !bitusd) return 0n
-    return (
-      btcPrice *
-        Number(parseFromMist(BigInt(wBtcBalance), collateralDecimals)) +
-      Number(parseFromMist(BigInt(bitusd), bitUSDDecimals))
-    )
-  }, [btcPrice, wBtcBalance, bitusd, collateralDecimals, bitUSDDecimals])
+    if (!collateralsTVL || !bitusd) return 0
+    return Number(collateralsTVL) + Number(parseFromMist(bitusd))
+  }, [collateralsTVL, bitusd])
 
   const isFetching = isLoadingBitUSD || isLoadingWBTC
 
-  const suiFormatedTvl = useMemo(
+  const suiFormattedTVL = useMemo(
     () => (isFetching ? '--' : formatNumberAsCompact(suiTVL)),
     [isFetching, suiTVL]
   )
 
-  return { isFetching, suiTVL, suiFormatedTvl }
+  return { isFetching, suiTVL, suiFormattedTVL }
 }
