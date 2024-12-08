@@ -71,8 +71,9 @@ const ContentContainer: React.FC<{ children: React.ReactNode }> = ({
 
 const TVLIndicator: React.FC = () => {
   const { isSuiConnected } = useUserInfo()
-  const { formatedTvl } = useTVL()
-  const { suiFormatedTvl } = useSuiTVL()
+  const { formattedTVL } = useTVL()
+  const { suiFormattedTVL } = useSuiTVL()
+
   return (
     <div className="absolute left-[33%] top-[8.4%] z-50 h-[4.3%] w-[33.4%] overflow-hidden">
       <div className="flex size-full items-center justify-between">
@@ -83,7 +84,7 @@ const TVLIndicator: React.FC = () => {
         <div className="flex items-center justify-center gap-x-1 xl:gap-x-3">
           <TVLIndicatorIcon className="h-4 xl:h-6" />
           <span className="text-nowrap stroke-green6 stroke-[0.2] font-sdm text-2xl text-green6 xl:text-[28px]">
-            TVL: {isSuiConnected ? suiFormatedTvl : formatedTvl}
+            TVL: {isSuiConnected ? suiFormattedTVL : formattedTVL}
           </span>
           <TVLIndicatorIcon className="h-4 rotate-180 xl:h-6" />
         </div>

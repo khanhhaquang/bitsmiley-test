@@ -2,8 +2,6 @@ import { Address } from 'viem'
 
 import { ILiquidatedDetail } from '@/services/user'
 
-import { IDetailedSuiCollateral } from './sui'
-
 export interface IVault {
   liquidationPrice?: string
   healthFactor?: string
@@ -63,10 +61,11 @@ export interface IDetailedCollateral {
   chainId: number
   name?: string
   maxLTV?: string
-  isOpenVault: boolean
-  collateralId?: Address
+  isOpenVault?: boolean
+  collateralId?: Address | string
   liquidationFeeRate?: string
   collateral?: {
+    decimals?: number
     tokenAddress: Address
     maxDebt: string
     safetyFactor: string
@@ -106,7 +105,3 @@ export interface ICollateral {
   vaultAddress?: Address
   collaterals?: IDetailedCollateral[]
 }
-
-export type IGeneralDetailedCollateral =
-  | IDetailedCollateral
-  | IDetailedSuiCollateral

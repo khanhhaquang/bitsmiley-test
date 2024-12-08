@@ -30,7 +30,7 @@ import { useCollaterals } from '@/hooks/useCollaterals'
 import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
 import { useSupportedChains } from '@/hooks/useSupportedChains'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IDetailedCollateral, IGeneralDetailedCollateral } from '@/types/vault'
+import { IDetailedCollateral } from '@/types/vault'
 import { isSuiChain } from '@/utils/chain'
 import { cn } from '@/utils/cn'
 
@@ -245,7 +245,7 @@ const ChainPairsTable: React.FC<{
 const MintingPairsTable: React.FC<
   {
     isOpenedVaults?: boolean
-    table: TTable<IGeneralDetailedCollateral>
+    table: TTable<IDetailedCollateral>
   } & MintingPairsProps
 > = ({
   isOpenedVaults,

@@ -141,10 +141,10 @@ export const useTVL = () => {
     [queryRes]
   )
 
-  const formatedTvl = useMemo(
+  const formattedTVL = useMemo(
     () => (isFetching ? '--' : formatNumberAsCompact(formatEther(BigInt(tvl)))),
     [isFetching, tvl]
   )
 
-  return { isFetching, tvl, formatedTvl }
+  return { isFetching, tvl, formattedTVL }
 }

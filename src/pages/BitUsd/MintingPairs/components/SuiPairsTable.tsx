@@ -4,24 +4,36 @@ import { TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { chainsTitle } from '@/config/chain'
 import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IDetailedSuiCollateral } from '@/types/sui'
+import { IDetailedCollateral } from '@/types/vault'
 
 import SuiMintingPairTableRow from './SuiMintingPairTableRow'
 
 import { TTable } from '../../tables'
 
 const SuiPairsTable: React.FC<{
-  table: TTable<IDetailedSuiCollateral>
+  table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
 }> = ({ table, isOpenedVaults }) => {
   const { isSuiConnected, suiChainIdAsNumber } = useUserInfo()
-  const { isFetching, availableCollaterals, openedCollaterals, isError } =
-    useSuiCollaterals()
+  const {
+    isFetching,
+    availableCollaterals,
+    openedCollaterals,
+    isError,
+    hasOpenedCollaterals
+  } = useSuiCollaterals()
 
-  const collaterals = isOpenedVaults ? openedCollaterals : availableCollaterals
+  const collaterals = useMemo(
+    () => (isOpenedVaults ? openedCollaterals : availableCollaterals),
+    [availableCollaterals, isOpenedVaults, openedCollaterals]
+  )
+
+  const showEmpty = useMemo(() => {
+    return (!isOpenedVaults && hasOpenedCollaterals) || !collaterals.length
+  }, [collaterals.length, hasOpenedCollaterals, isOpenedVaults])
 
   const rows = useMemo(() => {
-    if (!collaterals.length) {
+    if (showEmpty) {
       return (
         <TableRow className="my-6">
           <TableCell
@@ -42,7 +54,7 @@ const SuiPairsTable: React.FC<{
         collateral={collateral}
       />
     ))
-  }, [collaterals, table])
+  }, [collaterals, showEmpty, table])
 
   return (
     <>

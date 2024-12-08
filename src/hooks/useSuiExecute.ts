@@ -2,7 +2,7 @@ import { SuiClient, SuiTransactionBlockResponse } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
 import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 type Options = Omit<
   Parameters<SuiClient['getTransactionBlock']>[0],
@@ -77,19 +77,22 @@ export const useSuiExecute = (): ExecutorResult & ExecutorHandler => {
     throw new Error('Failed to execute transaction')
   }
 
-  const fetchTransactionResult = async (tx: Transaction) => {
-    if (!wallet?.address) return undefined
+  const fetchTransactionResult = useCallback(
+    async (tx: Transaction) => {
+      if (!wallet?.address) return undefined
 
-    const res = await client.devInspectTransactionBlock({
-      sender: wallet.address,
-      transactionBlock: tx
-    })
+      const res = await client.devInspectTransactionBlock({
+        sender: wallet.address,
+        transactionBlock: tx
+      })
 
-    if (res.error) {
-      throw new Error(res.error)
-    }
-    return res.results![0].returnValues![0][0]
-  }
+      if (res.error) {
+        throw new Error(res.error)
+      }
+      return res.results![0].returnValues![0][0]
+    },
+    [client, wallet.address]
+  )
 
   return {
     fetchTransactionResult,

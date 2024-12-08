@@ -3,6 +3,8 @@ import { bcs } from '@mysten/sui/bcs'
 
 import { ILiquidatedDetail } from '@/services/user'
 
+import { IDetailedCollateral } from './vault'
+
 export const Bytes32 = bcs.struct('Bytes32', {
   bytes: bcs.vector(bcs.u8())
 })
@@ -119,42 +121,5 @@ export interface ICollateralFromSuiChain {
 export interface ISuiCollateral {
   chainId: number
   vaultAddress?: string
-  collaterals?: IDetailedSuiCollateral[]
-}
-
-export interface IDetailedSuiCollateral {
-  chainId: number
-  name: string
-  maxLTV: string
-  isOpenVault?: boolean
-  collateralId?: string
-  liquidationFeeRate?: string
-  collateral?: {
-    decimals: number
-    tokenAddress: string
-    maxDebt: string
-    safetyFactor: string
-    totalDebt: string
-    totalLocked: string
-    vaultMaxDebt: string
-    vaultMinDebt: string
-  }
-  // computed
-  stabilityFee?: number
-
-  // from UserService.getLiquidated
-  liquidated?: ILiquidatedDetail[]
-
-  // opened vault
-  availableToMint?: string
-  availableToWithdraw?: string
-  debt?: string
-  fee?: string
-  healthFactor?: string
-  liquidationPrice?: string
-  lockedCollateral?: string
-  mintedBitUSD?: string
-
-  // injected from chain
-  collateralSymbol?: string
+  collaterals?: IDetailedCollateral[]
 }

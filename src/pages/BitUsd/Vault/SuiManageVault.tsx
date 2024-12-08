@@ -15,7 +15,6 @@ import { useSuiTokenPrice } from '@/hooks/useSuiTokenPrice'
 import { useSuiTransaction } from '@/hooks/useSuiTransaction'
 import { useSuiVaultDetail } from '@/hooks/useSuiVaultDetail'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IDetailedCollateral } from '@/types/vault'
 import {
   formatNumberAsCeil,
   formatNumberAsCompact,
@@ -78,7 +77,7 @@ export const SuiManageVault: React.FC<{
   const { balance: collateralBalance, coinMetadata: collateralMetaData } =
     useSuiToken(collateral?.collateral?.tokenAddress)
 
-  const deptTokenSymbol = collateralMetaData?.symbol || ''
+  const collateralSymbol = collateralMetaData?.symbol || ''
 
   const { balance: bitUsdBalance, coinMetadata: bitUSDMetaData } = useSuiToken(
     `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
@@ -137,7 +136,7 @@ export const SuiManageVault: React.FC<{
     // mintAndDeposit
     if (isMintFromBtc === true) {
       // no input values
-      if (!depositBtc || !mintBitUsd) return true // TO DO: Confirm with BE
+      if (!depositBtc && !mintBitUsd) return true
       // deposit > balance
       if (!!depositBtc && Number(depositBtc) > collateralBalance) return true
 
@@ -304,13 +303,7 @@ export const SuiManageVault: React.FC<{
           onClickActionButton={() => {
             refetchCollaterals()
             refreshVaultValues()
-            if (processingType === 'error') {
-              transactionState?.reset()
-            }
-
-            if (processingType === 'success') {
-              navigate(-1)
-            }
+            transactionState?.reset()
           }}
           actionButtonText={processingType !== 'info' ? 'Ok' : ''}
           message={processingMessage}
@@ -320,7 +313,6 @@ export const SuiManageVault: React.FC<{
     return null
   }, [
     transactionState,
-    navigate,
     processingMessage,
     processingType,
     refetchCollaterals,
@@ -400,20 +392,18 @@ export const SuiManageVault: React.FC<{
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
-      <ManageVaultHeaderInformation
-        collateral={collateral as IDetailedCollateral}
-      />
+      <ManageVaultHeaderInformation collateral={collateral} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
         <LiquidatedWarning
-          collateral={collateral as IDetailedCollateral}
+          collateral={collateral}
           open={isLiquidatedWarningOpen}
           onClose={() => setIsLiquidatedWarningOpen(false)}
         />
 
         <ManageVaultInfoSection
           className="mb-12"
-          vault={{ ...vault, collateralSymbol: deptTokenSymbol }}
+          vault={{ ...vault, collateralSymbol: collateralSymbol }}
         />
 
         <div className="mb-6 grid grid-cols-2 gap-x-[46px]">
@@ -421,7 +411,7 @@ export const SuiManageVault: React.FC<{
             <ManageVaultSectionTitle
               title="manage"
               className="mb-6 gap-x-0"
-              subTitle="btc"
+              subTitle={collateralSymbol}
               icon={<BitCoinIcon className="shrink-0" width={27} height={29} />}
             />
             <NumberInput
@@ -431,7 +421,7 @@ export const SuiManageVault: React.FC<{
               onFocus={() => setIsMintFromBtc(true)}
               greyOut={isMintFromBtc === false}
               disabled={depositWBtcDisabled && false}
-              title={`deposit ${deptTokenSymbol}`}
+              title={`deposit ${collateralSymbol}`}
               inputSuffix={`~${depositInUsd}$`}
               titleSuffix={
                 'Available: ' + formatNumberAsCompact(collateralBalance)
@@ -450,13 +440,13 @@ export const SuiManageVault: React.FC<{
               disabled={withdrawWbtcDisabled}
               onFocus={() => setIsMintFromBtc(false)}
               greyOut={isMintFromBtc === true}
-              title={`withdraw ${deptTokenSymbol}`}
+              title={`withdraw ${collateralSymbol}`}
               titleSuffix={
                 <span className="flex items-center gap-x-2">
                   Max:{' '}
                   {
                     displayVaultValues(
-                      { ...maxVault, collateralSymbol: deptTokenSymbol },
+                      { ...maxVault, collateralSymbol: collateralSymbol },
                       false
                     ).availableToWithdraw
                   }
