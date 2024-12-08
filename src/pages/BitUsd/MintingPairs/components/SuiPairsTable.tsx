@@ -4,14 +4,14 @@ import { TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { chainsTitle } from '@/config/chain'
 import { useSuiCollaterals } from '@/hooks/useSuiCollaterals'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IDetailedSuiCollateral } from '@/types/sui'
+import { IDetailedCollateral } from '@/types/vault'
 
 import SuiMintingPairTableRow from './SuiMintingPairTableRow'
 
 import { TTable } from '../../tables'
 
 const SuiPairsTable: React.FC<{
-  table: TTable<IDetailedSuiCollateral>
+  table: TTable<IDetailedCollateral>
   isOpenedVaults?: boolean
 }> = ({ table, isOpenedVaults }) => {
   const { isSuiConnected, suiChainIdAsNumber } = useUserInfo()
@@ -54,7 +54,7 @@ const SuiPairsTable: React.FC<{
         collateral={collateral}
       />
     ))
-  }, [collaterals, hasOpenedCollaterals, table])
+  }, [collaterals, showEmpty, table])
 
   return (
     <>

@@ -7,13 +7,8 @@ import { useParams } from 'react-router-dom'
 
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 import { useDebounce } from '@/hooks/useDebounce'
-import {
-  BcsOpenVault,
-  BcsVaultDetail,
-  IBcsVaultDetail,
-  IDetailedSuiCollateral
-} from '@/types/sui'
-import { IVault } from '@/types/vault'
+import { BcsOpenVault, BcsVaultDetail, IBcsVaultDetail } from '@/types/sui'
+import { IDetailedCollateral, IVault } from '@/types/vault'
 import { getSuiChainConfig } from '@/utils/chain'
 import { formatNumberAsTrunc } from '@/utils/number'
 import {
@@ -29,7 +24,7 @@ import { useSuiVaultAddress } from './useSuiVaultAddress'
 
 const SAFE_BITUSD_DEDUCT_AMOUNT = 0.01
 
-export const useSuiVaultDetail = (collateral?: IDetailedSuiCollateral) => {
+export const useSuiVaultDetail = (collateral?: IDetailedCollateral) => {
   const { address, chain } = useWallet()
   const { fetchTransactionResult } = useSuiExecute()
   const { suiContractAddresses } = useContractAddresses(

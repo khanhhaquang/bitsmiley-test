@@ -8,7 +8,7 @@ import { Image } from '@/components/Image'
 import { TableCell, TableRow } from '@/components/ui/table'
 import { chainsIconUrl } from '@/config/chain'
 import { useSuiToken } from '@/hooks/useSuiToken'
-import { IDetailedSuiCollateral } from '@/types/sui'
+import { IDetailedCollateral } from '@/types/vault'
 import { cn } from '@/utils/cn'
 
 import {
@@ -19,8 +19,8 @@ import { TTable } from '../../tables'
 
 const SuiMintingPairTableRow: React.FC<{
   isOpened?: boolean
-  collateral: IDetailedSuiCollateral
-  table: TTable<IDetailedSuiCollateral>
+  collateral: IDetailedCollateral
+  table: TTable<IDetailedCollateral>
 }> = ({ collateral, table, isOpened }) => {
   const navigate = useNavigate()
   const { coinMetadata } = useSuiToken(collateral.collateral?.tokenAddress)

@@ -15,7 +15,6 @@ import { useSuiTokenPrice } from '@/hooks/useSuiTokenPrice'
 import { useSuiTransaction } from '@/hooks/useSuiTransaction'
 import { useSuiVaultDetail } from '@/hooks/useSuiVaultDetail'
 import { useUserInfo } from '@/hooks/useUserInfo'
-import { IDetailedCollateral } from '@/types/vault'
 import {
   formatNumberAsCeil,
   formatNumberAsCompact,
@@ -304,13 +303,7 @@ export const SuiManageVault: React.FC<{
           onClickActionButton={() => {
             refetchCollaterals()
             refreshVaultValues()
-            if (processingType === 'error') {
-              transactionState?.reset()
-            }
-
-            if (processingType === 'success') {
-              navigate(-1)
-            }
+            transactionState?.reset()
           }}
           actionButtonText={processingType !== 'info' ? 'Ok' : ''}
           message={processingMessage}
@@ -320,7 +313,6 @@ export const SuiManageVault: React.FC<{
     return null
   }, [
     transactionState,
-    navigate,
     processingMessage,
     processingType,
     refetchCollaterals,
@@ -400,13 +392,11 @@ export const SuiManageVault: React.FC<{
     <div className="size-full overflow-y-auto pb-12">
       {processingModal}
       <VaultTitleBlue>MANAGE VAULT</VaultTitleBlue>
-      <ManageVaultHeaderInformation
-        collateral={collateral as IDetailedCollateral}
-      />
+      <ManageVaultHeaderInformation collateral={collateral} />
 
       <div className="mx-auto mt-10 flex w-[709px] flex-col">
         <LiquidatedWarning
-          collateral={collateral as IDetailedCollateral}
+          collateral={collateral}
           open={isLiquidatedWarningOpen}
           onClose={() => setIsLiquidatedWarningOpen(false)}
         />

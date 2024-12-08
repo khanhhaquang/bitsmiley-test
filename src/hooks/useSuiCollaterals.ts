@@ -2,7 +2,6 @@ import { bcs } from '@mysten/sui/bcs'
 import { Transaction } from '@mysten/sui/transactions'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo, useCallback } from 'react'
-import { parseEther } from 'viem'
 
 import { UserService } from '@/services/user'
 import {
@@ -101,10 +100,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
       if (!stabilityFeeRate || !blockTime) return 0
 
       const blocks = (365 * 24 * 3600) / blockTime
-      return (
-        Number(BigInt(blocks) * stabilityFeeRate * BigInt('1000000')) /
-        Number(parseEther('1'))
-      )
+      return Number(BigInt(blocks) * stabilityFeeRate) / 10 ** 12 / 100
     },
     [suiChains, suiChainIdAsNumber]
   )
@@ -117,13 +113,15 @@ export const useSuiCollaterals = (collateralId?: string) => {
         chainId: suiChainIdAsNumber,
         vaultAddress: res?.vaultAddress,
         collaterals: res?.collaterals?.map((c) => ({
-          ...c,
           name: c.name,
           chainId: suiChainIdAsNumber,
           isOpenVault: c.isOpenVault, // TO DO: Not return true when have vault
           collateralId: byteArrayToString(c.collateralId.bytes),
           maxLTV: parseFromMist(c.maxLtv).toString(),
-          liquidationFeeRate: parseFromMist(c.liquidationFeeRate).toString(),
+          liquidationFeeRate: parseFromMist(
+            c.liquidationFeeRate,
+            14 // 12 decimals + 2 of percentage
+          ).toString(),
           stabilityFee: getStabilityFee(BigInt(c.stabilityFeeRate)),
           collateral: {
             decimals: c.collateral.decimals,
@@ -298,6 +296,7 @@ export const useSuiCollaterals = (collateralId?: string) => {
     () => collaterals?.find((p) => p.collateralId === collateralId),
     [collateralId, collaterals]
   )
+  console.log('🚀 ~ useSuiCollaterals ~ collateral:', collateral)
 
   return {
     collaterals,

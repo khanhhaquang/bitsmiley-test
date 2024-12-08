@@ -315,7 +315,6 @@ export const useCollaterals = (chainId?: number, collateralId?: string) => {
       ),
     [chainWithCollaterals]
   )
-  console.log('🚀 ~ useCollaterals ~ collaterals:', collaterals)
 
   const availableCollaterals = useMemo(() => {
     if (!chainId) return []
