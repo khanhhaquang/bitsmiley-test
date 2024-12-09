@@ -1,5 +1,6 @@
 import { SuiClient, SuiTransactionBlockResponse } from '@mysten/sui/client'
 import { Transaction } from '@mysten/sui/transactions'
+import { SuiSignAndExecuteTransactionOutput } from '@mysten/wallet-standard'
 import { useSuiClient, useWallet } from '@suiet/wallet-kit'
 import { useMutation } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
@@ -13,7 +14,6 @@ type Options = Omit<
 type ResponseCallback = (
   tx: SuiTransactionBlockResponse
 ) => void | Promise<void>
-type ExecuteResponse = { digest: string; rawEffects?: number[] }
 
 type Executor = (
   options: Options,
@@ -27,7 +27,7 @@ export type ExecutorResult = {
   isSuccess: boolean
   isError: boolean
   isPaused: boolean
-  executeData?: ExecuteResponse
+  executeData?: SuiSignAndExecuteTransactionOutput
   error?: Error | null
   reset: () => void
   transactionResponse?: SuiTransactionBlockResponse
