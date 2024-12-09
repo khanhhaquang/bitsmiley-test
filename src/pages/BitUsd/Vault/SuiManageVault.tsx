@@ -278,7 +278,7 @@ export const SuiManageVault: React.FC<{
       isMintFromBtc &&
       transactionState?.transactionResponse
     )
-      return `${suiBlockExplorerUrl}/tx/${transactionState?.transactionResponse}`
+      return `${suiBlockExplorerUrl}/tx/${transactionState?.transactionResponse.digest}`
     return ''
   }, [suiBlockExplorerUrl, isMintFromBtc, transactionState])
 
@@ -303,7 +303,9 @@ export const SuiManageVault: React.FC<{
           onClickActionButton={() => {
             refetchCollaterals()
             refreshVaultValues()
-            transactionState?.reset()
+            if (transactionState.isSuccess || transactionState.isError) {
+              transactionState?.reset()
+            }
           }}
           actionButtonText={processingType !== 'info' ? 'Ok' : ''}
           message={processingMessage}

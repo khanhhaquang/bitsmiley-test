@@ -61,7 +61,10 @@ export const useSuiExecute = (): ExecutorResult & ExecutorHandler => {
       })
   })
 
-  const mutate: Executor = async ({ tx, ...options }, then) => {
+  const validateTransaction: Executor = async (
+    { tx, ...options },
+    callback
+  ) => {
     setTxResponse(undefined)
     const result = await signAndExecute(tx)
     if (result?.digest) {
@@ -70,7 +73,7 @@ export const useSuiExecute = (): ExecutorResult & ExecutorHandler => {
         ...options
       })
 
-      then?.(waitResult)
+      callback?.(waitResult)
       setTxResponse(waitResult)
       return waitResult
     }
@@ -96,7 +99,7 @@ export const useSuiExecute = (): ExecutorResult & ExecutorHandler => {
 
   return {
     fetchTransactionResult,
-    validateTransaction: mutate,
+    validateTransaction,
     status,
     isIdle,
     isPending,
