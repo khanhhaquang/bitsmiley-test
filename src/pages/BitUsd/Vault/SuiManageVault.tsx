@@ -273,14 +273,10 @@ export const SuiManageVault: React.FC<{
   }, [transactionState])
 
   const txnLink = useMemo(() => {
-    if (
-      !!suiBlockExplorerUrl &&
-      isMintFromBtc &&
-      transactionState?.transactionResponse
-    )
+    if (!!suiBlockExplorerUrl && transactionState?.transactionResponse)
       return `${suiBlockExplorerUrl}/tx/${transactionState?.transactionResponse.digest}`
     return ''
-  }, [suiBlockExplorerUrl, isMintFromBtc, transactionState])
+  }, [suiBlockExplorerUrl, transactionState])
 
   const processingMessage = useMemo(() => {
     switch (processingType) {

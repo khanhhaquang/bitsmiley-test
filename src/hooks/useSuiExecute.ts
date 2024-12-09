@@ -65,19 +65,23 @@ export const useSuiExecute = (): ExecutorResult & ExecutorHandler => {
     { tx, ...options },
     callback
   ) => {
-    setTxResponse(undefined)
-    const result = await signAndExecute(tx)
-    if (result?.digest) {
-      const waitResult = await client.waitForTransaction({
-        digest: result.digest,
-        ...options
-      })
+    try {
+      setTxResponse(undefined)
+      const result = await signAndExecute(tx)
+      if (result?.digest) {
+        const waitResult = await client.waitForTransaction({
+          digest: result.digest,
+          ...options
+        })
 
-      callback?.(waitResult)
-      setTxResponse(waitResult)
-      return waitResult
+        callback?.(waitResult)
+        setTxResponse(waitResult)
+        return waitResult
+      }
+    } catch (error) {
+      console.log('validate txn error: ', error)
+      throw error
     }
-    throw new Error('Failed to execute transaction')
   }
 
   const fetchTransactionResult = useCallback(
