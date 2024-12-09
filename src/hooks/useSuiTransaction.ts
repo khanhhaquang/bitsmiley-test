@@ -31,7 +31,7 @@ export const useSuiTransaction = (collateralId: string) => {
     useSuiToken(bitUSDType)
 
   const openAndMint = useCallback(
-    async (deposit: string, mint: string, collateralId: string) => {
+    (deposit: string, mint: string, collateralId: string) => {
       const tx = new Transaction()
 
       if (collateralCoinId) {
@@ -68,7 +68,7 @@ export const useSuiTransaction = (collateralId: string) => {
           ]
         })
 
-        await validateTransaction({ tx })
+        validateTransaction({ tx })
       }
     },
     [
@@ -86,7 +86,7 @@ export const useSuiTransaction = (collateralId: string) => {
   )
 
   const mint = useCallback(
-    async (deposit: string, mint: string) => {
+    (deposit: string, mint: string) => {
       const tx = new Transaction()
       if (collateralCoinId) {
         const collateral = convertToMist(
@@ -120,7 +120,7 @@ export const useSuiTransaction = (collateralId: string) => {
             tx.object.clock()
           ]
         })
-        await validateTransaction({ tx })
+        validateTransaction({ tx })
       }
     },
     [
@@ -139,7 +139,7 @@ export const useSuiTransaction = (collateralId: string) => {
   )
 
   const repay = useCallback(
-    async (deposit: string, mint: string) => {
+    (deposit: string, mint: string) => {
       const tx = new Transaction()
 
       const collateral = convertToMist(
@@ -175,7 +175,7 @@ export const useSuiTransaction = (collateralId: string) => {
             tx.object.clock()
           ]
         })
-        await validateTransaction({ tx })
+        validateTransaction({ tx })
       }
     },
     [
@@ -195,7 +195,7 @@ export const useSuiTransaction = (collateralId: string) => {
   )
 
   const repayAll = useCallback(
-    async (deposit: string) => {
+    (deposit: string) => {
       const tx = new Transaction()
       const collateral = convertToMist(Number(deposit))
 
@@ -225,7 +225,7 @@ export const useSuiTransaction = (collateralId: string) => {
             tx.object.clock()
           ]
         })
-        await validateTransaction({ tx })
+        validateTransaction({ tx })
       }
     },
     [

@@ -17,7 +17,7 @@ type ResponseCallback = (
 
 type Executor = (
   options: Options,
-  then?: ResponseCallback
+  callback?: ResponseCallback
 ) => Promise<SuiTransactionBlockResponse | undefined>
 
 export type ExecutorResult = {
