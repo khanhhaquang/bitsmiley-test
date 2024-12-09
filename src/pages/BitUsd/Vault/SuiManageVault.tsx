@@ -80,7 +80,7 @@ export const SuiManageVault: React.FC<{
   const collateralSymbol = collateralMetaData?.symbol || ''
 
   const { balance: bitUsdBalance, coinMetadata: bitUSDMetaData } = useSuiToken(
-    `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
+    `${suiContractAddresses?.bitUSDPackageId}::bitsmiley::BITSMILEY`
   )
 
   const bitUSDDecimals = useMemo(

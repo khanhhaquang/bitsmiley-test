@@ -34,7 +34,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedCollateral) => {
   const PackageIds = useMemo(() => suiContractAddresses, [suiContractAddresses])
 
   const collateralType = collateral?.collateral?.tokenAddress
-  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitusd::BITUSD`
+  const bitUSDType = `${suiContractAddresses?.bitUSDPackageId}::bitsmiley::BITSMILEY`
 
   const {
     coinMetadata: collateralMetaData,
