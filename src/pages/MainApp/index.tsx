@@ -11,6 +11,7 @@ import { useUserInfo } from '@/hooks/useUserInfo'
 import { cn } from '@/utils/cn'
 import { getIllustrationUrl } from '@/utils/getAssetsUrl'
 import { formatNumberWithSeparator } from '@/utils/number'
+import { useSuiBtcPrice } from '@/hooks/useSuiBtcPrice'
 
 const MachineContainer: React.FC<{ children: React.ReactNode }> = ({
   children
@@ -99,12 +100,15 @@ const TVLIndicator: React.FC = () => {
 
 const BTCPrice = () => {
   const wbtcPrice = useTokenPrice()
+  const { price: suiBtcPrice } = useSuiBtcPrice()
+
+  const price = suiBtcPrice || wbtcPrice
 
   return (
     <div className="absolute bottom-[29.75%] right-[24.92%] z-10 flex h-[3%] w-[14%] items-center justify-center gap-x-1 text-nowrap font-sdm text-[10px] text-white xl:text-base">
       Current BTC Price:
-      <span className={cn(wbtcPrice && 'text-green')}>
-        {wbtcPrice ? `$${formatNumberWithSeparator(wbtcPrice, 4)}` : '-'}
+      <span className={cn(price && 'text-green')}>
+        {price ? `$${formatNumberWithSeparator(price, 4)}` : '-'}
       </span>
     </div>
   )

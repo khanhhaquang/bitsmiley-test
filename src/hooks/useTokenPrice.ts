@@ -4,13 +4,17 @@ import { Address, formatEther } from 'viem'
 import { useReadOracleGetPrice } from '@/contracts/Oracle'
 import { useContractAddresses } from '@/hooks/useContractAddresses'
 
-export const useTokenPrice = () => {
+export const useTokenPrice = (injectedCollateralId: string = '') => {
   const { collateralId } = useParams()
   const { evmContractAddresses } = useContractAddresses()
 
+  const expectedCollateralId = collateralId || injectedCollateralId
+
   const { data } = useReadOracleGetPrice({
     address: evmContractAddresses?.oracle,
-    args: (collateralId as Address) && [collateralId as Address],
+    args: (expectedCollateralId as Address) && [
+      expectedCollateralId as Address
+    ],
     query: {
       refetchInterval: 5 * 1000
     }
