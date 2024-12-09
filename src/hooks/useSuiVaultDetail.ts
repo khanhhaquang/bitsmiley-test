@@ -58,11 +58,6 @@ export const useSuiVaultDetail = (collateral?: IDetailedCollateral) => {
     bitusd: string,
     vault: string = ''
   ) => {
-    console.log(
-      '🚀 ~ useSuiVaultDetail ~ bitusd:',
-      convertToMist(bitusd, collateralMetaData?.decimals ?? 0)
-    )
-
     if (!PackageIds || !address) return undefined
 
     const tx = new Transaction()
@@ -133,14 +128,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedCollateral) => {
     isFetching: isFetchingVault,
     ...rest
   } = useQuery({
-    queryKey: [
-      'sui-vault-details',
-      vaultAddress,
-      '0',
-      '0',
-      bitUSDMetadata?.decimals,
-      collateralMetaData?.decimals
-    ],
+    queryKey: ['sui-vault-details', vaultAddress, '0', '0'],
     queryFn: () => getVaultDetail('0', '0', vaultAddress),
     enabled: Boolean(
       PackageIds?.bitSmileyPackageId &&
@@ -169,9 +157,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedCollateral) => {
       'sui-debounced-vault-details',
       vaultAddress,
       debouncedChangedCollateral,
-      debouncedChangedBitUsd,
-      bitUSDMetadata?.decimals,
-      collateralMetaData?.decimals
+      debouncedChangedBitUsd
     ],
     queryFn: () =>
       getVaultDetail(
@@ -205,9 +191,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedCollateral) => {
       'sui-max-vault-details',
       vaultAddress,
       debouncedMaxVaultCollateral,
-      debouncedMaxVaultBitUsd,
-      bitUSDMetadata?.decimals,
-      collateralMetaData?.decimals
+      debouncedMaxVaultBitUsd
     ],
     queryFn: () =>
       getVaultDetail(
@@ -280,8 +264,7 @@ export const useSuiVaultDetail = (collateral?: IDetailedCollateral) => {
       'sui-try-open-vault',
       collateralId,
       debouncedTryOpenVaultCollateral,
-      debouncedTryOpenVaultBitUsd,
-      bitUSDMetadata?.decimals
+      debouncedTryOpenVaultBitUsd
     ],
     queryFn: () =>
       tryOpenVault(
