@@ -293,7 +293,8 @@ export const useSuiCollaterals = (collateralId?: string) => {
   }, [collateralId, collaterals])
 
   const collateral = useMemo(
-    () => collaterals?.find((p) => p.collateralId === collateralId),
+    () =>
+      collaterals?.find((p) => collateralId && p.collateralId === collateralId),
     [collateralId, collaterals]
   )
   console.log('🚀 ~ useSuiCollaterals ~ collateral:', collateral)
